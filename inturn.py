@@ -2,6 +2,7 @@
 projeto   deeplaw: intern
 automatizar abertura de pastas no sistema dplaw
 '''
+# TODO PROJETO
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -59,8 +60,6 @@ def acessToIntegra():
 
 def incluirProcesso(df={}):
 
-    
-
     # incluindo processo
     time.sleep(3)
     driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
@@ -71,22 +70,32 @@ def incluirProcesso(df={}):
     select.select_by_visible_text(str(df['gpProcesso']))
 
     #Numero do CNJ e do Processo
-    print(df['numProcesso'])
     element = waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
     element.send_keys(str(df['numProcesso']))
     element = waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
     element.send_keys(str(df['numProcesso']))
 
     # Status
-    print(df['statusProcessual'])
     element = waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
     select = Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
 
-    
+
+    ########### COLUNA 2 DA PÁGINA
+
+    # Pasta
+    element = waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
+    element.send_keys(str(df['pasta']))
+
+    # Grupo Local trâmite
+    element = waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
+    select = Select(element)
+    select.select_by_visible_text(str(df['localTr']))
+    element = waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
+    select = Select(element)
+    select.select_by_visible_text(str(df['localTramite']))
 
     # Comarca
-    print(df['comarca'])
     element = waitinstance(driver, '//*[@id="slcComarca"]', 30, 1, 'show')
     select = Select(element)
     select.select_by_visible_text(str(df['comarca']))
@@ -96,34 +105,56 @@ def incluirProcesso(df={}):
     select = Select(element)
     select.select_by_visible_text(str(df['uf']))
 
-    # Responsável
-    element = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/span/span', 30, 1, 'show')
-    element.click()
-    element_over = waitinstance(driver, "//option[contains(text(),'advbradesco')]", 30, 1, 'show')
-    hover = ActionChains(driver).move_to_element(element_over)
-    hover.perform()
-    element_over.click()
+    # RESPONSÁVEL
+    # element = waitinstance(driver, '//*[@id="slcResponsavel"]', 30, 1, 'show')
+    # select = Select(element)
+    # select.select_by_visible_text(str(df['responsavel']))
+
+
+    # # Responsável
+
+    # TODO Instead of get_element_by_id() you can try elem = browser.find_element_by_css_selector('#elemId') (go to that webpage and the element, right click it and Copy CSS Selector, or something like that.) This is what i did and it works. You also try find_element_by_link_text(text), find_element_by_partial_link_text(text), find_element_by_tag_name(tagName_case_insensitive_here), find_element_by_name(name) etc. Something will work. After the id the CSS Selector is your best bet.
+
+    #//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]
+
+
+    element = waitinstance(driver, '//*[@id="slcResponsavel"]', 30, 1, 'show')
+    # select = Select(element)
+    # select.select_by_visible_text(str(df['uf']))
+
+    # element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-5"]', 30, 1, 'show')
+    # element.click()
+    # element_over = waitinstance(driver, "//option[contains(text(),'advbradesco')]", 30, 1, 'show')
+    # hover = ActionChains(driver).move_to_element(element_over)
+    # hover.perform()
+    # element_over.click()
     #format(df['responsavel'][0])
 
-    # Pasta
-    element = waitinstance(driver, "txtPasta", 30, 1, 'show', 'id')
-    element.send_keys(str(df['pasta']))
 
-    # Data da Contratação
-    #element = waitinstance(driver, "txtDataContratacao", 30, 1, 'show', 'id')
-    #element.send_keys(str(df['DataContratacao'][0]))
+    # element = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/span/span', 30, 1, 'show')
+    # element.click()
+    # element_over = waitinstance(driver, "//option[contains(text(),'advbradesco')]", 30, 1, 'show')
+    # hover = ActionChains(driver).move_to_element(element_over)
+    # hover.perform()
+    # element_over.click()
+    # #format(df['responsavel'][0])
 
-    # Valor da Causa
-    element = waitinstance(driver, "txtValorCausa", 30, 1, 'show', 'id')
-    element.send_keys(str(df['vCausa']))
+    
+    # # Data da Contratação
+    # element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
+    # element.send_keys(str(df['DataContratacao'][0]))
 
-    # Abre a aba Parte Adversa
-    element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
-    element.click()
+    # # Valor da Causa
+    # element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
+    # element.send_keys(str(df['vCausa']))
 
-    # Parte Adversa
-    element = waitinstance(driver, "txtNome", 30, 1, 'show', 'id')
-    element.send_keys(str(df['adversa']))
+    # # Abre a aba Parte Adversa
+    # element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
+    # element.click()
+
+    # # Parte Adversa
+    # element = waitinstance(driver, "txtNome", 30, 1, 'show', 'id')
+    # element.send_keys(str(df['adversa']))
 
 
     #===================
@@ -194,7 +225,12 @@ df['gpProcesso']       =  dfExcel[item, 8]
 df['nomeAdversa']      =  dfExcel[item, 9]
 df['tipoProcesso']     =  dfExcel[item, 10]
 df['comarca']          =  dfExcel[item, 11]
-df['localTramite']     =  dfExcel[item, 12]
+
+local = dfExcel[item, 12].split(';')
+
+df['localTr']          =  str(local[0])
+df['localTramite']     =  str(local[1])
+
 df['responsavel']      =  dfExcel[item, 13]
 df['vCausa']           =  dfExcel[item, 14]
 df['dataContratacao']  =  dfExcel[item, 15]
