@@ -27,6 +27,96 @@ cliente = {}
 '''
 funções
 '''
+def responsavelXpath(responsavel):
+    if responsavel == 'acordosg4':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-1"]'
+    elif responsavel == 'ADV1GE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-2"]'
+    elif responsavel == 'ADV2GE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-3"]'
+    elif responsavel == 'ADV3GE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-3"]'
+    elif responsavel == 'ADV4GE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-4"]'
+    elif responsavel == 'advbradesco':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-5"]'
+    elif responsavel == 'advgg1':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-6"]'
+    elif responsavel == 'AG6':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-7"]'
+    elif responsavel == 'AGE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-8"]'
+    elif responsavel == 'AGE2':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-9"]'
+    elif responsavel == 'AGS':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-10"]'
+    elif responsavel == 'ApoioBV':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-11"]'
+    elif responsavel == 'apoiogg1':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-12"]'
+    elif responsavel == 'apoiogg2':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-13"]'
+    elif responsavel == 'BVADV1':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-14"]'
+    elif responsavel == 'BVADV2':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-15"]'
+    elif responsavel == 'cbradesco':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-16"]'
+    elif responsavel == 'CBV':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-17"]'
+    elif responsavel == 'CGE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-18"]'
+    elif responsavel == 'COBRA1':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-19"]'
+    elif responsavel == 'COP':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-20"]'
+    elif responsavel == 'Correspondente':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-21"]'
+    elif responsavel == 'CSEG':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-22"]'
+    elif responsavel == 'ESP':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-23"]'
+    elif responsavel == 'EXT':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-24"]'
+    elif responsavel == 'Financeiro':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-25"]'
+    elif responsavel == 'GFP':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-26"]'
+    elif responsavel == 'GG1':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-27"]'
+    elif responsavel == 'GG2':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-28"]'
+    elif responsavel == 'GST':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-29"]'
+    elif responsavel == 'JEP':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-30"]'
+    elif responsavel == 'jREP':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-31"]'
+    elif responsavel == 'KET':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-32"]'
+    elif responsavel == 'LBG':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-33"]'
+    elif responsavel == 'LVC':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-34"]'
+    elif responsavel == 'operacoes':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-35"]'
+    elif responsavel == 'PLV':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-36"]'
+    elif responsavel == 'PUB':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-37"]'
+    elif responsavel == 'Robô':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-38"]'
+    elif responsavel == 'SMF':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-39"]'
+    elif responsavel == 'STJ':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-40"]'
+    elif responsavel == 'TESTE':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-41"]'
+    elif responsavel == 'TLA -':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-42"]'
+    elif responsavel == 'TRIA':
+        return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
+        
 def acessToIntegra():
     # acessando a primeira página do sistema promad
     driver.get('http://www.integra.adv.br/')
@@ -111,16 +201,11 @@ def incluirProcesso(df={}):
     comboResponsavel = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 30, 1, 'show')
     comboResponsavel.click()  # clica e abre as opções
     
-    element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-5"]', 30, 1, 'show')
+    element = waitinstance(driver, responsavelXpath(df['responsavel']), 30, 1, 'show')
     element.click() # seleciona o item desejado
 
-    element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-6"]', 30, 1, 'show')
-    element.click() # selecionando mais itens
-
     comboResponsavel.click() # clica para fechar as opções do combo
-
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
-
     
     # # Data da Contratação
     # element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
@@ -218,5 +303,4 @@ df['vCausa']           =  dfExcel[item, 14]
 df['dataContratacao']  =  dfExcel[item, 15]
 df['uf']               =  dfExcel[item, 16]
 
-# print(df['numProcesso'])
 incluirProcesso(df)
