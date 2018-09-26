@@ -116,7 +116,7 @@ def responsavelXpath(responsavel):
         return '//*[@id="ui-multiselect-slcResponsavel-option-42"]'
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
-        
+
 def acessToIntegra():
     # acessando a primeira página do sistema promad
     driver.get('http://www.integra.adv.br/')
@@ -207,13 +207,15 @@ def incluirProcesso(df={}):
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
-    # # Data da Contratação
-    # element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
-    # element.send_keys(str(df['DataContratacao'][0]))
+    # Data da Contratação
+    print(df['dataContratacao'])
+    element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
+    element.send_keys(str(df['dataContratacao']))
 
-    # # Valor da Causa
-    # element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
-    # element.send_keys(str(df['vCausa']))
+    # Valor da Causa
+    print(df['vCausa'])
+    element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
+    element.send_keys(str(df['vCausa']))
 
     # # Abre a aba Parte Adversa
     # element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
@@ -300,7 +302,15 @@ df['localTramite']     =  str(local[1])
 
 df['responsavel']      =  dfExcel[item, 13]
 df['vCausa']           =  dfExcel[item, 14]
-df['dataContratacao']  =  dfExcel[item, 15]
+
+
+dataContratacao        = str(dfExcel[item, 15])
+# import datetime
+# dataContratacao        = dataContratacao.strtime("%d/%m/%Y")
+
+dataContratacao        = dataContratacao.replace("/", "")
+
+df['dataContratacao']  =  dataContratacao
 df['uf']               =  dfExcel[item, 16]
 
 incluirProcesso(df)
