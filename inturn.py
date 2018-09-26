@@ -105,39 +105,21 @@ def incluirProcesso(df={}):
     select = Select(element)
     select.select_by_visible_text(str(df['uf']))
 
-    # RESPONSÁVEL
-    # element = waitinstance(driver, '//*[@id="slcResponsavel"]', 30, 1, 'show')
-    # select = Select(element)
-    # select.select_by_visible_text(str(df['responsavel']))
+    # RESPONSÁVEL    
+    driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
+    comboResponsavel = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 30, 1, 'show')
+    comboResponsavel.click()  # clica e abre as opções
+    
+    element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-5"]', 30, 1, 'show')
+    element.click() # seleciona o item desejado
 
-    # # Responsável
+    element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-6"]', 30, 1, 'show')
+    element.click() # selecionando mais itens
 
-    # TODO Instead of get_element_by_id() you can try elem = browser.find_element_by_css_selector('#elemId') (go to that webpage and the element, right click it and Copy CSS Selector, or something like that.) This is what i did and it works. You also try find_element_by_link_text(text), find_element_by_partial_link_text(text), find_element_by_tag_name(tagName_case_insensitive_here), find_element_by_name(name) etc. Something will work. After the id the CSS Selector is your best bet.
+    comboResponsavel.click() # clica para fechar as opções do combo
 
-    #//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]
-
-
-    element = waitinstance(driver, '//*[@id="slcResponsavel"]', 30, 1, 'show')
-    # select = Select(element)
-    # select.select_by_visible_text(str(df['uf']))
-
-    # element = waitinstance(driver, '//*[@id="ui-multiselect-slcResponsavel-option-5"]', 30, 1, 'show')
-    # element.click()
-    # element_over = waitinstance(driver, "//option[contains(text(),'advbradesco')]", 30, 1, 'show')
-    # hover = ActionChains(driver).move_to_element(element_over)
-    # hover.perform()
-    # element_over.click()
-    #format(df['responsavel'][0])
-
-
-    # element = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/span/span', 30, 1, 'show')
-    # element.click()
-    # element_over = waitinstance(driver, "//option[contains(text(),'advbradesco')]", 30, 1, 'show')
-    # hover = ActionChains(driver).move_to_element(element_over)
-    # hover.perform()
-    # element_over.click()
-    # #format(df['responsavel'][0])
+    driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
 
     
     # # Data da Contratação
