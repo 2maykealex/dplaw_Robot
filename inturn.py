@@ -14,6 +14,7 @@ import time
 import pandas as pd
 import pyexcel as pe
 import datetime
+import locale
 
 '''
 variáveis
@@ -294,12 +295,13 @@ df['tipoProcesso']     =  dfExcel[item, 10]
 df['comarca']          =  dfExcel[item, 11]
 
 local = dfExcel[item, 12].split(';')
-
 df['localTr']          =  str(local[0])
 df['localTramite']     =  str(local[1])
 
 df['responsavel']      =  dfExcel[item, 13]
-df['vCausa']           =  dfExcel[item, 14]
+
+valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
+df['vCausa']           =  valorCausa
 
 dataContratacao        = (dfExcel[item, 15])
 dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
