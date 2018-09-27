@@ -2,8 +2,6 @@
 projeto   deeplaw: intern
 automatizar abertura de pastas no sistema dplaw
 '''
-# TODO PROJETO
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,6 +13,7 @@ import os
 import time
 import pandas as pd
 import pyexcel as pe
+import datetime
 
 '''
 variáveis
@@ -208,7 +207,6 @@ def incluirProcesso(df={}):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    print(df['dataContratacao'])
     element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
     element.send_keys(str(df['dataContratacao']))
 
@@ -269,14 +267,14 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
 dirpath = os.path.dirname(os.path.realpath(__file__))
 chromepath = dirpath + '/chromedriver'
 driver = webdriver.Chrome(executable_path = chromepath)
- 
+
+acessToIntegra()
+
 dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
 
 count = dfExcel.number_of_rows()-1
 
 item = 2
-
-acessToIntegra()
 
 # for x in range(1):
 
@@ -303,12 +301,9 @@ df['localTramite']     =  str(local[1])
 df['responsavel']      =  dfExcel[item, 13]
 df['vCausa']           =  dfExcel[item, 14]
 
-
-dataContratacao        = str(dfExcel[item, 15])
-# import datetime
-# dataContratacao        = dataContratacao.strtime("%d/%m/%Y")
-
-dataContratacao        = dataContratacao.replace("/", "")
+dataContratacao        = (dfExcel[item, 15])
+dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
+dataContratacao         = dataContratacao.replace("/", "")
 
 df['dataContratacao']  =  dataContratacao
 df['uf']               =  dfExcel[item, 16]
