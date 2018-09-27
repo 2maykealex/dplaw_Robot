@@ -216,14 +216,17 @@ def incluirProcesso(df={}):
     element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
     element.send_keys(str(df['vCausa']))
 
-    # # Abre a aba Parte Adversa
-    # element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
-    # element.click()
+    # Abre a aba Parte Adversa
+    element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
+    element.click()
 
-    # # Parte Adversa
-    # element = waitinstance(driver, "txtNome", 30, 1, 'show', 'id')
-    # element.send_keys(str(df['adversa']))
+    # Parte Adversa
+    element = waitinstance(driver, '//*[@id="txtNome"]', 30, 1, 'show')
+    element.send_keys(str(df['adversa']))
 
+    # Botão salvar
+    element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click()
 
     #===================
 
@@ -290,7 +293,7 @@ df['statusProcessual'] =  dfExcel[item, 5]
 df['cnpjAdversa']      =  dfExcel[item, 6]
 df['cpfAdversa']       =  dfExcel[item, 7]
 df['gpProcesso']       =  dfExcel[item, 8]
-df['nomeAdversa']      =  dfExcel[item, 9]
+df['adversa']          =  dfExcel[item, 9]
 df['tipoProcesso']     =  dfExcel[item, 10]
 df['comarca']          =  dfExcel[item, 11]
 
