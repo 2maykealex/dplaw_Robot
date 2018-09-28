@@ -20,6 +20,8 @@ import locale
 variáveis
 '''
 cliente = {}
+
+urlPage = ""
 '''
 ------------
 '''
@@ -128,8 +130,6 @@ def acessToIntegra():
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
-    
-    pesquisarCliente()
 
 def pesquisarCliente(cliente = 'Cliente teste'):
     # acessando a pesquisa de clientes no sistema
@@ -148,13 +148,17 @@ def pesquisarCliente(cliente = 'Cliente teste'):
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(3)
+    # SELECIONA O CLIENTE PESQUISADO
     element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
-def incluirProcesso(df={}):
+def incluirProcesso(self, df={}):
 
-    # incluindo processo
-    time.sleep(3)
+    if (self.urlPage == ""):
+        self.urlPage =  driver.current_url
+        print (self.urlPage)
+
+    # incluindo processo    
     driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
 
     # Grupo internodd
@@ -240,10 +244,16 @@ def incluirProcesso(df={}):
     # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
     # element.click()
 
+    time.sleep(5)
+    driver.get(urlPage)
+
+    # TODO VER PARA IDENTIFICAR JAVASCRIPT E DAR OK QUANDO IDENTIFICA QUE JÁ EXISTE A PESSOA
     
-    element = waitinstance(driver, '//*[@id="barra"]/div/div[1]/span[2]', 30, 1, 'show')
-    hover = ActionChains(driver).move_to_element(element)
-    hover.perform()
+    # //*[@id="popup_ok"]
+
+    # element = waitinstance(driver, '//*[@id="barra"]/div/div[1]/span[2]', 30, 1, 'show')
+    # hover = ActionChains(driver).move_to_element(element)
+    # hover.perform()
     # element.click()
 
     # driver.execute_script("return clickAcessoPagina('parteVisualizar.asp?codigo=100858103&codigo2=100858103')"); #torna elemento invisível novamente
@@ -291,45 +301,47 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 chromepath = dirpath + '/chromedriver'
 driver = webdriver.Chrome(executable_path = chromepath)
 
-acessToIntegra()
-
 dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
 
 count = dfExcel.number_of_rows()-1
+print ('contador ', count)
+acessToIntegra()
+pesquisarCliente()
 
-item = 2
+item = 1
 
-# for x in range(1):
+for item in range(count):
 
-df = {}
+    df = {}
 
-df['razaoSocial']      =  dfExcel[item, 0]
-df['gpCliente']        =  dfExcel[item, 1]
-df['cnpjCliente']      =  dfExcel[item, 2]
-df['numProcesso']      =  dfExcel[item, 3]
-df['pasta']            =  dfExcel[item, 4]
-df['statusProcessual'] =  dfExcel[item, 5]
-df['cnpjAdversa']      =  dfExcel[item, 6]
-df['cpfAdversa']       =  dfExcel[item, 7]
-df['gpProcesso']       =  dfExcel[item, 8]
-df['adversa']          =  dfExcel[item, 9]
-df['tipoProcesso']     =  dfExcel[item, 10]
-df['comarca']          =  dfExcel[item, 11]
+    df['razaoSocial']      =  dfExcel[item, 0]
+    df['gpCliente']        =  dfExcel[item, 1]
+    df['cnpjCliente']      =  dfExcel[item, 2]
+    df['numProcesso']      =  dfExcel[item, 3]
+    df['pasta']            =  dfExcel[item, 4]
+    df['statusProcessual'] =  dfExcel[item, 5]
+    df['cnpjAdversa']      =  dfExcel[item, 6]
+    df['cpfAdversa']       =  dfExcel[item, 7]
+    df['gpProcesso']       =  dfExcel[item, 8]
+    df['adversa']          =  dfExcel[item, 9]
+    df['tipoProcesso']     =  dfExcel[item, 10]
+    df['comarca']          =  dfExcel[item, 11]
 
-local = dfExcel[item, 12].split(';')
-df['localTr']          =  str(local[0])
-df['localTramite']     =  str(local[1])
+    local = dfExcel[item, 12].split(';')
+    df['localTr']          =  str(local[0])
+    df['localTramite']     =  str(local[1])
 
-df['responsavel']      =  dfExcel[item, 13]
+    df['responsavel']      =  dfExcel[item, 13]
 
-valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-df['vCausa']           =  valorCausa
+    valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
+    df['vCausa']           =  valorCausa
 
-dataContratacao        = (dfExcel[item, 15])
-dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
-dataContratacao         = dataContratacao.replace("/", "")
+    dataContratacao        = (dfExcel[item, 15])
+    dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
+    dataContratacao         = dataContratacao.replace("/", "")
 
-df['dataContratacao']  =  dataContratacao
-df['uf']               =  dfExcel[item, 16]
+    df['dataContratacao']  =  dataContratacao
+    df['uf']               =  dfExcel[item, 16]
 
-incluirProcesso(df)
+    time.sleep(3)    
+    incluirProcesso(df)
