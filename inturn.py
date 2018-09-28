@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import *
 import os
 import time
-import pandas as pd
+# import pandas as pd
 import pyexcel as pe
 import datetime
 import locale
@@ -128,7 +128,10 @@ def acessToIntegra():
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
+    
+    pesquisarCliente()
 
+def pesquisarCliente(cliente = 'Cliente teste'):
     # acessando a pesquisa de clientes no sistema
     element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
     hover = ActionChains(driver).move_to_element(element_over)
@@ -140,7 +143,7 @@ def acessToIntegra():
 
     # buscando o cliente e acessando sua pasta
     element = waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
-    element.send_keys('Cliente Teste')
+    element.send_keys(cliente)
     driver.find_element_by_id("btnPesquisar").click()
 
     # ATÉ A URL NÃO MUDAR
@@ -212,7 +215,6 @@ def incluirProcesso(df={}):
     element.send_keys(str(df['dataContratacao']))
 
     # Valor da Causa
-    print(df['vCausa'])
     element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
     element.send_keys(str(df['vCausa']))
 
@@ -228,6 +230,23 @@ def incluirProcesso(df={}):
     element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
     element.click()
 
+    # Link Ficha do cliente (voltar)
+    # pesquisarCliente()
+
+    # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
+    # hover = ActionChains(driver).move_to_element(element_over)
+    # hover.perform()
+
+    # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
+    # element.click()
+
+    
+    element = waitinstance(driver, '//*[@id="barra"]/div/div[1]/span[2]', 30, 1, 'show')
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
+    # element.click()
+
+    # driver.execute_script("return clickAcessoPagina('parteVisualizar.asp?codigo=100858103&codigo2=100858103')"); #torna elemento invisível novamente
     #===================
 
     # #OUTRA CONDIÇÃO !!!
