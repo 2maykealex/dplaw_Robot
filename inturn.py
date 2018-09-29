@@ -310,7 +310,8 @@ pesquisarCliente()
 
 item = 1
 
-for item in range(count):
+while (item <= count):
+    print('item: ', item)
 
     df = {}
 
@@ -328,6 +329,7 @@ for item in range(count):
     df['comarca']          =  dfExcel[item, 11]
 
     local = dfExcel[item, 12].split(';')
+
     df['localTr']          =  str(local[0])
     df['localTramite']     =  str(local[1])
 
@@ -343,5 +345,7 @@ for item in range(count):
     df['dataContratacao']  =  dataContratacao
     df['uf']               =  dfExcel[item, 16]
 
-    time.sleep(3)    
-    incluirProcesso(df)
+    # time.sleep(3)    
+    # incluirProcesso(df)
+
+    item = item + 1
