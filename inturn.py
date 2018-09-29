@@ -229,8 +229,8 @@ def incluirProcesso(urlPage, df={}):
     element.send_keys(str(df['adversa']))
 
     # Botão salvar
-    # element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    # element.click()
+    element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click()
 
     # Link Ficha do cliente (voltar)
     # pesquisarCliente()
@@ -242,7 +242,7 @@ def incluirProcesso(urlPage, df={}):
     # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
     # element.click()
 
-    time.sleep(5)
+    time.sleep(6)
     driver.get(urlPage)
 
     # TODO VER PARA IDENTIFICAR JAVASCRIPT E DAR OK QUANDO IDENTIFICA QUE JÁ EXISTE A PESSOA
