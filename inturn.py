@@ -20,8 +20,6 @@ import locale
 variáveis
 '''
 cliente = {}
-
-urlPage = ""
 '''
 ------------
 '''
@@ -152,11 +150,11 @@ def pesquisarCliente(cliente = 'Cliente teste'):
     element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
-def incluirProcesso(self, df={}):
+def incluirProcesso(urlPage, df={}):
 
-    if (self.urlPage == ""):
-        self.urlPage =  driver.current_url
-        print (self.urlPage)
+    if (urlPage == ""):
+        urlPage =  driver.current_url
+        print (urlPage)
 
     # incluindo processo    
     driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
@@ -231,8 +229,8 @@ def incluirProcesso(self, df={}):
     element.send_keys(str(df['adversa']))
 
     # Botão salvar
-    element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    element.click()
+    # element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    # element.click()
 
     # Link Ficha do cliente (voltar)
     # pesquisarCliente()
@@ -301,6 +299,7 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 chromepath = dirpath + '/chromedriver'
 driver = webdriver.Chrome(executable_path = chromepath)
 
+urlPage = ""
 dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
 
 count = dfExcel.number_of_rows()-1
@@ -345,7 +344,7 @@ while (item <= count):
     df['dataContratacao']  =  dataContratacao
     df['uf']               =  dfExcel[item, 16]
 
-    # time.sleep(3)    
-    # incluirProcesso(df)
+    time.sleep(3)    
+    incluirProcesso(urlPage, df)
 
     item = item + 1
