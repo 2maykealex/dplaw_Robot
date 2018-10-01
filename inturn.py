@@ -16,17 +16,41 @@ import pyexcel as pe
 import datetime
 import locale
 
-'''
-variáveis
-'''
-cliente = {}
-'''
-------------
-'''
+driver = vars
 
-'''
-funções
-'''
+# TODO DEIXAR O CÓDIGO MAIS LIMPO DISTRIBUINDO FUNÇÕES PARA OUTROS ARQUIVOS
+
+def iniciaWebdriver():
+    # acessando diretório do webdriver do chrome
+    dirpath = os.path.dirname(os.path.realpath(__file__))
+    chromepath = dirpath + '/chromedriver'
+    driver = webdriver.Chrome(executable_path = chromepath)
+    return driver
+
+def waitinstance(browser, object, time, poll, type, form = 'xpath'):
+    if type == 'click':
+        if form == 'xpath':
+            element = WebDriverWait(browser, time, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
+            return element
+        elif form == 'id':
+            element = WebDriverWait(browser, time, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
+            return element
+    elif type == 'show':
+        if form == 'xpath':
+            element = WebDriverWait(browser, time, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
+            return element
+        elif form == 'id':
+            element = WebDriverWait(browser, time, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
+            return element
+
 def responsavelXpath(responsavel):
     if responsavel == 'acordosg4':
         return '//*[@id="ui-multiselect-slcResponsavel-option-1"]'
@@ -150,16 +174,16 @@ def pesquisarCliente(cliente = 'Cliente teste'):
     element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
-def incluirProcesso(urlPage, df={}):
+def incluirProcesso(urlPage, df):    
 
     if (urlPage == ""):
         urlPage =  driver.current_url
-        print (urlPage)
 
     # incluindo processo    
     driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
 
     # Grupo internodd
+    print(df['gpProcesso'])
     element = waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
     select = Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
@@ -229,17 +253,7 @@ def incluirProcesso(urlPage, df={}):
     element.send_keys(str(df['adversa']))
 
     # Botão salvar
-    element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    element.click()
-
-    # Link Ficha do cliente (voltar)
-    # pesquisarCliente()
-
-    # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
-    # hover = ActionChains(driver).move_to_element(element_over)
-    # hover.perform()
-
-    # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
+    # element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
     # element.click()
 
     time.sleep(6)
@@ -267,101 +281,71 @@ def incluirProcesso(urlPage, df={}):
     # jsbutton = ActionChains(driver).click(element)
     # jsbutton.perform()
 
-def waitinstance(browser, object, time, poll, type, form = 'xpath'):
-    if type == 'click':
-        if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
-            return element
-    elif type == 'show':
-        if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
-            return element
-'''
-------------
-'''
+def abrePasta():
+    urlPage = ""
+    dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
 
-# acessando diretório do webdriver do chrome
-dirpath = os.path.dirname(os.path.realpath(__file__))
-chromepath = dirpath + '/chromedriver'
-driver = webdriver.Chrome(executable_path = chromepath)
+    count = dfExcel.number_of_rows()-1
+    pesquisarCliente()
 
-urlPage = ""
-dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
+    item = 1
 
-count = dfExcel.number_of_rows()-1
-print ('contador ', count)
+
+    # from pyexcel._compact import OrderedDict
+    # dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
+    # isinstance(dfExcel, OrderedDict)
+    # True
+
+    # for key, values in dfExcel.items():
+    #     print({str(key): values})
+
+
+    # dfExcel = pe.get_records(file_name="teste_db.xlsx")
+    # print (dfExcel[1])
+    # print('=============================================================================')
+    # for record in dfExcel:
+    #     print(record['Grupo Cliente'])
+    #     print('=============================================================================')
+
+    while (item <= count):
+
+        df = {}
+
+        df['razaoSocial']      =  dfExcel[item, 0]
+        df['gpCliente']        =  dfExcel[item, 1]
+        df['cnpjCliente']      =  dfExcel[item, 2]
+        df['numProcesso']      =  dfExcel[item, 3]
+        df['pasta']            =  dfExcel[item, 4]
+        df['statusProcessual'] =  dfExcel[item, 5]
+        df['cnpjAdversa']      =  dfExcel[item, 6]
+        df['cpfAdversa']       =  dfExcel[item, 7]
+        df['gpProcesso']       =  dfExcel[item, 8]
+        df['adversa']          =  dfExcel[item, 9]
+        df['tipoProcesso']     =  dfExcel[item, 10]
+        df['comarca']          =  dfExcel[item, 11]
+
+        local = dfExcel[item, 12].split(';')
+
+        df['localTr']          =  str(local[0])
+        df['localTramite']     =  str(local[1])
+
+        df['responsavel']      =  dfExcel[item, 13]
+
+        valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
+        df['vCausa']           =  valorCausa
+
+        dataContratacao        = (dfExcel[item, 15])
+        dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
+        dataContratacao         = dataContratacao.replace("/", "")
+
+        df['dataContratacao']  =  dataContratacao
+        df['uf']               =  dfExcel[item, 16]
+
+        time.sleep(3)            
+        incluirProcesso(urlPage, df)
+
+        item = item + 1
+
+driver = iniciaWebdriver()
 acessToIntegra()
-pesquisarCliente()
-
-item = 1
-
-
-# from pyexcel._compact import OrderedDict
-# dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
-# isinstance(dfExcel, OrderedDict)
-# True
-
-# for key, values in dfExcel.items():
-#     print({str(key): values})
-
-
-# dfExcel = pe.get_records(file_name="teste_db.xlsx")
-# print (dfExcel[1])
-# print('=============================================================================')
-# for record in dfExcel:
-#     print(record['Grupo Cliente'])
-#     print('=============================================================================')
-
-while (item <= count):
-    print('x ', item)
-
-    df = {}
-
-    df['razaoSocial']      =  dfExcel[item, 0]
-    df['gpCliente']        =  dfExcel[item, 1]
-    df['cnpjCliente']      =  dfExcel[item, 2]
-    df['numProcesso']      =  dfExcel[item, 3]
-    df['pasta']            =  dfExcel[item, 4]
-    df['statusProcessual'] =  dfExcel[item, 5]
-    df['cnpjAdversa']      =  dfExcel[item, 6]
-    df['cpfAdversa']       =  dfExcel[item, 7]
-    df['gpProcesso']       =  dfExcel[item, 8]
-    df['adversa']          =  dfExcel[item, 9]
-    df['tipoProcesso']     =  dfExcel[item, 10]
-    df['comarca']          =  dfExcel[item, 11]
-
-    local = dfExcel[item, 12].split(';')
-
-    df['localTr']          =  str(local[0])
-    df['localTramite']     =  str(local[1])
-
-    df['responsavel']      =  dfExcel[item, 13]
-
-    valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-    df['vCausa']           =  valorCausa
-
-    dataContratacao        = (dfExcel[item, 15])
-    dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
-    dataContratacao         = dataContratacao.replace("/", "")
-
-    df['dataContratacao']  =  dataContratacao
-    df['uf']               =  dfExcel[item, 16]
-
-    time.sleep(3)    
-    incluirProcesso(urlPage, df)
-
-    item = item + 1
+abrePasta()
