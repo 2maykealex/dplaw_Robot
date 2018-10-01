@@ -346,6 +346,45 @@ def abrePasta():
 
         item = item + 1
 
+def inserirVolumetria(pasta = '01700117977'):
+
+    #TODO FAZER LOOPING
+    # acessando a pesquisa de clientes no sistema
+    element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
+    hover = ActionChains(driver).move_to_element(element_over)
+    hover.perform()
+
+    element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
+    element.click()
+    #driver.find_element_by_xpath("//*[@id='header']/ul/li[1]/ul/lii[1]/p").click()
+
+    # selecionar opção pesquisa por pasta
+    element = waitinstance(driver, '//*[@id="chkPesquisa139"]', 30, 1, 'show')
+    element.click()
+
+    # buscando pasta
+    element = waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    element.send_keys(pasta)
+    driver.find_element_by_id("btnPesquisar").click()
+    
+    # ATÉ A URL NÃO MUDAR
+    time.sleep(3)
+    # SELECIONA O CLIENTE PESQUISADO
+    element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element.click()
+
+    element = waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+    element.send_keys('volumetria.09.2018')
+    
+
 driver = iniciaWebdriver()
 acessToIntegra()
-abrePasta()
+
+
+# abrePasta()
+
+inserirVolumetria()
+
+
+
+
