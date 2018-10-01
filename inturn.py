@@ -309,8 +309,25 @@ pesquisarCliente()
 
 item = 1
 
+
+# from pyexcel._compact import OrderedDict
+# dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
+# isinstance(dfExcel, OrderedDict)
+# True
+
+# for key, values in dfExcel.items():
+#     print({str(key): values})
+
+
+# dfExcel = pe.get_records(file_name="teste_db.xlsx")
+# print (dfExcel[1])
+# print('=============================================================================')
+# for record in dfExcel:
+#     print(record['Grupo Cliente'])
+#     print('=============================================================================')
+
 while (item <= count):
-    print('item: ', item)
+    print('x ', item)
 
     df = {}
 
