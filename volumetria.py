@@ -15,6 +15,7 @@ import time
 import pyexcel as pe
 import datetime
 import locale
+import sys
 
 # TODO DEIXAR O CÓDIGO MAIS LIMPO DISTRIBUINDO FUNÇÕES PARA OUTROS ARQUIVOS
 
@@ -150,17 +151,19 @@ def acessToIntegra():
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
 
-def inserirVolumetria(pasta = '01700117977'):
+def pesquisarPasta(pasta = '01700117977'):
 
-    #TODO FAZER LOOPING
     # acessando a pesquisa de clientes no sistema
-    element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
-    hover = ActionChains(driver).move_to_element(element_over)
-    hover.perform()
-
-    element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
-    element.click()
-    #driver.find_element_by_xpath("//*[@id='header']/ul/li[1]/ul/lii[1]/p").click()
+    # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
+    # hover = ActionChains(driver).move_to_element(element_over)
+    # hover.perform()
+    # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
+    # element.click()
+    # driver.find_element_by_xpath("//*[@id='header']/ul/li[1]/ul/lii[1]/p").click()
+    
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
 
     # selecionar opção pesquisa por pasta
     element = waitinstance(driver, '//*[@id="chkPesquisa139"]', 30, 1, 'show')
@@ -176,9 +179,11 @@ def inserirVolumetria(pasta = '01700117977'):
     element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
+def inserirVolumetria(volumetriaMes):
+
     # PREENCHE O CAMPO 3
     element = waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
-    element.send_keys('volumetria.09.2018')
+    element.send_keys(volumetriaMes)
 
     # SALVAR ALTERAÇÃO
     time.sleep(2)
@@ -189,7 +194,20 @@ def inserirVolumetria(pasta = '01700117977'):
     time.sleep(2)
     element = waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
     element.click()
+
+
     
+
+
+#============================PROGRAMA PRINCIPAL==============================
+#executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
+volumetriaMes = sys.argv[1]
+volumetriaMes = volumetriaMes[:-5]
+
 driver = iniciaWebdriver()
 acessToIntegra()
-inserirVolumetria()
+
+#TODO FAZER LOOPING
+pesquisarPasta()
+inserirVolumetria(volumetriaMes)
+pesquisarPasta()
