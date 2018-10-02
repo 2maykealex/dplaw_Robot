@@ -152,14 +152,18 @@ def acessToIntegra():
     driver.find_element_by_tag_name('button').click()
 
 def pesquisarCliente(cliente = 'Cliente teste'):
-    # acessando a pesquisa de clientes no sistema
-    element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
-    hover = ActionChains(driver).move_to_element(element_over)
-    hover.perform()
+    # # acessando a pesquisa de clientes no sistema
+    # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
+    # hover = ActionChains(driver).move_to_element(element_over)
+    # hover.perform()
 
-    element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
-    element.click()
-    #driver.find_element_by_xpath("//*[@id='header']/ul/li[1]/ul/lii[1]/p").click()
+    # element = waitinstance(driver, "//*[@id='header']/ul/li[1]/ul/lii[1]/p", 30, 1, 'click')
+    # element.click()
+    # #driver.find_element_by_xpath("//*[@id='header']/ul/li[1]/ul/lii[1]/p").click()
+
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
 
     # buscando o cliente e acessando sua pasta
     element = waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
@@ -280,7 +284,8 @@ def incluirProcesso(urlPage, df):
     # jsbutton.perform()
 
 def abrePasta():
-    urlPage = ""
+    
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"    
     dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
 
     count = dfExcel.number_of_rows()-1
