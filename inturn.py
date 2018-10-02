@@ -367,16 +367,25 @@ def inserirVolumetria(pasta = '01700117977'):
     element.send_keys(pasta)
     driver.find_element_by_id("btnPesquisar").click()
     
-    # ATÉ A URL NÃO MUDAR
-    time.sleep(3)
     # SELECIONA O CLIENTE PESQUISADO
+    time.sleep(3)
     element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
+    # PREENCHE O CAMPO 3
     element = waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
     element.send_keys('volumetria.09.2018')
-    
 
+    # SALVAR ALTERAÇÃO
+    time.sleep(2)
+    element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click()
+
+    # SALVAR ALTERAÇÃO
+    time.sleep(2)
+    element = waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
+    element.click()
+    
 driver = iniciaWebdriver()
 acessToIntegra()
 
