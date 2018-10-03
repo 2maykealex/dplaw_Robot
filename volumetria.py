@@ -62,6 +62,11 @@ def acessToIntegra():
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
 
+def abreArquivo(volumetriaMes):
+    fileName = (volumetriaMes + '.xlsx')
+    dfExcel = pe.get_sheet(file_name=fileName) 
+    return dfExcel
+
 def pesquisarPasta(pasta = '01700117977'):
 
     # acessando a pesquisa de clientes no sistema
@@ -105,7 +110,8 @@ def inserirVolumetria(volumetriaMes):
     time.sleep(2)
     element = waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
     element.click() 
-    
+
+
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 volumetriaMes = sys.argv[1]
@@ -113,8 +119,9 @@ volumetriaMes = volumetriaMes[:-5]
 
 driver = iniciaWebdriver()
 acessToIntegra()
+dfExcel = abreArquivo(volumetriaMes)
+count = dfExcel.number_of_rows()-1
 
 #TODO FAZER LOOPING
 pesquisarPasta()
 inserirVolumetria(volumetriaMes)
-pesquisarPasta()
