@@ -8,6 +8,33 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import *
 import pyexcel as pe
 import os
+import pandas as pd
+
+def getFile(arquivo): #TESTE PARA USAR O PANDAS
+    fileName = (arquivo + '.xlsx')
+    df = pd.read_excel(fileName)
+    # df = pd.DataFrame.to_dict (df)
+
+    return df
+
+    # df.to_dict()
+        
+    # myDict = {}    
+    # item = 0
+    # for key, val in df.items():
+    #     myDict[item] = val
+    #     item = item + 1
+
+    
+    # for x in myDict.values():
+    #     print (x[1])
+    # print (myDict[4][0])  # col - lin
+    # print (myDict[4][0])
+
+    # return myDict
+
+
+    # print (df['pasta'][0])
 
 def iniciaWebdriver():
     # acessando diretório do webdriver do chrome

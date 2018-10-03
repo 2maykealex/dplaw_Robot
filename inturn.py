@@ -99,6 +99,7 @@ def responsavelXpath(responsavel):
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
+#TODO ver erro do driver aqui em pesquisa cliente
 def pesquisarCliente(cliente = 'Cliente teste'):
     # # acessando a pesquisa de clientes no sistema
     # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
@@ -232,12 +233,167 @@ def incluirProcesso(urlPage, df):
     # jsbutton = ActionChains(driver).click(element)
     # jsbutton.perform()
 
-def abrePasta(arquivoAbrirPasta):
+def abrePastaTeste(arquivoAbrirPasta):
     
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
 
     dfExcel = rf.abreArquivo(arquivoAbrirPasta)
+    dfExcel = rf.getFile(arquivoAbrirPasta)
+    # dfExcel.to_dict()
 
+    # print (dfExcel)
+
+    # count = dfExcel.number_of_rows()-1
+    # pesquisarCliente()
+
+    listIndex = []
+    listIndex.append('razaoSocial')
+    listIndex.append('gpCliente')
+    listIndex.append('cnpjCliente')
+    listIndex.append('numProcesso')
+    listIndex.append('pasta')
+    listIndex.append('statusProcessual')
+    listIndex.append('cnpjAdversa')
+    listIndex.append('cpfAdversa')
+    listIndex.append('gpProcesso')
+    listIndex.append('adversa')
+    listIndex.append('tipoProcesso')
+    listIndex.append('comarca')
+    listIndex.append('localTr')
+    listIndex.append('localTramite')
+    listIndex.append('responsavel')
+    listIndex.append('vCausa')
+    listIndex.append('dataContratacao')
+    listIndex.append('uf')
+
+
+    df = {}    
+    item = 1
+    for key, val in dfExcel.items():
+
+        df[listIndex[item]] = val
+
+        # myDict['razaoSocial'] = val
+
+        # df['razaoSocial']      =  dfExcel[0][item]
+
+        
+        item = item + 1
+
+    print('==================')
+    # print(val)
+    # print (myDict['Valor Causa'][1])
+
+
+    print (df['vCausa'][item])
+
+    # item = 1
+
+    # while (item <= 2):
+
+
+        # df = {}
+
+        # df['razaoSocial']      =  dfExcel[0][item]#dfExcel[item, 0]
+        # df['gpCliente']        =  dfExcel[1][item]#dfExcel[item, 1]
+        # df['cnpjCliente']      =  dfExcel[2][item]#dfExcel[item, 2]
+        # df['numProcesso']      =  dfExcel[3][item]#dfExcel[item, 3]
+        # df['pasta']            =  dfExcel[4][item]#dfExcel[item, 4]
+        # df['statusProcessual'] =  dfExcel[5][item]#dfExcel[item, 5]
+        # df['cnpjAdversa']      =  dfExcel[6][item]#dfExcel[item, 6]
+        # df['cpfAdversa']       =  dfExcel[7][item]#dfExcel[item, 7]
+        # df['gpProcesso']       =  dfExcel[8][item]#dfExcel[item, 8]
+        # df['adversa']          =  dfExcel[9][item]#dfExcel[item, 9]
+        # df['tipoProcesso']     =  dfExcel[10][item]#dfExcel[item, 10]
+        # df['comarca']          =  dfExcel[11][item]#dfExcel[item, 11]
+
+        # # local = dfExcel[12][item].split(';')
+
+        # # df['localTr']          =  str(local[0])
+        # # df['localTramite']     =  str(local[1])
+
+        # df['responsavel']      =  dfExcel[13][item]
+
+        # valorCausa             = locale.format_string("%1.2f", dfExcel[14][item] , 0)
+        # df['vCausa']           =  valorCausa
+
+        # dataContratacao        = (dfExcel[15][item])
+        # dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
+        # dataContratacao         = dataContratacao.replace("/", "")
+
+        # df['dataContratacao']  =  dataContratacao
+        # df['uf']               =  dfExcel[16][item]
+
+        # # time.sleep(3)            
+        # # incluirProcesso(urlPage, df)
+
+        # item = item + 1
+
+        # print ('item ',item, ' ', df['vCausa'])
+
+    # while (item <= 2):
+    #     df = {}
+
+
+    # print(listIndex)
+
+    #     df['razaoSocial']      =  dfExcel[0][item]#dfExcel[item, 0]
+    #     df['gpCliente']        =  dfExcel[1][item]#dfExcel[item, 1]
+    #     df['cnpjCliente']      =  dfExcel[2][item]#dfExcel[item, 2]
+    #     df['numProcesso']      =  dfExcel[3][item]#dfExcel[item, 3]
+    #     df['pasta']            =  dfExcel[4][item]#dfExcel[item, 4]
+    #     df['statusProcessual'] =  dfExcel[5][item]#dfExcel[item, 5]
+    #     df['cnpjAdversa']      =  dfExcel[6][item]#dfExcel[item, 6]
+    #     df['cpfAdversa']       =  dfExcel[7][item]#dfExcel[item, 7]
+    #     df['gpProcesso']       =  dfExcel[8][item]#dfExcel[item, 8]
+    #     df['adversa']          =  dfExcel[9][item]#dfExcel[item, 9]
+    #     df['tipoProcesso']     =  dfExcel[10][item]#dfExcel[item, 10]
+    #     df['comarca']          =  dfExcel[11][item]#dfExcel[item, 11]
+
+    #     # local = dfExcel[12][item].split(';')
+
+    #     # df['localTr']          =  str(local[0])
+    #     # df['localTramite']     =  str(local[1])
+
+    #     df['responsavel']      =  dfExcel[13][item]
+
+    #     valorCausa             = locale.format_string("%1.2f", dfExcel[14][item] , 0)
+    #     df['vCausa']           =  valorCausa
+
+    #     dataContratacao        = (dfExcel[15][item])
+    #     dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
+    #     dataContratacao         = dataContratacao.replace("/", "")
+
+    #     df['dataContratacao']  =  dataContratacao
+    #     df['uf']               =  dfExcel[16][item]
+
+    #     # time.sleep(3)            
+    #     # incluirProcesso(urlPage, df)
+
+    #     item = item + 1
+
+    #     print ('item ',item, ' ', df['vCausa'])
+
+        # TODO IMPORTAR DADOS DA PLANILHA PARA UM DICIONÁRIO
+        # from pyexcel._compact import OrderedDict
+        # dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
+        # isinstance(dfExcel, OrderedDict)
+        # True
+
+        # for key, values in dfExcel.items():
+        #     print({str(key): values})
+
+        # dfExcel = pe.get_records(file_name="teste_db.xlsx")
+        # print (dfExcel[1])
+        # print('=============================================================================')
+        # for record in dfExcel:
+        #     print(record['Grupo Cliente'])
+        #     print('=============================================================================')
+
+def abrePasta(arquivoAbrirPasta):
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+
+    dfExcel = rf.abreArquivo(arquivoAbrirPasta)
     count = dfExcel.number_of_rows()-1
     pesquisarCliente()
 
@@ -281,32 +437,19 @@ def abrePasta(arquivoAbrirPasta):
 
         item = item + 1
 
-        # TODO IMPORTAR DADOS DA PLANILHA PARA UM DICIONÁRIO
-        # from pyexcel._compact import OrderedDict
-        # dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
-        # isinstance(dfExcel, OrderedDict)
-        # True
-
-        # for key, values in dfExcel.items():
-        #     print({str(key): values})
-
-        # dfExcel = pe.get_records(file_name="teste_db.xlsx")
-        # print (dfExcel[1])
-        # print('=============================================================================')
-        # for record in dfExcel:
-        #     print(record['Grupo Cliente'])
-        #     print('=============================================================================')
-
-
 #============================PROGRAMA PRINCIPAL==============================
 #executando python inturn.py "teste_db.xlsx" no TERMINAL
 arquivoAbrirPasta = sys.argv[1]
 arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
-driver = rf.iniciaWebdriver()
-rf.acessToIntegra(driver)
+# driver = rf.iniciaWebdriver()
+# rf.acessToIntegra(driver)
+
+# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
 abrePasta(arquivoAbrirPasta)
+
+# rf.getFile(arquivoAbrirPasta)
 
 
 
