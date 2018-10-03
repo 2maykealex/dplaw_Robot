@@ -2,52 +2,12 @@
 projeto   deeplaw: intern
 automatizar abertura de pastas no sistema dplaw
 '''
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import *
-import os
-import time
-# import pandas as pd
-import pyexcel as pe
 import datetime
 import locale
-
-# TODO DEIXAR O CÓDIGO MAIS LIMPO DISTRIBUINDO FUNÇÕES PARA OUTROS ARQUIVOS
-
-def iniciaWebdriver():
-    # acessando diretório do webdriver do chrome
-    dirpath = os.path.dirname(os.path.realpath(__file__))
-    chromepath = dirpath + '/chromedriver'
-    driver = webdriver.Chrome(executable_path = chromepath)
-    return driver
-
-def waitinstance(browser, object, time, poll, type, form = 'xpath'):
-    if type == 'click':
-        if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
-            return element
-    elif type == 'show':
-        if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
-            return element
+import time
+import sys
+import os
+import robot_functions as rf
 
 def responsavelXpath(responsavel):
     if responsavel == 'acordosg4':
@@ -139,18 +99,6 @@ def responsavelXpath(responsavel):
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
-def acessToIntegra():
-    # acessando a primeira página do sistema promad
-    driver.get('http://www.integra.adv.br/')
-    driver.maximize_window()
-
-    # realizando o login no sistema
-
-    element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
-    element.send_keys('robo@dplaw.com.br')
-    driver.find_element_by_id("login_senha").send_keys('dplaw00612')
-    driver.find_element_by_tag_name('button').click()
-
 def pesquisarCliente(cliente = 'Cliente teste'):
     # # acessando a pesquisa de clientes no sistema
     # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
@@ -166,99 +114,100 @@ def pesquisarCliente(cliente = 'Cliente teste'):
     driver.get(urlPage)
 
     # buscando o cliente e acessando sua pasta
-    element = waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
     element.send_keys(cliente)
     driver.find_element_by_id("btnPesquisar").click()
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(3)
     # SELECIONA O CLIENTE PESQUISADO
-    element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
 def incluirProcesso(urlPage, df):    
 
-    if (urlPage == ""):
-        urlPage =  driver.current_url
+    # if (urlPage == ""):
+    #     urlPage =  driver.current_url
 
     # incluindo processo    
     driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
 
     # Grupo internodd
     print(df['gpProcesso'])
-    element = waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
 
     #Numero do CNJ e do Processo
-    element = waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
+    element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
     element.send_keys(str(df['numProcesso']))
-    element = waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
+    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
     element.send_keys(str(df['numProcesso']))
 
     # Status
-    element = waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
 
 
     ########### COLUNA 2 DA PÁGINA
 
     # Pasta
-    element = waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
     element.send_keys(str(df['pasta']))
 
     # Grupo Local trâmite
-    element = waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['localTr']))
-    element = waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
 
     # Comarca
-    element = waitinstance(driver, '//*[@id="slcComarca"]', 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
 
     # UF
-    element = waitinstance(driver, '//*[@id="txtUf"]', 30, 1, 'show')
-    select = Select(element)
+    element = rf.waitinstance(driver, '//*[@id="txtUf"]', 30, 1, 'show')
+    select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
 
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
-    comboResponsavel = waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 30, 1, 'show')
+    comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 30, 1, 'show')
     comboResponsavel.click()  # clica e abre as opções
     
-    element = waitinstance(driver, responsavelXpath(df['responsavel']), 30, 1, 'show')
+    element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 30, 1, 'show')
     element.click() # seleciona o item desejado
 
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    element = waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
     element.send_keys(str(df['dataContratacao']))
 
     # Valor da Causa
-    element = waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
     element.send_keys(str(df['vCausa']))
 
     # Abre a aba Parte Adversa
-    element = waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
+    element = rf.waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
     element.click()
 
     # Parte Adversa
-    element = waitinstance(driver, '//*[@id="txtNome"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtNome"]', 30, 1, 'show')
     element.send_keys(str(df['adversa']))
 
-    # Botão salvar
-    # element = waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    # element.click()
+    #Botão salvar
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click()
 
     time.sleep(6)
+    print (urlPage)
     driver.get(urlPage)
 
     # TODO VER PARA IDENTIFICAR JAVASCRIPT E DAR OK QUANDO IDENTIFICA QUE JÁ EXISTE A PESSOA
@@ -283,35 +232,18 @@ def incluirProcesso(urlPage, df):
     # jsbutton = ActionChains(driver).click(element)
     # jsbutton.perform()
 
-def abrePasta():
+def abrePasta(arquivoAbrirPasta):
     
-    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"    
-    dfExcel = pe.get_sheet(file_name='teste_db.xlsx') 
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+
+    dfExcel = rf.abreArquivo(arquivoAbrirPasta)
 
     count = dfExcel.number_of_rows()-1
     pesquisarCliente()
 
     item = 1
 
-
-    # from pyexcel._compact import OrderedDict
-    # dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
-    # isinstance(dfExcel, OrderedDict)
-    # True
-
-    # for key, values in dfExcel.items():
-    #     print({str(key): values})
-
-
-    # dfExcel = pe.get_records(file_name="teste_db.xlsx")
-    # print (dfExcel[1])
-    # print('=============================================================================')
-    # for record in dfExcel:
-    #     print(record['Grupo Cliente'])
-    #     print('=============================================================================')
-
     while (item <= count):
-
         df = {}
 
         df['razaoSocial']      =  dfExcel[item, 0]
@@ -349,9 +281,32 @@ def abrePasta():
 
         item = item + 1
 
-driver = iniciaWebdriver()
-acessToIntegra()
-abrePasta()
+        # TODO IMPORTAR DADOS DA PLANILHA PARA UM DICIONÁRIO
+        # from pyexcel._compact import OrderedDict
+        # dfExcel = pe.get_dict(file_name="teste_db.xlsx", name_columns_by_row=0)
+        # isinstance(dfExcel, OrderedDict)
+        # True
+
+        # for key, values in dfExcel.items():
+        #     print({str(key): values})
+
+        # dfExcel = pe.get_records(file_name="teste_db.xlsx")
+        # print (dfExcel[1])
+        # print('=============================================================================')
+        # for record in dfExcel:
+        #     print(record['Grupo Cliente'])
+        #     print('=============================================================================')
+
+
+#============================PROGRAMA PRINCIPAL==============================
+#executando python inturn.py "teste_db.xlsx" no TERMINAL
+arquivoAbrirPasta = sys.argv[1]
+arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+
+driver = rf.iniciaWebdriver()
+rf.acessToIntegra(driver)
+
+abrePasta(arquivoAbrirPasta)
 
 
 
