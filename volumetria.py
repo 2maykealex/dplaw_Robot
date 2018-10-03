@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import *
+# from selenium.common.exceptions import *
 import os
 import time
 # import pandas as pd
@@ -49,95 +49,6 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
                                     ignored_exceptions=[NoSuchElementException,
                                     ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
             return element
-
-    if responsavel == 'acordosg4':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-1"]'
-    elif responsavel == 'ADV1GE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-2"]'
-    elif responsavel == 'ADV2GE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-3"]'
-    elif responsavel == 'ADV3GE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-3"]'
-    elif responsavel == 'ADV4GE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-4"]'
-    elif responsavel == 'advbradesco':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-5"]'
-    elif responsavel == 'advgg1':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-6"]'
-    elif responsavel == 'AG6':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-7"]'
-    elif responsavel == 'AGE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-8"]'
-    elif responsavel == 'AGE2':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-9"]'
-    elif responsavel == 'AGS':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-10"]'
-    elif responsavel == 'ApoioBV':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-11"]'
-    elif responsavel == 'apoiogg1':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-12"]'
-    elif responsavel == 'apoiogg2':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-13"]'
-    elif responsavel == 'BVADV1':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-14"]'
-    elif responsavel == 'BVADV2':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-15"]'
-    elif responsavel == 'cbradesco':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-16"]'
-    elif responsavel == 'CBV':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-17"]'
-    elif responsavel == 'CGE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-18"]'
-    elif responsavel == 'COBRA1':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-19"]'
-    elif responsavel == 'COP':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-20"]'
-    elif responsavel == 'Correspondente':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-21"]'
-    elif responsavel == 'CSEG':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-22"]'
-    elif responsavel == 'ESP':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-23"]'
-    elif responsavel == 'EXT':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-24"]'
-    elif responsavel == 'Financeiro':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-25"]'
-    elif responsavel == 'GFP':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-26"]'
-    elif responsavel == 'GG1':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-27"]'
-    elif responsavel == 'GG2':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-28"]'
-    elif responsavel == 'GST':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-29"]'
-    elif responsavel == 'JEP':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-30"]'
-    elif responsavel == 'jREP':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-31"]'
-    elif responsavel == 'KET':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-32"]'
-    elif responsavel == 'LBG':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-33"]'
-    elif responsavel == 'LVC':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-34"]'
-    elif responsavel == 'operacoes':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-35"]'
-    elif responsavel == 'PLV':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-36"]'
-    elif responsavel == 'PUB':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-37"]'
-    elif responsavel == 'Robô':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-38"]'
-    elif responsavel == 'SMF':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-39"]'
-    elif responsavel == 'STJ':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-40"]'
-    elif responsavel == 'TESTE':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-41"]'
-    elif responsavel == 'TLA -':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-42"]'
-    elif responsavel == 'TRIA':
-        return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
 def acessToIntegra():
     # acessando a primeira página do sistema promad
@@ -193,12 +104,8 @@ def inserirVolumetria(volumetriaMes):
     # SALVAR ALTERAÇÃO
     time.sleep(2)
     element = waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
-    element.click()
-
-
+    element.click() 
     
-
-
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 volumetriaMes = sys.argv[1]
