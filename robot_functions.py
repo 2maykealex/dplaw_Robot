@@ -69,8 +69,8 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
 
 def acessToIntegra(driver):
     # acessando a primeira página do sistema promad
-    driver.get('http://www.integra.adv.br/')
     driver.maximize_window()
+    driver.get('http://www.integra.adv.br/')    
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
