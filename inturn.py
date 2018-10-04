@@ -99,7 +99,6 @@ def responsavelXpath(responsavel):
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
-#TODO ver erro do driver aqui em pesquisa cliente
 def pesquisarCliente(cliente = 'Cliente teste'):
     # # acessando a pesquisa de clientes no sistema
     # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
@@ -240,52 +239,50 @@ def abrePastaTeste(arquivoAbrirPasta):
     dfExcel = rf.abreArquivo(arquivoAbrirPasta)
     dfExcel = rf.getFile(arquivoAbrirPasta)
     # dfExcel.to_dict()
-
-    # print (dfExcel)
-
-    # count = dfExcel.number_of_rows()-1
+    # dfExcel = rf.pd.DataFrame.to_dict (dfExcel)
     # pesquisarCliente()
 
-    listIndex = []
-    listIndex.append('razaoSocial')
-    listIndex.append('gpCliente')
-    listIndex.append('cnpjCliente')
-    listIndex.append('numProcesso')
-    listIndex.append('pasta')
-    listIndex.append('statusProcessual')
-    listIndex.append('cnpjAdversa')
-    listIndex.append('cpfAdversa')
-    listIndex.append('gpProcesso')
-    listIndex.append('adversa')
-    listIndex.append('tipoProcesso')
-    listIndex.append('comarca')
-    listIndex.append('localTr')
-    listIndex.append('localTramite')
-    listIndex.append('responsavel')
-    listIndex.append('vCausa')
-    listIndex.append('dataContratacao')
-    listIndex.append('uf')
-
+    listIndex = ['razaoSocial', 'gpCliente', 'cnpjCliente', 'numProcesso'
+    , 'pasta' , 'statusProcessual', 'cnpjAdversa', 'cpfAdversa', 'gpProcesso', 'adversa', 'tipoProcesso', 'comarca', 'localTr', 'localTramite', 'responsavel', 'vCausa', 'dataContratacao', 'uf']
 
     df = {}    
-    item = 1
-    for key, val in dfExcel.items():
+    item = 0
+    for key, value in dfExcel.items():
+        for x in value:
+            if (item != 12):
+                # print('item = ', item, ' - ', listIndex[item],'=>', x)
+                df[listIndex[item]] = x
+            else:
+                local = x.split(';')
+                
+                # print('item = ', item, ' - ', listIndex[item],'=>', str(local[0]))
+                df[listIndex[item]] = str(local[0])
+                item = item + 1
+                print (local[1])
+                df[listIndex[item]] = str(local[1])
+                # item = item + 1
+                # print('item = ', item, ' - ', listIndex[item],'=>', str(local[1]))
+            
+        item = item + 1
+    
+    print (df)
 
-        df[listIndex[item]] = val
+        # df[listIndex[item]] = val
+        # print(val)
 
         # myDict['razaoSocial'] = val
 
         # df['razaoSocial']      =  dfExcel[0][item]
 
         
-        item = item + 1
+        
 
     print('==================')
     # print(val)
-    # print (myDict['Valor Causa'][1])
+    # print (df['vCausa'][1])
 
 
-    print (df['vCausa'][item])
+    # print (df['vCausa'][1])
 
     # item = 1
 
@@ -445,9 +442,9 @@ arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 # driver = rf.iniciaWebdriver()
 # rf.acessToIntegra(driver)
 
-# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
+abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
-abrePasta(arquivoAbrirPasta)
+# abrePasta(arquivoAbrirPasta)
 
 # rf.getFile(arquivoAbrirPasta)
 
