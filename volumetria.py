@@ -29,19 +29,31 @@ def pesquisarPasta(pasta = '01700117977'):
 
 def inserirVolumetria(volumetriaMes):
 
+    # TODO SE CAMPO LIVRE 3 JÁ ESTIVER PREENCHIDO - PULAR
     # PREENCHE O CAMPO 3
-    element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
-    element.send_keys(volumetriaMes)
 
-    # SALVAR ALTERAÇÃO
-    time.sleep(2)
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    element.click()
+    
 
-    # SALVAR ALTERAÇÃO
-    time.sleep(2)
-    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
-    element.click() 
+    textInsideInputBox = driver.find_element_by_xpath('//*[@id="txtCampoLivre3"]').get_attribute('value')
+
+    print (textInsideInputBox)
+    
+    if (textInsideInputBox == ''):
+    # # if (element.text == ""):
+        element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+        element.send_keys(volumetriaMes)
+
+        # SALVAR ALTERAÇÃO
+        time.sleep(2)
+        element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+        element.click()
+
+        # SALVAR ALTERAÇÃO
+        time.sleep(2)
+        element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
+        element.click() 
+    else:
+        print('pulou')
 
 
 #============================PROGRAMA PRINCIPAL==============================
