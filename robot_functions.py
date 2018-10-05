@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import *
 import pyexcel as pe
 import os
+import time
 import pandas as pd
 
 def getFile(arquivo): #TESTE PARA USAR O PANDAS
@@ -77,6 +78,11 @@ def acessToIntegra(driver):
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
+
+def logoutIntegra(driver):
+    driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
+    time.sleep(2)
+    driver.quit()
 
 def abreArquivo(arquivo):
     fileName = (arquivo + '.xlsx')
