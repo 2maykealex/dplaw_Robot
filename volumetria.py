@@ -29,17 +29,9 @@ def pesquisarPasta(pasta = '01700117977'):
 
 def inserirVolumetria(volumetriaMes):
 
-    # TODO SE CAMPO LIVRE 3 JÁ ESTIVER PREENCHIDO - PULAR
-    # PREENCHE O CAMPO 3
+    element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
 
-    
-
-    textInsideInputBox = driver.find_element_by_xpath('//*[@id="txtCampoLivre3"]').get_attribute('value')
-
-    print (textInsideInputBox)
-    
-    if (textInsideInputBox == ''):
-    # # if (element.text == ""):
+    if (element.get_attribute('value') ==  ''):
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         element.send_keys(volumetriaMes)
 
@@ -52,9 +44,7 @@ def inserirVolumetria(volumetriaMes):
         time.sleep(2)
         element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
         element.click() 
-    else:
-        print('pulou')
-
+        
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
@@ -72,3 +62,5 @@ while (item <= count):
     pesquisarPasta(pasta)
     inserirVolumetria(volumetriaMes)
     item = item + 1
+
+rf.logoutIntegra(driver)
