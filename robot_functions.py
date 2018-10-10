@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import *
+import logging 
+from selenium.webdriver.remote.remote_connection import LOGGER
 import pyexcel as pe
 import os
 import time
@@ -37,11 +39,21 @@ def getFile(arquivo): #TESTE PARA USAR O PANDAS
 
     # print (df['pasta'][0])
 
-def iniciaWebdriver():
+def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
     dirpath = os.path.dirname(os.path.realpath(__file__))
     chromepath = dirpath + '/chromedriver'
-    driver = webdriver.Chrome(executable_path = chromepath)
+    
+    chrome_options = webdriver.ChromeOptions()
+    if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
+        chrome_options.add_argument('--headless')            
+
+    chrome_options.add_argument('--hide-scrollbars')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument("--log-level=3")
+
+    driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
+    
     return driver
 
 def waitinstance(browser, object, time, poll, type, form = 'xpath'):
