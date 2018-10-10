@@ -27,11 +27,12 @@ def pesquisarPasta(pasta = '01700117977'):
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
 
-def inserirVolumetria(volumetriaMes):
+def inserirVolumetria(volumetriaMes, pasta):
 
     element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
 
     if (element.get_attribute('value') ==  ''):
+        print('Preenchendo a volumetria ', volumetriaMes, ' na pasta ', pasta,'\n')
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         element.send_keys(volumetriaMes)
 
@@ -45,24 +46,57 @@ def inserirVolumetria(volumetriaMes):
         element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
         element.click() 
     else:
+        print('------> A pasta ', pasta, ' já está com a volumetria correspondente preenchida!\n')
         time.sleep(2)
        
+def enviaParametros(volumetriaMes):
+    print('> > > ACESSANDO ARQUIVO ', volumetriaMes, '.xlsx')
+    dfExcel = rf.abreArquivo(volumetriaMes)
+    count = dfExcel.number_of_rows()-1
+    item = 1
+
+    while (item <= count):         #looping dentro de cada arquivo
+        pasta =  dfExcel[item, 7]
+        pesquisarPasta(pasta)
+        print('> > Acessando a pasta ', pasta)
+        inserirVolumetria(volumetriaMes, pasta)
+        item = item + 1
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
-volumetriaMes = sys.argv[1]
-volumetriaMes = volumetriaMes[:-5]
 
-driver = rf.iniciaWebdriver()
+
+print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
+
+import glob
+os.chdir("C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/volumetrias") # seleciona o diretório do script
+
+files =  []
+print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA')
+print('-------------------------------------------')
+for file in glob.glob("volu*.xlsx"):
+    # print('-------------------------------------------')
+    files.append(file)
+    print(len(files), ' => ', files[-1])    
+print('-------------------------------------------')
+
+selectedFile = int(input('Digite sua opção: '))
+print('> > > ACESSANDO http://www.integra.adv.br/...')
+time.sleep(1)
+driver = rf.iniciaWebdriver(True)
 rf.acessToIntegra(driver)
-dfExcel = rf.abreArquivo(volumetriaMes)
-count = dfExcel.number_of_rows()-1
-item = 1
 
-while (item <= count):
-    pasta =  dfExcel[item, 7]
-    pesquisarPasta(pasta)
-    inserirVolumetria(volumetriaMes)
-    item = item + 1
+
+if (selectedFile-1 < 0):
+    # opção 0 selecionada
+    for file in files:
+        volumetriaMes = file
+        volumetriaMes = volumetriaMes[:-5]
+        enviaParametros(volumetriaMes)
+else:
+    volumetriaMes = files[selectedFile -1]
+    volumetriaMes = volumetriaMes[:-5]
+    enviaParametros(volumetriaMes)
+
 
 # rf.logoutIntegra(driver)
