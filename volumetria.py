@@ -5,6 +5,7 @@ automatizar a inserção da volumetria em pastas existentes no sistema dplaw
 import sys
 import os
 import time
+import glob
 import robot_functions as rf
 
 def pesquisarPasta(pasta = '01700117977'):
@@ -68,7 +69,6 @@ def enviaParametros(volumetriaMes):
 
 print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
 
-import glob
 os.chdir("C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/volumetrias") # seleciona o diretório do script
 
 files =  []
@@ -98,5 +98,4 @@ else:
     volumetriaMes = volumetriaMes[:-5]
     enviaParametros(volumetriaMes)
 
-
-# rf.logoutIntegra(driver)
+rf.logoutIntegra(driver)
