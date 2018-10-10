@@ -210,18 +210,6 @@ def incluirProcesso(urlPage, df):
     print (urlPage)
     driver.get(urlPage)
 
-    # TODO VER PARA IDENTIFICAR JAVASCRIPT E DAR OK QUANDO IDENTIFICA QUE JÁ EXISTE A PESSOA
-    
-    # //*[@id="popup_ok"]
-
-    # element = waitinstance(driver, '//*[@id="barra"]/div/div[1]/span[2]', 30, 1, 'show')
-    # hover = ActionChains(driver).move_to_element(element)
-    # hover.perform()
-    # element.click()
-
-    # driver.execute_script("return clickAcessoPagina('parteVisualizar.asp?codigo=100858103&codigo2=100858103')"); #torna elemento invisível novamente
-    #===================
-
     # #OUTRA CONDIÇÃO !!!
     # element = waitinstance(driver, "//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]", 30, 5, 'click')
     # element.click()
@@ -242,28 +230,51 @@ def abrePastaTeste(arquivoAbrirPasta):
     # dfExcel = rf.pd.DataFrame.to_dict (dfExcel)
     # pesquisarCliente()
 
-    listIndex = ['razaoSocial', 'gpCliente', 'cnpjCliente', 'numProcesso'
-    , 'pasta' , 'statusProcessual', 'cnpjAdversa', 'cpfAdversa', 'gpProcesso', 'adversa', 'tipoProcesso', 'comarca', 'localTr', 'localTramite', 'responsavel', 'vCausa', 'dataContratacao', 'uf']
+    listIndex = ['razaoSocial', 'gpCliente', 'cnpjCliente', 'numProcesso', 'pasta', 'statusProcessual', 'cnpjAdversa', 'cpfAdversa', 
+                'gpProcesso', 'adversa', 'tipoProcesso', 'comarca', 'localTr', 'localTramite', 'responsavel', 'vCausa', 
+                'dataContratacao', 'uf']
 
-    df = {}    
+    df = []    
     item = 0
     for key, value in dfExcel.items():
-        for x in value:
-            if (item != 12):
-                # print('item = ', item, ' - ', listIndex[item],'=>', x)
-                df[listIndex[item]] = x
-            else:
-                local = x.split(';')
+        # print(value[0])
+
+        linha  = 0
+        coluna =  0
+
+        while coluna <= 16:
+
+            while linha <= value.count():
+
+                df[linha][coluna] =  value[0]
+                print (df)
+
+                linha = linha + 1
+
+            coluna  = coluna  + 1
+
+
+
+
+
+
+        # for x in value:
+        #     print(x)
+            # if (item != 12):  # item que corresponde à coluna local Tramite na planilha
+            #     print('item = ', item, ' - ', listIndex[item],'=>', x)
+            #     df[listIndex[item]] = x
+            # else:
+            #     print(x)
+            #     local = x.split(';')
                 
-                # print('item = ', item, ' - ', listIndex[item],'=>', str(local[0]))
-                df[listIndex[item]] = str(local[0])
-                item = item + 1
-                print (local[1])
-                df[listIndex[item]] = str(local[1])
-                # item = item + 1
-                # print('item = ', item, ' - ', listIndex[item],'=>', str(local[1]))
+            #     # print('item = ', item, ' - ', listIndex[item],'=>', str(local[0]))
+            #     df[listIndex[item]] = str(local[0])
+            #     item = item + 1
+            #     df[listIndex[item]] = str(local[1])
+            #     # item = item + 1
+            #     # print('item = ', item, ' - ', listIndex[item],'=>', str(local[1]))
             
-        item = item + 1
+            # item = item + 1
     
     print (df)
 
@@ -434,16 +445,68 @@ def abrePasta(arquivoAbrirPasta):
 
         item = item + 1
 
+def downloadFile():
+
+    # ACESSAR ÁREA DE DOWNLOADS
+    driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
+
+
+    # TODO FAZER LOOPING PARA ADD TODOS OS ARQUIVOS PERTINENTES AO PROCESSO/CLIENTE
+    time.sleep(6)      
+    path = 'C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/pdf.pdf' # CAMINHO DO ARQUIVO 
+    # TODO MONTAR CAMINHO DINAMICAMENTE # driver.send_keys(os.getcwd() + "/tests/sample_files/Figure1.tif")
+
+    # driver.switch_to.frame(1)
+    driver.switch_to.frame(driver.find_element_by_tag_name("iframe")) #ACESSANDO CONTEUDO DE UM FRAME
+
+    element = driver.find_element_by_xpath('//*[@id="realupload"]')
+    element.send_keys(path)
+
+    driver.switch_to.default_content()   #VOLTAR PARA O CONTEUDO PRINCIPAL
+
+    #Botão salvar
+    time.sleep(6)  
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click()
+    # POP UP (OK)
+    time.sleep(2)  
+    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
+    element.click()
+
+def pesquisarPasta(pasta = '033333333'):
+    
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
+
+    # selecionar opção pesquisa por pasta
+    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 30, 1, 'show')
+    element.click()
+
+    # buscando pasta
+    element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    element.send_keys(pasta)
+    driver.find_element_by_id("btnPesquisar").click()
+    
+    # SELECIONA O CLIENTE PESQUISADO
+    time.sleep(3)
+    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element.click()
+
+# TODO ADD FUNCÕES DE PESQUISA EM ROBOT_FUNCTIONS: COLOCAR OPÇÃO PARA PESQUISA
+
 #============================PROGRAMA PRINCIPAL==============================
 #executando python inturn.py "teste_db.xlsx" no TERMINAL
 arquivoAbrirPasta = sys.argv[1]
 arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
-# driver = rf.iniciaWebdriver()
-# rf.acessToIntegra(driver)
+driver = rf.iniciaWebdriver()
+rf.acessToIntegra(driver)
 
-abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
+# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
+pesquisarPasta()
+downloadFile()
 # abrePasta(arquivoAbrirPasta)
 
 # rf.getFile(arquivoAbrirPasta)
