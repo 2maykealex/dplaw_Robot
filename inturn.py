@@ -445,7 +445,7 @@ def abrePasta(arquivoAbrirPasta):
 
         item = item + 1
 
-def downloadFile():
+def uploadFile():
 
     # ACESSAR ÁREA DE DOWNLOADS
     driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
@@ -500,13 +500,13 @@ def pesquisarPasta(pasta = '033333333'):
 arquivoAbrirPasta = sys.argv[1]
 arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
-driver = rf.iniciaWebdriver()
+driver = rf.iniciaWebdriver(False) 
 rf.acessToIntegra(driver)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
 pesquisarPasta()
-downloadFile()
+uploadFile()
 # abrePasta(arquivoAbrirPasta)
 
 # rf.getFile(arquivoAbrirPasta)
