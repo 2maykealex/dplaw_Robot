@@ -44,7 +44,9 @@ def inserirVolumetria(volumetriaMes):
         time.sleep(2)
         element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
         element.click() 
-        
+    else:
+        time.sleep(2)
+       
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
@@ -63,4 +65,4 @@ while (item <= count):
     inserirVolumetria(volumetriaMes)
     item = item + 1
 
-rf.logoutIntegra(driver)
+# rf.logoutIntegra(driver)
