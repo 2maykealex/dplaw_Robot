@@ -83,16 +83,20 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
 def acessToIntegra(driver):
     # acessando a primeira página do sistema promad
     driver.maximize_window()
-    driver.get('http://www.integra.adv.br/')    
+    logging('>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
+    driver.get('http://www.integra.adv.br/')        
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
+    logging('FAZENDO LOGIN NO SITE')
 
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
+    logging('> > > SCRIPT ENCERRADO!')
+    logging('_________________________________________________________________')
     time.sleep(2)
     driver.quit()
 
@@ -100,3 +104,13 @@ def abreArquivo(arquivo):
     fileName = (arquivo + '.xlsx')
     dfExcel = pe.get_sheet(file_name=fileName) 
     return dfExcel
+
+def createLog(arquivo, log, printOut = True):
+    hoje = "%s" % (time.strftime("%Y-%m-%d"))
+    hora = time.strftime("%H:%M:%S")
+    horaStr = hora.replace(':', '-')
+    writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
+    arquivo.writelines(writeLog)
+    if (printOut):
+        print(writeLog)
+    return writeLog
