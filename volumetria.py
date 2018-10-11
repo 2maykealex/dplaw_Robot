@@ -69,10 +69,14 @@ def enviaParametros(volumetriaMes):
 
 print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
 
-os.chdir("C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/volumetrias") # seleciona o diretório do script
+path = os.getcwd() + "/volumetrias" # obtem o caminho do script e add a pasta volumetrias
+
+os.chdir(path) # seleciona o diretório do script
+
+
 
 files =  []
-print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA')
+print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
 print('-------------------------------------------')
 for file in glob.glob("volu*.xlsx"):
     # print('-------------------------------------------')
