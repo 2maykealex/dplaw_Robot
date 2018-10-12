@@ -99,8 +99,10 @@ rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________
 
 driver = rf.iniciaWebdriver(True)
 
+rf.createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
 rf.acessToIntegra(driver)
 time.sleep(1)
+rf.createLog(arquivo, 'FAZENDO LOGIN NO SITE')
 
 if (selectedFile-1 < 0):
     # opção 0 selecionada
@@ -113,5 +115,7 @@ else:
     volumetriaMes = volumetriaMes[:-5]
     enviaParametros(volumetriaMes)
 
+rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
+rf.createLog(arquivo, '_________________________________________________________________')
 arquivo.close()
 rf.logoutIntegra(driver)

@@ -83,7 +83,6 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
 def acessToIntegra(driver):
     # acessando a primeira página do sistema promad
     driver.maximize_window()
-    logging('>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
     driver.get('http://www.integra.adv.br/')        
 
     # realizando o login no sistema
@@ -91,12 +90,9 @@ def acessToIntegra(driver):
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
-    logging('FAZENDO LOGIN NO SITE')
-
+    
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
-    logging('> > > SCRIPT ENCERRADO!')
-    logging('_________________________________________________________________')
     time.sleep(2)
     driver.quit()
 
