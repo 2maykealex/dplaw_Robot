@@ -99,7 +99,7 @@ def responsavelXpath(responsavel):
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
-def pesquisarCliente(cliente = 'Cliente teste'):
+def pesquisarCliente(cliente):
     # # acessando a pesquisa de clientes no sistema
     # element_over = waitinstance(driver, "//*[@id='header']/ul/li[1]/a", 30, 1, 'click')
     # hover = ActionChains(driver).move_to_element(element_over)
@@ -117,6 +117,7 @@ def pesquisarCliente(cliente = 'Cliente teste'):
     element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
     element.send_keys(cliente)
     driver.find_element_by_id("btnPesquisar").click()
+    rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente))
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(3)
@@ -205,9 +206,12 @@ def incluirProcesso(urlPage, df):
     #Botão salvar
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
     element.click()
-
+    
+    for key, value in df:
+        rf.createLog(arquivo, 'inserindo dados: {} => {}'.format(key, value))
+    rf.createLog(arquivo, 'Salvando dados do cliente')
+    
     time.sleep(6)
-    print (urlPage)
     driver.get(urlPage)
 
     # #OUTRA CONDIÇÃO !!!
@@ -220,7 +224,7 @@ def incluirProcesso(urlPage, df):
     # jsbutton = ActionChains(driver).click(element)
     # jsbutton.perform()
 
-def abrePastaTeste(arquivoAbrirPasta):
+def abrePastaTeste(arquivoAbrirPasta):  #teste pandas
     
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
 
@@ -400,11 +404,10 @@ def abrePastaTeste(arquivoAbrirPasta):
 
 def abrePasta(arquivoAbrirPasta):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-
+    
     dfExcel = rf.abreArquivo(arquivoAbrirPasta)
     count = dfExcel.number_of_rows()-1
-    pesquisarCliente()
-
+    
     item = 1
 
     while (item <= count):
@@ -423,7 +426,20 @@ def abrePasta(arquivoAbrirPasta):
         df['tipoProcesso']     =  dfExcel[item, 10]
         df['comarca']          =  dfExcel[item, 11]
 
-        local = dfExcel[item, 12].split(';')
+        # local = dfExcel[item, 12].split(';')
+        local = dfExcel[item, 12]
+
+        corte = ''
+        if (local[0].isdigit()):
+            
+            position = dfExcel[item, 12].index('º')
+
+            # print (position)
+
+            # local = (dfExcel[item, 12].split('º'+1))
+            # print(local[0])
+            
+
 
         df['localTr']          =  str(local[0])
         df['localTramite']     =  str(local[1])
@@ -440,8 +456,10 @@ def abrePasta(arquivoAbrirPasta):
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
 
-        time.sleep(3)            
-        incluirProcesso(urlPage, df)
+
+        # pesquisarCliente(df['razaoSocial'])
+        # time.sleep(3)            
+        # incluirProcesso(urlPage, df)
 
         item = item + 1
 
@@ -473,7 +491,7 @@ def uploadFile():
     element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
     element.click()
 
-def pesquisarPasta(pasta = '033333333'):
+def pesquisarPasta(pasta):
     
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
@@ -500,30 +518,30 @@ def pesquisarPasta(pasta = '033333333'):
 arquivoAbrirPasta = sys.argv[1]
 arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
-path = os.getcwd() + "/logs" # obtem o caminho do script e add a pasta volumetrias
-
-os.chdir(path) # seleciona o diretório do script
+os.chdir(os.getcwd()) # obtem o caminho do script e seleciona o diretório do script
 
 hoje = "%s" % (time.strftime("%Y_%m_%d"))
 hora = time.strftime("%H:%M:%S")
 horaStr = hora.replace(':', '-')
-logFile = os.getcwd() + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
+logFile = os.getcwd() + "/logs/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
-driver = rf.iniciaWebdriver(False) 
-rf.acessToIntegra(arquivo, driver)
+# driver = rf.iniciaWebdriver(False) 
+# rf.acessToIntegra(arquivo, driver)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
 # pesquisarPasta()
-# uploadFile()
-# abrePasta(arquivoAbrirPasta)
+abrePasta(arquivoAbrirPasta)
 
+# uploadFile()
 # rf.getFile(arquivoAbrirPasta)
 
 # rf.acessToPJE(arquivo, driver)
-rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
-rf.createLog(arquivo, '_________________________________________________________________')
-arquivo.close()
-rf.logoutIntegra(driver)
+
+
+# rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
+# rf.createLog(arquivo, '_________________________________________________________________')
+# arquivo.close()
+# rf.logoutIntegra(driver)
