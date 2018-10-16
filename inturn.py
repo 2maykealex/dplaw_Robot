@@ -512,9 +512,7 @@ logFile = os.getcwd() + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 arquivo = open(logFile, 'w+')
 
 driver = rf.iniciaWebdriver(False) 
-# rf.acessToIntegra(driver)
-
-rf.acessToPJE(arquivo, driver)
+rf.acessToIntegra(arquivo, driver)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
@@ -524,6 +522,8 @@ rf.acessToPJE(arquivo, driver)
 
 # rf.getFile(arquivoAbrirPasta)
 
-
-
-
+# rf.acessToPJE(arquivo, driver)
+rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
+rf.createLog(arquivo, '_________________________________________________________________')
+arquivo.close()
+rf.logoutIntegra(driver)

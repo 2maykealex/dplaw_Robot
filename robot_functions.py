@@ -75,7 +75,7 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
                                     ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
             return element
 
-def acessToIntegra(driver):
+def acessToIntegra(arquivo, driver):
     # acessando a primeira página do sistema promad
     driver.maximize_window()
     createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
