@@ -500,13 +500,26 @@ def pesquisarPasta(pasta = '033333333'):
 arquivoAbrirPasta = sys.argv[1]
 arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
+path = os.getcwd() + "/logs" # obtem o caminho do script e add a pasta volumetrias
+
+os.chdir(path) # seleciona o diretório do script
+
+hoje = "%s" % (time.strftime("%Y_%m_%d"))
+hora = time.strftime("%H:%M:%S")
+horaStr = hora.replace(':', '-')
+logFile = os.getcwd() + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
+
+arquivo = open(logFile, 'w+')
+
 driver = rf.iniciaWebdriver(False) 
-rf.acessToIntegra(driver)
+# rf.acessToIntegra(driver)
+
+rf.acessToPJE(arquivo, driver)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 
-pesquisarPasta()
-uploadFile()
+# pesquisarPasta()
+# uploadFile()
 # abrePasta(arquivoAbrirPasta)
 
 # rf.getFile(arquivoAbrirPasta)

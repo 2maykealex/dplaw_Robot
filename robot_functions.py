@@ -16,28 +16,23 @@ import pandas as pd
 def getFile(arquivo): #TESTE PARA USAR O PANDAS
     fileName = (arquivo + '.xlsx')
     df = pd.read_excel(fileName)
-    # df = pd.DataFrame.to_dict (df)
-
     return df
 
-    # df.to_dict()
-        
-    # myDict = {}    
-    # item = 0
-    # for key, val in df.items():
-    #     myDict[item] = val
-    #     item = item + 1
+def abreArquivo(arquivo):
+    fileName = (arquivo + '.xlsx')
+    dfExcel = pe.get_sheet(file_name=fileName) 
+    return dfExcel
 
-    
-    # for x in myDict.values():
-    #     print (x[1])
-    # print (myDict[4][0])  # col - lin
-    # print (myDict[4][0])
-
-    # return myDict
-
-
-    # print (df['pasta'][0])
+def createLog(arquivo, log, printOut = True):
+    hoje = "%s" % (time.strftime("%Y-%m-%d"))
+    hora = time.strftime("%H:%M:%S")
+    horaStr = hora.replace(':', '-')
+    writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
+    if (arquivo != ""):
+        arquivo.writelines(writeLog)
+    if (printOut):
+        print(writeLog)
+    return writeLog
 
 def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
@@ -83,30 +78,54 @@ def waitinstance(browser, object, time, poll, type, form = 'xpath'):
 def acessToIntegra(driver):
     # acessando a primeira página do sistema promad
     driver.maximize_window()
-    driver.get('http://www.integra.adv.br/')        
+    createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
+    driver.get('http://www.integra.adv.br/')
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
     element.send_keys('robo@dplaw.com.br')
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     driver.find_element_by_tag_name('button').click()
+    createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
     time.sleep(2)
     driver.quit()
 
-def abreArquivo(arquivo):
-    fileName = (arquivo + '.xlsx')
-    dfExcel = pe.get_sheet(file_name=fileName) 
-    return dfExcel
+def acessToPJE(arquivo, driver):
+    # acessando a primeira página do sistema promad
+    # TODO VER LOGS
+    driver.maximize_window()
+    createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
+    driver.get('http://www.pje.jus.br/navegador/')        
 
-def createLog(arquivo, log, printOut = True):
-    hoje = "%s" % (time.strftime("%Y-%m-%d"))
-    hora = time.strftime("%H:%M:%S")
-    horaStr = hora.replace(':', '-')
-    writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
-    arquivo.writelines(writeLog)
-    if (printOut):
-        print(writeLog)
-    return writeLog
+    # selecionando o estado
+    element = waitinstance(driver, "/html/body/div[3]/div/div[1]/select", 30, 1, 'show')
+    select = Select(element)
+    select.select_by_visible_text(str('Rondônia'))
+
+    # selecionando o Tribunal
+    element = waitinstance(driver, "/html/body/div[3]/div/div[2]/select", 30, 1, 'show')
+    select = Select(element)
+    select.select_by_visible_text(str('TJRO - 1º grau'))
+
+    driver.find_element_by_tag_name('button').click()
+
+    # TJRO - 1º grau
+    # TJRO - 2º grau
+    # TRF 1ª Região - 1º grau
+    # TRF 1ª Região - 2º grau
+    # TRT 14 - 1º grau
+    # TRT 14 - 2º grau
+
+
+
+
+
+    # # realizando o login no sistema
+    # element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
+    # element.send_keys('robo@dplaw.com.br')
+    # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
+    
+    # createLog("", 'FAZENDO LOGIN NO SITE')

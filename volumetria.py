@@ -8,6 +8,13 @@ import time
 import glob
 import robot_functions as rf
 
+
+import sys
+import os
+import time
+import glob
+import robot_functions as rf
+
 def pesquisarPasta(pasta = '01700117977'):
     
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
@@ -97,7 +104,7 @@ arquivo = open(logFile, 'w+')
 print('\n\n\n')
 rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
 
-driver = rf.iniciaWebdriver(True)
+driver = rf.iniciaWebdriver(arquivo, True)
 
 rf.createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
 rf.acessToIntegra(driver)
