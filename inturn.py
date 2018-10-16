@@ -433,10 +433,13 @@ def abrePasta(arquivoAbrirPasta):
         if (local[0].isdigit()):
             
             position = dfExcel[item, 12].index('º')
+            position = position + 1
+
+
 
             # print (position)
 
-            # local = (dfExcel[item, 12].split('º'+1))
+            local = (dfExcel[item, 12].split('º'+1))
             # print(local[0])
             
 
