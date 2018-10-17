@@ -127,14 +127,17 @@ def pesquisarCliente(cliente):
 
 def incluirProcesso(urlPage, df):    
 
-    # if (urlPage == ""):
-    #     urlPage =  driver.current_url
-
     # incluindo processo    
-    driver.find_element_by_xpath("//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]").click()
+    element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 30, 1, 'show')
+    element.click()
+
+    print('\n--------INCLUINDO PROCESSO------------\n')
+    while True:
+        if driver.find_elements_by_css_selector('#aProximo'):  #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
+            print("O ELEMENTO CARREGOU")
+            break
 
     # Grupo internodd
-    print(df['gpProcesso'])
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
@@ -232,6 +235,9 @@ def incluirProcesso(urlPage, df):
     
     time.sleep(6)
     driver.get(urlPage)
+
+
+
 
     # #OUTRA CONDIÇÃO !!!
     # element = waitinstance(driver, "//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]", 30, 5, 'click')

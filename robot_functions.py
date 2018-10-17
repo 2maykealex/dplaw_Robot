@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import *
+from selenium.common.exceptions import TimeoutException
 import logging 
 from selenium.webdriver.remote.remote_connection import LOGGER
 import pyexcel as pe
@@ -51,26 +52,31 @@ def iniciaWebdriver(modSilent = False):
     
     return driver
 
-def waitinstance(browser, object, time, poll, type, form = 'xpath'):
+def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
     if type == 'click':
         if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
                                     ignored_exceptions=[NoSuchElementException,
                                     ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
             return element
         elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
                                     ignored_exceptions=[NoSuchElementException,
                                     ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
             return element
     elif type == 'show':
         if form == 'xpath':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
+            try:
+                element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                        ignored_exceptions=[NoSuchElementException,
+                                        ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
+            except TimeoutException:
+                print('\n=====================================\nACABOU O TEMPO!!!!!!!\n=======================================\n')
+                
+
             return element
         elif form == 'id':
-            element = WebDriverWait(browser, time, poll_frequency = poll,
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
                                     ignored_exceptions=[NoSuchElementException,
                                     ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
             return element
