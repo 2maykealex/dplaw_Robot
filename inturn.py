@@ -426,26 +426,18 @@ def abrePasta(arquivoAbrirPasta):
         df['tipoProcesso']     =  dfExcel[item, 10]
         df['comarca']          =  dfExcel[item, 11]
 
-        # local = dfExcel[item, 12].split(';')
         local = dfExcel[item, 12]
 
-        corte = ''
-        if (local[0].isdigit()):
-            
+        if (local[0].isdigit()):            
             position = dfExcel[item, 12].index('º')
             position = position + 1
 
+            df['localTr']       = dfExcel[item, 12][0:position]
+            df['localTramite']  = dfExcel[item, 12][position+1: ]
 
-
-            # print (position)
-
-            local = (dfExcel[item, 12].split('º'+1))
-            # print(local[0])
-            
-
-
-        df['localTr']          =  str(local[0])
-        df['localTramite']     =  str(local[1])
+        else:
+            df['localTr']       = ''
+            df['localTramite']  = dfExcel[item, 12]
 
         df['responsavel']      =  dfExcel[item, 13]
 
@@ -459,10 +451,9 @@ def abrePasta(arquivoAbrirPasta):
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
 
-
-        # pesquisarCliente(df['razaoSocial'])
-        # time.sleep(3)            
-        # incluirProcesso(urlPage, df)
+        pesquisarCliente(df['razaoSocial'])
+        time.sleep(3)            
+        incluirProcesso(urlPage, df)
 
         item = item + 1
 
@@ -530,21 +521,21 @@ logFile = os.getcwd() + "/logs/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
-# driver = rf.iniciaWebdriver(False) 
-# rf.acessToIntegra(arquivo, driver)
-
-# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
-
-# pesquisarPasta()
+driver = rf.iniciaWebdriver(False) 
+rf.acessToIntegra(arquivo, driver)
 abrePasta(arquivoAbrirPasta)
 
+# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
+# pesquisarPasta()
 # uploadFile()
 # rf.getFile(arquivoAbrirPasta)
+
+
 
 # rf.acessToPJE(arquivo, driver)
 
 
-# rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
-# rf.createLog(arquivo, '_________________________________________________________________')
-# arquivo.close()
-# rf.logoutIntegra(driver)
+rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
+rf.createLog(arquivo, '_________________________________________________________________')
+arquivo.close()
+rf.logoutIntegra(driver)
