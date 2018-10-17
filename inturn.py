@@ -139,12 +139,25 @@ def incluirProcesso(urlPage, df):
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
 
-    #Numero do CNJ e do Processo
-    element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
-    element.send_keys(str(df['numProcesso']))
-    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
-    element.send_keys(str(df['numProcesso']))
+    if (df['cnj'] != ''):
+        #Numero do CNJ
+        element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
+        element.clear()
+        element.send_keys(str(df['cnj']))
 
+        # Segredo de Justiça  #por padrão, será marcado não
+        element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
+        element.click()
+
+        # Capturar andamentos
+        element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')
+        element.click()
+
+    #Numero do Processo
+    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
+    element.clear()
+    element.send_keys(str(df['numProcesso']))
+    
     # Status
     element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
     select = rf.Select(element)
@@ -152,15 +165,16 @@ def incluirProcesso(urlPage, df):
 
 
     ########### COLUNA 2 DA PÁGINA
-
     # Pasta
     element = rf.waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
     element.send_keys(str(df['pasta']))
 
     # Grupo Local trâmite
-    element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['localTr']))
+    if (df['localTr'] != ''):
+        element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
+        select = rf.Select(element)
+        select.select_by_visible_text(str(df['localTr']))
+        
     element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
@@ -182,7 +196,9 @@ def incluirProcesso(urlPage, df):
     comboResponsavel.click()  # clica e abre as opções
     
     element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 30, 1, 'show')
+    time.sleep(0.5)
     element.click() # seleciona o item desejado
+    print('selecionado o responsável')
 
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
@@ -196,20 +212,23 @@ def incluirProcesso(urlPage, df):
     element.send_keys(str(df['vCausa']))
 
     # Abre a aba Parte Adversa
+    print('Abrindo Aba Parte adversa')
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
     element.click()
 
     # Parte Adversa
     element = rf.waitinstance(driver, '//*[@id="txtNome"]', 30, 1, 'show')
     element.send_keys(str(df['adversa']))
-
+    print('Preenchido o campo Nome')
+    
     #Botão salvar
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    element.click()
+    element.click() 
+    print('btnSalvar clicado')
     
-    for key, value in df:
-        rf.createLog(arquivo, 'inserindo dados: {} => {}'.format(key, value))
-    rf.createLog(arquivo, 'Salvando dados do cliente')
+    # for key, value in df:
+    #     rf.createLog(arquivo, 'inserindo dados: {} => {}'.format(key, value))
+    # rf.createLog(arquivo, 'Salvando dados do cliente')
     
     time.sleep(6)
     driver.get(urlPage)
@@ -415,7 +434,7 @@ def abrePasta(arquivoAbrirPasta):
 
         df['razaoSocial']      =  dfExcel[item, 0]
         df['gpCliente']        =  dfExcel[item, 1]
-        df['cnpjCliente']      =  dfExcel[item, 2]
+        df['cnj']              =  dfExcel[item, 2]
         df['numProcesso']      =  dfExcel[item, 3]
         df['pasta']            =  dfExcel[item, 4]
         df['statusProcessual'] =  dfExcel[item, 5]
@@ -433,6 +452,8 @@ def abrePasta(arquivoAbrirPasta):
             position = position + 1
 
             df['localTr']       = dfExcel[item, 12][0:position]
+            df['localTr'] = df['localTr'].replace('ª', ' ª')
+
             df['localTramite']  = dfExcel[item, 12][position+1: ]
 
         else:
