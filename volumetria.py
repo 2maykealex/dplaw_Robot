@@ -72,6 +72,7 @@ def enviaParametros(volumetriaMes):
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 
 path = os.getcwd() + "/volumetrias" # obtem o caminho do script e add a pasta volumetrias
+logsPath = os.getcwd() + "/logs"
 
 os.chdir(path) # seleciona o diretório do script
 
@@ -90,7 +91,7 @@ selectedFile = int(input('Digite sua opção: '))
 hoje = "%s" % (time.strftime("%Y_%m_%d"))
 hora = time.strftime("%H:%M:%S")
 horaStr = hora.replace(':', '-')
-logFile = os.getcwd() + "/_{}_{}_log_volumetrias.txt".format(hoje, horaStr)
+logFile = logsPath + "/_{}_{}_log_volumetrias.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
