@@ -17,7 +17,7 @@ import pandas as pd
 def checkElement(driver, element):
     while True:
         if driver.find_elements_by_css_selector("{}".format(element)):  #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
-            print("A PÁGINA FOI CARREGADA")
+            # print("A PÁGINA FOI CARREGADA")
             break
         else:
             print('---AGUARDANDO O CARREGAMENTO TOTAL DA PÁGINA---')
@@ -47,15 +47,17 @@ def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
     dirpath = os.path.dirname(os.path.realpath(__file__))
     chromepath = dirpath + '/chromedriver'
-    
+        
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
+    chrome_options.add_argument('--disable-gpu')
+
     if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
         chrome_options.add_argument('--headless')            
 
     chrome_options.add_argument('--hide-scrollbars')
-    chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument("--log-level=3")
-
+    
     driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
     
     return driver
@@ -74,14 +76,9 @@ def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
             return element
     elif type == 'show':
         if form == 'xpath':
-            try:
-                element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                        ignored_exceptions=[NoSuchElementException,
-                                        ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object)))
-            except TimeoutException:
-                print('\n=====================================\nACABOU O TEMPO!!!!!!!\n=======================================\n')
-                
-
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
             return element
         elif form == 'id':
             element = WebDriverWait(browser, timeOut, poll_frequency = poll,
@@ -92,10 +89,8 @@ def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
 def acessToIntegra(arquivo, driver):
     # acessando a primeira página do sistema promad
     driver.maximize_window()
-    createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
+    createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
-
-
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
