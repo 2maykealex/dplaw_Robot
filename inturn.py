@@ -147,23 +147,6 @@ def incluirProcesso(urlPage, df):
         element.click()
         rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
-        time.sleep(1)
-        # Capturar andamentos
-        
-        # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')
-
-        # element = driver.find_element_by_id("capturarAndamentosS")
-        # print (element.
-
-        # driver.execute_script("$('#capturarAndamentosS').css('display', 'block');") # torna elemento visível
-
-        # //*[@id="capturarAndamentosS"]
-
-
-        # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')
-        # element.click()
-        # rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
-
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
     element.clear()
@@ -567,7 +550,7 @@ logFile = os.getcwd() + "/logs/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
-driver = rf.iniciaWebdriver(False) 
+driver = rf.iniciaWebdriver(True) 
 rf.acessToIntegra(arquivo, driver)
 abrePasta(arquivoAbrirPasta)
 
