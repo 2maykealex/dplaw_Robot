@@ -5,6 +5,7 @@ automatizar abertura de pastas no sistema dplaw
 import datetime
 import locale
 import time
+import glob
 import sys
 import os
 import robot_functions as rf
@@ -537,21 +538,37 @@ def pesquisarPasta(pasta):
 # TODO ADD FUNCÕES DE PESQUISA EM ROBOT_FUNCTIONS: COLOCAR OPÇÃO PARA PESQUISA
 
 #============================PROGRAMA PRINCIPAL==============================
-#executando python inturn.py "teste_db.xlsx" no TERMINAL
-arquivoAbrirPasta = sys.argv[1]
-arquivoAbrirPasta = arquivoAbrirPasta[:-5]
 
-os.chdir(os.getcwd()) # obtem o caminho do script e seleciona o diretório do script
+path     = os.getcwd() + "/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
+logsPath = os.getcwd() + "/logs"
+
+os.chdir(path) # seleciona o diretório do script
+
+print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
+files =  []
+# print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "ABERTURA_PASTAS" ')
+print('-------------------------------------------')
+for file in glob.glob("*.xlsx"):
+    # print('-------------------------------------------')
+    files.append(file)
+    print(len(files), ' => ', files[-1])    
+print('-------------------------------------------')
+
+selectedFile = int(input('Digite sua opção: '))
 
 hoje = "%s" % (time.strftime("%Y_%m_%d"))
 hora = time.strftime("%H:%M:%S")
 horaStr = hora.replace(':', '-')
-logFile = os.getcwd() + "/logs/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
+logFile = logsPath + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
-driver = rf.iniciaWebdriver(True) 
+driver = rf.iniciaWebdriver(True) #TODO: no modo Silent, ao incluir processo e ao marcar a opção CapturarAndamentos dá erro.. verificar
 rf.acessToIntegra(arquivo, driver)
+
+arquivoAbrirPasta = files[selectedFile -1]
+arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+
 abrePasta(arquivoAbrirPasta)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
