@@ -14,6 +14,14 @@ import os
 import time
 import pandas as pd
 
+def checkElement(driver, element):
+    while True:
+        if driver.find_elements_by_css_selector("{}".format(element)):  #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
+            print("A PÁGINA FOI CARREGADA")
+            break
+        else:
+            print('---AGUARDANDO O CARREGAMENTO TOTAL DA PÁGINA---')
+
 def getFile(arquivo): #TESTE PARA USAR O PANDAS
     fileName = (arquivo + '.xlsx')
     df = pd.read_excel(fileName)
@@ -86,6 +94,8 @@ def acessToIntegra(arquivo, driver):
     driver.maximize_window()
     createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
     driver.get('http://www.integra.adv.br/')
+
+
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
