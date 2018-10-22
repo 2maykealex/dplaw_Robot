@@ -42,18 +42,18 @@ def createLog(arquivo, log, printOut = True):
     if (printOut):
         print(writeLog)
     return writeLog
-
+    
 def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
     dirpath = os.path.dirname(os.path.realpath(__file__))
     chromepath = dirpath + '/chromedriver'
-        
+    
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
     chrome_options.add_argument('--disable-gpu')
 
     if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
-        chrome_options.add_argument('--headless')            
+        chrome_options.add_argument('--headless')
 
     chrome_options.add_argument('--hide-scrollbars')
     chrome_options.add_argument("--log-level=3")
@@ -87,7 +87,7 @@ def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
             return element
 
 def acessToIntegra(arquivo, driver):
-    # acessando a primeira página do sistema promad
+    # acessando a primeira página do sistema promad    
     driver.maximize_window()
     createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
