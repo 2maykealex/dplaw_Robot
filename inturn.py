@@ -118,9 +118,9 @@ def pesquisarCliente(cliente):
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
     rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
+    time.sleep(4)
 
 def incluirProcesso(urlPage, df):    
-
     # incluindo processo    
     element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 30, 1, 'show')
     element.click()
@@ -142,11 +142,15 @@ def incluirProcesso(urlPage, df):
         element.send_keys(str(df['cnj']))
         rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
 
-        time.sleep(1)
         # Segredo de Justiça  #por padrão, será marcado não
         element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
         element.click()
         rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
+
+        time.sleep(1)
+        element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
+        element.click()
+        rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
@@ -215,12 +219,6 @@ def incluirProcesso(urlPage, df):
     element.send_keys(str(df['vCausa']))
     rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
 
-    if (df['cnj'] != ''):
-        element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')
-        element.click()
-        rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
-        time.sleep(4)
-
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
     element.click()
@@ -231,26 +229,13 @@ def incluirProcesso(urlPage, df):
     element.send_keys(str(df['adversa']))
     rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
     
-    #Botão salvar
+    # Botão salvar
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
     element.click() 
     rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
     time.sleep(6)
     driver.get(urlPage)
-
-
-
-
-    # #OUTRA CONDIÇÃO !!!
-    # element = waitinstance(driver, "//*[@id='frmProcesso']/table/tbody/tr[2]/td/div[1]", 30, 5, 'click')
-    # element.click()
-
-    # #acessa
-    # driver.get('http://www.integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=14421241&codigo2=14421241')
-    # //*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]
-    # jsbutton = ActionChains(driver).click(element)
-    # jsbutton.perform()
 
 def abrePastaTeste(arquivoAbrirPasta):  #teste pandas
     
@@ -438,6 +423,12 @@ def abrePasta(arquivoAbrirPasta):
     
     item = 1
 
+    cliente = ''
+    cliente = dfExcel[1, 0]
+
+    pesquisarCliente(cliente) #Pesquisa cliente, depois faz looping no seu arquivo adicionando os seus processos
+
+    urlPage = driver.current_url
     while (item <= count):
         df = {}
 
@@ -481,7 +472,6 @@ def abrePasta(arquivoAbrirPasta):
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
 
-        pesquisarCliente(df['razaoSocial'])
         time.sleep(3)            
         incluirProcesso(urlPage, df)
 
@@ -563,7 +553,7 @@ logFile = logsPath + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
 arquivo = open(logFile, 'w+')
 
-driver = rf.iniciaWebdriver(True) #TODO: no modo Silent, ao incluir processo e ao marcar a opção CapturarAndamentos dá erro.. verificar
+driver = rf.iniciaWebdriver(False)
 rf.acessToIntegra(arquivo, driver)
 
 arquivoAbrirPasta = files[selectedFile -1]
