@@ -43,6 +43,14 @@ def createLog(arquivo, log, printOut = True):
         print(writeLog)
     return writeLog
     
+def slowInternet(driver, active = False):   # Para simular internet Lenta
+    if (active == True):
+        driver.set_network_conditions(
+        offline=False,
+        latency=3,  # additional latency (ms)
+        download_throughput= 50 * 1024,  # maximal throughput
+        upload_throughput= 50 * 1024)  # maximal throughput
+
 def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
     dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -57,9 +65,14 @@ def iniciaWebdriver(modSilent = False):
 
     chrome_options.add_argument('--hide-scrollbars')
     chrome_options.add_argument("--log-level=3")
+        
+    slow = True # True - Internet Lenta  / False - Internet normal
+
+    if (slow):
+        chrome_options.add_argument("--disable-application-cache")
     
     driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
-    
+    slowInternet(driver, slow)   
     return driver
 
 def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
