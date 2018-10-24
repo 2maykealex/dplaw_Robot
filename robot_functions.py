@@ -15,6 +15,7 @@ import time
 import pandas as pd
 
 def checkElement(driver, element):
+    print('checando o elemento {}'.format(element))
     while True:
         if driver.find_elements_by_css_selector("{}".format(element)):  #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
             # print("A PÁGINA FOI CARREGADA")
@@ -66,7 +67,7 @@ def iniciaWebdriver(modSilent = False):
     chrome_options.add_argument('--hide-scrollbars')
     chrome_options.add_argument("--log-level=3")
         
-    slow = True # True - Internet Lenta  / False - Internet normal
+    slow = False # True - Internet Lenta  / False - Internet normal
 
     if (slow):
         chrome_options.add_argument("--disable-application-cache")
