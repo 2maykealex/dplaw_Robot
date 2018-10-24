@@ -110,7 +110,7 @@ def pesquisarCliente(cliente):
     element.send_keys(cliente)
     driver.find_element_by_id("btnPesquisar").click()
     rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
-    rf.checkElement(driver, "#loopVazio")
+    # rf.checkElement(driver, "#loopVazio")
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(3)
@@ -127,7 +127,7 @@ def incluirProcesso(urlPage, df):
 
     rf.createLog(arquivo, "Incluindo novo processo para o cliente {}".format(df['razaoSocial']))
 
-    rf.checkElement(driver, "#aProximo")   #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
+    # rf.checkElement(driver, "#aProximo")   #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
 
     # Grupo internodd
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
@@ -230,8 +230,8 @@ def incluirProcesso(urlPage, df):
     rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
     
     # Botão salvar
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    element.click() 
+    # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    # element.click() 
     rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
     time.sleep(6)
@@ -420,7 +420,6 @@ def abrePasta(arquivoAbrirPasta):
     
     dfExcel = rf.abreArquivo(arquivoAbrirPasta)
     count = dfExcel.number_of_rows()-1
-    
     item = 1
 
     cliente = ''
@@ -452,7 +451,7 @@ def abrePasta(arquivoAbrirPasta):
             position = position + 1
 
             df['localTr']       = dfExcel[item, 12][0:position]
-            df['localTr'] = df['localTr'].replace('ª', 'ª')       # Em casa funciona sem o replace.. no escritorio tive que usar  replace('ª', ' ª')  
+            df['localTr'] = df['localTr'].replace('ª', ' ª')       # Em casa funciona sem o replace.. no escritorio tive que usar  replace('ª', ' ª')  
 
             df['localTramite']  = dfExcel[item, 12][position+1: ]
 
@@ -532,11 +531,14 @@ def pesquisarPasta(pasta):
 path     = os.getcwd() + "/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
 logsPath = os.getcwd() + "/logs"
 
+if (os.path.exists(path) == False):
+    os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
+
 os.chdir(path) # seleciona o diretório do script
 
 print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
 files =  []
-# print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "ABERTURA_PASTAS" ')
+print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "ABERTURA_PASTAS" ')
 print('-------------------------------------------')
 for file in glob.glob("*.xlsx"):
     # print('-------------------------------------------')
@@ -551,15 +553,30 @@ hora = time.strftime("%H:%M:%S")
 horaStr = hora.replace(':', '-')
 logFile = logsPath + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
 
+if (os.path.exists(logsPath) == False):
+    os.mkdir(logsPath)   # Se o diretório Logs não existir, será criado
+    
 arquivo = open(logFile, 'w+')
 
 driver = rf.iniciaWebdriver(False)
 rf.acessToIntegra(arquivo, driver)
 
-arquivoAbrirPasta = files[selectedFile -1]
-arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+if (selectedFile-1 < 0):
+    # opção 0 selecionada
+    for file in files:
+        arquivoAbrirPasta = file
+        rf.createLog(arquivo, '>>>>>>>>> ABRINDO O ARQUIVO {} <<<<<<<<<'.format(arquivoAbrirPasta))
+        arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+        abrePasta(arquivoAbrirPasta)
+else:
+    arquivoAbrirPasta = files[selectedFile -1]
+    arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+    abrePasta(arquivoAbrirPasta)
 
-abrePasta(arquivoAbrirPasta)
+# arquivoAbrirPasta = files[selectedFile -1]
+# arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+
+# abrePasta(arquivoAbrirPasta)
 
 # abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
 # pesquisarPasta()

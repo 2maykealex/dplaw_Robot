@@ -74,6 +74,9 @@ def enviaParametros(volumetriaMes):
 path = os.getcwd() + "/volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "/logs"
 
+if (os.path.exists(path) == False):
+    os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 
+
 os.chdir(path) # seleciona o diretório do script
 
 print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
@@ -93,17 +96,17 @@ hora = time.strftime("%H:%M:%S")
 horaStr = hora.replace(':', '-')
 logFile = logsPath + "/_{}_{}_log_volumetrias.txt".format(hoje, horaStr)
 
+if (os.path.exists(logsPath) == False):
+    os.mkdir(logsPath)   # Se o diretório Logs não existir, será criado
+
 arquivo = open(logFile, 'w+')
 
 print('\n\n\n')
 rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
 
 driver = rf.iniciaWebdriver(True)
-
-rf.createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/...')
+print('\n')
 rf.acessToIntegra(arquivo, driver)
-time.sleep(1)
-rf.createLog(arquivo, 'FAZENDO LOGIN NO SITE')
 
 if (selectedFile-1 < 0):
     # opção 0 selecionada
