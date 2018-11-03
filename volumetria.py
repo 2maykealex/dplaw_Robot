@@ -38,6 +38,19 @@ def inserirVolumetria(volumetriaMes, pasta):
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         element.send_keys(volumetriaMes)
 
+        # checando se o elemento CNJ está preenchido
+        element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
+        if (element.get_attribute("value") != ''):
+            # Segredo de Justiça  #por padrão, será marcado não
+            element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
+            element.click()
+            rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
+
+            time.sleep(1)
+            element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
+            element.click()
+            rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
+
         # SALVAR ALTERAÇÃO
         time.sleep(2)
         element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
