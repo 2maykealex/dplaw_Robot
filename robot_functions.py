@@ -1,3 +1,5 @@
+#coding=utf-8
+
 # FUNÇÕES COMUNS QUE ATENDEM A VARIOS ARQUIVOS (INTURN.PY; VOLUMETRIA.PY; ETC...)
 from selenium import webdriver
 from selenium.webdriver.common.by import By

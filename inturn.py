@@ -1,7 +1,5 @@
-'''
-projeto   deeplaw: intern
-automatizar abertura de pastas no sistema dplaw
-'''
+#coding=utf-8
+
 import datetime
 import locale
 import time
