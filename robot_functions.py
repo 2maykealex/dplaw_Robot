@@ -56,7 +56,9 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
 
 def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
+    (os.getcwd()
     dirpath = os.path.dirname(os.path.realpath(__file__))
+    print(dirpath)
     chromepath = dirpath + '/chromedriver'
     
     chrome_options = webdriver.ChromeOptions()
