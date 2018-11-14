@@ -94,7 +94,7 @@ print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
 files =  []
 print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
 print('-------------------------------------------')
-for file in glob.glob("volu*.xlsx"):
+for file in glob.glob("*.xlsx"):
     # print('-------------------------------------------')
     files.append(file)
     print(len(files), ' => ', files[-1])    
