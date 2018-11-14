@@ -56,10 +56,11 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
 
 def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
-    dirpath = os.path.dirname(os.path.realpath(__file__))
-    print(dirpath)
+    #dirpath = os.path.dirname(os.path.realpath(__file__))
+    dirpath = '/usr/bin'
     chromepath = dirpath + '/chromedriver'
-    
+    print(chromepath)
+
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
     # chrome_options.add_argument('--disable-gpu')
