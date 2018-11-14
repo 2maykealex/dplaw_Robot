@@ -14,7 +14,7 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 import pyexcel as pe
 import os
 import time
-import pandas as pd
+# import pandas as pd
 
 def checkElement(driver, element):
     print('checando o elemento {}'.format(element))
@@ -27,8 +27,8 @@ def checkElement(driver, element):
 
 def getFile(arquivo): #TESTE PARA USAR O PANDAS
     fileName = (arquivo + '.xlsx')
-    df = pd.read_excel(fileName)
-    return df
+    # df = pd.read_excel(fileName)
+    # return df
 
 def abreArquivo(arquivo):
     fileName = (arquivo + '.xlsx')
