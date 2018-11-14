@@ -1,7 +1,5 @@
-'''
-projeto   deeplaw: volumetria
-automatizar a inserção da volumetria em pastas existentes no sistema dplaw
-'''
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import time
@@ -33,7 +31,7 @@ def inserirVolumetria(volumetriaMes, pasta):
     element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
 
     if (element.get_attribute('value') ==  ''):
-        log = "Preenchendo a volumetria {} na pasta {}".format(volumetriaMes, pasta)
+        log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         element.send_keys(volumetriaMes)
@@ -46,7 +44,7 @@ def inserirVolumetria(volumetriaMes, pasta):
             element.click()
             rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
-            time.sleep(1)
+            time.sleep(3)
             element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
             element.click()
             rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
@@ -117,7 +115,7 @@ arquivo = open(logFile, 'w+')
 print('\n\n\n')
 rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
 
-driver = rf.iniciaWebdriver(True)
+driver = rf.iniciaWebdriver(False)
 print('\n')
 rf.acessToIntegra(arquivo, driver)
 
@@ -132,7 +130,7 @@ else:
     volumetriaMes = volumetriaMes[:-5]
     enviaParametros(volumetriaMes)
 
-rf.createLog(arquivo, '> > > SCRIPT ENCERRADO!')
+rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
 rf.createLog(arquivo, '_________________________________________________________________')
 arquivo.close()
 rf.logoutIntegra(driver)
