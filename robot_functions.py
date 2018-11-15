@@ -59,7 +59,7 @@ def iniciaWebdriver(modSilent = False):
     #dirpath = os.path.dirname(os.path.realpath(__file__))
     dirpath = '/usr/bin'
     chromepath = dirpath + '/chromedriver'
-    print(chromepath)
+    # print(chromepath)
 
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
@@ -117,6 +117,7 @@ def acessToIntegra(arquivo, driver):
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     createLog(arquivo, 'FAZENDO LOGIN NO SITE')
+    time.sleep(1)
     driver.find_element_by_tag_name('button').click()    
     
 def logoutIntegra(driver):
