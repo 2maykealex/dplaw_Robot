@@ -121,7 +121,7 @@ def acessToIntegra(arquivo, driver):
     # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     time.sleep(1)
-    driver.find_element_by_tag_name('button').click()    
+    # driver.find_element_by_tag_name('button').click()    
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
