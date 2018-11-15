@@ -119,18 +119,18 @@ driver = rf.iniciaWebdriver(False)
 print('\n')
 rf.acessToIntegra(arquivo, driver)
 
-if (selectedFile-1 < 0):
-    # opção 0 selecionada
-    for file in files:
-        volumetriaMes = file
-        volumetriaMes = volumetriaMes[:-5]
-        enviaParametros(volumetriaMes)
-else:
-    volumetriaMes = files[selectedFile -1]
-    volumetriaMes = volumetriaMes[:-5]
-    enviaParametros(volumetriaMes)
+# if (selectedFile-1 < 0):
+#     # opção 0 selecionada
+#     for file in files:
+#         volumetriaMes = file
+#         volumetriaMes = volumetriaMes[:-5]
+#         enviaParametros(volumetriaMes)
+# else:
+#     volumetriaMes = files[selectedFile -1]
+#     volumetriaMes = volumetriaMes[:-5]
+#     enviaParametros(volumetriaMes)
 
-rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
-rf.createLog(arquivo, '_________________________________________________________________')
-arquivo.close()
-rf.logoutIntegra(driver)
+# rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
+# rf.createLog(arquivo, '_________________________________________________________________')
+# arquivo.close()
+# rf.logoutIntegra(driver)
