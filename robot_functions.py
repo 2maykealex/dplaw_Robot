@@ -113,7 +113,8 @@ def acessToIntegra(arquivo, driver):
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
-    element.send_keys('robo@dplaw.com.br')
+    # element.send_keys('robo@dplaw.com.br')
+    element.send_keys('dplaw00612')
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     element = waitinstance(driver, "login_senha", 30, 1, 'show', 'id')
     element.send_keys('dplaw00612')
