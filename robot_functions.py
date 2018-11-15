@@ -117,6 +117,7 @@ def acessToIntegra(arquivo, driver):
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     createLog(arquivo, 'FAZENDO LOGIN NO SITE')
+    print(driver.find_element_by_id("login_senha").value)
     time.sleep(1)
     driver.find_element_by_tag_name('button').click()    
     
