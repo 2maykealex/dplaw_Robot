@@ -20,7 +20,7 @@ def pesquisarPasta(pasta = '01700117977'):
     # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
     # element.send_keys(pasta)
     print(pasta)
-
+    time.sleep(1)
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
     time.sleep(1)
 
