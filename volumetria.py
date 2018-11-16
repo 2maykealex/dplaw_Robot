@@ -43,7 +43,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         print(volumetriaMes)
         element.send_keys(volumetriaMes)
 
-        time.sleep(1)
+        time.sleep(3)
         # driver.execute_script("document.getElementById('txtCampoLivre3').value=volumetriaMes " )
         # time.sleep(1)
 
