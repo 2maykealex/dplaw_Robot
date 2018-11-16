@@ -38,6 +38,9 @@ def inserirVolumetria(volumetriaMes, pasta):
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
+
+        volumetriaMes = volumetriaMes.replace('.','-')
+
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         time.sleep(1)
         print(volumetriaMes)
@@ -135,12 +138,10 @@ if (selectedFile-1 < 0):
     for file in files:
         volumetriaMes = file
         volumetriaMes = volumetriaMes[:-5]
-        volumetriaMes = volumetriaMes.replace('.','-')
         enviaParametros(volumetriaMes)
 else:
     volumetriaMes = files[selectedFile -1]
     volumetriaMes = volumetriaMes[:-5]
-    volumetriaMes = volumetriaMes.replace('.','-')
     enviaParametros(volumetriaMes)
 
 rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
