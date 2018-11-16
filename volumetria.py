@@ -47,7 +47,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         # element.send_keys(volumetriaMes)
 
         time.sleep(3)
-        driver.execute_script("document.getElementById('txtCampoLivre3').value={}".format(volumetriaMes) )
+        driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
         # time.sleep(1)
 
         # checando se o elemento CNJ está preenchido
