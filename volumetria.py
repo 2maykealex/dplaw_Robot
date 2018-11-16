@@ -38,12 +38,13 @@ def inserirVolumetria(volumetriaMes, pasta):
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
-        # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
-        # element.send_keys(volumetriaMes)
+        element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+        time.sleep(1)
+        element.send_keys(volumetriaMes)
 
         time.sleep(1)
-        driver.execute_script("document.getElementById('txtCampoLivre3').value=volumetriaMes " )
-        time.sleep(1)
+        # driver.execute_script("document.getElementById('txtCampoLivre3').value=volumetriaMes " )
+        # time.sleep(1)
 
         # checando se o elemento CNJ está preenchido
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
