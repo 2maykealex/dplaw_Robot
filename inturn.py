@@ -173,8 +173,11 @@ def incluirProcesso(urlPage, df):
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
-    element = rf.waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
-    element.send_keys(str(df['pasta']))
+    # element = rf.waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
+    # element.send_keys(str(df['pasta']))
+
+    driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
+    time.sleep(1)
     rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
 
     # Grupo Local trâmite
@@ -217,8 +220,11 @@ def incluirProcesso(urlPage, df):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
-    element.send_keys(str(df['dataContratacao']))
+    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
+    time.sleep(1)
+
+    # element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
+    # element.send_keys(str(df['dataContratacao']))
     rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
 
     # Valor da Causa
