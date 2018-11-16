@@ -17,8 +17,12 @@ def pesquisarPasta(pasta = '01700117977'):
     element.click()
 
     # buscando pasta
-    element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
-    element.send_keys(pasta)
+    # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    # element.send_keys(pasta)
+
+    driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
+    time.sleep(1)
+
     driver.find_element_by_id("btnPesquisar").click()
     
     # SELECIONA O CLIENTE PESQUISADO
