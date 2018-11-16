@@ -41,9 +41,8 @@ def inserirVolumetria(volumetriaMes, pasta):
         # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         # element.send_keys(volumetriaMes)
 
-        volumetriaMes = str(volumetriaMes)
         time.sleep(1)
-        driver.execute_script("document.getElementById('txtCampoLivre3').value={} ".format(volumetriaMes) )
+        driver.execute_script("document.getElementById('txtCampoLivre3').value=volumetriaMes " )
         time.sleep(1)
 
         # checando se o elemento CNJ está preenchido
