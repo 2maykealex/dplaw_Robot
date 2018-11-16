@@ -135,10 +135,12 @@ if (selectedFile-1 < 0):
     for file in files:
         volumetriaMes = file
         volumetriaMes = volumetriaMes[:-5]
+        volumetriaMes = volumetriaMes.replace('.','-')
         enviaParametros(volumetriaMes)
 else:
     volumetriaMes = files[selectedFile -1]
     volumetriaMes = volumetriaMes[:-5]
+    volumetriaMes = volumetriaMes.replace('.','-')
     enviaParametros(volumetriaMes)
 
 rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
