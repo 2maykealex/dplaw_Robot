@@ -183,7 +183,7 @@ def incluirProcesso(urlPage, df):
     # Grupo Local trâmite
     if (df['localTr'] != ''):
         element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
-        element.click()
+        # element.click()
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
         rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
@@ -222,6 +222,7 @@ def incluirProcesso(urlPage, df):
     # Data da Contratação
     print(str(df['dataContratacao']))
     driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
+    driver.switch_to.active_element
     time.sleep(1)
 
     # element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
