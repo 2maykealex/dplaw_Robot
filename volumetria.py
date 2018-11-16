@@ -39,7 +39,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
 
-        volumetriaMes = "Volum.2018.05"
+        # volumetriaMes = "Volum.2018.05"
 
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         print(volumetriaMes)
@@ -54,13 +54,19 @@ def inserirVolumetria(volumetriaMes, pasta):
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
         if (element.get_attribute("value") != ''):
             # Segredo de Justiça  #por padrão, será marcado não
-            element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
-            element.click()
+            element = driver.find_element_by_id("segredoJusticaN")
+            driver.execute_script("arguments[0].click();", element)
+            
+            # element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
+            # element.click()
             rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
             time.sleep(3)
-            element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
-            element.click()
+            element = driver.find_element_by_id("capturarAndamentosS")
+            driver.execute_script("arguments[0].click();", element)
+
+            # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
+            # element.click()
             rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
