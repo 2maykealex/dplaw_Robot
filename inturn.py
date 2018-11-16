@@ -104,8 +104,12 @@ def pesquisarCliente(cliente):
     driver.get(urlPage)
 
     # buscando o cliente e acessando sua pasta
-    element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
-    element.send_keys(cliente)
+    # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    # element.send_keys(cliente)
+    print(cliente)
+    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
+    time.sleep(1)
+
     driver.find_element_by_id("btnPesquisar").click()
     rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
     # rf.checkElement(driver, "#loopVazio")
@@ -239,34 +243,34 @@ def abrePastaTeste(arquivoAbrirPasta):  #teste pandas
     
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
 
-    dfExcel = rf.abreArquivo(arquivoAbrirPasta)
-    dfExcel = rf.getFile(arquivoAbrirPasta)
+    # dfExcel = rf.abreArquivo(arquivoAbrirPasta)
+    # dfExcel = rf.getFile(arquivoAbrirPasta)
     # dfExcel.to_dict()
     # dfExcel = rf.pd.DataFrame.to_dict (dfExcel)
     # pesquisarCliente()
 
-    listIndex = ['razaoSocial', 'gpCliente', 'cnpjCliente', 'numProcesso', 'pasta', 'statusProcessual', 'cnpjAdversa', 'cpfAdversa', 
-                'gpProcesso', 'adversa', 'tipoProcesso', 'comarca', 'localTr', 'localTramite', 'responsavel', 'vCausa', 
-                'dataContratacao', 'uf']
+    # listIndex = ['razaoSocial', 'gpCliente', 'cnpjCliente', 'numProcesso', 'pasta', 'statusProcessual', 'cnpjAdversa', 'cpfAdversa', 
+    #             'gpProcesso', 'adversa', 'tipoProcesso', 'comarca', 'localTr', 'localTramite', 'responsavel', 'vCausa', 
+    #             'dataContratacao', 'uf']
 
-    df = []    
-    item = 0
-    for key, value in dfExcel.items():
-        # print(value[0])
+    # df = []    
+    # item = 0
+    # for key, value in dfExcel.items():
+    #     # print(value[0])
 
-        linha  = 0
-        coluna =  0
+    #     linha  = 0
+    #     coluna =  0
 
-        while coluna <= 16:
+    #     while coluna <= 16:
 
-            while linha <= value.count():
+    #         while linha <= value.count():
 
-                df[linha][coluna] =  value[0]
-                print (df)
+    #             df[linha][coluna] =  value[0]
+    #             print (df)
 
-                linha = linha + 1
+    #             linha = linha + 1
 
-            coluna  = coluna  + 1
+    #         coluna  = coluna  + 1
 
 
 
@@ -291,7 +295,7 @@ def abrePastaTeste(arquivoAbrirPasta):  #teste pandas
             
             # item = item + 1
     
-    print (df)
+    # print (df)
 
         # df[listIndex[item]] = val
         # print(val)
@@ -303,7 +307,7 @@ def abrePastaTeste(arquivoAbrirPasta):  #teste pandas
         
         
 
-    print('==================')
+    # print('==================')
     # print(val)
     # print (df['vCausa'][1])
 
