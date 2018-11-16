@@ -40,6 +40,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         rf.createLog(arquivo, log)
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         time.sleep(1)
+        print(volumetriaMes)
         element.send_keys(volumetriaMes)
 
         time.sleep(1)
