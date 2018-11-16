@@ -116,8 +116,10 @@ def acessToIntegra(arquivo, driver):
     element.send_keys("robo@dplaw.com.br")
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     driver.execute_script("document.getElementById('login_senha').value='dplaw00612' ")
+    time.sleep(1)
     createLog(arquivo, 'FAZENDO LOGIN NO SITE')
-    driver.find_element_by_tag_name('button').click()    
+    element = driver.find_element_by_tag_name('button')
+    element.click()
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
