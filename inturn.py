@@ -458,7 +458,7 @@ def abrePasta(arquivoAbrirPasta):
             position = position + 1
 
             df['localTr']       = dfExcel[item, 12][0:position]
-            df['localTr'] = df['localTr'].replace('ª', ' ª')       # Em casa funciona sem o replace.. no escritorio tive que usar  replace('ª', ' ª')  
+            # df['localTr'] = df['localTr'].replace('ª', ' ª')       # Em casa funciona sem o replace.. no escritorio tive que usar  replace('ª', ' ª')  
 
             df['localTramite']  = dfExcel[item, 12][position+1: ]
 
