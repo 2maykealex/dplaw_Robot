@@ -145,13 +145,17 @@ def incluirProcesso(urlPage, df):
         rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
 
         # Segredo de Justiça  #por padrão, será marcado não
-        element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
-        element.click()
+        # element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
+        # element.click()
+        element = driver.find_element_by_id("segredoJusticaN")
+        driver.execute_script("arguments[0].click();", element)
         rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
         time.sleep(1)
-        element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
-        element.click()
+        # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
+        # element.click()
+        element = driver.find_element_by_id("capturarAndamentosS")
+        driver.execute_script("arguments[0].click();", element)
         rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
     #Numero do Processo
