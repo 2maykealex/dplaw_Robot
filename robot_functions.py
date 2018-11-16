@@ -115,11 +115,7 @@ def acessToIntegra(arquivo, driver):
     element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
     element.send_keys("robo@dplaw.com.br")
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
-    # element = waitinstance(driver, "login_senha", 30, 1, 'show', 'id')
-    # element.send_keys("dplaw00612")
     driver.execute_script("document.getElementById('login_senha').value='dplaw00612' ")
-
-    # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     # driver.find_element_by_tag_name('button').click()    
     
