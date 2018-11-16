@@ -19,7 +19,7 @@ def pesquisarPasta(pasta = '01700117977'):
     # buscando pasta
     # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
     # element.send_keys(pasta)
-    print(pasta)
+    
     time.sleep(1)
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
     time.sleep(1)
@@ -38,8 +38,12 @@ def inserirVolumetria(volumetriaMes, pasta):
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
-        element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
-        element.send_keys(volumetriaMes)
+        # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+        # element.send_keys(volumetriaMes)
+
+        time.sleep(1)
+        driver.execute_script("document.getElementById('txtCampoLivre3').value={} ".format(volumetriaMes))
+        time.sleep(1)
 
         # checando se o elemento CNJ está preenchido
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
