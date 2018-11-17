@@ -1,6 +1,5 @@
 #coding=utf-8
 
-import pyautogui
 import datetime
 import locale
 import time
@@ -223,8 +222,8 @@ def incluirProcesso(urlPage, df):
     # Data da Contratação
     driver.find_element_by_id('txtDataContratacao').click()
     for digit in str(df['dataContratacao']):
-        driver.find_element_by_id('txtDataContratacao').send_keys(pyautogui.keyDown('end'), digit)
-        time.sleep(1)
+        driver.find_element_by_id('txtDataContratacao').send_keys(Keys.END, digit)
+        time.sleep(0.5)
 
     # driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
     # driver.switch_to.active_element
