@@ -1,5 +1,6 @@
 #coding=utf-8
 
+import pyautogui
 import datetime
 import locale
 import time
@@ -220,10 +221,14 @@ def incluirProcesso(urlPage, df):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    print(str(df['dataContratacao']))
-    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
-    driver.switch_to.active_element
-    time.sleep(1)
+    driver.find_element_by_id('txtDataContratacao').click()
+    for digit in str(df['dataContratacao']):
+        driver.find_element_by_id('txtDataContratacao').send_keys(digit)
+        time.sleep(1)
+
+    # driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
+    # driver.switch_to.active_element
+    # time.sleep(1)
 
     # element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
     # element.send_keys(str(df['dataContratacao']))
