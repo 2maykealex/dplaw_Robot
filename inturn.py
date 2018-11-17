@@ -223,6 +223,7 @@ def incluirProcesso(urlPage, df):
     driver.find_element_by_id('txtDataContratacao').click()
     for digit in str(df['dataContratacao']):
         driver.find_element_by_id('txtDataContratacao').click()
+        driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
         driver.find_element_by_id('txtDataContratacao').send_keys(digit)
         # driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END, digit)
         time.sleep(1)
