@@ -498,8 +498,10 @@ def abrePasta(arquivoAbrirPasta):
         df['vCausa']           =  valorCausa
 
         dataContratacao        = (dfExcel[item, 15])
+        print(dataContratacao)
         dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
-        dataContratacao         = dataContratacao.replace("/", "")
+        print(dataContratacao)
+        # dataContratacao         = dataContratacao.replace("/", "")
 
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
