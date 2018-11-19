@@ -220,15 +220,17 @@ def incluirProcesso(urlPage, df):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    driver.find_element_by_id('txtDataContratacao').click()
-    driver.find_element_by_id('txtDataContratacao').send_keys(str(df['dataContratacao']))
+    # driver.find_element_by_id('txtDataContratacao').click()
+    # driver.find_element_by_id('txtDataContratacao').send_keys(str(df['dataContratacao']))
 
-    # count = 0
-    # for digit in str(df['dataContratacao']):
-    #     # driver.find_element_by_id('txtDataContratacao').click()
-    #     # driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
-    #     print(digit)
-    #     driver.find_element_by_id('txtDataContratacao').send_keys(digit)
+    count = 0
+    for digit in str(df['dataContratacao']):
+        driver.find_element_by_id('txtDataContratacao').click()
+        driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
+        print(digit)
+        driver.find_element_by_id('txtDataContratacao').send_keys(digit)
+
+        driver.find_element_by_id('txtValorCausa').click()
         
     #     # driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END, digit)
     #     time.sleep(1)
@@ -496,7 +498,7 @@ def abrePasta(arquivoAbrirPasta):
         print(dataContratacao)
         dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
         print(dataContratacao)
-        # dataContratacao         = dataContratacao.replace("/", "")
+        dataContratacao         = dataContratacao.replace("/", "")
 
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
