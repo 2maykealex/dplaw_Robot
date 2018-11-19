@@ -104,9 +104,6 @@ def pesquisarCliente(cliente):
     driver.get(urlPage)
 
     # buscando o cliente e acessando sua pasta
-    # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
-    # element.send_keys(cliente)
-    print(cliente)
     driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
     time.sleep(1)
 
@@ -115,12 +112,12 @@ def pesquisarCliente(cliente):
     # rf.checkElement(driver, "#loopVazio")
 
     # ATÉ A URL NÃO MUDAR
-    time.sleep(3)
+    time.sleep(1)
     # SELECIONA O CLIENTE PESQUISADO
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
     element.click()
     rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
-    time.sleep(4)
+    time.sleep(2)
 
 def incluirProcesso(urlPage, df):    
     # incluindo processo    
@@ -145,8 +142,6 @@ def incluirProcesso(urlPage, df):
         rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
 
         # Segredo de Justiça  #por padrão, será marcado não
-        # element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
-        # element.click()
         element = driver.find_element_by_id("segredoJusticaN")
         driver.execute_script("arguments[0].click();", element)
         rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
@@ -173,9 +168,6 @@ def incluirProcesso(urlPage, df):
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
-    # element = rf.waitinstance(driver, '//*[@id="txtPasta"]', 30, 1, 'show')
-    # element.send_keys(str(df['pasta']))
-
     driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
     time.sleep(1)
     rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
@@ -474,10 +466,7 @@ def abrePasta(arquivoAbrirPasta):
         df['vCausa']           =  valorCausa
 
         dataContratacao        = (dfExcel[item, 15])
-        print(dataContratacao)
         dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
-        print(dataContratacao)
-        # dataContratacao         = dataContratacao.replace("/", "")
 
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
