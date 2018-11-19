@@ -223,15 +223,22 @@ def incluirProcesso(urlPage, df):
     # driver.find_element_by_id('txtDataContratacao').click()
     # driver.find_element_by_id('txtDataContratacao').send_keys(str(df['dataContratacao']))
 
-    count = 0
-    for digit in str(df['dataContratacao']):
-        driver.find_element_by_id('txtDataContratacao').click()
-        driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
-        print(digit)
-        driver.find_element_by_id('txtDataContratacao').send_keys(digit)
+    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
+    # count = 0
+    # for digit in str(df['dataContratacao']):
+    #     driver.find_element_by_id('txtDataContratacao').click()
+    #     driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
+    #     print(digit)
+    #     # driver.find_element_by_id('txtDataContratacao').send_keys(digit)
+        
+        
+    #     driver.execute_script("""document.querySelector("select[name='date1'] option").value="2016-09-07";""")
 
-        driver.find_element_by_id('txtCampoLivre3').click()
-        driver.find_element_by_id('txtCampoLivre3').send_keys(digit)
+
+    #     driver.find_element_by_id('txtCampoLivre3').click()
+    #     driver.find_element_by_id('txtCampoLivre3').send_keys(rf.Keys.END)
+    #     driver.find_element_by_id('txtCampoLivre3').send_keys(digit)
+
         
     #     # driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END, digit)
     #     time.sleep(1)
@@ -499,7 +506,7 @@ def abrePasta(arquivoAbrirPasta):
         print(dataContratacao)
         dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
         print(dataContratacao)
-        dataContratacao         = dataContratacao.replace("/", "")
+        # dataContratacao         = dataContratacao.replace("/", "")
 
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
