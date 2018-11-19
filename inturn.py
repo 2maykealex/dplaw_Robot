@@ -220,36 +220,7 @@ def incluirProcesso(urlPage, df):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-    # driver.find_element_by_id('txtDataContratacao').click()
-    # driver.find_element_by_id('txtDataContratacao').send_keys(str(df['dataContratacao']))
-
     driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
-    # count = 0
-    # for digit in str(df['dataContratacao']):
-    #     driver.find_element_by_id('txtDataContratacao').click()
-    #     driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END)
-    #     print(digit)
-    #     # driver.find_element_by_id('txtDataContratacao').send_keys(digit)
-        
-        
-    #     driver.execute_script("""document.querySelector("select[name='date1'] option").value="2016-09-07";""")
-
-
-    #     driver.find_element_by_id('txtCampoLivre3').click()
-    #     driver.find_element_by_id('txtCampoLivre3').send_keys(rf.Keys.END)
-    #     driver.find_element_by_id('txtCampoLivre3').send_keys(digit)
-
-        
-    #     # driver.find_element_by_id('txtDataContratacao').send_keys(rf.Keys.END, digit)
-    #     time.sleep(1)
-    #     count = count + 1
-
-    # driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
-    # driver.switch_to.active_element
-    # time.sleep(1)
-
-    # element = rf.waitinstance(driver, '//*[@id="txtDataContratacao"]', 30, 1, 'show')
-    # element.send_keys(str(df['dataContratacao']))
     rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
 
     # Valor da Causa
@@ -268,8 +239,8 @@ def incluirProcesso(urlPage, df):
     rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
     
     # Botão salvar
-    # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
-    # element.click() 
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element.click() 
     rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
     time.sleep(6)
