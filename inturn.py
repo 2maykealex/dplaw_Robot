@@ -220,13 +220,8 @@ def incluirProcesso(urlPage, df):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     
     # Data da Contratação
-
-    dataContratacao = f"{str(df['dataContratacao']):%d/%m%Y}"
-
-    print(dataContratacao)
-
     driver.find_element_by_id('txtDataContratacao').click()
-    driver.find_element_by_id('txtDataContratacao').send_keys(dataContratacao)
+    driver.find_element_by_id('txtDataContratacao').send_keys(str(df['dataContratacao']))
 
     # count = 0
     # for digit in str(df['dataContratacao']):
