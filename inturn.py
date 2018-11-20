@@ -216,8 +216,9 @@ def incluirProcesso(urlPage, df):
     rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
     time.sleep(4)
     # Valor da Causa
-    element = rf.waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
-    element.send_keys(str(df['vCausa']))
+    # element = rf.waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
+    driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
+    # element.send_keys(str(df['vCausa']))
     rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
     time.sleep(4)
     # Abre a aba Parte Adversa
@@ -463,7 +464,7 @@ def abrePasta(arquivoAbrirPasta):
         df['responsavel']      =  dfExcel[item, 13]
 
         valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-        print(str(df['vCausa']))
+        print(valorCausa)
         df['vCausa']           =  valorCausa
 
         dataContratacao        = (dfExcel[item, 15])
