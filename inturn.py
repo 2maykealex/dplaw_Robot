@@ -463,7 +463,7 @@ def abrePasta(arquivoAbrirPasta):
         df['responsavel']      =  dfExcel[item, 13]
 
         valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-        print(df['vCausa'])
+        print(str(df['vCausa']))
         df['vCausa']           =  valorCausa
 
         dataContratacao        = (dfExcel[item, 15])
