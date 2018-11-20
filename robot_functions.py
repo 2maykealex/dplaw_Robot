@@ -79,9 +79,7 @@ def iniciaWebdriver(modSilent = False):
         chrome_options.add_argument("--disable-application-cache")
     
     driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
-    slowInternet(driver, slow)   
-    driver.execute_script("document.body.style.zoom='60%'")
-    
+    slowInternet(driver, slow)    
     return driver
 
 def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
@@ -111,6 +109,7 @@ def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
 def acessToIntegra(arquivo, driver):
     # acessando a primeira página do sistema promad    
     driver.maximize_window()
+    driver.execute_script("document.body.style.zoom='60%'")
     createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
 
