@@ -80,7 +80,8 @@ def iniciaWebdriver(modSilent = False):
     
     driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
     slowInternet(driver, slow)   
-    driver.execute_script("$('body').css('zoom', 5);")
+    driver.execute_script("document.body.style.zoom='60%'")
+    
     return driver
 
 def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
