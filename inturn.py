@@ -133,7 +133,7 @@ def incluirProcesso(urlPage, df):
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
     rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
-
+    time.sleep(4)
     if (df['cnj'] != ''):
         #Numero do CNJ
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
@@ -152,26 +152,26 @@ def incluirProcesso(urlPage, df):
         element = driver.find_element_by_id("capturarAndamentosS")
         driver.execute_script("arguments[0].click();", element)
         rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
-
+    time.sleep(4)
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
     element.clear()
     element.send_keys(str(df['numProcesso']))
     rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
-    
+    time.sleep(4)
     # Status
     element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
     rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
-
+    time.sleep(4)
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
     driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
     time.sleep(1)
     rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
-
+    time.sleep(4)
     # Grupo Local trâmite
     if (df['localTr'] != ''):
         element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
@@ -179,24 +179,24 @@ def incluirProcesso(urlPage, df):
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
         rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
-        
+    time.sleep(4)        
     element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
     rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
-
+    time.sleep(4)
     # Comarca
     element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
     rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
-
+    time.sleep(4)
     # UF
     element = rf.waitinstance(driver, '//*[@id="txtUf"]', 30, 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
     rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
-
+    time.sleep(4)
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
@@ -210,16 +210,16 @@ def incluirProcesso(urlPage, df):
 
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
-    
+    time.sleep(4)
     # Data da Contratação
     driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
     rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
-
+    time.sleep(4)
     # Valor da Causa
     element = rf.waitinstance(driver, '//*[@id="txtValorCausa"]', 30, 1, 'show')
     element.send_keys(str(df['vCausa']))
     rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
-
+    time.sleep(4)
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
     element.click()
