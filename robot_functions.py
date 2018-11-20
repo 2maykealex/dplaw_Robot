@@ -109,7 +109,6 @@ def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
 def acessToIntegra(arquivo, driver):
     # acessando a primeira página do sistema promad    
     driver.maximize_window()
-    driver.execute_script("document.body.style.zoom='60%'")
     createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
 
