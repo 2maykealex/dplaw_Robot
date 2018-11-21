@@ -83,7 +83,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
         element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'btnSalvar'))
-        element.click()
+        # element.click()
 
         # SALVAR ALTERAÇÃO
         # time.sleep(4)
