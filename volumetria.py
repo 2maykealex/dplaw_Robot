@@ -13,11 +13,11 @@ def pesquisarPasta(pasta = '01700117977'):
     driver.get(urlPage)
 
     # selecionar opção pesquisa por pasta
-    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
 
     # buscando pasta
-    # element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    # element = rf.waitinstance(driver, "txtPesquisa", 1, 'show', 'id')
     # element.send_keys(pasta)
     
     time.sleep(1)
@@ -28,12 +28,12 @@ def pesquisarPasta(pasta = '01700117977'):
     
     # SELECIONA O CLIENTE PESQUISADO
     time.sleep(3)
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     element.click()
 
 def inserirVolumetria(volumetriaMes, pasta):
 
-    # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+    # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
 
     # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'txtCampoLivre3'))
@@ -46,13 +46,13 @@ def inserirVolumetria(volumetriaMes, pasta):
 
         time.sleep(2) 
 
-        # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
+        # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
 
         driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
         time.sleep(2)
 
         # checando se o elemento CNJ está preenchido
-        # element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
+        # element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
         element = rf.waitinstance(driver, 'txtNroCnj', 1, 'show', 'id')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'txtNroCnj'))
         if (element.get_attribute("value") != ''):
@@ -63,7 +63,7 @@ def inserirVolumetria(volumetriaMes, pasta):
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
             
-            # element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
+            # element = rf.waitinstance(driver, 'segredoJusticaN', 1, 'show', 'id')
             # element.click()
             rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
@@ -74,20 +74,20 @@ def inserirVolumetria(volumetriaMes, pasta):
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
 
-            # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
+            # element = rf.waitinstance(driver, 'capturarAndamentosS', 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
             # element.click()
             rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
         # time.sleep(2)
-        # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+        # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
         element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'btnSalvar'))
         element.click()
 
         # SALVAR ALTERAÇÃO
         # time.sleep(4)
-        # element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
+        # element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
         element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'popup_ok'))
         element.click() 

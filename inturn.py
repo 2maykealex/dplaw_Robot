@@ -114,14 +114,14 @@ def pesquisarCliente(cliente):
     # ATÉ A URL NÃO MUDAR
     time.sleep(1)
     # SELECIONA O CLIENTE PESQUISADO
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     element.click()
     rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
     time.sleep(2)
 
 def incluirProcesso(urlPage, df):    
     # incluindo processo    
-    element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
     element.click()
 
     rf.createLog(arquivo, "Incluindo novo processo para o cliente {}".format(df['razaoSocial']))
@@ -129,14 +129,14 @@ def incluirProcesso(urlPage, df):
     # rf.checkElement(driver, "#aProximo")   #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
 
     # Grupo internodd
-    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 30, 1, 'show')
+    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
     rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
     time.sleep(4)
     if (df['cnj'] != ''):
         #Numero do CNJ
-        element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
+        element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
         element.clear()
         element.send_keys(str(df['cnj']))
         rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
@@ -152,13 +152,13 @@ def incluirProcesso(urlPage, df):
         rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
     time.sleep(4)
     #Numero do Processo
-    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 30, 1, 'show', 'xpath')
+    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
     element.clear()
     element.send_keys(str(df['numProcesso']))
     rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
     time.sleep(4)
     # Status
-    element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
     rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
@@ -172,25 +172,25 @@ def incluirProcesso(urlPage, df):
     time.sleep(4)
     # Grupo Local trâmite
     if (df['localTr'] != ''):
-        element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 30, 1, 'show')
+        element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 1, 'show')
         # element.click()
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
         rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
     time.sleep(4)        
-    element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
     rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
     time.sleep(4)
     # Comarca
-    element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
     rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
     time.sleep(4)
     # UF
-    element = rf.waitinstance(driver, '//*[@id="txtUf"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
     rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
@@ -198,10 +198,10 @@ def incluirProcesso(urlPage, df):
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
-    comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 30, 1, 'show')
+    comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
     comboResponsavel.click()  # clica e abre as opções
     
-    element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 30, 1, 'show')
+    element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
     time.sleep(0.5)
     element.click() # seleciona o item desejado
     rf.createLog(arquivo, "--- selecionando o responsável: {}".format(df['responsavel']))
@@ -218,17 +218,17 @@ def incluirProcesso(urlPage, df):
     rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
     time.sleep(4)
     # Abre a aba Parte Adversa
-    element = rf.waitinstance(driver, "//*[@id='div_menu17']", 30, 1, 'show')
+    element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
     element.click()
     rf.createLog(arquivo, "--- Abrindo aba - Parte adversa")
 
     # Parte Adversa
-    element = rf.waitinstance(driver, '//*[@id="txtNome"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
     element.send_keys(str(df['adversa']))
     rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
     
     # Botão salvar
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click() 
     rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
@@ -317,11 +317,11 @@ def uploadFile():
 
     #Botão salvar
     time.sleep(6)  
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click()
     # POP UP (OK)
     time.sleep(2)  
-    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
     element.click()
 
 def pesquisarPasta(pasta):
@@ -331,17 +331,17 @@ def pesquisarPasta(pasta):
     driver.get(urlPage)
 
     # selecionar opção pesquisa por pasta
-    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 30, 1, 'show')
+    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
 
     # buscando pasta
-    element = rf.waitinstance(driver, "txtPesquisa", 30, 1, 'show', 'id')
+    element = rf.waitinstance(driver, "txtPesquisa", 1, 'show', 'id')
     element.send_keys(pasta)
     driver.find_element_by_id("btnPesquisar").click()
     
     # SELECIONA O CLIENTE PESQUISADO
     time.sleep(3)
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 30, 1, 'click')
+    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     element.click()
 
 # TODO ADD FUNCÕES DE PESQUISA EM ROBOT_FUNCTIONS: COLOCAR OPÇÃO PARA PESQUISA

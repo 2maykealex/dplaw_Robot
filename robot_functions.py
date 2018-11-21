@@ -109,7 +109,7 @@ def acessToIntegra(arquivo, driver):
     driver.get('http://www.integra.adv.br/')
 
     # realizando o login no sistema
-    element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
+    element = waitinstance(driver, "login_email", 1, 'show', 'id')
     element.send_keys("robo@dplaw.com.br")
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     driver.execute_script("document.getElementById('login_senha').value='dplaw00612' ")
@@ -131,12 +131,12 @@ def acessToPJE(arquivo, driver):
     driver.get('http://www.pje.jus.br/navegador/')        
 
     # selecionando o estado
-    element = waitinstance(driver, "/html/body/div[3]/div/div[1]/select", 30, 1, 'show')
+    element = waitinstance(driver, "/html/body/div[3]/div/div[1]/select", 1, 'show')
     select = Select(element)
     select.select_by_visible_text(str('Rondônia'))
 
     # selecionando o Tribunal
-    element = waitinstance(driver, "/html/body/div[3]/div/div[2]/select", 30, 1, 'show')
+    element = waitinstance(driver, "/html/body/div[3]/div/div[2]/select", 1, 'show')
     select = Select(element)
     select.select_by_visible_text(str('TJRO - 1º grau'))
 
@@ -154,7 +154,7 @@ def acessToPJE(arquivo, driver):
 
 
     # # realizando o login no sistema
-    # element = waitinstance(driver, "login_email", 30, 1, 'show', 'id')
+    # element = waitinstance(driver, "login_email", 1, 'show', 'id')
     # element.send_keys('robo@dplaw.com.br')
     # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     
