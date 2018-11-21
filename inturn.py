@@ -379,6 +379,7 @@ if (os.path.exists(logsPath) == False):
 arquivo = open(logFile, 'w+')
 
 driver = rf.iniciaWebdriver(False)
+driver1 = rf.iniciaWebdriver(False)
 rf.acessToIntegra(arquivo, driver)
 
 if (selectedFile-1 < 0):
