@@ -16,6 +16,9 @@ import pyexcel as pe
 import os
 import time
 
+def waitForElement(driver, element):
+    return driver.find_element_by_id(element)
+
 def checkElement(driver, element):
     print('checando o elemento {}'.format(element))
     while True:
