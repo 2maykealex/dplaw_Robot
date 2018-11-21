@@ -100,6 +100,7 @@ def enviaParametros(volumetriaMes):
         pesquisarPasta(pasta)
         log  =  "Acessando a pasta {}".format(pasta)
         rf.createLog(arquivo, log)
+        print("\nLinha => {}".format(item))
         inserirVolumetria(volumetriaMes, pasta)
         item = item + 1
 
