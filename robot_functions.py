@@ -16,8 +16,58 @@ import pyexcel as pe
 import os
 import time
 
-def waitForElement(driver, element):
-    return driver.find_element_by_id(element)
+def waitinstance(browser, object, poll, type, form = 'xpath'):
+    timeOut = 300
+
+    if type == 'click':
+        if form == 'xpath':
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
+            return element
+        elif form == 'id':
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
+            return element
+    elif type == 'show':
+        if form == 'xpath':
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
+            return element
+        elif form == 'id':
+            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                    ignored_exceptions=[NoSuchElementException,
+                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
+            return element
+
+def iniciaWebdriver(modSilent = False):
+    # acessando diretório do webdriver do chrome
+    #dirpath = os.path.dirname(os.path.realpath(__file__))
+    dirpath = '/usr/bin'
+    chromepath = dirpath + '/chromedriver'
+    # print(chromepath)
+
+    chrome_options = webdriver.ChromeOptions()
+    # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
+    # chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--no-sandbox')
+
+    if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
+        chrome_options.add_argument('--headless')
+
+    # chrome_options.add_argument('--hide-scrollbars')
+    # chrome_options.add_argument("--log-level=3")
+        
+    slow = False # True - Internet Lenta  / False - Internet normal
+
+    if (slow):
+        chrome_options.add_argument("--disable-application-cache")
+    
+    driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
+    slowInternet(driver, slow)    
+    return driver
 
 def checkElement(driver, element):
     print('checando o elemento {}'.format(element))
@@ -51,57 +101,6 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
         latency=3,  # additional latency (ms)
         download_throughput= 50 * 1024,  # maximal throughput
         upload_throughput= 50 * 1024)  # maximal throughput
-
-def iniciaWebdriver(modSilent = False):
-    # acessando diretório do webdriver do chrome
-    #dirpath = os.path.dirname(os.path.realpath(__file__))
-    dirpath = '/usr/bin'
-    chromepath = dirpath + '/chromedriver'
-    # print(chromepath)
-
-    chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
-    # chrome_options.add_argument('--disable-gpu')
-    chrome_options.add_argument('--no-sandbox')
-
-    if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
-        chrome_options.add_argument('--headless')
-
-    # chrome_options.add_argument('--hide-scrollbars')
-    # chrome_options.add_argument("--log-level=3")
-        
-    slow = False # True - Internet Lenta  / False - Internet normal
-
-    if (slow):
-        chrome_options.add_argument("--disable-application-cache")
-    
-    driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
-    slowInternet(driver, slow)    
-    return driver
-
-def waitinstance(browser, object, timeOut, poll, type, form = 'xpath'):
-    if type == 'click':
-        if form == 'xpath':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
-            return element
-    elif type == 'show':
-        if form == 'xpath':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
-            return element
 
 def acessToIntegra(arquivo, driver):
     # acessando a primeira página do sistema promad    
