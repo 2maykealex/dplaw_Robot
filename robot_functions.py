@@ -53,7 +53,7 @@ def iniciaWebdriver(modSilent = False):
     # acessando diretório do webdriver do chrome
     #dirpath = os.path.dirname(os.path.realpath(__file__))
     dirpath = '/usr/bin'
-    chromepath = dirpath + '/chromedriver'
+    chromepath = dirpath + '/folders'
     # print(chromepath)
 
     chrome_options = webdriver.ChromeOptions()
