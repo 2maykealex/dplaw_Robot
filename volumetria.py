@@ -35,20 +35,23 @@ def inserirVolumetria(volumetriaMes, pasta):
 
     element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
 
+    time.sleep(3) 
+
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
 
         # volumetriaMes = "Volum.2018.05"
+        time.sleep(2) 
 
         element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 30, 1, 'show')
         print(volumetriaMes)
         # element.send_keys('')
         # element.send_keys(volumetriaMes)
 
-        time.sleep(3)
+        time.sleep(2)
         driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
-        time.sleep(1)
+        time.sleep(2)
 
         # checando se o elemento CNJ está preenchido
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 30, 1, 'show', 'xpath')
@@ -56,6 +59,7 @@ def inserirVolumetria(volumetriaMes, pasta):
             # Segredo de Justiça  #por padrão, será marcado não
             element = driver.find_element_by_id("segredoJusticaN")
             driver.execute_script("arguments[0].click();", element)
+            time.sleep(2) 
             
             # element = rf.waitinstance(driver, 'segredoJusticaN', 30, 1, 'show', 'id')
             # element.click()
@@ -64,18 +68,19 @@ def inserirVolumetria(volumetriaMes, pasta):
             time.sleep(3)
             element = driver.find_element_by_id("capturarAndamentosS")
             driver.execute_script("arguments[0].click();", element)
+            time.sleep(2) 
 
             # element = rf.waitinstance(driver, 'capturarAndamentosS', 30, 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
             # element.click()
             rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
-        time.sleep(2)
+        time.sleep(4)
         element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 30, 1, 'show')
         element.click()
 
         # SALVAR ALTERAÇÃO
-        time.sleep(2)
+        time.sleep(4)
         element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 30, 1, 'show')
         element.click() 
     else:
