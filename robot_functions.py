@@ -17,7 +17,7 @@ import os
 import time
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
-    timeOut = 300
+    timeOut = 30
 
     if type == 'click':
         if form == 'xpath':
