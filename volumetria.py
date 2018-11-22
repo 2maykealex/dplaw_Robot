@@ -91,6 +91,9 @@ def inserirVolumetria(volumetriaMes, pasta):
         element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'popup_ok'))
         element.click() 
+        rf.createLog(arquivo, "--- Salvando alterações na pasta {}".format(pasta))
+        time.sleep(1)
+
     else:
         log = "A pasta {} já está com a volumetria correspondente preenchida! ******".format(pasta)
         rf.createLog(arquivo, log)
