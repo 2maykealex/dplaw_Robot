@@ -84,10 +84,10 @@ def enviaParametros(volumetriaMes):
 
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
+        print("\nLinha => {}".format(item))
         pesquisarPasta(pasta)
         log  =  "Acessando a pasta {}".format(pasta)
         rf.createLog(arquivo, log)
-        print("\nLinha => {}".format(item))
         inserirVolumetria(volumetriaMes, pasta)
         item = item + 1
 
