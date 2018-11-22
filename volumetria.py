@@ -33,8 +33,8 @@ def pesquisarPasta(pasta = '01700117977'):
 
 def inserirVolumetria(volumetriaMes, pasta):
 
-    element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
-    # element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
+    # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
+    element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
 
     # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'txtCampoLivre3'))
 
@@ -80,10 +80,10 @@ def inserirVolumetria(volumetriaMes, pasta):
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
+        element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
         # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-        element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
         # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'btnSalvar'))
-        # element.click()
+        element.click()
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
