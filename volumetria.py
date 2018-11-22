@@ -15,16 +15,16 @@ def pesquisarPasta(pasta = '01700117977'):
     # selecionar opção pesquisa por pasta
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
-
-    # buscando pasta
-    # element = rf.waitinstance(driver, "txtPesquisa", 1, 'show', 'id')
-    # element.send_keys(pasta)
-    
     time.sleep(1)
+    
+    # buscando pasta    
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
     time.sleep(1)
 
     driver.find_element_by_id("btnPesquisar").click()
+    log = "Pesquisando pela pasta '{}' ".format(pasta)
+    rf.createLog(arquivo, log)
+
     
     # SELECIONA O CLIENTE PESQUISADO
     time.sleep(3)
@@ -33,63 +33,39 @@ def pesquisarPasta(pasta = '01700117977'):
 
 def inserirVolumetria(volumetriaMes, pasta):
 
-    # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
-
-    # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'txtCampoLivre3'))
-
-    # time.sleep(3) 
 
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
-
         time.sleep(2) 
-
-        # element = rf.waitinstance(driver, '//*[@id="txtCampoLivre3"]', 1, 'show')
 
         driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
         time.sleep(2)
 
         # checando se o elemento CNJ está preenchido
-        # element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
         element = rf.waitinstance(driver, 'txtNroCnj', 1, 'show', 'id')
-        # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'txtNroCnj'))
         if (element.get_attribute("value") != ''):
             # Segredo de Justiça  #por padrão, será marcado não
-            # element = driver.find_element_by_id("segredoJusticaN")
             element = rf.waitinstance(driver, 'segredoJusticaN', 1, 'show', 'id')
-            # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'segredoJusticaN'))
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
-            
-            # element = rf.waitinstance(driver, 'segredoJusticaN', 1, 'show', 'id')
-            # element.click()
             rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
-
             time.sleep(2)
-            # element = driver.find_element_by_id("capturarAndamentosS")
-            # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'capturarAndamentosS'))
+
             element = rf.waitinstance(driver, 'capturarAndamentosS', 1, 'show', 'id')
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
-
-            # element = rf.waitinstance(driver, 'capturarAndamentosS', 1, 'show', 'id')  #só funciona com o browser visivel e maximizado
-            # element.click()
             rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
         element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
-        # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-        # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'btnSalvar'))
         element.click()
 
-        # SALVAR ALTERAÇÃO
+        # SALVAR ALTERAÇÃO - POP_UP
         time.sleep(2)
-        # element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
         element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
-        # element = rf.WebDriverWait(driver, 300).until(rf.waitForElement(driver, 'popup_ok'))
         element.click() 
         rf.createLog(arquivo, "--- Salvando alterações na pasta {}".format(pasta))
         time.sleep(1)
