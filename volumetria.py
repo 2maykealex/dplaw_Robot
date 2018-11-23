@@ -32,14 +32,11 @@ def pesquisarPasta(pasta):
         element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
         return False
     except:
-        print('---')    
         # SELECIONA O CLIENTE PESQUISADO
         time.sleep(3)    
         element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
         element.click()
         return True
-
-
 
 def inserirVolumetria(volumetriaMes, pasta):
 
@@ -52,8 +49,8 @@ def inserirVolumetria(volumetriaMes, pasta):
     if (element.value_of_css_property('display') == 'block'):
         driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
-    element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
 
+    element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
     if (element.get_attribute('value') ==  ''):
         log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         rf.createLog(arquivo, log)
