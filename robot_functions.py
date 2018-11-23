@@ -18,31 +18,40 @@ import platform
 import time
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
-    timeOut = 30
+    timeOut = 60 #segundos
 
-    if type == 'click':
-        if form == 'xpath':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
-            return element
-    elif type == 'show':
-        if form == 'xpath':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
-            return element
-        elif form == 'id':
-            element = WebDriverWait(browser, timeOut, poll_frequency = poll,
-                                    ignored_exceptions=[NoSuchElementException,
-                                    ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
-            return element
+    count = 1
+    
+    while (count < 10):
 
+        try:
+
+            if type == 'click':
+                if form == 'xpath':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
+                    # return element
+                elif form == 'id':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
+                    # return element
+            elif type == 'show':
+                if form == 'xpath':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
+                    # return element
+                elif form == 'id':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
+            return element
+        except:
+            count = count + 1
+            print('Elemento ainda não foi encontrado!')
+    
 def iniciaWebdriver(modSilent = False):
 
     sistemaOperacional = platform.system()
