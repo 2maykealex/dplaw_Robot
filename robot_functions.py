@@ -14,6 +14,7 @@ import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
 import pyexcel as pe
 import os
+import platform
 import time
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
@@ -43,11 +44,18 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
             return element
 
 def iniciaWebdriver(modSilent = False):
-    # acessando diretório do webdriver do chrome
-    #dirpath = os.path.dirname(os.path.realpath(__file__))
-    dirpath = '/usr/bin'
-    chromepath = dirpath + '/chromedriver'
-    # print(chromepath)
+
+    sistemaOperacional = platform.system()
+
+    if (sistemaOperacional == 'Windows'):
+        # acessando diretório do webdriver do chrome no WINDOWS
+        dirpath = os.path.dirname(os.path.realpath(__file__))
+        chromepath = dirpath + '/chromedriver.exe'
+    elif (sistemaOperacional == 'Linux'):
+        # acessando diretório do webdriver do chrome no LINUX
+        dirpath = '/usr/bin'
+        chromepath = dirpath + '/chromedriver'
+    
 
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
