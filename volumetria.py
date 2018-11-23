@@ -6,7 +6,7 @@ import time
 import glob
 import robot_functions as rf
 
-def pesquisarPasta(pasta = '01700117977'):
+def pesquisarPasta(pasta):
     
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
@@ -25,13 +25,32 @@ def pesquisarPasta(pasta = '01700117977'):
     log = "Pesquisando pela pasta '{}' ".format(pasta)
     rf.createLog(arquivo, log)
 
-    
-    # SELECIONA O CLIENTE PESQUISADO
-    time.sleep(3)
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-    element.click()
+    time.sleep(3)    
+    # element = rf.waitinstance(driver, '//*[@id="loopVazio"]', 1, 'show')
+
+    try:
+        element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
+        return False
+    except:
+        print('---')    
+        # SELECIONA O CLIENTE PESQUISADO
+        time.sleep(3)    
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
+        element.click()
+        return True
+
+
 
 def inserirVolumetria(volumetriaMes, pasta):
+
+    element = rf.waitinstance(driver, 'backgroundPopup', 1, 'show', 'id')
+
+    if (element.value_of_css_property('display') == 'block'):
+        driver.execute_script("$('#backgroundPopup').css('display', 'none');") # torna elemento visível
+
+    element = rf.waitinstance(driver, 'carregando', 1, 'show', 'id')
+    if (element.value_of_css_property('display') == 'block'):
+        driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
 
@@ -85,10 +104,13 @@ def enviaParametros(volumetriaMes):
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
         print("\nLinha => {}".format(item))
-        pesquisarPasta(pasta)
-        log  =  "Acessando a pasta {}".format(pasta)
-        rf.createLog(arquivo, log)
-        inserirVolumetria(volumetriaMes, pasta)
+        if (pesquisarPasta(pasta) == True):
+            log  =  "Acessando a pasta {}".format(pasta)
+            rf.createLog(arquivo, log)
+            inserirVolumetria(volumetriaMes, pasta)
+        else:
+            log  =  "========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(pasta)
+            rf.createLog(arquivo, log)
         item = item + 1
 
 
