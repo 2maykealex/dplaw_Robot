@@ -92,6 +92,7 @@ def inserirVolumetria(volumetriaMes, pasta):
         time.sleep(1)
        
 def enviaParametros(volumetriaMes):
+    print('\n')
     log = ">>>>>>>>> ACESSANDO ARQUIVO {}.xlsx".format(volumetriaMes)
     rf.createLog(arquivo, log)
     dfExcel = rf.abreArquivo(volumetriaMes)
@@ -100,7 +101,7 @@ def enviaParametros(volumetriaMes):
 
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
-        print("\nLinha => {}".format(item))
+        print("\nLinha => {} do ARQUIVO {}.xlsx".format(item, volumetriaMes))
         if (pesquisarPasta(pasta) == True):
             log  =  "Acessando a pasta {}".format(pasta)
             rf.createLog(arquivo, log)
