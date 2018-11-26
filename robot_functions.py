@@ -119,10 +119,10 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
         download_throughput= 50 * 1024,  # maximal throughput
         upload_throughput= 50 * 1024)  # maximal throughput
 
-def acessToIntegra(arquivo, driver):
+def acessToIntegra(driver):
     # acessando a primeira página do sistema promad    
     driver.maximize_window()
-    createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
+    # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
 
     # realizando o login no sistema
@@ -131,7 +131,7 @@ def acessToIntegra(arquivo, driver):
     # TODO ADD USUÁRIO E SENHA DE QUEM VAI UTILIZAR O SCRIPT
     driver.execute_script("document.getElementById('login_senha').value='dplaw00612' ")
     time.sleep(1)
-    createLog(arquivo, 'FAZENDO LOGIN NO SITE')
+    # createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     element = driver.find_element_by_tag_name('button')
     element.click()
     
