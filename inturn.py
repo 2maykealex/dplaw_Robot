@@ -349,10 +349,13 @@ def pesquisarPasta(pasta):
 #============================PROGRAMA PRINCIPAL==============================
 
 path     = os.getcwd() + "/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-logsPath = os.getcwd() + "/logs"
+logsPath = os.getcwd() + "/logs/abertura_pastas"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
+
+if (os.path.exists(logsPath) == False):
+    os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado - 
 
 os.chdir(path) # seleciona o diretório do script
 

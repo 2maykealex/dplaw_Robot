@@ -116,10 +116,13 @@ def enviaParametros(volumetriaMes):
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 
 path = os.getcwd() + "/volumetrias" # obtem o caminho do script e add a pasta volumetrias
-logsPath = os.getcwd() + "/logs"
+logsPath = os.getcwd() + "/logs/volumetrias"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 
+
+if (os.path.exists(logsPath) == False):
+    os.mkdir(logsPath)   # Se o diretório \logs\Volumetrias não existir, será criado - 
 
 os.chdir(path) # seleciona o diretório do script
 
