@@ -126,47 +126,52 @@ if (os.path.exists(logsPath) == False):
 
 os.chdir(path) # seleciona o diretório do script
 
-print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
-files =  []
-print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
-print('-------------------------------------------')
-for file in glob.glob("*.xlsx"):
+
+
+while True:
+    # print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
+    files =  []
+    # print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
     # print('-------------------------------------------')
-    files.append(file)
-    print(len(files), ' => ', files[-1])    
-print('-------------------------------------------')
+    for file in glob.glob("*.xlsx"):
+        
+        files.append(file)
+        print(len(files), ' => ', files[-1])    
+        
+    if (files):
+        print('-------------- NOVOS ARQUIVOS ENCONTRADOS --------------')
+        driver = rf.iniciaWebdriver(False)
+        print('\n')
+        rf.acessToIntegra(driver)
 
-selectedFile = int(input('Digite sua opção: '))
+        for file in files:
+            volumetriaMes = file
+            volumetriaMes = volumetriaMes[:-5]
+            
+            logFile = logsPath + "/_log_{}.txt".format(volumetriaMes)
+            
+            if (os.path.isfile(logFile)):
+                arquivoOriginal = open(logFile, 'r')  
+                arquivo = open(logFile, 'w+')  
+                for linha in arquivoOriginal:
+                    print(linha, '\n')
+                    arquivo.append(linha)
+                rf.createLog(arquivo, '_____________CONTINUANDO A PARTIR DE OUTRA EXECUÇÃO______________')
+            else:
+                arquivo = open(logFile, 'w+')
+                rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
+            print('\n\n\n')
+            
+            
+            enviaParametros(volumetriaMes)
 
-hoje = "%s" % (time.strftime("%Y_%m_%d"))
-hora = time.strftime("%H:%M:%S")
-horaStr = hora.replace(':', '-')
-logFile = logsPath + "/_{}_{}_log_volumetrias.txt".format(hoje, horaStr)
+            rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
+            rf.createLog(arquivo, '_________________________________________________________________')
+            arquivo.close()
 
-if (os.path.exists(logsPath) == False):
-    os.mkdir(logsPath)   # Se o diretório Logs não existir, será criado
-
-arquivo = open(logFile, 'w+')
-
-print('\n\n\n')
-rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
-
-driver = rf.iniciaWebdriver(False)
-print('\n')
-rf.acessToIntegra(arquivo, driver)
-
-if (selectedFile-1 < 0):
-    # opção 0 selecionada
-    for file in files:
-        volumetriaMes = file
-        volumetriaMes = volumetriaMes[:-5]
-        enviaParametros(volumetriaMes)
-else:
-    volumetriaMes = files[selectedFile -1]
-    volumetriaMes = volumetriaMes[:-5]
-    enviaParametros(volumetriaMes)
-
-rf.createLog(arquivo, '> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! SCRIPT ENCERRADO!')
-rf.createLog(arquivo, '_________________________________________________________________')
-arquivo.close()
-rf.logoutIntegra(driver)
+        print('\n> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! O WEBDRIVER SERÁ ENCERRADO!')
+        print('_________________________________________________________________')
+        
+        rf.logoutIntegra(driver)
+    time.sleep(5)
+    print('proxima verificação')
