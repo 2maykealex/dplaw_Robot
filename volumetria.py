@@ -22,8 +22,8 @@ def pesquisarPasta(pasta):
     time.sleep(1)
 
     driver.find_element_by_id("btnPesquisar").click()
-    log = "Pesquisando pela pasta '{}' ".format(pasta)
-    rf.createLog(arquivo, log)
+    # log = "Pesquisando pela pasta '{}' ".format(pasta)
+    # rf.createLog(arquivo, log)
 
     time.sleep(3)    
     # element = rf.waitinstance(driver, '//*[@id="loopVazio"]', 1, 'show')
@@ -38,7 +38,7 @@ def pesquisarPasta(pasta):
         element.click()
         return True
 
-def inserirVolumetria(volumetriaMes, pasta):
+def inserirVolumetria(volumetriaMes, pasta, registro):
 
     element = rf.waitinstance(driver, 'backgroundPopup', 1, 'show', 'id')
 
@@ -49,11 +49,10 @@ def inserirVolumetria(volumetriaMes, pasta):
     if (element.value_of_css_property('display') == 'block'):
         driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
-
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
     if (element.get_attribute('value') ==  ''):
-        log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
-        rf.createLog(arquivo, log)
+        # log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
+        # rf.createLog(arquivo, log)
         time.sleep(2) 
 
         driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
@@ -66,13 +65,13 @@ def inserirVolumetria(volumetriaMes, pasta):
             element = rf.waitinstance(driver, 'segredoJusticaN', 1, 'show', 'id')
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
-            rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
-            time.sleep(2)
+            # rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
+            # time.sleep(2)
 
             element = rf.waitinstance(driver, 'capturarAndamentosS', 1, 'show', 'id')
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
-            rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
+            # rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
@@ -83,32 +82,34 @@ def inserirVolumetria(volumetriaMes, pasta):
         time.sleep(2)
         element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
         element.click() 
-        rf.createLog(arquivo, "--- Salvando alterações na pasta {}".format(pasta))
+        rf.createLog(arquivo, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
         time.sleep(1)
 
     else:
-        log = "A pasta {} já está com a volumetria correspondente preenchida! ******".format(pasta)
+        log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! ******".format(registro, pasta)
         rf.createLog(arquivo, log)
         time.sleep(1)
        
-def enviaParametros(volumetriaMes):
+def enviaParametros(volumetriaMes, item = 1):
     print('\n')
-    log = ">>>>>>>>> ACESSANDO ARQUIVO {}.xlsx".format(volumetriaMes)
-    rf.createLog(arquivo, log)
+    # log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(volumetriaMes)
+    # rf.createLog(arquivo, log)
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
-    item = 1
 
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
-        print("\nLinha => {} do ARQUIVO {}.xlsx".format(item, volumetriaMes))
+        # print("\nLinha => {} do ARQUIVO {}.xlsx".format(item, volumetriaMes))
         if (pesquisarPasta(pasta) == True):
-            log  =  "Acessando a pasta {}".format(pasta)
-            rf.createLog(arquivo, log)
-            inserirVolumetria(volumetriaMes, pasta)
+            # log  =  "Acessando a pasta {}".format(pasta)
+            # rf.createLog(arquivo, log)
+            inserirVolumetria(volumetriaMes, pasta, item)            
         else:
-            log  =  "========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(pasta)
+            log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
             rf.createLog(arquivo, log)
+        
+        # log  =  "REGISTRO SALVO: {} ".format(item)
+        # rf.createLog(arquivo, log)
         item = item + 1
 
 
@@ -125,8 +126,6 @@ if (os.path.exists(logsPath) == False):
     os.mkdir(logsPath)   # Se o diretório \logs\Volumetrias não existir, será criado - 
 
 os.chdir(path) # seleciona o diretório do script
-
-
 
 while True:
     # print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
@@ -147,23 +146,44 @@ while True:
         for file in files:
             volumetriaMes = file
             volumetriaMes = volumetriaMes[:-5]
+            lastSaved = 0
             
             logFile = logsPath + "/_log_{}.txt".format(volumetriaMes)
             
             if (os.path.isfile(logFile)):
                 arquivoOriginal = open(logFile, 'r')  
+                conteudo = arquivoOriginal.readlines()
+                count = len(open(logFile).readlines())
+
+                
                 arquivo = open(logFile, 'w+')  
-                for linha in arquivoOriginal:
-                    print(linha, '\n')
-                    arquivo.append(linha)
-                rf.createLog(arquivo, '_____________CONTINUANDO A PARTIR DE OUTRA EXECUÇÃO______________')
+                for linha in conteudo:
+                    arquivo.writelines(linha)
+
+                print('total linhas ', count)
+                enviaParametros(volumetriaMes, count)
+                # text = linha.split(":")
+                # text2 = ""
+                # text2 = text[1]
+                
+                # text3 = text2.strip()
+
+                # print('texto3: ', text3)
+                # numReg = text3[9:]
+                # print('numReg', numReg)
+
+                # rf.createLog(arquivo, '\n_____________CONTINUANDO A PARTIR DE OUTRA EXECUÇÃO______________')
             else:
-                arquivo = open(logFile, 'w+')
-                rf.createLog(arquivo, '______________________ARQUIVO DE LOG CRIADO______________________')
+                arquivo = open(logFile, 'w+')                
+                log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(volumetriaMes)
+                rf.createLog(arquivo, log)
+                enviaParametros(volumetriaMes)
             print('\n\n\n')
             
-            
-            enviaParametros(volumetriaMes)
+            # if (lastSaved == 0):
+            #     enviaParametros(volumetriaMes)
+            # else:
+            #     enviaParametros(volumetriaMes, lastSaved)
 
             rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
             rf.createLog(arquivo, '_________________________________________________________________')
