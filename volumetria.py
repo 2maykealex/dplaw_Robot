@@ -112,6 +112,10 @@ def enviaParametros(volumetriaMes, item = 1):
         # rf.createLog(arquivo, log)
         item = item + 1
 
+    rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
+    rf.createLog(arquivo, '_________________________________________________________________')
+    arquivo.close()
+
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
@@ -127,6 +131,8 @@ if (os.path.exists(logsPath) == False):
 
 os.chdir(path) # seleciona o diretório do script
 
+driverIniciado = False
+
 while True:
     # print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
     files =  []
@@ -138,15 +144,11 @@ while True:
         print(len(files), ' => ', files[-1])    
         
     if (files):
-        print('-------------- NOVOS ARQUIVOS ENCONTRADOS --------------')
-        driver = rf.iniciaWebdriver(False)
-        print('\n')
-        rf.acessToIntegra(driver)
-
+        print('\n-------------- NOVOS ARQUIVOS ENCONTRADOS --------------\n')
+       
         for file in files:
             volumetriaMes = file
             volumetriaMes = volumetriaMes[:-5]
-            lastSaved = 0
             
             logFile = logsPath + "/_log_{}.txt".format(volumetriaMes)
             
@@ -155,43 +157,37 @@ while True:
                 conteudo = arquivoOriginal.readlines()
                 count = len(open(logFile).readlines())
 
-                
                 arquivo = open(logFile, 'w+')  
                 for linha in conteudo:
                     arquivo.writelines(linha)
 
-                print('total linhas ', count)
-                enviaParametros(volumetriaMes, count)
-                # text = linha.split(":")
-                # text2 = ""
-                # text2 = text[1]
-                
-                # text3 = text2.strip()
+                linha = linha[21:]
+                              
+                if (linha == "_________________________________________________________________"): #ultima linha do arquivo
+                    print('O arquivo {}.xlsx já foi executado!')
+                else:                    
+                    if (driverIniciado == False):       
+                        driverIniciado = True 
+                        driver = rf.iniciaWebdriver(False)                        
+                        rf.acessToIntegra(driver)
+                    
+                    enviaParametros(volumetriaMes, count)
 
-                # print('texto3: ', text3)
-                # numReg = text3[9:]
-                # print('numReg', numReg)
-
-                # rf.createLog(arquivo, '\n_____________CONTINUANDO A PARTIR DE OUTRA EXECUÇÃO______________')
             else:
                 arquivo = open(logFile, 'w+')                
                 log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(volumetriaMes)
                 rf.createLog(arquivo, log)
-                enviaParametros(volumetriaMes)
-            print('\n\n\n')
-            
-            # if (lastSaved == 0):
-            #     enviaParametros(volumetriaMes)
-            # else:
-            #     enviaParametros(volumetriaMes, lastSaved)
 
-            rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
-            rf.createLog(arquivo, '_________________________________________________________________')
-            arquivo.close()
+                if (driverIniciado == False):       
+                        driverIniciado = True 
+                        driver = rf.iniciaWebdriver(False)                        
+                        rf.acessToIntegra(driver)
+
+                enviaParametros(volumetriaMes)            
 
         print('\n> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! O WEBDRIVER SERÁ ENCERRADO!')
-        print('_________________________________________________________________')
+        print('_________________________________________________________________\n')
         
         rf.logoutIntegra(driver)
     time.sleep(5)
-    print('proxima verificação')
+    print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
