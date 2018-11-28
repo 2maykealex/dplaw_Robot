@@ -188,9 +188,10 @@ while True:
         print('\nNÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO!')
         print('_________________________________________________________________\n')
         
-        if (driverIniciado == True):  
-            driverIniciado == False
-            rf.logoutIntegra(driver)
+    # if (driverIniciado == True):  
+    #     driverIniciado == False
+    #     rf.logoutIntegra(driver)
+
 
     time.sleep(5)
     print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
