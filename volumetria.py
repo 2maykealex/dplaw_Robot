@@ -189,8 +189,9 @@ while True:
         print('_________________________________________________________________\n')
         
         if (driverIniciado == True):  
+            driverIniciado == False
             rf.logoutIntegra(driver)
-            
+
     time.sleep(5)
     print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
     time.sleep(3)
