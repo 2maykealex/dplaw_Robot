@@ -67,15 +67,15 @@ def iniciaWebdriver(modSilent = False):
     
 
     chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
-    # chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
+    chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
 
     if (modSilent == True):                   # Modo Silencioso: O Navegador fica oculto
         chrome_options.add_argument('--headless')
 
-    # chrome_options.add_argument('--hide-scrollbars')
-    # chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument('--hide-scrollbars')
+    chrome_options.add_argument("--log-level=3")
         
     slow = False # True - Internet Lenta  / False - Internet normal
 
