@@ -114,6 +114,7 @@ def enviaParametros(volumetriaMes, item = 1):
 
     rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
     rf.createLog(arquivo, '_________________________________________________________________')
+    arquivo.writelines('FIM')
     arquivo.close()
 
 
@@ -160,11 +161,10 @@ while True:
                 arquivo = open(logFile, 'w+')  
                 for linha in conteudo:
                     arquivo.writelines(linha)
-
-                linha = linha[21:]
                               
-                if (linha == "_________________________________________________________________"): #ultima linha do arquivo
-                    print('O arquivo {}.xlsx já foi executado!')
+                if (linha == "FIM"): #ultima linha do arquivo
+                    print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
+                    print('________________________________________________________________________________\n')
                 else:                    
                     if (driverIniciado == False):       
                         driverIniciado = True 
@@ -179,15 +179,18 @@ while True:
                 rf.createLog(arquivo, log)
 
                 if (driverIniciado == False):       
-                        driverIniciado = True 
-                        driver = rf.iniciaWebdriver(False)                        
-                        rf.acessToIntegra(driver)
+                    driverIniciado = True 
+                    driver = rf.iniciaWebdriver(False)                        
+                    rf.acessToIntegra(driver)
 
                 enviaParametros(volumetriaMes)            
 
-        print('\n> > > NÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO! O WEBDRIVER SERÁ ENCERRADO!')
+        print('\nNÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO!')
         print('_________________________________________________________________\n')
         
-        rf.logoutIntegra(driver)
+        if (driverIniciado == True):  
+            rf.logoutIntegra(driver)
+            
     time.sleep(5)
     print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
+    time.sleep(3)
