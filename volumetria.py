@@ -87,6 +87,7 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
         time.sleep(1)
 
     else:
+        print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
         log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! ******".format(registro, pasta)
         rf.createLog(arquivo, log)
         time.sleep(1)
