@@ -52,7 +52,7 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
     if (element.get_attribute('value') ==  ''):
         # log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
-        print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX".format(volumetriaMes, pasta, volumetriaMes))
+        print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(volumetriaMes, pasta, volumetriaMes))
         # rf.createLog(arquivo, log)
         time.sleep(2) 
 
@@ -106,6 +106,7 @@ def enviaParametros(volumetriaMes, item = 1):
             # rf.createLog(arquivo, log)
             inserirVolumetria(volumetriaMes, pasta, item)            
         else:
+            print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
             log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
             rf.createLog(arquivo, log)
         
