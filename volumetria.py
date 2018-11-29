@@ -52,6 +52,7 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
     if (element.get_attribute('value') ==  ''):
         # log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
+        print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX".format(volumetriaMes, pasta, volumetriaMes))
         # rf.createLog(arquivo, log)
         time.sleep(2) 
 
