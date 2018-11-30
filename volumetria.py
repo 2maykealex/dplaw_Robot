@@ -142,8 +142,7 @@ while True:
     files =  []
     # print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
     # print('-------------------------------------------')
-    for file in glob.glob("*.xlsx"):
-        
+    for file in glob.glob("*.xlsx"):        
         files.append(file)
         print(len(files), ' => ', files[-1])    
         
@@ -160,6 +159,7 @@ while True:
                 arquivoOriginal = open(logFile, 'r')  
                 conteudo = arquivoOriginal.readlines()
                 count = len(open(logFile).readlines())
+                linha = ""
 
                 arquivo = open(logFile, 'w+')  
                 for linha in conteudo:
