@@ -36,6 +36,10 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
                     element = WebDriverWait(browser, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
+                elif form == 'class':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.CLASS_NAME, object)))
                     # return element
             elif type == 'show':
                 if form == 'xpath':
@@ -47,6 +51,10 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
                     element = WebDriverWait(browser, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
+                elif form == 'class':
+                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                                            ignored_exceptions=[NoSuchElementException,
+                                            ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.CLASS_NAME, object)))
             return element
         except:
             count = count + 1
