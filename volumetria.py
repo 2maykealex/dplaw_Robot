@@ -22,11 +22,7 @@ def pesquisarPasta(pasta):
     time.sleep(1)
 
     driver.find_element_by_id("btnPesquisar").click()
-    # log = "Pesquisando pela pasta '{}' ".format(pasta)
-    # rf.createLog(arquivo, log)
-
     time.sleep(3)    
-    # element = rf.waitinstance(driver, '//*[@id="loopVazio"]', 1, 'show')
 
     try:
         element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
@@ -51,9 +47,7 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
 
     element = rf.waitinstance(driver, 'txtCampoLivre3', 1, 'show', 'id')
     if (element.get_attribute('value') ==  ''):
-        # log = "Preenchendo com '{}' na pasta {}".format(volumetriaMes, pasta)
         print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(volumetriaMes, pasta, volumetriaMes))
-        # rf.createLog(arquivo, log)
         time.sleep(2) 
 
         driver.execute_script("document.getElementById('txtCampoLivre3').value='{}' ".format(volumetriaMes) )
@@ -65,14 +59,11 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
             # Segredo de Justiça  #por padrão, será marcado não
             element = rf.waitinstance(driver, 'segredoJusticaN', 1, 'show', 'id')
             driver.execute_script("arguments[0].click();", element)
-            time.sleep(2) 
-            # rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
-            # time.sleep(2)
+            time.sleep(2)
 
             element = rf.waitinstance(driver, 'capturarAndamentosS', 1, 'show', 'id')
             driver.execute_script("arguments[0].click();", element)
             time.sleep(2) 
-            # rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
@@ -94,32 +85,23 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
        
 def enviaParametros(volumetriaMes, item = 1):
     print('\n')
-    # log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(volumetriaMes)
-    # rf.createLog(arquivo, log)
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
 
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
-        # print("\nLinha => {} do ARQUIVO {}.xlsx".format(item, volumetriaMes))
         if (pesquisarPasta(pasta) == True):
-            # log  =  "Acessando a pasta {}".format(pasta)
-            # rf.createLog(arquivo, log)
             inserirVolumetria(volumetriaMes, pasta, item)            
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
             log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
             rf.createLog(arquivo, log)
         
-        # log  =  "REGISTRO SALVO: {} ".format(item)
-        # rf.createLog(arquivo, log)
         item = item + 1
 
-    rf.createLog(arquivo, '> > > NÃO HÁ MAIS REGISTROS NO ARQUIVO {}.xlsx! FECHANDO ESTE ARQUIVO!'.format(volumetriaMes))
     rf.createLog(arquivo, '_________________________________________________________________')
     arquivo.writelines('FIM')
     arquivo.close()
-
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
@@ -138,16 +120,13 @@ os.chdir(path) # seleciona o diretório do script
 driverIniciado = False
 
 while True:
-    # print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
+
     files =  []
-    # print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "VOLUMETRIAS" ')
-    # print('-------------------------------------------')
+    
     for file in glob.glob("*.xlsx"):        
         files.append(file)
-        print(len(files), ' => ', files[-1])    
         
     if (files):
-        print('\n-------------- NOVOS ARQUIVOS ENCONTRADOS --------------\n')
        
         for file in files:
             volumetriaMes = file
@@ -167,14 +146,16 @@ while True:
                               
                 if (linha == "FIM"): #ultima linha do arquivo
                     print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
-                    print('________________________________________________________________________________\n')
-                else:                    
+                    
+                else:                          # continua o preenchimento do log já existente 
                     if (driverIniciado == False):       
                         driverIniciado = True 
                         driver = rf.iniciaWebdriver(False)                        
                         rf.acessToIntegra(driver)
                     
                     enviaParametros(volumetriaMes, count)
+                
+                arquivoOriginal.close()
 
             else:
                 arquivo = open(logFile, 'w+')                
@@ -186,16 +167,18 @@ while True:
                     driver = rf.iniciaWebdriver(False)                        
                     rf.acessToIntegra(driver)
 
-                enviaParametros(volumetriaMes)            
+                enviaParametros(volumetriaMes)
 
-        print('\nNÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO!')
-        print('_________________________________________________________________\n')
+            arquivo.close()
+
+        # print('\nNÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO!')
+        # print('_________________________________________________________________\n')
         
-    # if (driverIniciado == True):  
-    #     driverIniciado == False
-    #     rf.logoutIntegra(driver)
+    if (driverIniciado == True):  
+        driverIniciado = False
+        rf.logoutIntegra(driver)
 
 
-    time.sleep(5)
+    time.sleep(3)
     print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
     time.sleep(3)
