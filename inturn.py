@@ -236,8 +236,8 @@ def incluirProcesso(urlPage, df, registro):
     # rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
 
     # Botão salvar
-    # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-    # element.click() 
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
+    element.click() 
     rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
     # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
@@ -404,7 +404,8 @@ while True:
                         driver = rf.iniciaWebdriver(False)                        
                         rf.acessToIntegra(driver)
                     
-                    abrePasta(arquivoAbrirPasta, count)                    
+                    abrePasta(arquivoAbrirPasta, count) 
+
                 arquivoOriginal.close()
 
             else:
@@ -418,6 +419,7 @@ while True:
                     rf.acessToIntegra(driver)
 
                 abrePasta(arquivoAbrirPasta)            
+            
             arquivo.close()
 
     if (driverIniciado == True):       
