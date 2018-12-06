@@ -170,9 +170,6 @@ while True:
                 enviaParametros(volumetriaMes)
 
             arquivo.close()
-
-        # print('\nNÃO HÁ MAIS ARQUIVOS PARA EXECUÇÃO!')
-        # print('_________________________________________________________________\n')
         
     if (driverIniciado == True):  
         driverIniciado = False
