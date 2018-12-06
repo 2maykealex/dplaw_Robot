@@ -108,23 +108,24 @@ def pesquisarCliente(cliente):
     time.sleep(1)
 
     driver.find_element_by_id("btnPesquisar").click()
-    rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
+    # rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
     # rf.checkElement(driver, "#loopVazio")
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(1)
     # SELECIONA O CLIENTE PESQUISADO
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
+    time.sleep(1)
     element.click()
-    rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
-    time.sleep(2)
+    # rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
+    time.sleep(1)
 
-def incluirProcesso(urlPage, df):    
+def incluirProcesso(urlPage, df, registro):    
     # incluindo processo    
     element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
     element.click()
 
-    rf.createLog(arquivo, "Incluindo novo processo para o cliente {}".format(df['razaoSocial']))
+    # rf.createLog(arquivo, "Incluindo novo processo para o cliente {}".format(df['razaoSocial']))
 
     # rf.checkElement(driver, "#aProximo")   #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
 
@@ -132,69 +133,69 @@ def incluirProcesso(urlPage, df):
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
-    rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
+    time.sleep(1)
     if (df['cnj'] != ''):
         #Numero do CNJ
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
         element.clear()
         element.send_keys(str(df['cnj']))
-        rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
+        # rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
 
         # Segredo de Justiça  #por padrão, será marcado não
         element = driver.find_element_by_id("segredoJusticaN")
         driver.execute_script("arguments[0].click();", element)
-        rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
+        # rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
         time.sleep(1)
         element = driver.find_element_by_id("capturarAndamentosS")
         driver.execute_script("arguments[0].click();", element)
-        rf.createLog(arquivo, "--- Marcando SIM em Capturar andamentos")
-    time.sleep(4)
+        # rf.createLog(arquivo, "--- Marcando NÃO em SEGREDO DE JUSTIÇA e SIM em CAPTURAR ANDAMENTOS")
+    time.sleep(1)
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
     element.clear()
     element.send_keys(str(df['numProcesso']))
-    rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
+    time.sleep(1)
     # Status
     element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
-    rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
+    time.sleep(1)
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
     driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
     time.sleep(1)
-    rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
+    time.sleep(1)
     # Grupo Local trâmite
     if (df['localTr'] != ''):
         element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 1, 'show')
         # element.click()
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
-        rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
-    time.sleep(4)        
+        # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
+    time.sleep(1)        
     element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
-    rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
+    time.sleep(1)
     # Comarca
     element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
-    rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
+    time.sleep(1)
     # UF
     element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
-    rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
+    time.sleep(1)
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
@@ -202,45 +203,52 @@ def incluirProcesso(urlPage, df):
     comboResponsavel.click()  # clica e abre as opções
     
     element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
-    time.sleep(0.5)
+    time.sleep(1)
     element.click() # seleciona o item desejado
-    rf.createLog(arquivo, "--- selecionando o responsável: {}".format(df['responsavel']))
+    # rf.createLog(arquivo, "--- preenchendo o responsável: {}".format(df['responsavel']))
 
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
-    time.sleep(4)
+    time.sleep(1)
     # Data da Contratação
     driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
-    rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
+    time.sleep(1)
     # Valor da Causa
     driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
-    rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
-    time.sleep(4)
+    # rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
+    time.sleep(1)
+
+    #Obtém o Num da nova pasta a ser aberta
+    time.sleep(2)
+    element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
+    idNovaPasta = element.get_attribute("innerHTML")
+    idNovaPasta = idNovaPasta[14:].strip()    
+
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
     element.click()
-    rf.createLog(arquivo, "--- Abrindo aba - Parte adversa")
+    # rf.createLog(arquivo, "--- Abrindo aba - Parte adversa")
 
     # Parte Adversa
     element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
     element.send_keys(str(df['adversa']))
-    rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
-    
+    # rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
+
     # Botão salvar
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-    element.click() 
-    rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
+    # element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
+    # element.click() 
+    rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
+    # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
-    time.sleep(6)
+    time.sleep(3)
     driver.get(urlPage)
 
-def abrePasta(arquivoAbrirPasta):
+def abrePasta(arquivoAbrirPasta, item = 1):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
     
     dfExcel = rf.abreArquivo(arquivoAbrirPasta)
     count = dfExcel.number_of_rows()-1
-    item = 1
 
     cliente = ''
     cliente = dfExcel[1, 0]
@@ -282,8 +290,7 @@ def abrePasta(arquivoAbrirPasta):
         df['responsavel']      =  dfExcel[item, 13]
 
         valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-        print(valorCausa)
-        df['vCausa']           =  valorCausa
+        df['vCausa']           =  valorCausa.replace('.',',')
 
         dataContratacao        = (dfExcel[item, 15])
         dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
@@ -291,10 +298,13 @@ def abrePasta(arquivoAbrirPasta):
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
 
-        time.sleep(3)            
-        incluirProcesso(urlPage, df)
+        time.sleep(2)            
+        incluirProcesso(urlPage, df, item)
 
         item = item + 1
+    
+    rf.createLog(arquivo, '_________________________________________________________________')
+    arquivo.writelines('FIM')
 
 def uploadFile():
 
@@ -348,8 +358,8 @@ def pesquisarPasta(pasta):
 
 #============================PROGRAMA PRINCIPAL==============================
 
-path     = os.getcwd() + "/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-logsPath = os.getcwd() + "/logs/abertura_pastas"
+path     = os.getcwd() + "\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
+logsPath = os.getcwd() + "\\logs\\abertura_pastas"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
@@ -359,59 +369,67 @@ if (os.path.exists(logsPath) == False):
 
 os.chdir(path) # seleciona o diretório do script
 
-print('\n========== SELECIONE UMA DAS OPÇÕES ABAIXO ==========\n')
-files =  []
-print('0  =>  EXECUTAR TODOS OS ARQUIVOS DA PASTA  "ABERTURA_PASTAS" ')
-print('-------------------------------------------')
-for file in glob.glob("*.xlsx"):
-    # print('-------------------------------------------')
-    files.append(file)
-    print(len(files), ' => ', files[-1])    
-print('-------------------------------------------')
+driverIniciado = False
 
-selectedFile = int(input('Digite sua opção: '))
+while True:
 
-hoje = "%s" % (time.strftime("%Y_%m_%d"))
-hora = time.strftime("%H:%M:%S")
-horaStr = hora.replace(':', '-')
-logFile = logsPath + "/_{}_{}_log_dplaw_robot.txt".format(hoje, horaStr)
+    files =  []
+    for file in glob.glob("*.xlsx"):
+        files.append(file)
+        # print(len(files), ' => ', files[-1])    
 
-if (os.path.exists(logsPath) == False):
-    os.mkdir(logsPath)   # Se o diretório Logs não existir, será criado
-    
-arquivo = open(logFile, 'w+')
+    if (files):
+     
+        for file in files:
+            arquivoAbrirPasta = file
+            arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+            logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
 
-driver = rf.iniciaWebdriver(False)
-rf.acessToIntegra(arquivo, driver)
+            if (os.path.isfile(logFile)):
+                arquivoOriginal = open(logFile, 'r')  
+                conteudo = arquivoOriginal.readlines()
+                count = len(open(logFile).readlines())
+                linha = ""
 
-if (selectedFile-1 < 0):
-    # opção 0 selecionada
-    for file in files:
-        arquivoAbrirPasta = file
-        rf.createLog(arquivo, '>>>>>>>>> ABRINDO O ARQUIVO {} <<<<<<<<<'.format(arquivoAbrirPasta))
-        arquivoAbrirPasta = arquivoAbrirPasta[:-5]
-        abrePasta(arquivoAbrirPasta)
-else:
-    arquivoAbrirPasta = files[selectedFile -1]
-    arquivoAbrirPasta = arquivoAbrirPasta[:-5]
-    abrePasta(arquivoAbrirPasta)
+                arquivo = open(logFile, 'w+')  
+                for linha in conteudo:
+                    arquivo.writelines(linha)
+                              
+                if (linha == "FIM"): #ultima linha do arquivo
+                    print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
+                    
+                else:                              # continua o preenchimento do log já existente
+                    if (driverIniciado == False):       
+                        driverIniciado = True 
+                        driver = rf.iniciaWebdriver(False)                        
+                        rf.acessToIntegra(driver)
+                    
+                    abrePasta(arquivoAbrirPasta, count)                    
+                arquivoOriginal.close()
 
-# arquivoAbrirPasta = files[selectedFile -1]
-# arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+            else:
+                arquivo = open(logFile, 'w+')      
+                log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(arquivoAbrirPasta.upper())
+                rf.createLog(arquivo, log)
 
-# abrePasta(arquivoAbrirPasta)
+                if (driverIniciado == False):       
+                    driverIniciado = True 
+                    driver = rf.iniciaWebdriver(False)                        
+                    rf.acessToIntegra(driver)
 
-# abrePastaTeste(arquivoAbrirPasta)  #teste para usar o PANDAS
-# pesquisarPasta()
-# uploadFile()
-# rf.getFile(arquivoAbrirPasta)
+                abrePasta(arquivoAbrirPasta)            
+            arquivo.close()
+
+    if (driverIniciado == True):       
+        driverIniciado = False
+        rf.logoutIntegra(driver)
+
+    time.sleep(3)
+    print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
+    time.sleep(3)
+#FIM DO WHILE
 
 
-
-# rf.acessToPJE(arquivo, driver)
-
-
-rf.createLog(arquivo, '>>>>>>>>> SCRIPT ENCERRADO! <<<<<<<<<')
-rf.createLog(arquivo, '_________________________________________________________________')
-arquivo.close()
-rf.logoutIntegra(driver)
+# rf.createLog(arquivo, '>>>>>>>>> SCRIPT ENCERRADO! <<<<<<<<<')
+# rf.createLog(arquivo, '_________________________________________________________________')
+# rf.logoutIntegra(driver)
