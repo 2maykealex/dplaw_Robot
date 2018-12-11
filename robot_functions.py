@@ -142,6 +142,14 @@ def acessToIntegra(driver):
     # createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     element = driver.find_element_by_tag_name('button')
     element.click()
+
+    time.sleep(1)    # Verifica se existe um pop-up no início e o fecha
+    try:    
+        element = waitinstance(driver, "menuvaimudarbtn", 1, 'click', 'id')
+        element.click()
+        print('\nPop-up "MENU VAI MUDAR" fechado!\n')
+    except:
+        pass
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
