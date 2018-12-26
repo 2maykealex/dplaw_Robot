@@ -12,6 +12,8 @@ def pesquisarPasta(pasta):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
     driver.get(urlPage)
 
+    rf.checkPopUps(driver)
+
     # selecionar opção pesquisa por pasta
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
@@ -35,6 +37,8 @@ def pesquisarPasta(pasta):
         return True
 
 def inserirVolumetria(volumetriaMes, pasta, registro):
+
+    rf.checkPopUps(driver)
 
     element = rf.waitinstance(driver, 'backgroundPopup', 1, 'show', 'id')
 
@@ -67,13 +71,13 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
-        element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
-        element.click()
+        # element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
+        # element.click()
 
-        # SALVAR ALTERAÇÃO - POP_UP
-        time.sleep(2)
-        element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
-        element.click() 
+        # # SALVAR ALTERAÇÃO - POP_UP
+        # time.sleep(2)
+        # element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
+        # element.click() 
         rf.createLog(arquivo, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
         time.sleep(1)
 
@@ -107,7 +111,7 @@ def enviaParametros(volumetriaMes, item = 1):
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 
 path = os.getcwd() + "/volumetrias" # obtem o caminho do script e add a pasta volumetrias
-logsPath = os.getcwd() + "/logs/volumetrias"
+logsPath = os.getcwd() + "/volumetrias/logs"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 

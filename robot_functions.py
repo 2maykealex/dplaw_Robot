@@ -17,7 +17,25 @@ import os
 import platform
 import time
 
+def checkPopUps(driver):
+    try:
+        element = waitinstance(driver, "divCarregarAvisoPopUp", 1, 'click', 'id')
+        element.click()
+        print('===Pop-up "MENSAGEM FINAL DE ANO" fechado!\n')
+    except:
+        pass
+    time.sleep(2)
+    try:    #menuvaimudar
+        element = waitinstance(driver, "menuvaimudarbtn", 1, 'click', 'id')
+        element.click()
+        print('===Pop-up "MENU VAI MUDAR" fechado!\n')
+    except:
+        pass
+
+    print('POPUPS OK!!!!\n')
+
 def waitinstance(browser, object, poll, type, form = 'xpath'):
+
     timeOut = 60 #segundos
 
     count = 1
@@ -144,12 +162,8 @@ def acessToIntegra(driver):
     element.click()
 
     time.sleep(1)    # Verifica se existe um pop-up no início e o fecha
-    try:    
-        element = waitinstance(driver, "menuvaimudarbtn", 1, 'click', 'id')
-        element.click()
-        print('\nPop-up "MENU VAI MUDAR" fechado!\n')
-    except:
-        pass
+
+    checkPopUps(driver)
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")

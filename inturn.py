@@ -103,6 +103,8 @@ def pesquisarCliente(cliente):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
     driver.get(urlPage)
 
+    rf.checkPopUps(driver)
+    
     # buscando o cliente e acessando sua pasta
     driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
     time.sleep(1)
@@ -122,6 +124,9 @@ def pesquisarCliente(cliente):
 
 def incluirProcesso(urlPage, df, registro):    
     # incluindo processo    
+
+    rf.checkPopUps(driver)
+
     element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
     element.click()
 
@@ -308,6 +313,8 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
 def uploadFile():
 
+    rf.checkPopUps(driver)
+
     # ACESSAR ÁREA DE DOWNLOADS
     driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
 
@@ -339,6 +346,7 @@ def pesquisarPasta(pasta):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
     driver.get(urlPage)
+    rf.checkPopUps(driver)
 
     # selecionar opção pesquisa por pasta
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
@@ -359,7 +367,7 @@ def pesquisarPasta(pasta):
 #============================PROGRAMA PRINCIPAL==============================
 
 path     = os.getcwd() + "/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-logsPath = os.getcwd() + "/logs/abertura_pastas"
+logsPath = os.getcwd() + "/abertura_pastas/logs"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
