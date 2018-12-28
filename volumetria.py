@@ -17,14 +17,14 @@ def pesquisarPasta(pasta):
     # selecionar opção pesquisa por pasta
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
-    time.sleep(1)
+    time.sleep(0.5)
     
     # buscando pasta    
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
-    time.sleep(1)
+    time.sleep(0.5)
 
     driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(3)    
+    time.sleep(0.5)    
 
     try:
         element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
@@ -71,8 +71,8 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
 
         # SALVAR ALTERAÇÃO
         time.sleep(2)
-        # element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
-        # element.click()
+        element = rf.waitinstance(driver, 'btnSalvar', 1, 'show', 'id')
+        element.click()
 
         # # SALVAR ALTERAÇÃO - POP_UP
         # time.sleep(2)
@@ -92,8 +92,12 @@ def enviaParametros(volumetriaMes, item = 1):
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
 
+    print('item ', item)
+
+
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
+        print('item ', dfExcel[item, 7])
         if (pesquisarPasta(pasta) == True):
             inserirVolumetria(volumetriaMes, pasta, item)            
         else:
@@ -117,7 +121,7 @@ if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 
 
 if (os.path.exists(logsPath) == False):
-    os.mkdir(logsPath)   # Se o diretório \logs\Volumetrias não existir, será criado - 
+    os.mkdir(logsPath)   # Se o diretório \Volumetrias\files não existir, será criado - 
 
 os.chdir(path) # seleciona o diretório do script
 
@@ -157,7 +161,10 @@ while True:
                         driver = rf.iniciaWebdriver(False)                        
                         rf.acessToIntegra(driver)
                     
-                    enviaParametros(volumetriaMes, count)
+                    if (count >= 1):
+                        enviaParametros(volumetriaMes, count)
+                    else:
+                        enviaParametros(volumetriaMes, 1)
                 
                 arquivoOriginal.close()
 
