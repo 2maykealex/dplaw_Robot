@@ -4,6 +4,7 @@ import sys
 import os
 import time
 import glob
+import shutil
 import robot_functions as rf
 
 def pesquisarPasta(pasta):
@@ -92,12 +93,8 @@ def enviaParametros(volumetriaMes, item = 1):
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
 
-    print('item ', item)
-
-
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
-        print('item ', dfExcel[item, 7])
         if (pesquisarPasta(pasta) == True):
             inserirVolumetria(volumetriaMes, pasta, item)            
         else:
@@ -116,6 +113,11 @@ def enviaParametros(volumetriaMes, item = 1):
 
 path = os.getcwd() + "/files/volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "/files/volumetrias/logs"
+
+pathExecutados = path + "/arquivos_executados"
+
+if (os.path.exists(pathExecutados) == False):
+    os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 
@@ -181,6 +183,8 @@ while True:
                 enviaParametros(volumetriaMes)
 
             arquivo.close()
+            
+            shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         
     if (driverIniciado == True):  
         driverIniciado = False
