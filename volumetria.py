@@ -19,20 +19,22 @@ def pesquisarPasta(pasta):
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
     time.sleep(0.5)
-    
     # buscando pasta    
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
+    # element = rf.waitinstance(driver, 'txtPesquisa', 1, 'show', 'id')
+    # element.send_keys(str(pasta))
+    
     time.sleep(0.5)
 
     driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(0.5)    
+    time.sleep(1)    
 
     try:
         element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
         return False
     except:
         # SELECIONA O CLIENTE PESQUISADO
-        time.sleep(3)    
+        time.sleep(2)    
         element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
         element.click()
         return True
@@ -93,9 +95,20 @@ def enviaParametros(volumetriaMes, item = 1):
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
 
+    trySearch = 1
+
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
-        if (pesquisarPasta(pasta) == True):
+
+        search = False
+        while (trySearch < 4):
+            print('{}ª tentativa de busca...'.format(trySearch))            
+            search = pesquisarPasta(pasta)
+            if (search == True):
+                break
+            trySearch = trySearch + 1
+        
+        if (search == True):
             inserirVolumetria(volumetriaMes, pasta, item)            
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
