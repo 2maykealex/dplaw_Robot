@@ -19,16 +19,24 @@ import time
 
 def checkPopUps(driver):
     try:
-        element = waitinstance(driver, "divCarregarAvisoPopUp", 1, 'click', 'id')
-        element.click()
+        time.sleep(0.5)
+        driver.execute_script("$('.popup_block').css('display', 'none');") # torna elemento visível
+        time.sleep(0.5)
         print('===Pop-up "MENSAGEM FINAL DE ANO" fechado!\n')
     except:
         pass
-    time.sleep(2)
+    
     try:    #menuvaimudar
-        element = waitinstance(driver, "menuvaimudarbtn", 1, 'click', 'id')
-        element.click()
+        driver.execute_script("$('#menuvaimudar').css('display', 'none');") # torna elemento visível
+        time.sleep(0.5)
         print('===Pop-up "MENU VAI MUDAR" fechado!\n')
+    except:
+        pass
+
+    try:    
+        driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');") # torna elemento visível
+        time.sleep(0.5)
+        print('===Pop-up "BODY" fechado!\n')
     except:
         pass
 
@@ -43,7 +51,6 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
     while (count < 10):
 
         try:
-
             if type == 'click':
                 if form == 'xpath':
                     element = WebDriverWait(browser, timeOut, poll_frequency = poll,
@@ -94,6 +101,7 @@ def iniciaWebdriver(modSilent = False):
 
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
+    #chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
 
