@@ -21,19 +21,19 @@ def checkPopUps(driver):
     try:
         time.sleep(0.5)
         driver.execute_script("$('.popup_block').css('display', 'none');") # torna elemento visível
-        time.sleep(0.5)
+        time.sleep(2)
     except:
         pass
     
     try:    #menuvaimudar
         driver.execute_script("$('#menuvaimudar').css('display', 'none');") # torna elemento visível
-        time.sleep(0.5)
+        time.sleep(2)
     except:
         pass
 
     try:    
         driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');") # torna elemento visível
-        time.sleep(0.5)
+        time.sleep(2)
     except:
         pass
 
