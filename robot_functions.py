@@ -22,25 +22,22 @@ def checkPopUps(driver):
         time.sleep(0.5)
         driver.execute_script("$('.popup_block').css('display', 'none');") # torna elemento visível
         time.sleep(0.5)
-        print('===Pop-up "MENSAGEM FINAL DE ANO" fechado!\n')
     except:
         pass
     
     try:    #menuvaimudar
         driver.execute_script("$('#menuvaimudar').css('display', 'none');") # torna elemento visível
         time.sleep(0.5)
-        print('===Pop-up "MENU VAI MUDAR" fechado!\n')
     except:
         pass
 
     try:    
         driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');") # torna elemento visível
         time.sleep(0.5)
-        print('===Pop-up "BODY" fechado!\n')
     except:
         pass
 
-    print('POPUPS OK!!!!\n')
+    print('\nPOPUPS OK!!!!\n')
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
 
