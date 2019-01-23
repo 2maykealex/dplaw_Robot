@@ -97,7 +97,7 @@ def iniciaWebdriver(modSilent = False):
         dirpath = '/usr/bin'
         chromepath = dirpath + '/chromedriver'
     
-    display = Display(visible=0, size=(800, 600))
+    display = Display(visible=0, size=(1024, 768))
     display.start()
     
     chrome_options = webdriver.ChromeOptions()
