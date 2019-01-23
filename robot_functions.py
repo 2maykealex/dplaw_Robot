@@ -152,7 +152,7 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
 
 def acessToIntegra(driver):
     # acessando a primeira página do sistema promad    
-#    driver.maximize_window()
+    driver.maximize_window()
     # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
 
