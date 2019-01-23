@@ -97,8 +97,8 @@ def iniciaWebdriver(modSilent = False):
         dirpath = '/usr/bin'
         chromepath = dirpath + '/chromedriver'
     
-    display = Display(visible=0, size=(1024, 768))
-    display.start()
+#    display = Display(visible=0, size=(1024, 768))
+#    display.start()
     
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
