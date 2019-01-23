@@ -16,6 +16,8 @@ import pyexcel as pe
 import os
 import platform
 import time
+from pyvirtualdisplay import Display
+
 
 def checkPopUps(driver):
     try:
@@ -95,7 +97,9 @@ def iniciaWebdriver(modSilent = False):
         dirpath = '/usr/bin'
         chromepath = dirpath + '/chromedriver'
     
-
+    display = Display(visible=0, size=(800, 600))
+    display.start()
+    
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
     #chrome_options.add_argument("--disable-popup-blocking")
@@ -155,6 +159,7 @@ def acessToIntegra(driver):
     driver.maximize_window()
     # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
     driver.get('http://www.integra.adv.br/')
+    print(driver.title)
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 1, 'show', 'id')
