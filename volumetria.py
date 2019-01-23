@@ -6,7 +6,6 @@ import time
 import glob
 import shutil
 import robot_functions as rf
-from pyvirtualdisplay import Display
 
 def pesquisarPasta(pasta):
     
@@ -143,9 +142,6 @@ os.chdir(path) # seleciona o diretório do script
 
 driverIniciado = False
 
-display = Display(visible=0, size=(800, 600))
-display.start()
-
 while True:
 
     files =  []
@@ -211,5 +207,3 @@ while True:
     time.sleep(3)
     print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
     time.sleep(3)
-
-display.stop()
