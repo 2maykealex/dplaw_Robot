@@ -16,8 +16,6 @@ import pyexcel as pe
 import os
 import platform
 import time
-from pyvirtualdisplay import Display
-
 
 def checkPopUps(driver):
     try:
@@ -96,9 +94,6 @@ def iniciaWebdriver(modSilent = False):
         # acessando diretório do webdriver do chrome no LINUX
         dirpath = '/usr/bin'
         chromepath = dirpath + '/chromedriver'
-    
-#    display = Display(visible=0, size=(1024, 768))
-#    display.start()
     
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])

@@ -362,8 +362,6 @@ def pesquisarPasta(pasta):
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     element.click()
 
-# TODO ADD FUNCÕES DE PESQUISA EM ROBOT_FUNCTIONS: COLOCAR OPÇÃO PARA PESQUISA
-
 #============================PROGRAMA PRINCIPAL==============================
 
 path     = os.getcwd() + "/files/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
