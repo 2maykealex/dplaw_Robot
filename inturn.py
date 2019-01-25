@@ -6,6 +6,7 @@ import time
 import glob
 import sys
 import os
+import shutil
 import robot_functions as rf
 
 def responsavelXpath(responsavel):
@@ -367,6 +368,11 @@ def pesquisarPasta(pasta):
 path     = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
 logsPath = os.getcwd() + "\\files\\abertura_pastas\\logs"
 
+pathExecutados = path + "\\arquivos_executados"
+
+if (os.path.exists(pathExecutados) == False):
+    os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
+
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
 
@@ -427,6 +433,7 @@ while True:
                 abrePasta(arquivoAbrirPasta)            
             
             arquivo.close()
+            shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):       
         driverIniciado = False
