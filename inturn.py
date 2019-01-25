@@ -364,8 +364,8 @@ def pesquisarPasta(pasta):
 
 #============================PROGRAMA PRINCIPAL==============================
 
-path     = os.getcwd() + "/files/abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-logsPath = os.getcwd() + "/files/abertura_pastas/logs"
+path     = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
+logsPath = os.getcwd() + "\\files\\abertura_pastas\\logs"
 
 if (os.path.exists(path) == False):
     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
@@ -389,7 +389,7 @@ while True:
         for file in files:
             arquivoAbrirPasta = file
             arquivoAbrirPasta = arquivoAbrirPasta[:-5]
-            logFile = logsPath + "/_log_{}.txt".format(arquivoAbrirPasta)
+            logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
 
             if (os.path.isfile(logFile)):
                 arquivoOriginal = open(logFile, 'r')  

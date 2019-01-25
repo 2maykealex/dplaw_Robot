@@ -124,10 +124,10 @@ def enviaParametros(volumetriaMes, item = 1):
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
 
-path = os.getcwd() + "/files/volumetrias" # obtem o caminho do script e add a pasta volumetrias
-logsPath = os.getcwd() + "/files/volumetrias/logs"
+path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
+logsPath = os.getcwd() + "\\files\\volumetrias\\logs"
 
-pathExecutados = path + "/arquivos_executados"
+pathExecutados = path + "\\arquivos_executados"
 
 if (os.path.exists(pathExecutados) == False):
     os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
@@ -155,7 +155,7 @@ while True:
             volumetriaMes = file
             volumetriaMes = volumetriaMes[:-5]
             
-            logFile = logsPath + "/_log_{}.txt".format(volumetriaMes)
+            logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
             
             if (os.path.isfile(logFile)):
                 arquivoOriginal = open(logFile, 'r')  
