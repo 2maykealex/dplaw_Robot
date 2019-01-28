@@ -127,9 +127,9 @@ path = os.getcwd()
 print (path)
 path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "\\files\\volumetrias\\logs"
-
+print (path)
 pathExecutados = path + "\\arquivos_executados"
-
+print (pathExecutados)
 if (os.path.exists(pathExecutados) == False):
     os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
