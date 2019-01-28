@@ -123,13 +123,12 @@ def enviaParametros(volumetriaMes, item = 1):
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
-path = os.getcwd()
-print (path)
+
 path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "\\files\\volumetrias\\logs"
-print (path)
+
 pathExecutados = path + "\\arquivos_executados"
-print (pathExecutados)
+
 if (os.path.exists(pathExecutados) == False):
     os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
@@ -155,6 +154,10 @@ while True:
         for file in files:
             volumetriaMes = file
             volumetriaMes = volumetriaMes[:-5]
+            print (volumetriaMes)
+            if (file != ""):
+                infoLog = "EXECUTANDO ARQUIVO {}.txt".format(file)
+                arquivo = open(infoLog, 'w+')  
             
             logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
             
@@ -197,6 +200,9 @@ while True:
                 enviaParametros(volumetriaMes)
 
             arquivo.close()
+
+            if (file != ""):
+                os.remove(infoLog)
             
             shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         
