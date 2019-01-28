@@ -1,5 +1,3 @@
-#coding=utf-8
-
 import datetime
 import locale
 import time
@@ -395,6 +393,11 @@ while True:
         for file in files:
             arquivoAbrirPasta = file
             arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+            
+            if (file != ""):
+                infoLog = "EXECUTANDO {}.txt".format(file.upper())
+                arquivo = open(infoLog, 'w+')  
+
             logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
 
             if (os.path.isfile(logFile)):
@@ -433,6 +436,10 @@ while True:
                 abrePasta(arquivoAbrirPasta)            
             
             arquivo.close()
+
+            if (file != ""):
+                os.remove(infoLog)
+
             shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):       
