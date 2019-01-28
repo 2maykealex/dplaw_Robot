@@ -123,7 +123,8 @@ def enviaParametros(volumetriaMes, item = 1):
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
-
+path = os.getcwd()
+print (path)
 path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "\\files\\volumetrias\\logs"
 
