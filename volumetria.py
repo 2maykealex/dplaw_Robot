@@ -156,7 +156,7 @@ while True:
             volumetriaMes = volumetriaMes[:-5]
             print (volumetriaMes)
             if (file != ""):
-                infoLog = "EXECUTANDO ARQUIVO {}.txt".format(file)
+                infoLog = "EXECUTANDO {}.txt".format(file.upper())
                 arquivo = open(infoLog, 'w+')  
             
             logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
