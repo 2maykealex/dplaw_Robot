@@ -27,9 +27,7 @@ def pesquisarPasta(pasta):
     time.sleep(0.5)
 
     driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(1)    
-
-    retorno = False
+    time.sleep(1)
 
     try:
         # SELECIONA O CLIENTE PESQUISADO
@@ -42,6 +40,7 @@ def pesquisarPasta(pasta):
         # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
         hora = time.strftime("%H:%M:%S")
         print('{} - Não encontrou a pasta'.format(hora))
+        retorno = False
         
     return retorno
 
@@ -101,19 +100,19 @@ def enviaParametros(volumetriaMes, item = 1):
     dfExcel = rf.abreArquivo(volumetriaMes)
     count = dfExcel.number_of_rows()-1
 
-    trySearch = 1
-
     while (item <= count):         #looping dentro de cada arquivo
         pasta =  dfExcel[item, 7]
+        trySearch = 1
 
         search = False
-        while (trySearch < 3):
+        while (trySearch < 4):
             hora = time.strftime("%H:%M:%S")
             print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
             search = pesquisarPasta(pasta)
             if (search == True):
                 break
             trySearch = trySearch + 1
+        print('\n')
         
         if (search == True):
             inserirVolumetria(volumetriaMes, pasta, item)            
