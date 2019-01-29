@@ -212,5 +212,6 @@ while True:
 
 
     time.sleep(3)
-    print('VERIFICANDO SE HÁ NOVOS ARQUIVOS\n')
+    hora = time.strftime("%H:%M:%S")
+    print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS\n'.format(hora))
     time.sleep(3)
