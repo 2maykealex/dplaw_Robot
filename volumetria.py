@@ -106,8 +106,9 @@ def enviaParametros(volumetriaMes, item = 1):
         pasta =  dfExcel[item, 7]
 
         search = False
-        while (trySearch < 4):
-            print('{}ª tentativa de busca...'.format(trySearch))            
+        while (trySearch < 3):
+            hora = time.strftime("%H:%M:%S")
+            print('{} - {}ª tentativa de busca...'.format(hora, trySearch))
             search = pesquisarPasta(pasta)
             if (search == True):
                 break
