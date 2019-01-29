@@ -109,7 +109,7 @@ def enviaParametros(volumetriaMes, item = 1):
         search = False
         while (trySearch < 3):
             hora = time.strftime("%H:%M:%S")
-            print('{} - {}ª tentativa de busca...'.format(hora, trySearch))
+            print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
             search = pesquisarPasta(pasta)
             if (search == True):
                 break
