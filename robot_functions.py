@@ -45,7 +45,7 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
 
     count = 1
     
-    while (count < 4):
+    while (count < 3):
 
         try:
             if type == 'click':
