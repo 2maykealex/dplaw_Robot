@@ -40,7 +40,8 @@ def pesquisarPasta(pasta):
 
     except:
         # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
-        print('Não encontrou a pasta')
+        hora = time.strftime("%H:%M:%S")
+        print('{} - Não encontrou a pasta'.format(hora))
         
     return retorno
 

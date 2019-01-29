@@ -80,7 +80,8 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
             return element
         except:
             count = count + 1
-            print('Elemento ainda não foi encontrado!')
+            hora = time.strftime("%H:%M:%S")
+            print('{} - Elemento ainda não foi encontrado!'.format(hora))
     
 def iniciaWebdriver(modSilent = False):
 
