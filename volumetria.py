@@ -29,15 +29,20 @@ def pesquisarPasta(pasta):
     driver.find_element_by_id("btnPesquisar").click()
     time.sleep(1)    
 
+    retorno = False
+
     try:
-        element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
-        return False
-    except:
         # SELECIONA O CLIENTE PESQUISADO
         time.sleep(2)    
         element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
         element.click()
-        return True
+        retorno = True
+
+    except:
+        # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
+        print('Não encontrou a pasta')
+        
+    return retorno
 
 def inserirVolumetria(volumetriaMes, pasta, registro):
 
