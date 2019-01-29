@@ -41,11 +41,11 @@ def checkPopUps(driver):
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
 
-    timeOut = 60 #segundos
+    timeOut = 30 #segundos
 
     count = 1
     
-    while (count < 10):
+    while (count < 4):
 
         try:
             if type == 'click':
