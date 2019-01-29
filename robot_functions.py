@@ -37,7 +37,7 @@ def checkPopUps(driver):
     except:
         pass
 
-    print('\nPOPUPS OK!!!!\n')
+    # print('\nPOPUPS OK!!!!\n')
 
 def waitinstance(browser, object, poll, type, form = 'xpath'):
 
