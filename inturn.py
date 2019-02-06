@@ -227,7 +227,7 @@ def incluirProcesso(urlPage, df, registro):
     time.sleep(2)
     element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
     idNovaPasta = element.get_attribute("innerHTML")
-    idNovaPasta = idNovaPasta[14:].strip()    
+    idNovaPasta = idNovaPasta[14:].strip()
 
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
@@ -242,11 +242,38 @@ def incluirProcesso(urlPage, df, registro):
     # Botão salvar
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click() 
+
+    time.sleep(1)
+
+    try:
+        # element = rf.waitinstance(driver, 'popup_ok', 1, 'click', 'id')
+
+        element = driver.find_element_by_id("popup_ok")
+        driver.execute_script("arguments[0].click();", element)
+        
+        # element.click
+        print('pop up OK')
+        time.sleep(1)
+    except:
+        pass
+    
     rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
     # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
-    time.sleep(3)
-    driver.get(urlPage)
+    time.sleep(2)
+
+    
+    # Agendamentos
+    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+    driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
+
+    # element = rf.waitinstance(driver, 'divMenuProcesso109', 1, 'show', 'id')
+    # element.click() 
+
+
+    # clickMenuCadastro(109,'processoAgenda.asp')
+
+    # driver.get(urlPage)
 
 def abrePasta(arquivoAbrirPasta, item = 1):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
