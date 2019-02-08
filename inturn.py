@@ -106,20 +106,20 @@ def pesquisarCliente(cliente):
     
     # buscando o cliente e acessando sua pasta
     driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
-    time.sleep(1)
+    time.sleep(0.5)
 
     driver.find_element_by_id("btnPesquisar").click()
     # rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
     # rf.checkElement(driver, "#loopVazio")
 
     # ATÉ A URL NÃO MUDAR
-    time.sleep(1)
+    time.sleep(0.5)
     # SELECIONA O CLIENTE PESQUISADO
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-    time.sleep(1)
+    time.sleep(0.5)
     element.click()
     # rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
-    time.sleep(1)
+    time.sleep(0.5)
 
 def incluirProcesso(urlPage, df, registro):    
     # incluindo processo    
@@ -138,7 +138,7 @@ def incluirProcesso(urlPage, df, registro):
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
     # rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
-    time.sleep(1)
+    time.sleep(0.5)
     if (df['cnj'] != ''):
         #Numero do CNJ
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
@@ -151,30 +151,30 @@ def incluirProcesso(urlPage, df, registro):
         driver.execute_script("arguments[0].click();", element)
         # rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
-        time.sleep(1)
+        time.sleep(0.5)
         element = driver.find_element_by_id("capturarAndamentosS")
         driver.execute_script("arguments[0].click();", element)
         # rf.createLog(arquivo, "--- Marcando NÃO em SEGREDO DE JUSTIÇA e SIM em CAPTURAR ANDAMENTOS")
-    time.sleep(1)
+    time.sleep(0.5)
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
     element.clear()
     element.send_keys(str(df['numProcesso']))
     # rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
-    time.sleep(1)
+    time.sleep(0.5)
     # Status
     element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
     # rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
-    time.sleep(1)
+    time.sleep(0.5)
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
     driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
-    time.sleep(1)
+    time.sleep(0.5)
     # rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
-    time.sleep(1)
+    time.sleep(0.5)
     # Grupo Local trâmite
     if (df['localTr'] != ''):
         element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 1, 'show')
@@ -182,24 +182,24 @@ def incluirProcesso(urlPage, df, registro):
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
         # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
-    time.sleep(1)        
+    time.sleep(0.5)        
     element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
     # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
-    time.sleep(1)
+    time.sleep(0.5)
     # Comarca
     element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
     # rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
-    time.sleep(1)
+    time.sleep(0.5)
     # UF
     element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
     # rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
-    time.sleep(1)
+    time.sleep(0.5)
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
@@ -207,24 +207,24 @@ def incluirProcesso(urlPage, df, registro):
     comboResponsavel.click()  # clica e abre as opções
     
     element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
-    time.sleep(1)
+    time.sleep(0.5)
     element.click() # seleciona o item desejado
     # rf.createLog(arquivo, "--- preenchendo o responsável: {}".format(df['responsavel']))
 
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
-    time.sleep(1)
+    time.sleep(0.5)
     # Data da Contratação
     driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
     # rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
-    time.sleep(1)
+    time.sleep(0.5)
     # Valor da Causa
     driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
     # rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
-    time.sleep(1)
+    time.sleep(0.5)
 
     #Obtém o Num da nova pasta a ser aberta
-    time.sleep(2)
+    time.sleep(1)
     element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
     idNovaPasta = element.get_attribute("innerHTML")
     idNovaPasta = idNovaPasta[14:].strip()
@@ -243,7 +243,7 @@ def incluirProcesso(urlPage, df, registro):
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click() 
 
-    time.sleep(1)
+    time.sleep(0.5)
 
     try:
         # element = rf.waitinstance(driver, 'popup_ok', 1, 'click', 'id')
@@ -253,14 +253,14 @@ def incluirProcesso(urlPage, df, registro):
         
         # element.click
         print('pop up OK')
-        time.sleep(1)
+        time.sleep(0.5)
     except:
         pass
     
     rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
     # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
-    time.sleep(3)
+    time.sleep(1.5)
 
     
     # Agendamentos
@@ -374,7 +374,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['dataContratacao']  =  dataContratacao
         df['uf']               =  dfExcel[item, 16]
 
-        time.sleep(2)            
+        time.sleep(1)            
         incluirProcesso(urlPage, df, item)
 
         item = item + 1
@@ -408,7 +408,7 @@ def uploadFile():
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click()
     # POP UP (OK)
-    time.sleep(2)  
+    time.sleep(1)  
     element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
     element.click()
 
@@ -429,7 +429,7 @@ def pesquisarPasta(pasta):
     driver.find_element_by_id("btnPesquisar").click()
     
     # SELECIONA O CLIENTE PESQUISADO
-    time.sleep(3)
+    time.sleep(1.5)
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     element.click()
 
@@ -522,10 +522,10 @@ while True:
         driverIniciado = False
         rf.logoutIntegra(driver)
 
-    time.sleep(3)
+    time.sleep(1.5)
     hora = time.strftime("%H:%M:%S")
     print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS\n'.format(hora))
-    time.sleep(3)
+    time.sleep(1.5)
 #FIM DO WHILE
 
 
