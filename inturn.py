@@ -264,16 +264,20 @@ def incluirProcesso(urlPage, df, registro):
 
     
     # Agendamentos
-    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu 
     driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
 
-    # element = rf.waitinstance(driver, 'divMenuProcesso109', 1, 'show', 'id')
-    # element.click() 
+    element = rf.waitinstance(driver, "btnAgendarSalvar", 1, 'show', id)  #checa se redirecionamento ocorreu para agendamentos
+    
+    for x in range(4):
+        driver.execute_script("clickAdicionarAgendarCadastrar();") #clica em agendamentos
+        
+
+    
+    # clickAdicionarAgendarCadastrar()
 
 
-    # clickMenuCadastro(109,'processoAgenda.asp')
-
-    # driver.get(urlPage)
+    # driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
 
 def abrePasta(arquivoAbrirPasta, item = 1):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
@@ -416,6 +420,10 @@ while True:
         # print(len(files), ' => ', files[-1])    
 
     if (files):
+
+        logFile = logsPath + "\\_log_Arquivo_teste_db.txt"
+        if (os.path.isfile(logFile)):
+            os.remove(logsPath)
      
         for file in files:
             arquivoAbrirPasta = file
