@@ -412,6 +412,10 @@ os.chdir(path) # seleciona o diretório do script
 
 driverIniciado = False
 
+logFile = logsPath + "\\_log_Arquivo_teste_db.txt"
+if (os.path.isfile(logFile)):
+    os.remove(logFile)
+
 while True:
 
     files =  []
@@ -420,10 +424,6 @@ while True:
         # print(len(files), ' => ', files[-1])    
 
     if (files):
-
-        logFile = logsPath + "\\_log_Arquivo_teste_db.txt"
-        if (os.path.isfile(logFile)):
-            os.remove(logsPath)
      
         for file in files:
             arquivoAbrirPasta = file
