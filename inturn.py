@@ -260,7 +260,7 @@ def incluirProcesso(urlPage, df, registro):
     rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
     # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
-    time.sleep(2)
+    time.sleep(3)
 
     
     # Agendamentos
@@ -269,8 +269,49 @@ def incluirProcesso(urlPage, df, registro):
 
     element = rf.waitinstance(driver, "btnAgendarSalvar", 1, 'show', id)  #checa se redirecionamento ocorreu para agendamentos
     
+    rf.checkPopUps(driver)
+
     for x in range(4):
-        driver.execute_script("clickAdicionarAgendarCadastrar();") #clica em agendamentos
+        time.sleep(0.5)
+        element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')
+        element.click()
+
+    for x in range(5):
+        xPath = '//*[@id="tableAgendamentoCadastroProcesso{x}"]/tbody/tr[3]/td[1]/button'.format
+        element = rf.waitinstance(driver, xPath, 1, 'show')
+        element.click()
+
+
+
+
+    #agendamento 1
+    #destinatário  //*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button
+    #tipo  //*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button
+    #quando   //*[@id="txtDataInicialAgendaProcesso1"]
+    
+    #com hora //*[@id="chkDiaInteiroAgendaProcesso1"]
+    #hora1  //*[@id="txtHoraInicialAgendaProcesso1"]
+    #hora2  //*[@id="txtHoraFinalAgendaProcesso1"]
+
+    #repetiçao  //*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[6]/td[1]/button
+    #agendamento  //*[@id="txtDescricaoAgendaProcesso1"]
+    #resumo   //*[@id="txtTituloAgendaProcesso1"]
+
+           
+    #agendamento 2
+    #destinatário  //*[@id="tableAgendamentoCadastroProcesso2"]/tbody/tr[3]/td[1]/button
+    #tipo  //*[@id="tableAgendamentoCadastroProcesso2"]/tbody/tr[4]/td/button
+    #quando   //*[@id="txtDataInicialAgendaProcesso2"]
+    
+    #com hora //*[@id="chkDiaInteiroAgendaProcesso2"]
+    #hora1  //*[@id="txtHoraInicialAgendaProcesso2"]
+    #hora2  //*[@id="txtHoraFinalAgendaProcesso2"]
+
+    #repetiçao  //*[@id="tableAgendamentoCadastroProcesso2"]/tbody/tr[6]/td[1]/button
+    #agendamento  //*[@id="txtDescricaoAgendaProcesso2"]
+    #resumo   //*[@id="txtTituloAgendaProcesso2"]
+
+
         
 
     
