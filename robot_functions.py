@@ -18,32 +18,34 @@ import platform
 import time
 
 def checkPopUps(driver):
+    popupOk = False
     try:
-        time.sleep(0.5)
         driver.execute_script("$('.popup_block').css('display', 'none');")
-        time.sleep(2)
+        popupOk = True        
     except:
         pass
     
     try:
         driver.execute_script("$('#menuvaimudar').css('display', 'none');")
-        time.sleep(2)
+        popupOk = True
     except:
         pass
 
     try:
         driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');")
-        time.sleep(2)
+        popupOk = True
     except:
         pass
 
     try:
         driver.execute_script("$('#backgroundPopup').css('display', 'none');")
-        time.sleep(2)
-        
+        popupOk = True
 
     except:
         pass
+    
+    if (popupOk == True):
+        time.sleep(2)
 
     # print('\nPOPUPS OK!!!!\n')
 
@@ -52,8 +54,10 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
     timeOut = 20 #segundos
 
     count = 1
+
+    # checkPopUps(browser)
     
-    while (count < 3):
+    while (count < 21):
 
         try:
             if type == 'click':
@@ -91,7 +95,7 @@ def waitinstance(browser, object, poll, type, form = 'xpath'):
             hora = time.strftime("%H:%M:%S")
             print('{} - Elemento ainda não foi encontrado!'.format(hora))
     
-def iniciaWebdriver(modSilent = False):
+def iniciaWebdriver(modSilent = False, monitor = 2):
 
     sistemaOperacional = platform.system()
 
@@ -122,6 +126,10 @@ def iniciaWebdriver(modSilent = False):
         chrome_options.add_argument("--disable-application-cache")
     
     driver = webdriver.Chrome(executable_path = chromepath, chrome_options=chrome_options)
+    
+    if (monitor == 2):
+        driver.set_window_position(2000,0)   # ATIVA A EXECUÇÃO NO SEGUNDO MONITOR
+    
     slowInternet(driver, slow)    
     return driver
 
