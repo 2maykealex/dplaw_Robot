@@ -1,4 +1,5 @@
 import datetime
+from datetime import date
 import locale
 import time
 import glob
@@ -256,13 +257,14 @@ def incluirProcesso(urlPage, df, registro):
         time.sleep(0.5)
     except:
         pass
+
     
     rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {} ".format(registro, idNovaPasta))
     # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
     
     time.sleep(1.5)
 
-    
+
     # Agendamentos
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu 
     driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
@@ -271,15 +273,151 @@ def incluirProcesso(urlPage, df, registro):
     
     rf.checkPopUps(driver)
 
-    for x in range(4):
-        time.sleep(0.5)
-        element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')
-        element.click()
+    time.sleep(0.5)
+
+    # for x in range(4):
+    #     time.sleep(0.5)
+    #     element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')
+    #     element.click()
+
+    rf.checkPopUps(driver)
 
     for x in range(5):
-        xPath = '//*[@id="tableAgendamentoCadastroProcesso{x}"]/tbody/tr[3]/td[1]/button'.format
-        element = rf.waitinstance(driver, xPath, 1, 'show')
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+        # combo destinatário - abrir
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()            
+        # seleciona os responsáveis
+        time.sleep(0.5) 
+        # respons. pelo cliente
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
         element.click()
+
+        time.sleep(0.3)
+        # GST
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[30]/label'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        # operações
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        # combo destinatário - fechar
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        # combo TIPO - ABRIR
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/button'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+        
+        #AUDIENCIA
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        # combo TIPO - FECHAR
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/button'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        # CAMPO QUANDO
+        dataAudiencia = date.today()
+        dataAudiencia = str(dataAudiencia.strftime("%d/%m/%Y"))
+        xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.send_keys(dataAudiencia)
+        
+        # com HORA
+        xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.click()
+
+        time.sleep(0.3)
+        horaAudienciaFormatada = "10:30"
+        horaAudiencia = horaAudienciaFormatada.replace(":", "")
+        print(horaAudiencia)
+        time.sleep(0.3)
+        xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element.clear()
+        xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        time.sleep(0.3)
+        element.send_keys(horaAudiencia)
+
+        time.sleep(0.3)    
+        xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.clear()
+        time.sleep(0.3)
+        xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        time.sleep(0.3)
+        element.send_keys(horaAudiencia)
+        
+        # campo agendamento
+        agendamento = "Audiência designada para dia {} às {}".format(dataAudiencia, horaAudienciaFormatada)
+        xPathElement = '//*[@id="txtDescricaoAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.send_keys(agendamento)
+
+        # campo resumo
+        xPathElement = '//*[@id="txtTituloAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.clear()
+        time.sleep(0.3)
+
+        xPathElement = '//*[@id="txtTituloAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.send_keys(agendamento[:28])
+        print(agendamento[:28])
+
+        if (x < 4):
+            print("Novo agendamento {}".format(x+2))
+            element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')  #abrir novo agendamento
+            element.click()
+
+
+    
+
+    
+    
+    
+
+    # driver.execute_script("$('#slcDestinatarioAgendaProcesso1').css('display', 'block');") # torna elemento visível
+
+    # comboResponsavel = rf.waitinstance(driver, 'slcDestinatarioAgendaProcesso1', 1, 'click', 'id')
+    # comboResponsavel.click()  # clica e abre as opções
+
+    
+    # element = rf.waitinstance(driver, '//*[@id="slcDestinatarioAgendaProcesso1"]/optgroup[1]/option', 1, 'show')
+    # select = rf.Select(comboResponsavel)
+    # select.select_by_visible_text(str(df['responsavel']))
+
+    # element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
+    # time.sleep(0.5)
+    # element.click() # seleciona o item desejado
+    # rf.createLog(arquivo, "--- preenchendo o responsável: {}".format(df['responsavel']))
+
+    # comboResponsavel.click() # clica para fechar as opções do combo
+
+
+    # driver.execute_script("$('#slcDestinatarioAgendaProcesso1').css('display', 'none');") #torna elemento invisível novamente
+
+    # for x in range(5):        
+    #     idAgendamento = "slcDestinatarioAgendaProcesso{}".format(x+1)
+
+    #     # xPath = '//*[@id="tableAgendamentoCadastroProcesso{}]/tbody/tr[3]/td[1]/button'.format(x+1)
+    #     print (idAgendamento)
+    #     element = rf.waitinstance(driver, idAgendamento, 1, 'click', 'id')
+    #     # element.click()
+    #     # select = rf.Select(element)
+    #     # select.select_by_visible_text(str(df['advbradesco']))
 
 
 
