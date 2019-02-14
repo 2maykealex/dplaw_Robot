@@ -280,9 +280,22 @@ def incluirProcesso(urlPage, df, registro):
     #     element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')
     #     element.click()
 
-    rf.checkPopUps(driver)
-
     for x in range(5):
+
+        if (x == 0):   #tipo audiencia
+            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1) 
+        elif (x == 1): #tipo Instruções para a Audiência
+            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
+        elif (x == 2): #tipo Anexar
+            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(x+1)
+        elif (x == 3): #tipo Fotocópia
+            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(x+1)
+        elif (x == 4): #tipo Certificar abertura de pasta
+            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(x+1)
+
+
+
+
         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
         # combo destinatário - abrir
         element = rf.waitinstance(driver, xPathElement, 1, 'click')
@@ -312,7 +325,7 @@ def incluirProcesso(urlPage, df, registro):
 
         # combo TIPO - ABRIR
         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/button'.format(x+1)
-        element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        element = rf.waitinstance(driver, tipoAgendamento, 1, 'click')
         element.click()
         
         #AUDIENCIA
@@ -374,8 +387,8 @@ def incluirProcesso(urlPage, df, registro):
 
         xPathElement = '//*[@id="txtTituloAgendaProcesso{}"]'.format(x+1)
         element = rf.waitinstance(driver, xPathElement, 1, 'show')
-        element.send_keys(agendamento[:28])
-        print(agendamento[:28])
+        element.send_keys(agendamento[:30])
+        print(agendamento[:30])
 
         if (x < 4):
             print("Novo agendamento {}".format(x+2))
