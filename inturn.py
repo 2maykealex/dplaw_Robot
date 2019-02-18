@@ -198,7 +198,7 @@ def incluirProcesso(urlPage, df, registro):
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     time.sleep(0.5)
     # Data da Contratação
-    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao']))
+    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])))
     time.sleep(0.5)
     # Valor da Causa
     driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
@@ -452,7 +452,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
 
         incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df)
+        # criarAgendamentos(df)
         driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
 
         item = item + 1
