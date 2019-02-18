@@ -109,10 +109,8 @@ def pesquisarCliente(cliente):
     # buscando o cliente e acessando sua pasta
     driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
     time.sleep(0.5)
-
+    print("pesquisar cliente")
     driver.find_element_by_id("btnPesquisar").click()
-    # rf.createLog(arquivo, 'Pesquisando pelo cliente {}'.format(cliente.upper()))
-    # rf.checkElement(driver, "#loopVazio")
 
     # ATÉ A URL NÃO MUDAR
     time.sleep(0.5)
@@ -120,62 +118,50 @@ def pesquisarCliente(cliente):
     element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
     time.sleep(0.5)
     element.click()
-    # rf.createLog(arquivo, 'Cliente {} localizado e selecionado'.format(cliente.upper()))
     time.sleep(0.5)
 
 def incluirProcesso(urlPage, df, registro):    
-    # incluindo processo    
-
+    # incluindo processo 
+    print("incluindo processo")
     rf.checkPopUps(driver)
 
     element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
     element.click()
 
-    # rf.createLog(arquivo, "Incluindo novo processo para o cliente {}".format(df['razaoSocial']))
-
-    # rf.checkElement(driver, "#aProximo")   #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
-
     # Grupo internodd
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['gpProcesso']))
-    # rf.createLog(arquivo, "--- preenchendo Grupo {}".format(df['gpProcesso']))
     time.sleep(0.5)
+
     if (df['cnj'] != ''):
         #Numero do CNJ
         element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
         element.clear()
         element.send_keys(str(df['cnj']))
-        # rf.createLog(arquivo, "--- preenchendo CNJ: {}".format(df['cnj']))
 
         # Segredo de Justiça  #por padrão, será marcado não
         element = driver.find_element_by_id("segredoJusticaN")
         driver.execute_script("arguments[0].click();", element)
-        # rf.createLog(arquivo, "--- Marcando NÃO em Segredo de Justiça")
 
         time.sleep(0.5)
         element = driver.find_element_by_id("capturarAndamentosS")
         driver.execute_script("arguments[0].click();", element)
-        # rf.createLog(arquivo, "--- Marcando NÃO em SEGREDO DE JUSTIÇA e SIM em CAPTURAR ANDAMENTOS")
     time.sleep(0.5)
     #Numero do Processo
     element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
     element.clear()
     element.send_keys(str(df['numProcesso']))
-    # rf.createLog(arquivo, "--- preenchendo num. Processo: {}".format(df['numProcesso']))
     time.sleep(0.5)
     # Status
     element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['statusProcessual']))
-    # rf.createLog(arquivo, "--- preenchendo Status do proceso: {}".format(df['statusProcessual']))
     time.sleep(0.5)
 
     ########### COLUNA 2 DA PÁGINA
     # Pasta
     driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
-    time.sleep(0.5)
-    # rf.createLog(arquivo, "--- preenchendo a pasta: {}".format(df['pasta']))
     time.sleep(0.5)
     # Grupo Local trâmite
     if (df['localTr'] != ''):
@@ -183,24 +169,20 @@ def incluirProcesso(urlPage, df, registro):
         # element.click()
         select = rf.Select(element)
         select.select_by_visible_text(str(df['localTr']))
-        # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTr']))
     time.sleep(0.5)        
     element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
-    # rf.createLog(arquivo, "--- preenchendo a Local trâmite: {}".format(df['localTramite']))
     time.sleep(0.5)
     # Comarca
     element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['comarca']))
-    # rf.createLog(arquivo, "--- preenchendo a Comarca: {}".format(df['comarca']))
     time.sleep(0.5)
     # UF
     element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
-    # rf.createLog(arquivo, "--- preenchendo a UF: {}".format(df['uf']))
     time.sleep(0.5)
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
@@ -211,18 +193,15 @@ def incluirProcesso(urlPage, df, registro):
     element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
     time.sleep(0.5)
     element.click() # seleciona o item desejado
-    # rf.createLog(arquivo, "--- preenchendo o responsável: {}".format(df['responsavel']))
-
+    
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     time.sleep(0.5)
     # Data da Contratação
-    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])) )
-    # rf.createLog(arquivo, "--- preenchendo a data de contratação: {}".format(df['dataContratacao']))
+    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao']))
     time.sleep(0.5)
     # Valor da Causa
     driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
-    # rf.createLog(arquivo, "--- preenchendo o valor da causa: {}".format(df['vCausa']))
     time.sleep(0.5)
 
     #Obtém o Num da nova pasta a ser aberta
@@ -234,12 +213,9 @@ def incluirProcesso(urlPage, df, registro):
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
     element.click()
-    # rf.createLog(arquivo, "--- Abrindo aba - Parte adversa")
-
     # Parte Adversa
     element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
     element.send_keys(str(df['adversa']))
-    # rf.createLog(arquivo, "--- preenchendo parte adversa: {}".format(df['adversa']))
 
     time.sleep(0.5)
     # Botão salvar
@@ -247,12 +223,9 @@ def incluirProcesso(urlPage, df, registro):
     element.click() 
 
     time.sleep(0.5)
-
     complemento = ""
 
     try:
-        # element = rf.waitinstance(driver, 'popup_ok', 1, 'click', 'id')
-
         element = driver.find_element_by_id("popup_ok")
         driver.execute_script("arguments[0].click();", element)
         
@@ -262,14 +235,12 @@ def incluirProcesso(urlPage, df, registro):
     except:
         pass
 
-    
-    rf.createLog(arquivo, "REGISTRO {}: Gravando a nova pasta {}.{}".format(registro, idNovaPasta, complemento))
-    # rf.createLog(arquivo, "--- SALVANDO OS DADOS PREENCHIDOS ")
-    
+    rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
 def criarAgendamentos(df):
     # Agendamentos
+    print("criar agendamentos")
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu 
     driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
 
@@ -486,8 +457,8 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
         item = item + 1
     
-    rf.createLog(arquivo, '_________________________________________________________________')
-    arquivo.writelines('FIM')
+    rf.createLog(logFile, '_________________________________________________________________')
+    rf.createLog(logFile, 'FIM')
 
 def uploadFile():
 
@@ -531,6 +502,7 @@ def pesquisarPasta(pasta):
     element.click()
 
     # buscando pasta
+    print("pesquisar pasta")
     element = rf.waitinstance(driver, "txtPesquisa", 1, 'show', 'id')
     element.send_keys(pasta)
     driver.find_element_by_id("btnPesquisar").click()
@@ -560,9 +532,9 @@ os.chdir(path) # seleciona o diretório do script
 
 driverIniciado = False
 
-logFile = logsPath + "\\_log_Arquivo_teste_db.txt"
-if (os.path.isfile(logFile)):
-    os.remove(logFile)
+# logFile = logsPath + "\\_log_Arquivo_teste_db.txt"
+# if (os.path.isfile(logFile)):
+#     os.remove(logFile)
 
 while True:
 
@@ -579,51 +551,37 @@ while True:
             
             if (file != ""):
                 infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
-                arquivo = open(infoLog, 'w+')  
+                arquivo = open(infoLog, 'w+')
+                arquivo.close()
 
             logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
 
             if (os.path.isfile(logFile)):
-                arquivoOriginal = open(logFile, 'r')  
-                conteudo = arquivoOriginal.readlines()
-                count = len(open(logFile).readlines())
-                linha = ""
-
-                arquivo = open(logFile, 'w+')  
-                for linha in conteudo:
-                    arquivo.writelines(linha)
+                linha, count = rf.checkEndFile(logFile)
                               
                 if (linha == "FIM"): #ultima linha do arquivo
                     print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
                     
                 else:                              # continua o preenchimento do log já existente
-                    if (driverIniciado == False):       
-                        driverIniciado = True 
-                        driver = rf.iniciaWebdriver(False)                        
+                    if (driverIniciado == False):
+                        driverIniciado = True
+                        print("INICIANDO WebDriver")
+                        driver = rf.iniciaWebdriver(False)
                         rf.acessToIntegra(driver)
                     
-                    abrePasta(arquivoAbrirPasta, count) 
-
-                arquivoOriginal.close()
-
+                    abrePasta(arquivoAbrirPasta, count)
             else:
-                arquivo = open(logFile, 'w+')      
-                log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(arquivoAbrirPasta.upper())
-                rf.createLog(arquivo, log)
-
+                print("INICIANDO WebDriver")
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
                     rf.acessToIntegra(driver)
 
                 abrePasta(arquivoAbrirPasta)            
-            
-            arquivo.close()
 
             if (file != ""):
-                os.remove(infoLog)
-
-            # shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                os.remove(infoLog)                
+                shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):       
         driverIniciado = False
