@@ -578,7 +578,7 @@ while True:
             arquivoAbrirPasta = arquivoAbrirPasta[:-5]
             
             if (file != ""):
-                infoLog = "EXECUTANDO {}.txt".format(file.upper())
+                infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
                 arquivo = open(infoLog, 'w+')  
 
             logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
