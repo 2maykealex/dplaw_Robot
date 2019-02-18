@@ -309,7 +309,7 @@ def criarAgendamentos(df):
         elif (x == 1): #tipo Instruções para a Audiência
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
             dataAudiencia = date.today() - timedelta(days=1)
-            agendamento = "SIGLA - Audiência designada para dia {}".format(dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
+            agendamento = "{} - Audiência designada para dia {}".format(str(df['sigla']), dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
             
             # operações
             time.sleep(0.3)
@@ -344,7 +344,7 @@ def criarAgendamentos(df):
         elif (x == 4): #tipo Certificar abertura de pasta
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(x+1)
             dataAudiencia = date.today() - timedelta(days=1)
-            agendamento = "SIGLA - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida."
+            agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(str(df['sigla']))
             # respons. pelo cliente
             time.sleep(0.3)
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(x+1)
@@ -414,7 +414,7 @@ def criarAgendamentos(df):
 
             time.sleep(0.3)
             element.send_keys(horaAudiencia)
-            agendamento = "SIGLA - Audiência designada para dia {} às {}".format(dataAudiencia, horaAudienciaFormatada)
+            agendamento = "{} - Audiência designada para dia {} às {}".format(str(df['sigla']), dataAudiencia, horaAudienciaFormatada)
             
         # campo agendamento
         time.sleep(0.3)        
@@ -443,7 +443,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
     count = dfExcel.number_of_rows()-1
 
     cliente = ''
-    cliente = dfExcel[1, 0]
+    cliente = dfExcel[1, 12]
 
     pesquisarCliente(cliente) #Pesquisa cliente, depois faz looping no seu arquivo adicionando os seus processos
 
@@ -451,46 +451,35 @@ def abrePasta(arquivoAbrirPasta, item = 1):
     while (item <= count):
         df = {}
 
-        df['razaoSocial']      =  dfExcel[item, 0]
-        df['gpCliente']        =  dfExcel[item, 1]
-        df['cnj']              =  dfExcel[item, 2]
-        df['numProcesso']      =  dfExcel[item, 3]
-        df['pasta']            =  dfExcel[item, 4]
-        df['statusProcessual'] =  dfExcel[item, 5]
-        df['cnpjAdversa']      =  dfExcel[item, 6]
-        df['cpfAdversa']       =  dfExcel[item, 7]
-        df['gpProcesso']       =  dfExcel[item, 8]
-        df['adversa']          =  dfExcel[item, 9]
-        df['tipoProcesso']     =  dfExcel[item, 10]
-        df['comarca']          =  dfExcel[item, 11]
+        df['pasta']            = dfExcel[item, 0]
+        df['adversa']          = dfExcel[item, 1]
 
-        local = dfExcel[item, 12]
+        dataContratacao        = (dfExcel[item, 2])
+        dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
+        df['dataContratacao']  = dataContratacao
 
-        if (local[0].isdigit()):            
-            position = dfExcel[item, 12].index('º')
-            position = position + 1
+        df['cnj']              = dfExcel[item, 3]
+        df['numProcesso']      = dfExcel[item, 4]
+        df['gpProcesso']       = dfExcel[item, 5]
 
-            df['localTr']       = dfExcel[item, 12][0:position]
-            # df['localTr'] = df['localTr'].replace('ª', ' ª')       # Em casa funciona sem o replace.. no escritorio tive que usar  replace('ª', ' ª')  
+        df['localTr']          = dfExcel[item, 6]
+        df['localTramite']     = dfExcel[item, 7]
+        df['comarca']          = dfExcel[item, 8]
+        df['uf']               = dfExcel[item, 9]
+        
+        valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
+        df['vCausa']           = valorCausa.replace('.',',')
+        
+        df['statusProcessual'] = dfExcel[item, 11]
 
-            df['localTramite']  = dfExcel[item, 12][position+1: ]
+        df['razaoSocial']      = dfExcel[item, 12]
+        df['gpCliente']        = dfExcel[item, 13]
 
-        else:
-            df['localTr']       = ''
-            df['localTramite']  = dfExcel[item, 12]
+        df['responsavel']      = dfExcel[item, 14]
+        df['sigla']            = dfExcel[item, 15]
+        
+        time.sleep(1)
 
-        df['responsavel']      =  dfExcel[item, 13]
-
-        valorCausa             = locale.format_string("%1.2f", dfExcel[item, 14] , 0)
-        df['vCausa']           =  valorCausa.replace('.',',')
-
-        dataContratacao        = (dfExcel[item, 15])
-        dataContratacao         = str(dataContratacao.strftime("%d/%m/%Y"))
-
-        df['dataContratacao']  =  dataContratacao
-        df['uf']               =  dfExcel[item, 16]
-
-        time.sleep(1)            
         incluirProcesso(urlPage, df, item)
         criarAgendamentos(df)
         driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
@@ -634,7 +623,7 @@ while True:
             if (file != ""):
                 os.remove(infoLog)
 
-            shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+            # shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):       
         driverIniciado = False
