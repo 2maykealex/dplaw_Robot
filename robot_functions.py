@@ -147,17 +147,51 @@ def abreArquivo(arquivo):
     dfExcel = pe.get_sheet(file_name=fileName) 
     return dfExcel
 
-def createLog(arquivo, log, printOut = True):
+def checkEndFile(log):
+    arquivo =  open(log, 'r')
+    arquivoLinhas = arquivo.readlines() 
+    arquivo.close()
+
+    lastLine = arquivoLinhas[len(arquivoLinhas)-1]
+    count = len(open(log).readlines()) + 1
+    return (lastLine, count)
+
+def createLog(log, message = "", tipo = 'w+', printOut = True):
+    
+    if (os.path.isfile(log)): #se o log não existir, cria-se
+        arquivo =  open(log, 'a')
+    else:
+        arquivo = open(log, tipo)
+
     hoje = "%s" % (time.strftime("%Y-%m-%d"))
     hora = time.strftime("%H:%M:%S")
     horaStr = hora.replace(':', '-')
-    writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
+    
+    if (message == "FIM"):
+        writeLog = "{}".format(message) 
+    else:
+        writeLog = "{}__{}: {}\n".format(hoje, horaStr, message)
+    
     if (arquivo != ""):
         arquivo.writelines(writeLog)
     if (printOut):
         print(writeLog)
-    return writeLog
     
+    arquivo.close()
+    
+# def createLog(arquivo, log, printOut = True):
+#     arquivo
+#     hoje = "%s" % (time.strftime("%Y-%m-%d"))
+#     hora = time.strftime("%H:%M:%S")
+#     horaStr = hora.replace(':', '-')
+#     writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
+#     if (arquivo != ""):
+#         arquivo.writelines(writeLog)
+#     if (printOut):
+#         print(writeLog)
+#     return writeLog
+    
+
 def slowInternet(driver, active = False):   # Para simular internet Lenta
     if (active == True):
         driver.set_network_conditions(
