@@ -49,44 +49,39 @@ def checkPopUps(driver):
 
     # print('\nPOPUPS OK!!!!\n')
 
-def waitinstance(browser, object, poll, type, form = 'xpath'):
+def waitinstance(driver, object, poll, type, form = 'xpath'):
 
-    timeOut = 20 #segundos
-
+    timeOut = 60 #segundos
     count = 1
-
-    # checkPopUps(browser)
-    
     while (count < 21):
-
         try:
             if type == 'click':
                 if form == 'xpath':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.XPATH, object)))
                     # return element
                 elif form == 'id':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.ID, object)))
                 elif form == 'class':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.element_to_be_clickable((By.CLASS_NAME, object)))
                     # return element
             elif type == 'show':
                 if form == 'xpath':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.XPATH, object))) 
                     # return element
                 elif form == 'id':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.ID, object)))
                 elif form == 'class':
-                    element = WebDriverWait(browser, timeOut, poll_frequency = poll,
+                    element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                             ignored_exceptions=[NoSuchElementException,
                                             ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.CLASS_NAME, object)))
             return element
@@ -132,15 +127,6 @@ def iniciaWebdriver(modSilent = False, monitor = 2):
     
     slowInternet(driver, slow)    
     return driver
-
-def checkElement(driver, element):
-    print('checando o elemento {}'.format(element))
-    while True:
-        if driver.find_elements_by_css_selector("{}".format(element)):  #AGUARDA O CARREGAMENTO DO ÚLTIMO ELEMENTO DA PÁGINA
-            # print("A PÁGINA FOI CARREGADA")
-            break
-        else:
-            print('---AGUARDANDO O CARREGAMENTO TOTAL DA PÁGINA---')
 
 def abreArquivo(arquivo):
     fileName = (arquivo + '.xlsx')
