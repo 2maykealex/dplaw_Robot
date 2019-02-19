@@ -430,7 +430,11 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['dataContratacao']  = dataContratacao
 
         df['cnj']              = dfExcel[item, 3]
-        df['numProcesso']      = dfExcel[item, 4]
+
+        numProcesso = dfExcel[item, 4]
+        numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
+        
+        df['numProcesso']      = numProcesso
         df['gpProcesso']       = dfExcel[item, 5]
 
         df['localTr']          = dfExcel[item, 6]
@@ -452,7 +456,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
 
         incluirProcesso(urlPage, df, item)
-        # criarAgendamentos(df)
+        criarAgendamentos(df)
         driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
 
         item = item + 1
