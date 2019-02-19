@@ -279,7 +279,7 @@ def criarAgendamentos(df):
 
         elif (x == 1): #tipo Instruções para a Audiência
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
-            dataAudiencia = date.today() - timedelta(days=1)
+            dataAudiencia = date.today() - timedelta(days=7)
             agendamento = "{} - Audiência designada para dia {}".format(str(df['sigla']), dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
             
             # operações
@@ -289,7 +289,7 @@ def criarAgendamentos(df):
             element.click()
         elif (x == 2): #tipo Anexar
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(x+1)
-            dataAudiencia = date.today() - timedelta(days=1)
+            dataAudiencia = date.today() + timedelta(days=1)
             agendamento = "ANEXAR"
             # operações
             time.sleep(0.3)
@@ -299,7 +299,7 @@ def criarAgendamentos(df):
 
         elif (x == 3): #tipo Fotocópia
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(x+1)
-            dataAudiencia = date.today() - timedelta(days=1)
+            dataAudiencia = date.today() + timedelta(days=1)
             agendamento = "Fotocópia integral"
             # GST
             time.sleep(0.3)
@@ -314,7 +314,7 @@ def criarAgendamentos(df):
 
         elif (x == 4): #tipo Certificar abertura de pasta
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(x+1)
-            dataAudiencia = date.today() - timedelta(days=1)
+            dataAudiencia = date.today() + timedelta(days=1)
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(str(df['sigla']))
             # respons. pelo cliente
             time.sleep(0.3)
