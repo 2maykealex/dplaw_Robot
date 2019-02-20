@@ -3,6 +3,7 @@ from datetime import date
 from datetime import timedelta
 import locale
 import time
+from time import strftime
 import glob
 import sys
 import os
@@ -238,7 +239,7 @@ def incluirProcesso(urlPage, df, registro):
     rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
-def criarAgendamentos(df):
+def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
     # Agendamentos
     print("criar agendamentos")
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu 
@@ -248,48 +249,69 @@ def criarAgendamentos(df):
     
     rf.checkPopUps(driver)
 
+    # dataAudiencia = date.strftime(dataAudiencia, '%Y-%m-%d')
+
     for x in range(5):
-        time.sleep(0.5)
-        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
-        # combo destinatário - abrir
-        element = rf.waitinstance(driver, xPathElement, 1, 'click')
-        element.click()
 
         if (x == 0):   #tipo audiencia
-            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(x+1) 
-            dataAudiencia = date.today()
+            if (dataAudiencia != ""):
+                time.sleep(0.5)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+                # combo destinatário - abrir
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
 
-            # respons. pelo cliente
-            time.sleep(0.3)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+                tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(x+1) 
 
-            # GST
-            time.sleep(0.3)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[30]/label'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+                # respons. pelo cliente
+                time.sleep(0.3)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
 
-            # operações
-            time.sleep(0.3)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+                # GST
+                time.sleep(0.3)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[30]/label'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
+
+                # operações
+                time.sleep(0.3)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
+            else:
+                continue
 
         elif (x == 1): #tipo Instruções para a Audiência
-            tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
-            dataAudiencia = date.today() - timedelta(days=7)
-            agendamento = "{} - Audiência designada para dia {}".format(str(df['sigla']), dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
-            
-            # operações
-            time.sleep(0.3)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
+            if (dataAudiencia != ""):
+                time.sleep(0.5)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+                # combo destinatário - abrir
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
+
+                tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
+                dataAudiencia = dataAudiencia - timedelta(days=7)
+                agendamento = "{} - Audiência designada para dia {}".format(sigla, dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
+                
+                # operações
+                time.sleep(0.3)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
+            else:
+                continue
+
+        elif (x == 2): #tipo Anexar
+            time.sleep(0.5)
+            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+            # combo destinatário - abrir
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
-        elif (x == 2): #tipo Anexar
+
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(x+1)
-            dataAudiencia = date.today() + timedelta(days=1)
+            dataAudiencia = dataAudiencia + timedelta(days=1)
             agendamento = "ANEXAR"
             # operações
             time.sleep(0.3)
@@ -298,8 +320,14 @@ def criarAgendamentos(df):
             element.click()
 
         elif (x == 3): #tipo Fotocópia
+            time.sleep(0.5)
+            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+            # combo destinatário - abrir
+            element = rf.waitinstance(driver, xPathElement, 1, 'click')
+            element.click()
+
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(x+1)
-            dataAudiencia = date.today() + timedelta(days=1)
+            dataAudiencia = dataAudiencia + timedelta(days=1)
             agendamento = "Fotocópia integral"
             # GST
             time.sleep(0.3)
@@ -313,8 +341,14 @@ def criarAgendamentos(df):
             element.click()
 
         elif (x == 4): #tipo Certificar abertura de pasta
+            time.sleep(0.5)
+            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(x+1)
+            # combo destinatário - abrir
+            element = rf.waitinstance(driver, xPathElement, 1, 'click')
+            element.click()
+
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(x+1)
-            dataAudiencia = date.today() + timedelta(days=1)
+            dataAudiencia = dataAudiencia + timedelta(days=1)
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(str(df['sigla']))
             # respons. pelo cliente
             time.sleep(0.3)
@@ -347,45 +381,54 @@ def criarAgendamentos(df):
         element.click()
 
         # CAMPO QUANDO
-        time.sleep(0.3)
-        dataAudiencia = str(dataAudiencia.strftime("%d/%m/%Y"))
-        xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(x+1)
-        element = rf.waitinstance(driver, xPathElement, 1, 'show')
-        element.send_keys(dataAudiencia)
+        if (dataAudiencia != ""):
+            time.sleep(0.3)
+            # dataAudiencia = str(dataAudiencia.strftime("%d/%m/%Y"))
+            xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(x+1)
+            element = rf.waitinstance(driver, xPathElement, 1, 'show')
+            element.clear()
+            time.sleep(0.3)
+            element = rf.waitinstance(driver, xPathElement, 1, 'show')
+            element.send_keys(dataAudiencia)
         
-        if (x == 0):        
-            # com HORA
-            time.sleep(0.3)
-            xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+            if (x == 0):        
+                # com HORA
+                time.sleep(0.3)
+                xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso{}"]'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.click()
 
-            time.sleep(0.3)
-            horaAudienciaFormatada = "10:30"
-            horaAudiencia = horaAudienciaFormatada.replace(":", "")
-            
-            time.sleep(0.3)
-            xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.clear()
+                time.sleep(0.3)
+                # hora = strftime("%H:%M", horaAudienciaFormatada)
+                # horaAudiencia = horaAudienciaFormatada.replace(":", "")
+                horaAudienciaFormatada = "10:30"
+                horaAudiencia = horaAudienciaFormatada.replace(":", "")
+                
+                time.sleep(0.3)
+                xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'click')
+                element.clear()
 
-            time.sleep(0.3)
-            xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'show')
-            element.send_keys(horaAudiencia)
+                time.sleep(0.3)
+                xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'show')
+                element.send_keys(horaAudienciaFormatada)
 
-            time.sleep(0.3)    
-            xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'show')
-            element.clear()
+                time.sleep(0.3)    
+                xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'show')
+                element.clear()
 
-            time.sleep(0.3)
-            xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'show')
+                time.sleep(0.3)
+                xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
+                element = rf.waitinstance(driver, xPathElement, 1, 'show')
 
-            time.sleep(0.3)
-            element.send_keys(horaAudiencia)
-            agendamento = "{} - Audiência designada para dia {} às {}".format(str(df['sigla']), dataAudiencia, horaAudienciaFormatada)
+                time.sleep(0.3)
+                element.send_keys(horaAudiencia)
+                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, horaAudienciaFormatada)
+        else:
+            agendamento = "AUDIÊNCIA NÃO MARCADA!"
+            # agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, horaAudienciaFormatada)
             
         # campo agendamento
         time.sleep(0.3)        
@@ -452,11 +495,13 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
         df['responsavel']      = dfExcel[item, 14]
         df['sigla']            = dfExcel[item, 15]
+        df['dataAudiencia']    = dfExcel[item, 16]
+        df['horaAudiencia']    = dfExcel[item, 17]
         
         time.sleep(1)
 
         incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df)
+        criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
         driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
 
         item = item + 1
