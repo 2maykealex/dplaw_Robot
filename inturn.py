@@ -501,7 +501,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
 
         incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+        # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
         driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
 
         item = item + 1
