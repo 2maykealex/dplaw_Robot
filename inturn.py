@@ -236,7 +236,7 @@ def incluirProcesso(urlPage, df, registro):
     except:
         pass
 
-    # rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
+    rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
 def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
@@ -507,7 +507,6 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['sigla']            = dfExcel[item, 15]
         df['dataAudiencia']    = dfExcel[item, 16]
 
-        # hora = dfExcel[item, 17]
         if (dfExcel[item, 17] != ""):
             df['horaAudiencia']    = dfExcel[item, 17]
         else:
