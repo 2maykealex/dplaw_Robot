@@ -236,7 +236,7 @@ def incluirProcesso(urlPage, df, registro):
     except:
         pass
 
-    rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
+    # rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
 def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
@@ -249,8 +249,6 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
     
     rf.checkPopUps(driver)
 
-    # dataAudiencia = date.strftime(dataAudiencia, '%Y-%m-%d')
-
     for x in range(5):
 
         if (x == 0):   #tipo audiencia
@@ -262,6 +260,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 element.click()
 
                 tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(x+1) 
+                appointmentDate = dataAudiencia
+                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
 
                 # respons. pelo cliente
                 time.sleep(0.3)
@@ -280,6 +280,7 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[34]/label'.format(x+1)
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
+                
             else:
                 continue
 
@@ -292,8 +293,12 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 element.click()
 
                 tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(x+1)
-                dataAudiencia = dataAudiencia - timedelta(days=7)
-                agendamento = "{} - Audiência designada para dia {}".format(sigla, dataAudiencia)  #VERIFICAR SER VAI PRECISAR DE HORA 
+        
+                appointmentDate = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
+                appointmentDate = appointmentDate.date() - timedelta(days=2)
+                appointmentDate = format(appointmentDate, "%d/%m/%Y")
+
+                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
                 
                 # operações
                 time.sleep(0.3)
@@ -311,7 +316,10 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
             element.click()
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(x+1)
-            dataAudiencia = dataAudiencia + timedelta(days=1)
+            appointmentDate = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
+            appointmentDate = appointmentDate.date() - timedelta(days=2)
+            appointmentDate = format(appointmentDate, "%d/%m/%Y")
+
             agendamento = "ANEXAR"
             # operações
             time.sleep(0.3)
@@ -327,7 +335,11 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
             element.click()
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(x+1)
-            dataAudiencia = dataAudiencia + timedelta(days=1)
+            # dataAudiencia = dataAudiencia + timedelta(days=1)
+            appointmentDate = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
+            appointmentDate = appointmentDate.date() + timedelta(days=1)
+            appointmentDate = format(appointmentDate, "%d/%m/%Y")
+            
             agendamento = "Fotocópia integral"
             # GST
             time.sleep(0.3)
@@ -349,7 +361,7 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(x+1)
             dataAudiencia = dataAudiencia + timedelta(days=1)
-            agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(str(df['sigla']))
+            agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(sigla)
             # respons. pelo cliente
             time.sleep(0.3)
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(x+1)
@@ -381,16 +393,16 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
         element.click()
 
         # CAMPO QUANDO
-        if (dataAudiencia != ""):
-            time.sleep(0.3)
-            # dataAudiencia = str(dataAudiencia.strftime("%d/%m/%Y"))
-            xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(x+1)
-            element = rf.waitinstance(driver, xPathElement, 1, 'show')
-            element.clear()
-            time.sleep(0.3)
-            element = rf.waitinstance(driver, xPathElement, 1, 'show')
-            element.send_keys(dataAudiencia)
-        
+        time.sleep(0.3)
+        # dataAudiencia = str(dataAudiencia.strftime("%d/%m/%Y"))
+        xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(x+1)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.clear()
+        time.sleep(0.3)
+        element = rf.waitinstance(driver, xPathElement, 1, 'show')
+        element.send_keys(dataAudiencia)
+
+        if (dataAudiencia != ""):        
             if (x == 0):        
                 # com HORA
                 time.sleep(0.3)
@@ -399,10 +411,6 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 element.click()
 
                 time.sleep(0.3)
-                # hora = strftime("%H:%M", horaAudienciaFormatada)
-                # horaAudiencia = horaAudienciaFormatada.replace(":", "")
-                horaAudienciaFormatada = "10:30"
-                horaAudiencia = horaAudienciaFormatada.replace(":", "")
                 
                 time.sleep(0.3)
                 xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
@@ -412,7 +420,9 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 time.sleep(0.3)
                 xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(x+1)
                 element = rf.waitinstance(driver, xPathElement, 1, 'show')
-                element.send_keys(horaAudienciaFormatada)
+                
+                hora = horaAudienciaFormatada.strftime("%H:%M")
+                element.send_keys(hora)
 
                 time.sleep(0.3)    
                 xPathElement = '//*[@id="txtHoraFinalAgendaProcesso{}"]'.format(x+1)
@@ -424,8 +434,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 element = rf.waitinstance(driver, xPathElement, 1, 'show')
 
                 time.sleep(0.3)
-                element.send_keys(horaAudiencia)
-                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, horaAudienciaFormatada)
+                element.send_keys(hora)
+                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, hora)
         else:
             agendamento = "AUDIÊNCIA NÃO MARCADA!"
             # agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, horaAudienciaFormatada)
@@ -496,7 +506,11 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['responsavel']      = dfExcel[item, 14]
         df['sigla']            = dfExcel[item, 15]
         df['dataAudiencia']    = dfExcel[item, 16]
-        df['horaAudiencia']    = dfExcel[item, 17]
+
+        if (dfExcel[item, 17] != ""):
+            df['horaAudiencia']    = dfExcel[item, 17]
+        else:
+            df['horaAudiencia']    = "00:00"    #checar no teste
         
         time.sleep(1)
 
@@ -630,7 +644,7 @@ while True:
 
             if (file != ""):
                 os.remove(infoLog)                
-                shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                # shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):       
         driverIniciado = False
