@@ -507,6 +507,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['sigla']            = dfExcel[item, 15]
         df['dataAudiencia']    = dfExcel[item, 16]
 
+        # hora = dfExcel[item, 17]
         if (dfExcel[item, 17] != ""):
             df['horaAudiencia']    = dfExcel[item, 17]
         else:
