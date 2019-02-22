@@ -602,7 +602,6 @@ while True:
     files =  []
     for file in glob.glob("*.xlsx"):
         files.append(file)
-        # print(len(files), ' => ', files[-1])    
 
     if (files):
      
@@ -626,13 +625,13 @@ while True:
                 else:                              # continua o preenchimento do log já existente
                     if (driverIniciado == False):
                         driverIniciado = True
-                        print("INICIANDO WebDriver")
+                        print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
                         rf.acessToIntegra(driver)
                     
                     abrePasta(arquivoAbrirPasta, count)
             else:
-                print("INICIANDO WebDriver")
+                print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
