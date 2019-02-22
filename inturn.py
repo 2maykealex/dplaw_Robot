@@ -627,7 +627,7 @@ while True:
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        rf.acessToIntegra(driver)
+                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     
                     abrePasta(arquivoAbrirPasta, count)
             else:
@@ -635,7 +635,7 @@ while True:
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
-                    rf.acessToIntegra(driver)
+                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abrePasta(arquivoAbrirPasta)            
 
