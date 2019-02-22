@@ -142,12 +142,12 @@ def checkEndFile(log):
     count = len(open(log).readlines()) + 1
     return (lastLine, count)
 
-def createLog(log, message = "", tipo = 'w+', printOut = True):
+def createLog(logFile, message = "", tipo = 'w+', printOut = True):
     
-    if (os.path.isfile(log)): #se o log não existir, cria-se
-        arquivo =  open(log, 'a')
+    if (os.path.isfile(logFile)): #se o log não existir, cria-se
+        arquivo =  open(logFile, 'a')
     else:
-        arquivo = open(log, tipo)
+        arquivo = open(logFile, tipo)
 
     hoje = "%s" % (time.strftime("%Y-%m-%d"))
     hora = time.strftime("%H:%M:%S")
