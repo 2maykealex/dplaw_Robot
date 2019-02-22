@@ -164,20 +164,7 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True):
         print(writeLog)
     
     arquivo.close()
-    
-# def createLog(arquivo, log, printOut = True):
-#     arquivo
-#     hoje = "%s" % (time.strftime("%Y-%m-%d"))
-#     hora = time.strftime("%H:%M:%S")
-#     horaStr = hora.replace(':', '-')
-#     writeLog = "{}__{}: {}\n".format(hoje, horaStr,log)
-#     if (arquivo != ""):
-#         arquivo.writelines(writeLog)
-#     if (printOut):
-#         print(writeLog)
-#     return writeLog
-    
-
+ 
 def slowInternet(driver, active = False):   # Para simular internet Lenta
     if (active == True):
         driver.set_network_conditions(
@@ -186,7 +173,7 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
         download_throughput= 50 * 1024,  # maximal throughput
         upload_throughput= 50 * 1024)  # maximal throughput
 
-def acessToIntegra(driver):
+def acessToIntegra(driver, login="robo@dplaw.com.br", password="dplaw00612"):
     # acessando a primeira página do sistema promad    
     driver.maximize_window()
     # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
@@ -194,8 +181,8 @@ def acessToIntegra(driver):
 
     # realizando o login no sistema
     element = waitinstance(driver, "login_email", 1, 'show', 'id')
-    element.send_keys("robo@dplaw.com.br")
-    driver.execute_script("document.getElementById('login_senha').value='dplaw00612' ")
+    element.send_keys("{}".format(login))
+    driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
     time.sleep(1)
     # createLog(arquivo, 'FAZENDO LOGIN NO SITE')
     element = driver.find_element_by_tag_name('button')
