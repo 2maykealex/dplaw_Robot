@@ -86,13 +86,13 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
         # time.sleep(2)
         # element = rf.waitinstance(driver, 'popup_ok', 1, 'show', 'id')
         # element.click() 
-        rf.createLog(arquivo, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
+        rf.createLog(logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
         time.sleep(1)
 
     else:
         print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
         log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! ******".format(registro, pasta)
-        rf.createLog(arquivo, log)
+        rf.createLog(logFile, log)
         time.sleep(1)
        
 def enviaParametros(volumetriaMes, item = 1):
@@ -119,13 +119,12 @@ def enviaParametros(volumetriaMes, item = 1):
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
             log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
-            rf.createLog(arquivo, log)
+            rf.createLog(logFile, log)
         
         item = item + 1
 
-    rf.createLog(arquivo, '_________________________________________________________________')
-    arquivo.writelines('FIM')
-    arquivo.close()
+    rf.createLog(logFile, '_________________________________________________________________')
+    rf.createLog(logFile, 'FIM')
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
@@ -150,8 +149,7 @@ driverIniciado = False
 
 while True:
 
-    files =  []
-    
+    files =  []    
     for file in glob.glob("*.xlsx"):        
         files.append(file)
         
@@ -163,19 +161,13 @@ while True:
             
             if (file != ""):
                 infoLog = "EXECUTANDO {}.txt".format(file.upper())
-                arquivo = open(infoLog, 'w+')  
+                arquivo = open(infoLog, 'w+')
+                arquivo.close() 
             
             logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
             
             if (os.path.isfile(logFile)):
-                arquivoOriginal = open(logFile, 'r')  
-                conteudo = arquivoOriginal.readlines()
-                count = len(open(logFile).readlines())
-                linha = ""
-
-                arquivo = open(logFile, 'w+')  
-                for linha in conteudo:
-                    arquivo.writelines(linha)
+                linha, count = rf.checkEndFile(logFile)
                               
                 if (linha == "FIM"): #ultima linha do arquivo
                     print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
@@ -183,21 +175,14 @@ while True:
                 else:                          # continua o preenchimento do log já existente 
                     if (driverIniciado == False):       
                         driverIniciado = True 
+                        print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)                        
                         rf.acessToIntegra(driver)
+                        
+                    enviaParametros(volumetriaMes, count)
                     
-                    if (count >= 1):
-                        enviaParametros(volumetriaMes, count)
-                    else:
-                        enviaParametros(volumetriaMes, 1)
-                
-                arquivoOriginal.close()
-
             else:
-                arquivo = open(logFile, 'w+')                
-                log = "_________ARQUIVO DE LOG CRIADO DO ARQUIVO {}.xlsx_________".format(volumetriaMes)
-                rf.createLog(arquivo, log)
-
+                print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
@@ -205,19 +190,16 @@ while True:
 
                 enviaParametros(volumetriaMes)
 
-            arquivo.close()
-
             if (file != ""):
-                os.remove(infoLog)
-            
-            shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                os.remove(infoLog)            
+                shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         
     if (driverIniciado == True):  
         driverIniciado = False
         rf.logoutIntegra(driver)
 
-
     time.sleep(3)
     hora = time.strftime("%H:%M:%S")
     print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS\n'.format(hora))
     time.sleep(3)
+#FIM DO WHILE
