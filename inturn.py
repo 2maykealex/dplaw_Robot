@@ -100,6 +100,36 @@ def responsavelXpath(responsavel):
     elif responsavel == 'TRIA':
         return '//*[@id="ui-multiselect-slcResponsavel-option-43"]'
 
+def uploadFile():
+
+    rf.checkPopUps(driver)
+
+    # ACESSAR ÁREA DE DOWNLOADS
+    driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
+
+
+    # TODO FAZER LOOPING PARA ADD TODOS OS ARQUIVOS PERTINENTES AO PROCESSO/CLIENTE
+    time.sleep(6)      
+    path = 'C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/pdf.pdf' # CAMINHO DO ARQUIVO 
+    # TODO MONTAR CAMINHO DINAMICAMENTE # driver.send_keys(os.getcwd() + "/tests/sample_files/Figure1.tif")
+
+    # driver.switch_to.frame(1)
+    driver.switch_to.frame(driver.find_element_by_tag_name("iframe")) #ACESSANDO CONTEUDO DE UM FRAME
+
+    element = driver.find_element_by_xpath('//*[@id="realupload"]')
+    element.send_keys(path)
+
+    driver.switch_to.default_content()   #VOLTAR PARA O CONTEUDO PRINCIPAL
+
+    #Botão salvar
+    time.sleep(6)  
+    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
+    element.click()
+    # POP UP (OK)
+    time.sleep(1)  
+    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
+    element.click()
+
 def pesquisarCliente(cliente):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
@@ -120,6 +150,40 @@ def pesquisarCliente(cliente):
     time.sleep(0.5)
     element.click()
     time.sleep(0.5)
+
+def pesquisarPasta(pasta):    
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
+
+    rf.checkPopUps(driver)
+
+    # selecionar opção pesquisa por pasta
+    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
+    time.sleep(0.3)
+    element.click()
+    time.sleep(0.3)    
+
+    # buscando pasta    
+    driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
+    time.sleep(0.3)
+    print("pesquisar pasta")
+    driver.find_element_by_id("btnPesquisar").click()
+    time.sleep(1)
+
+    try:
+        # SELECIONA O CLIENTE PESQUISADO
+        time.sleep(1)    
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
+        retorno = True
+
+    except:
+        # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
+        hora = time.strftime("%H:%M:%S")
+        print('{} - Não encontrou a pasta'.format(hora))
+        retorno = False
+        
+    return retorno
 
 def incluirProcesso(urlPage, df, registro):    
     # incluindo processo 
@@ -516,66 +580,20 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         
         time.sleep(1)
 
-        incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
-        driver.get(urlPage)   # Volta para a tela de inclusão de nova pasta
+        urlBack = driver.current_url
+        print(urlBack)
 
+        if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
+            incluirProcesso(urlPage, df, item)
+            criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+            driver.get(urlPage)   # Volta para a tela de pesquisa
+        else:
+            driver.get(urlBack)
+        
         item = item + 1
     
     rf.createLog(logFile, '_________________________________________________________________')
     rf.createLog(logFile, 'FIM')
-
-def uploadFile():
-
-    rf.checkPopUps(driver)
-
-    # ACESSAR ÁREA DE DOWNLOADS
-    driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
-
-
-    # TODO FAZER LOOPING PARA ADD TODOS OS ARQUIVOS PERTINENTES AO PROCESSO/CLIENTE
-    time.sleep(6)      
-    path = 'C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/pdf.pdf' # CAMINHO DO ARQUIVO 
-    # TODO MONTAR CAMINHO DINAMICAMENTE # driver.send_keys(os.getcwd() + "/tests/sample_files/Figure1.tif")
-
-    # driver.switch_to.frame(1)
-    driver.switch_to.frame(driver.find_element_by_tag_name("iframe")) #ACESSANDO CONTEUDO DE UM FRAME
-
-    element = driver.find_element_by_xpath('//*[@id="realupload"]')
-    element.send_keys(path)
-
-    driver.switch_to.default_content()   #VOLTAR PARA O CONTEUDO PRINCIPAL
-
-    #Botão salvar
-    time.sleep(6)  
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-    element.click()
-    # POP UP (OK)
-    time.sleep(1)  
-    element = rf.waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
-    element.click()
-
-def pesquisarPasta(pasta):
-    
-    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    driver.get(urlPage)
-    rf.checkPopUps(driver)
-
-    # selecionar opção pesquisa por pasta
-    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
-    element.click()
-
-    # buscando pasta
-    print("pesquisar pasta")
-    element = rf.waitinstance(driver, "txtPesquisa", 1, 'show', 'id')
-    element.send_keys(pasta)
-    driver.find_element_by_id("btnPesquisar").click()
-    
-    # SELECIONA O CLIENTE PESQUISADO
-    time.sleep(1.5)
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-    element.click()
 
 #============================PROGRAMA PRINCIPAL==============================
 
@@ -652,8 +670,3 @@ while True:
     print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS\n'.format(hora))
     time.sleep(1.5)
 #FIM DO WHILE
-
-
-# rf.createLog(arquivo, '>>>>>>>>> SCRIPT ENCERRADO! <<<<<<<<<')
-# rf.createLog(arquivo, '_________________________________________________________________')
-# rf.logoutIntegra(driver)
