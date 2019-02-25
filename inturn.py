@@ -239,16 +239,30 @@ def incluirProcesso(urlPage, df, registro):
     select = rf.Select(element)
     select.select_by_visible_text(str(df['localTramite']))
     time.sleep(0.5)
+
     # Comarca
-    element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['comarca']))
-    time.sleep(0.5)
+    if (str(df['comarca']) != ""):
+        element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+        select = rf.Select(element)
+        select.select_by_visible_text(str(df['comarca']))
+        time.sleep(0.5)
+    else:
+        element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+        select = rf.Select(element)
+        select.select_by_visible_text("--Cadastrar Novo Item--")
+        time.sleep(0.5)
+
+        element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
+        select = rf.Select(element)
+        select.select_by_visible_text(str(df['NovaComarca']))
+        time.sleep(0.5)
+    
     # UF
     element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
     select = rf.Select(element)
     select.select_by_visible_text(str(df['uf']))
     time.sleep(0.5)
+
     # RESPONSÁVEL    
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
@@ -576,12 +590,12 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         if (dfExcel[item, 17] != ""):
             df['horaAudiencia']    = dfExcel[item, 17]
         else:
-            df['horaAudiencia']    = "00:00"    #checar no teste
+            df['horaAudiencia']    = "00:00"
         
-        time.sleep(1)
+        df['comarcaNova']    = dfExcel[item, 18]
 
+        time.sleep(1)
         urlBack = driver.current_url
-        print(urlBack)
 
         if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
             incluirProcesso(urlPage, df, item)
