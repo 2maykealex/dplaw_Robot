@@ -601,7 +601,9 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             incluirProcesso(urlPage, df, item)
             criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
             driver.get(urlPage)   # Volta para a tela de pesquisa
-        else:
+        else:            
+            rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
+            time.sleep(1.5)
             driver.get(urlBack)
         
         item = item + 1
