@@ -140,7 +140,7 @@ def pesquisarCliente(cliente):
     # buscando o cliente e acessando sua pasta
     driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
     time.sleep(0.5)
-    print("pesquisar cliente")
+    print("pesquisar cliente {}".format(cliente))
     driver.find_element_by_id("btnPesquisar").click()
 
     # ATÉ A URL NÃO MUDAR
@@ -167,7 +167,7 @@ def pesquisarPasta(pasta):
     # buscando pasta    
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
     time.sleep(0.3)
-    print("pesquisar pasta")
+    print("pesquisar pasta {}".format(pasta))
     driver.find_element_by_id("btnPesquisar").click()
     time.sleep(1)
 
