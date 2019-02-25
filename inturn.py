@@ -253,8 +253,7 @@ def incluirProcesso(urlPage, df, registro):
         time.sleep(0.5)
 
         element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
-        select = rf.Select(element)
-        select.select_by_visible_text(str(df['NovaComarca']))
+        element.send_keys(str(df['comarcaNova']))
         time.sleep(0.5)
     
     # UF
