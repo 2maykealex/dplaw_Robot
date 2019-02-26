@@ -630,7 +630,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
         if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
             incluirProcesso(urlPage, df, item)
-            criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+            # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
             driver.get(urlPage)   # Volta para a tela de pesquisa
         else:            
             rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
