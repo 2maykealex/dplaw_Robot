@@ -1,6 +1,7 @@
 import datetime
 from datetime import date
 from datetime import timedelta
+import calendar
 import locale
 import time
 from time import strftime
@@ -394,13 +395,22 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 element.click()
 
                 tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(cont)
-                appointmentDate = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
+                
+                # data = str(dataAudiencia)
+                data = "{}/{}/{}".format(dataAudiencia.day, dataAudiencia.month, dataAudiencia.year)
+
+                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
                 appointmentDate = appointmentDate.date() - timedelta(days=2)
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
-                if (appointmentDate.weekday() == 5):   #sábado
+                diaAudiencia = int(dataAudiencia.day) - 2
+
+                wDay = calendar.weekday(dataAudiencia.year, dataAudiencia.month, diaAudiencia)
+
+                # if (appointmentDate.weekday() == 5):   #sábado
+                if (wDay == 5):   #sábado
                     appointmentDate = appointmentDate.date() - timedelta(days=1)
-                elif (appointmentDate.weekday() == 6): #domingo
+                elif (wDay == 6): #domingo
                     appointmentDate = appointmentDate.date() - timedelta(days=2)
 
                 agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
@@ -422,9 +432,9 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(cont)
             
-            appointmentDate = dataAberturaPasta
+            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
 
-            if (appointmentDate.weekday() == 5):   #sábado
+            if (dataAberturaPasta.weekday() == 5):   #sábado
                 appointmentDate = appointmentDate.date() + timedelta(days=2)
 
             agendamento = "ANEXAR"
@@ -444,8 +454,9 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(cont)
             
-            appointmentDate = dataAberturaPasta
-            if (appointmentDate.weekday() == 5):   #sábado
+            # appointmentDate = dataAberturaPasta
+            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            if (dataAberturaPasta.weekday() == 5):   #sábado
                 appointmentDate = appointmentDate.date() + timedelta(days=2)
 
             agendamento = "Fotocópia integral"
@@ -470,8 +481,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(cont)
             
-            appointmentDate = dataAberturaPasta
-            if (appointmentDate.weekday() == 5):   #sábado
+            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            if (dataAberturaPasta.weekday() == 5):   #sábado
                 appointmentDate = appointmentDate.date() + timedelta(days=2)
                 
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(sigla)
@@ -512,12 +523,6 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
         element = rf.waitinstance(driver, tipoAgendamento, 1, 'click')
         element.click()
 
-        # combo TIPO - FECHAR
-        time.sleep(0.3)
-        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/button'.format(cont)
-        element = rf.waitinstance(driver, xPathElement, 1, 'click')
-        element.click()
-
         # CAMPO QUANDO
         time.sleep(0.3)
         xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(cont)
@@ -526,6 +531,12 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
         time.sleep(0.3)
         element = rf.waitinstance(driver, xPathElement, 1, 'show')
         element.send_keys(appointmentDate)
+        time.sleep(0.3)
+        
+        try:
+            driver.execute_script("$('#ui-datepicker-div').css('display', 'none');") #torna elemento invisível novamente
+        except:
+            pass
 
         if (dataAudiencia != ""):        
             if (x == 0):        
@@ -533,9 +544,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
                 time.sleep(0.3)
                 xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso{}"]'.format(cont)
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
-                element.click()
-
                 time.sleep(0.3)
+                element.click()
                 
                 time.sleep(0.3)
                 xPathElement = '//*[@id="txtHoraInicialAgendaProcesso{}"]'.format(cont)
@@ -645,7 +655,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
         urlBack = driver.current_url
 
-        # #PARA TESTES
+        #PARA TESTES
         # incluirProcesso(urlPage, df, item)
         # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
         # driver.get(urlPage)   # Volta para a tela de pesquisa
@@ -714,8 +724,8 @@ while True:
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        rf.acessToIntegra(driver)
-                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        # rf.acessToIntegra(driver)
+                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     
                     abrePasta(arquivoAbrirPasta, count)
             else:
@@ -723,8 +733,8 @@ while True:
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
-                    rf.acessToIntegra(driver)
-                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    # rf.acessToIntegra(driver)
+                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abrePasta(arquivoAbrirPasta)            
 
