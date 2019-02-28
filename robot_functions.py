@@ -142,7 +142,7 @@ def checkEndFile(log):
     count = len(open(log).readlines()) + 1
     return (lastLine, count)
 
-def createLog(logFile, message = "", tipo = 'w+', printOut = True):
+def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
     
     if (os.path.isfile(logFile)): #se o log não existir, cria-se
         arquivo =  open(logFile, 'a')
@@ -156,7 +156,10 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True):
     if (message == "FIM"):
         writeLog = "{}".format(message) 
     else:
-        writeLog = "{}__{}: {}\n".format(hoje, horaStr, message)
+        if (onlyText == False):
+            writeLog = "{}__{}: {}\n".format(hoje, horaStr, message)
+        else:
+            writeLog = "{}".format(message)
     
     if (arquivo != ""):
         arquivo.writelines(writeLog)
