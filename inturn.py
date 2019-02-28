@@ -656,18 +656,18 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         urlBack = driver.current_url
 
         #PARA TESTES
-        # incluirProcesso(urlPage, df, item)
+        incluirProcesso(urlPage, df, item)
         # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
-        # driver.get(urlPage)   # Volta para a tela de pesquisa
+        driver.get(urlPage)   # Volta para a tela de pesquisa
         
-        if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
-            incluirProcesso(urlPage, df, item)
-            criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
-            driver.get(urlPage)   # Volta para a tela de pesquisa
-        else:            
-            rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
-            time.sleep(1.5)
-            driver.get(urlBack)
+        # if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
+        #     incluirProcesso(urlPage, df, item)
+        #     criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+        #     driver.get(urlPage)   # Volta para a tela de pesquisa
+        # else:            
+        #     rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
+        #     time.sleep(1.5)
+        #     driver.get(urlBack)
         
         item = item + 1
     
