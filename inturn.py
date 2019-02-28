@@ -240,6 +240,13 @@ def incluirProcesso(urlPage, df, registro):
     select.select_by_visible_text(str(df['localTramite']))
     time.sleep(0.5)
 
+    # #PARA ATUALIZAR OS DADOS
+    # logAtualizaPromad = os.getcwd() + "\\logs\\_Locais.txt"
+    # rf.createLog(logAtualizaPromad)
+    # for elemento in element.find_elements_by_tag_name('option'):   
+    #     texto = "{}\n".format(elemento.text)
+    #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
+
     # Comarca
     if (str(df['comarca']) != ""):
         element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
@@ -251,6 +258,13 @@ def incluirProcesso(urlPage, df, registro):
         select = rf.Select(element)
         select.select_by_visible_text("--Cadastrar Novo Item--")
         time.sleep(0.5)
+
+        # #PARA ATUALIZAR OS DADOS
+        # logAtualizaPromad = os.getcwd() + "\\logs\\_Comarcas.txt"
+        # rf.createLog(logAtualizaPromad)
+        # for elemento in element.find_elements_by_tag_name('option'):   
+        #     texto = "{}\n".format(elemento.text)
+        #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
 
         element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
         element.send_keys(str(df['comarcaNova']))
