@@ -645,9 +645,14 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
         urlBack = driver.current_url
 
+        # #PARA TESTES
+        # incluirProcesso(urlPage, df, item)
+        # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+        # driver.get(urlPage)   # Volta para a tela de pesquisa
+        
         if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
             incluirProcesso(urlPage, df, item)
-            # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+            criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
             driver.get(urlPage)   # Volta para a tela de pesquisa
         else:            
             rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
@@ -709,8 +714,8 @@ while True:
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        # rf.acessToIntegra(driver)
-                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        rf.acessToIntegra(driver)
+                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     
                     abrePasta(arquivoAbrirPasta, count)
             else:
@@ -718,8 +723,8 @@ while True:
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
-                    # rf.acessToIntegra(driver)
-                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    rf.acessToIntegra(driver)
+                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abrePasta(arquivoAbrirPasta)            
 
