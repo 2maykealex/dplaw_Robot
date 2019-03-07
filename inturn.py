@@ -328,7 +328,7 @@ def incluirProcesso(urlPage, df, registro):
     except:
         pass
 
-    rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
+    # rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
 def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, sigla):
@@ -356,7 +356,8 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         if (x == 0):   #tipo audiencia
             if (dataAudiencia != ""):
                 time.sleep(0.5)
-                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)                
+                
                 # combo destinatário - abrir
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
@@ -366,6 +367,34 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 agendamento = "{} - Audiência designada para dia {}/{}/{}".format(sigla, appointmentDate.day, appointmentDate.month, appointmentDate.year)
 
                 # respons. pelo cliente
+                # driver.execute_script("$('#slcDestinatarioAgendaProcesso1').css('display', 'block');")
+
+                # adv = driver.find_elements_by_xpath("//*[contains(text(), {})]".format('advbradesco'))
+                # print(adv)
+
+                # inputsss = driver.find_element_by_tag_name('input')
+
+                                                          
+                inputsss = driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul')
+
+                lis = inputsss.find_element_by_tag_name('li')
+
+                for item in lis:
+                    print(item.get_attribute('a'))
+
+                # aTagsInLi = driver.find_elements_by_css_selector('li label')
+                # for a in aTagsInLi:
+                #     (print a.get_attribute('href'))
+
+                element = rf.waitinstance(driver, '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul', 1, 'show')
+                
+                for elemento in element:   
+                    texto = "{}\n".format(elemento.text)
+                    print(texto)
+                
+                # select = rf.Select(element)
+                # select.select_by_visible_text(str(df['responsavel']))
+
                 time.sleep(0.3)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[2]/label'.format(cont)
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
@@ -373,6 +402,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
 
                 # GST
                 time.sleep(0.3)
+                                #  //*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[28]/label
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[30]/label'.format(cont)
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
