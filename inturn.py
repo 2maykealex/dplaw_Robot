@@ -331,7 +331,7 @@ def incluirProcesso(urlPage, df, registro):
     rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
 
-def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
+def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, sigla):
     # Agendamentos
     print("criar agendamentos")
     element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu 
@@ -341,8 +341,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
     
     rf.checkPopUps(driver)
 
-    dataAberturaPasta = datetime.datetime.now()
-    # dataAberturaPasta = datetime.datetime.strptime("01/03/2019", "%d/%m/%Y")
+    # dataAberturaPasta = datetime.datetime.now()
+    dataAberturaPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
     dataAberturaPasta = dataAberturaPasta.date() + timedelta(days=1)
     dataAberturaPasta = format(dataAberturaPasta, "%d/%m/%Y")
 
@@ -363,7 +363,7 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
                 tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(cont) 
                 appointmentDate = dataAudiencia
-                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
+                agendamento = "{} - Audiência designada para dia {}/{}/{}".format(sigla, appointmentDate.day, appointmentDate.month, appointmentDate.year)
 
                 # respons. pelo cliente
                 time.sleep(0.3)
@@ -396,24 +396,23 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
                 tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(cont)
                 
-                # data = str(dataAudiencia)
+                appointmentDate = dataAudiencia
                 data = "{}/{}/{}".format(dataAudiencia.day, dataAudiencia.month, dataAudiencia.year)
 
-                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
-                appointmentDate = appointmentDate.date() - timedelta(days=2)
-                appointmentDate = format(appointmentDate, "%d/%m/%Y")
+                appointmentDate1 = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+                appointmentDate1 = appointmentDate1.date() - timedelta(days=2)
+                appointmentDate1 = format(appointmentDate1, "%d/%m/%Y")
 
                 diaAudiencia = int(dataAudiencia.day) - 2
 
                 wDay = calendar.weekday(dataAudiencia.year, dataAudiencia.month, diaAudiencia)
 
-                # if (appointmentDate.weekday() == 5):   #sábado
                 if (wDay == 5):   #sábado
-                    appointmentDate = appointmentDate.date() - timedelta(days=1)
+                    appointmentDate1 = appointmentDate1.date() - timedelta(days=1)
                 elif (wDay == 6): #domingo
-                    appointmentDate = appointmentDate.date() - timedelta(days=2)
+                    appointmentDate1 = appointmentDate1.date() - timedelta(days=2)
 
-                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
+                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate1)
                 
                 # operações
                 time.sleep(0.3)
@@ -433,9 +432,10 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(cont)
             
             appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
 
-            if (dataAberturaPasta.weekday() == 5):   #sábado
-                appointmentDate = appointmentDate.date() + timedelta(days=2)
+            if (appointmentDate1.weekday() == 5):   #sábado
+                appointmentDate1 = appointmentDate1.date() + timedelta(days=2)
 
             agendamento = "ANEXAR"
 
@@ -454,10 +454,10 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
 
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(cont)
             
-            # appointmentDate = dataAberturaPasta
             appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            if (dataAberturaPasta.weekday() == 5):   #sábado
-                appointmentDate = appointmentDate.date() + timedelta(days=2)
+            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            if (appointmentDate1.weekday() == 5):   #sábado
+                appointmentDate1 = appointmentDate1.date() + timedelta(days=2)
 
             agendamento = "Fotocópia integral"
 
@@ -482,7 +482,8 @@ def criarAgendamentos(dataAudiencia, horaAudienciaFormatada, sigla):
             tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(cont)
             
             appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            if (dataAberturaPasta.weekday() == 5):   #sábado
+            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            if (appointmentDate1.weekday() == 5):   #sábado
                 appointmentDate = appointmentDate.date() + timedelta(days=2)
                 
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(sigla)
@@ -656,18 +657,19 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         urlBack = driver.current_url
 
         #PARA TESTES
-        incluirProcesso(urlPage, df, item)
-        # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
-        driver.get(urlPage)   # Volta para a tela de pesquisa
+        # incluirProcesso(urlPage, df, item)
+        # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], df['horaAudiencia'], df['sigla'])
+        # driver.get(urlPage)   # Volta para a tela de pesquisa
         
-        # if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
-        #     incluirProcesso(urlPage, df, item)
-        #     criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
-        #     driver.get(urlPage)   # Volta para a tela de pesquisa
-        # else:            
-        #     rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
-        #     time.sleep(1.5)
-        #     driver.get(urlBack)
+        if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
+            incluirProcesso(urlPage, df, item)
+            # criarAgendamentos(df['dataAudiencia'], df['horaAudiencia'], df['sigla'])
+            time.sleep(0.5)
+            driver.get(urlPage)   # Volta para a tela de pesquisa
+        else:            
+            rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
+            time.sleep(1.5)
+            driver.get(urlBack)
         
         item = item + 1
     
