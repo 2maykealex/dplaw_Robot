@@ -282,7 +282,22 @@ def incluirProcesso(urlPage, df, registro):
 
     comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
     comboResponsavel.click()  # clica e abre as opções
-    
+
+    #recupera lista de DESTINATÁRIOS cadastrados no PROMAD 
+    xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
+    listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+
+    # RESPONSÁVEIS
+    y = 1
+    for item in listInputs:  #itera inputs recuperados, checa e clica
+        if (item.text == df['responsavel']):                         
+            xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
+            element = rf.waitinstance(driver, xPathItem, 1, 'click')
+            element.click()
+            time.sleep(0.3)        
+            break
+        y = y + 1
+
     element = rf.waitinstance(driver, responsavelXpath(df['responsavel']), 1, 'show')
     time.sleep(0.5)
     element.click() # seleciona o item desejado
@@ -365,7 +380,16 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 # tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[2]/label'.format(cont) 
                 tipoAgendamento = 'Audiência' 
                 appointmentDate = dataAudiencia
-                agendamento = "{} - Audiência designada para dia {}/{}/{}".format(sigla, appointmentDate.day, appointmentDate.month, appointmentDate.year)
+                
+                diaAudiencia = int(dataAudiencia.day)
+
+                data = "{}/{}/{}".format(str(diaAudiencia), dataAudiencia.month, dataAudiencia.year)
+
+                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+                
+                appointmentDate = format(appointmentDate, "%d/%m/%Y")
+
+                # agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate)
 
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
                 xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
@@ -402,23 +426,31 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 # tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[75]/label/span'.format(cont)
                 tipoAgendamento = 'Instruções para a Audiência'
                 
-                appointmentDate = dataAudiencia
-                data = "{}/{}/{}".format(dataAudiencia.day, dataAudiencia.month, dataAudiencia.year)
+                # appointmentDate = dataAudiencia
+                # dataAbPasta = dataAudiencia
 
-                appointmentDate1 = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
-                appointmentDate1 = appointmentDate1.date() - timedelta(days=2)
-                appointmentDate1 = format(appointmentDate1, "%d/%m/%Y")
+                data1 = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
 
-                diaAudiencia = int(dataAudiencia.day) - 2
+                dataIncrementada = data1.date() - timedelta(days=7)
 
-                wDay = calendar.weekday(dataAudiencia.year, dataAudiencia.month, diaAudiencia)
+                diaAudiencia = int(dataIncrementada.day)
+
+                wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAudiencia)
 
                 if (wDay == 5):   #sábado
-                    appointmentDate1 = appointmentDate1.date() - timedelta(days=1)
+                    diaAudiencia = diaAudiencia - 1
+                    # appointmentDate2 = appointmentDate1.date() - timedelta(days=1)
                 elif (wDay == 6): #domingo
-                    appointmentDate1 = appointmentDate1.date() - timedelta(days=2)
+                    diaAudiencia = diaAudiencia - 2
+                    # appointmentDate2 = appointmentDate1.date() - timedelta(days=2)
 
-                agendamento = "{} - Audiência designada para dia {}".format(sigla, appointmentDate1)
+                data = "{}/{}/{}".format(str(diaAudiencia), dataIncrementada.month, dataIncrementada.year)                
+
+                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+                
+                appointmentDate = format(appointmentDate, "%d/%m/%Y")
+
+                agendamento = "{} - Audiência designada para dia {}".format(sigla, str(appointmentDate))
                 
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
                 xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
@@ -448,11 +480,24 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[22]/label/span'.format(cont)
             tipoAgendamento = 'Anexar'
             
-            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
 
-            if (appointmentDate1.weekday() == 5):   #sábado
-                appointmentDate1 = appointmentDate1.date() + timedelta(days=2)
+            dataIncrementada = dataAbPasta.date() + timedelta(days=2)
+
+            diaAberturaPasta = int(dataIncrementada.day)
+
+            wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+            if (wDay == 5):   #sábado
+                diaAberturaPasta = diaAberturaPasta + 2
+            elif (wDay == 6): #domingo
+                diaAberturaPasta = diaAberturaPasta + 1
+
+            data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)                
+
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+            
+            appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
             agendamento = "ANEXAR"
 
@@ -481,10 +526,27 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[71]/label'.format(cont)
             tipoAgendamento = 'Fotocópia'
             
-            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            if (appointmentDate1.weekday() == 5):   #sábado
-                appointmentDate1 = appointmentDate1.date() + timedelta(days=2)
+            # appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            # appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            # if (appointmentDate1.weekday() == 5):   #sábado
+            #     appointmentDate1 = appointmentDate1.date() + timedelta(days=2)
+
+            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+
+            diaAberturaPasta = int(dataAbPasta.day) + 2
+
+            wDay = calendar.weekday(dataAbPasta.year, dataAbPasta.month, diaAberturaPasta)
+
+            if (wDay == 5):   #sábado
+                diaAberturaPasta = diaAberturaPasta + 2
+            elif (wDay == 6): #domingo
+                diaAberturaPasta = diaAberturaPasta + 1
+
+            data = "{}/{}/{}".format(str(diaAberturaPasta), dataAberturaPasta.month, dataAberturaPasta.year)                
+
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+            
+            appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
             agendamento = "Fotocópia integral"
 
@@ -517,10 +579,24 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # tipoAgendamento = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[34]/label/span'.format(cont)
             tipoAgendamento = 'Certificar Abertura de Pasta'
             
-            appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            if (appointmentDate1.weekday() == 5):   #sábado
-                appointmentDate = appointmentDate.date() + timedelta(days=2)
+            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            diaAberturaPasta = int(dataAbPasta.day) + 1
+            wDay = calendar.weekday(dataAbPasta.year, dataAbPasta.month, diaAberturaPasta)
+
+            if (wDay == 5):   #sábado
+                diaAberturaPasta = diaAberturaPasta + 2
+            elif (wDay == 6): #domingo
+                diaAberturaPasta = diaAberturaPasta + 1
+
+            data = "{}/{}/{}".format(str(diaAberturaPasta), dataAberturaPasta.month, dataAberturaPasta.year)
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")            
+            appointmentDate = format(appointmentDate, "%d/%m/%Y")
+
+
+            # appointmentDate = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            # appointmentDate1 = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            # if (appointmentDate1.weekday() == 5):   #sábado
+            #     appointmentDate = appointmentDate.date() + timedelta(days=2)
                 
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.".format(sigla)
             
@@ -539,17 +615,17 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                     break
                 y = y + 1
         
-        if (appointmentDate.day >= 10):
-            dia = appointmentDate.day
-        else:
-            dia = "0{}".format(appointmentDate.day)
+        # if (appointmentDate.day >= 10):
+        #     dia = appointmentDate.day
+        # else:
+        #     dia = "0{}".format(appointmentDate.day)
 
-        if (appointmentDate.month >= 10):
-            mes = appointmentDate.month  
-        else:
-            mes = "0{}".format(appointmentDate.month)
+        # if (appointmentDate.month >= 10):
+        #     mes = appointmentDate.month  
+        # else:
+        #     mes = "0{}".format(appointmentDate.month)
 
-        appointmentDate = "{}{}{}".format(dia, mes, str(appointmentDate.year))
+        # appointmentDate = "{}{}{}".format(dia, mes, str(appointmentDate.year))
 
         time.sleep(0.3)
         # combo destinatário - fechar
@@ -624,7 +700,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
 
                 time.sleep(0.3)
                 element.send_keys(hora)
-                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, dataAudiencia, hora)
+                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, appointmentDate, hora)
         else:
             agendamento = "AUDIÊNCIA NÃO MARCADA!"
             
@@ -720,7 +796,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
         #PARA TESTES
         incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], df['horaAudiencia'], df['sigla'], df['responsavel'], df['pasta'], item)
+        # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], df['horaAudiencia'], df['sigla'], df['responsavel'], df['pasta'], item)
         driver.get(urlPage)   # Volta para a tela de pesquisa
         
 
@@ -791,8 +867,8 @@ while True:
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        # rf.acessToIntegra(driver)
-                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        rf.acessToIntegra(driver)
+                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     
                     abrePasta(arquivoAbrirPasta, count)
             else:
@@ -800,8 +876,8 @@ while True:
                 if (driverIniciado == False):       
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)                        
-                    # rf.acessToIntegra(driver)
-                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    rf.acessToIntegra(driver)
+                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abrePasta(arquivoAbrirPasta)            
 
