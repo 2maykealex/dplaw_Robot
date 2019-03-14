@@ -79,20 +79,20 @@ def pesquisarPasta(pasta):
     time.sleep(0.3)
     print("pesquisar pasta {}".format(pasta))
     driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(1)
+    time.sleep(0.3)
 
-    try:
-        # SELECIONA O CLIENTE PESQUISADO
-        time.sleep(1)
-        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-        retorno = True
-
-    except:
-        # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros
+    try:        
+        #Checa se não existe registros para essa pasta
+        element = driver.find_element_by_id('loopVazio').is_displayed()
         hora = time.strftime("%H:%M:%S")
         print('{} - Não encontrou a pasta'.format(hora))
         retorno = False
-        
+
+    except:
+        # SELECIONA O CLIENTE PESQUISADO
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'show')        
+        retorno = True
+
     return retorno
 
 def incluirProcesso(urlPage, df, registro):
@@ -634,20 +634,19 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         urlBack = driver.current_url
 
         #PARA TESTES
-        incluirProcesso(urlPage, df, item)
-        criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-        driver.get(urlPage)   # Volta para a tela de pesquisa
+        # incluirProcesso(urlPage, df, item)
+        # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+        # driver.get(urlPage)   # Volta para a tela de pesquisa
         
-        #VER POR QUE NÃO RECARREGA A PAGINA DEPOIS DE CONFERIR QUE NÃO EXISTE
-        # if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
-        #     incluirProcesso(urlPage, df, item)
-        #     criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], df['horaAudiencia'], df['sigla'], df['responsavel'], df['pasta'], item)
-        #     time.sleep(0.5)
-        #     driver.get(urlPage)   # Volta para a tela de pesquisa
-        # else:
-        #     rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
-        #     time.sleep(1.5)
-        #     driver.get(urlBack)
+        if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
+            driver.get(urlPage)   # Volta para a tela de pesquisa
+            incluirProcesso(urlPage, df, item)
+            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+            time.sleep(0.5)            
+        else:
+            rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
+            time.sleep(1.5)
+            driver.get(urlBack)
         
         item = item + 1
     
