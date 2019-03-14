@@ -488,12 +488,12 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         element = rf.waitinstance(driver, xPathElement, 1, 'click')
         element.click()
 
-        # TIPO DE AGENDAMENTO  -  recupera lista de TIPOS cadastrados no PROMAD
-        xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li'.format(cont)
-        listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+        # # TIPO DE AGENDAMENTO  -  recupera lista de TIPOS cadastrados no PROMAD
+        xTiposAgendamentos = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li'.format(cont)
+        listTiposAgendamentos = driver.find_elements_by_xpath(xTiposAgendamentos) #recupera os inputs abaixo dessa tag
         
         y = 1
-        for item in listInputs:  #itera inputs recuperados, checa e clica
+        for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
             if (item.text == tipoAgendamento):
                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(cont, y)
                 element = rf.waitinstance(driver, xPathItem, 1, 'click')
