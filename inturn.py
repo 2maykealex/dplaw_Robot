@@ -103,50 +103,104 @@ def incluirProcesso(urlPage, df, registro):
     element = rf.waitinstance(driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
     element.click()
 
+    naoInserido = {}
+
     # Grupo internodd
-    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['gpProcesso']))
+    if (str(df['gpProcesso'])):
+        try:
+            element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['gpProcesso']))
+        except:        
+            naoInserido['gpProcesso'] = str(df['gpProcesso'])
+    else:
+        naoInserido['gpProcesso'] = 'Vazio'
+        
     time.sleep(0.5)
-
+    
+    #Numero do CNJ
     if (df['cnj'] != ''):
-        #Numero do CNJ
-        element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
-        element.clear()
-        element.send_keys(str(df['cnj']))
+        try:
+            element = rf.waitinstance(driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
+            element.clear()
+            element.send_keys(str(df['cnj']))
 
-        # Segredo de Justiça  #por padrão, será marcado não
-        element = driver.find_element_by_id("segredoJusticaN")
-        driver.execute_script("arguments[0].click();", element)
+            # Segredo de Justiça  #por padrão, será marcado não
+            element = driver.find_element_by_id("segredoJusticaN")
+            driver.execute_script("arguments[0].click();", element)
 
-        time.sleep(0.5)
-        element = driver.find_element_by_id("capturarAndamentosS")
-        driver.execute_script("arguments[0].click();", element)
+            time.sleep(0.5)
+            element = driver.find_element_by_id("capturarAndamentosS")
+            driver.execute_script("arguments[0].click();", element)
+        except:
+            naoInserido['cnj'] = str(df['cnj'])
+    else:
+        naoInserido['cnj'] = 'Vazio'        
+    
     time.sleep(0.5)
+
     #Numero do Processo
-    element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
-    element.clear()
-    element.send_keys(str(df['numProcesso']))
-    time.sleep(0.5)
-    # Status
-    element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['statusProcessual']))
+    if (str(df['numProcesso']) != ''):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
+            element.clear()
+            element.send_keys(str(df['numProcesso']))
+        except:
+            naoInserido['numProcesso'] = str(df['numProcesso'])
+    else:
+        naoInserido['numProcesso'] = 'vazio'
+    
     time.sleep(0.5)
 
-    ########### COLUNA 2 DA PÁGINA
+    # Status
+    if (str(df['statusProcessual'])):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['statusProcessual']))
+        except:
+            naoInserido['statusProcessual'] = str(df['statusProcessual'])
+    else:
+        naoInserido['statusProcessual'] = 'Vazio'
+        
+    time.sleep(0.5)
+
+    ###################################### 2ª COLUNA DA PÁGINA ######################################
     # Pasta
-    driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
+    if (str(df['pasta'])):
+        try:
+            driver.execute_script("document.getElementById('txtPasta').value='{}' ".format(str(df['pasta'])) )
+        except:
+            naoInserido['pasta'] = str(df['pasta'])
+    else:
+        naoInserido['pasta'] = 'Vazio'
+        
     time.sleep(0.5)
-    # Grupo Local trâmite
+
+    # Local trâmite - Campo 1
     if (df['localTr'] != ''):
-        element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 1, 'show')
-        select = rf.Select(element)
-        select.select_by_visible_text(str(df['localTr']))
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcNumeroVara"]', 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['localTr']))
+        except:
+            naoInserido['localTr'] = str(df['localTr'])
+    else:
+        naoInserido['localTr'] = 'Vazio'
+
     time.sleep(0.5)
-    element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['localTramite']))
+    
+    # Local trâmite - Campo 2
+    if (str(df['localTramite'])):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['localTramite']))
+        except:    
+            naoInserido['localTramite'] = str(df['localTramite'])
+    else:
+        naoInserido['localTramite'] = 'Vazio'
+
     time.sleep(0.5)
 
     # #PARA ATUALIZAR OS DADOS
@@ -158,15 +212,31 @@ def incluirProcesso(urlPage, df, registro):
 
     # Comarca
     if (str(df['comarca']) != ""):
-        element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
-        select = rf.Select(element)
-        select.select_by_visible_text(str(df['comarca']))
-        time.sleep(0.5)
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['comarca']))
+            time.sleep(0.5)
+        except:
+            naoInserido['comarca'] = str(df['comarca'])
     else:
-        element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
-        select = rf.Select(element)
-        select.select_by_visible_text("--Cadastrar Novo Item--")
-        time.sleep(0.5)
+        naoInserido['comarca'] = 'Vazio'
+    
+        # Nova Comarca
+        if (str(df['comarcaNova']) != ''):
+            try:        
+                element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+                select = rf.Select(element)
+                select.select_by_visible_text("--Cadastrar Novo Item--")
+                time.sleep(0.5)
+
+                element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
+                element.send_keys(str(df['comarcaNova']))
+                time.sleep(0.5)
+            except:
+                naoInserido['comarcaNova'] = str(df['comarcaNova'])
+        else:
+            naoInserido['comarcaNova'] = 'Vazio'
 
         # #PARA ATUALIZAR OS DADOS
         # logAtualizaPromad = os.getcwd() + "\\logs\\_Comarcas.txt"
@@ -174,18 +244,21 @@ def incluirProcesso(urlPage, df, registro):
         # for elemento in element.find_elements_by_tag_name('option'):
         #     texto = "{}\n".format(elemento.text)
         #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
-
-        element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
-        element.send_keys(str(df['comarcaNova']))
-        time.sleep(0.5)
     
     # UF
-    element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
-    select = rf.Select(element)
-    select.select_by_visible_text(str(df['uf']))
+    if (str(df['uf'])):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
+            select = rf.Select(element)
+            select.select_by_visible_text(str(df['uf']))
+        except:        
+            naoInserido['uf'] = str(df['uf'])
+    else:
+        naoInserido['uf'] = 'Vazio'
+
     time.sleep(0.5)
 
-    # RESPONSÁVEL  
+    # RESPONSÁVEL
     driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
     comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
@@ -196,40 +269,75 @@ def incluirProcesso(urlPage, df, registro):
     listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
     # RESPONSÁVEIS
-    y = 1
-    for item in listInputs:  #itera inputs recuperados, checa e clica
-        if (item.text == df['responsavel']):
-            xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-            element = rf.waitinstance(driver, xPathItem, 1, 'click')
-            element.click()
-            time.sleep(0.3)
-            break
-        y = y + 1
+    if (df['responsavel']):   #condição para evitar percorrer a lista se for "Vazio"
+        try:
+            y = 1
+            for item in listInputs:  #itera inputs recuperados, checa e clica
+                if (item.text == df['responsavel']):
+                    xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
+                    element = rf.waitinstance(driver, xPathItem, 1, 'click')
+                    element.click()
+                    time.sleep(0.3)
+                    break
+                y = y + 1
+        except:
+            naoInserido['responsavel'] = str(df['responsavel'])
+    else:
+        naoInserido['responsavel'] = 'Vazio'
     
     comboResponsavel.click() # clica para fechar as opções do combo
     driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
     time.sleep(0.5)
+
     # Data da Contratação
-    driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])))
+    if (str(df['dataContratacao'])):
+        try:
+            driver.execute_script("document.getElementById('txtDataContratacao').value='{}' ".format(str(df['dataContratacao'])))
+        except:
+            naoInserido['dataContratacao'] = str(df['dataContratacao'])
+    else:
+        naoInserido['dataContratacao'] = 'Vazio'
+        
     time.sleep(0.5)
+
     # Valor da Causa
-    driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
+    if (str(df['vCausa'])):
+        try:
+            driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
+        except:            
+            naoInserido['vCausa'] = str(df['vCausa'])
+    else:
+        naoInserido['vCausa'] = 'Vazio'
+
     time.sleep(0.5)
 
     #Obtém o Num da nova pasta a ser aberta
-    time.sleep(1)
-    element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
-    idNovaPasta = element.get_attribute("innerHTML")
-    idNovaPasta = idNovaPasta[14:].strip()
+    try:
+        element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
+        idNovaPasta = element.get_attribute("innerHTML")
+        idNovaPasta = idNovaPasta[14:].strip()
+    except:
+        naoInserido['idDoProcesso'] = 'Não recuperado'
 
     # Abre a aba Parte Adversa
     element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
     element.click()
+    
+    time.sleep(0.5)
+    rf.checkPopUps(driver)
+
     # Parte Adversa
-    element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
-    element.send_keys(str(df['adversa']))
+    if (str(df['adversa'])):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
+            element.send_keys(str(df['adversa']))
+        except:        
+            naoInserido['adversa'] = str(df['adversa'])
+    else:
+        naoInserido['adversa'] = 'Vazio'
 
     time.sleep(0.5)
+
     # Botão salvar
     element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
     element.click()
@@ -245,6 +353,11 @@ def incluirProcesso(urlPage, df, registro):
         time.sleep(0.5)
     except:
         pass
+
+    if (naoInserido):
+        complemento = '{} | Não foi gravado esses dados: '.format(complemento)
+        for k, v in naoInserido.items():
+            complemento = '{} {}: {} | '.format(complemento, k, v)
 
     rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
     time.sleep(1.5)
@@ -265,7 +378,9 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
     complementoAgendamento = ""
     cont = 0
     for x in range(5):
-
+        
+        rf.checkPopUps(driver)
+            
         if (dataAudiencia != ""):  #PARA INICIAR NO 1º AGENDAMENTO
             cont = x + 1
         else:
@@ -398,6 +513,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         elif (x == 3): #tipo Fotocópia
             time.sleep(0.5)
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
+
             # combo destinatário - abrir
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
@@ -481,12 +597,13 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
         element = rf.waitinstance(driver, xPathElement, 1, 'click')
         element.click()
-        time.sleep(0.3)
+        time.sleep(1)
 
         # combo TIPO - ABRIR
         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/button'.format(cont)
         element = rf.waitinstance(driver, xPathElement, 1, 'click')
         element.click()
+        time.sleep(1)
 
         # # TIPO DE AGENDAMENTO  -  recupera lista de TIPOS cadastrados no PROMAD
         xTiposAgendamentos = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li'.format(cont)
@@ -501,7 +618,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 time.sleep(0.3)
                 break
             y = y + 1
-
+            
         # CAMPO QUANDO
         time.sleep(0.3)
         xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(cont)
@@ -603,6 +720,8 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['cnj']              = dfExcel[item, 3]
         numProcesso = dfExcel[item, 4]
         numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
+        if (numProcesso == '-....'):
+            numProcesso = ''
         df['numProcesso']      = numProcesso
         df['gpProcesso']       = dfExcel[item, 5]
         df['localTr']          = dfExcel[item, 6]
