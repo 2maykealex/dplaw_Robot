@@ -838,6 +838,10 @@ while True:
 
             if (file != ""):
                 os.remove(infoLog)
+                fileExecuted = pathExecutados + "\\{}".format(file)
+                if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                    os.remove(fileExecuted)                    
+                
                 shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
 
     if (driverIniciado == True):
