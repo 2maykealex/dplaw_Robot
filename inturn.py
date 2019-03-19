@@ -754,23 +754,32 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
         #PARA TESTES
         # incluirProcesso(urlPage, df, item)
-        # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-        # driver.get(urlPage)   # Volta para a tela de pesquisa
-        
-        if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
-            driver.get(urlPage)   # Volta para a tela de pesquisa
+        try:
             incluirProcesso(urlPage, df, item)
-            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-            time.sleep(0.5)            
-        else:
-            rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
-            time.sleep(1.5)
-            driver.get(urlBack)
-        
-        item = item + 1
+        except:
+            errorFound = True
+            print('Erro ao incluir nova pasta')
+            return False
     
+    # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+    driver.get(urlPage)   # Volta para a tela de pesquisa
+    
+    # if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
+    #     driver.get(urlPage)   # Volta para a tela de pesquisa
+    #     incluirProcesso(urlPage, df, item)
+    #     criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+    #     time.sleep(0.5)            
+    # else:
+    #     rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
+    #     time.sleep(1.5)
+    #     driver.get(urlBack)
+    
+    item = item + 1
+
+
     rf.createLog(logFile, '_________________________________________________________________')
     rf.createLog(logFile, 'FIM')
+    return True
 
 #============================PROGRAMA PRINCIPAL==============================
 
@@ -825,7 +834,7 @@ while True:
                         # rf.acessToIntegra(driver)
                         rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     
-                    abrePasta(arquivoAbrirPasta, count)
+                    abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
             else:
                 print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):
@@ -834,15 +843,20 @@ while True:
                     # rf.acessToIntegra(driver)
                     rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
-                abrePasta(arquivoAbrirPasta)
+                abreNovaPasta = abrePasta(arquivoAbrirPasta)
 
-            if (file != ""):
-                os.remove(infoLog)
-                fileExecuted = pathExecutados + "\\{}".format(file)
-                if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
-                    os.remove(fileExecuted)                    
-                
-                shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+            if (abreNovaPasta):
+                if (file != ""):
+                    os.remove(infoLog)
+                    fileExecuted = pathExecutados + "\\{}".format(file)
+                    if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                        os.remove(fileExecuted)                    
+                    
+                    shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+            else:
+                driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                driver.quit()
+                break
 
     if (driverIniciado == True):
         driverIniciado = False
