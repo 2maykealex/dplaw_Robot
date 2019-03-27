@@ -81,7 +81,7 @@ def pesquisarPasta(pasta):
     driver.find_element_by_id("btnPesquisar").click()
     time.sleep(0.3)
 
-    try:        
+    try:
         #Checa se não existe registros para essa pasta
         element = driver.find_element_by_id('loopVazio').is_displayed()
         hora = time.strftime("%H:%M:%S")
@@ -90,7 +90,7 @@ def pesquisarPasta(pasta):
 
     except:
         # SELECIONA O CLIENTE PESQUISADO
-        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'show')        
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'show')
         retorno = True
 
     return retorno
@@ -111,13 +111,13 @@ def incluirProcesso(urlPage, df, registro):
             element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')
             select = rf.Select(element)
             select.select_by_visible_text(str(df['gpProcesso']))
-        except:        
+        except:
             naoInserido['gpProcesso'] = str(df['gpProcesso'])
     else:
         naoInserido['gpProcesso'] = 'Vazio'
-        
+
     time.sleep(0.5)
-    
+
     #Numero do CNJ
     if (df['cnj'] != ''):
         try:
@@ -135,7 +135,7 @@ def incluirProcesso(urlPage, df, registro):
         except:
             naoInserido['cnj'] = str(df['cnj'])
     else:
-        naoInserido['cnj'] = 'Vazio'        
+        naoInserido['cnj'] = 'Vazio'
     
     time.sleep(0.5)
 
@@ -244,7 +244,7 @@ def incluirProcesso(urlPage, df, registro):
         # for elemento in element.find_elements_by_tag_name('option'):
         #     texto = "{}\n".format(elemento.text)
         #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
-    
+
     # UF
     if (str(df['uf'])):
         try:
@@ -297,7 +297,7 @@ def incluirProcesso(urlPage, df, registro):
             naoInserido['dataContratacao'] = str(df['dataContratacao'])
     else:
         naoInserido['dataContratacao'] = 'Vazio'
-        
+
     time.sleep(0.5)
 
     # Valor da Causa
@@ -331,7 +331,7 @@ def incluirProcesso(urlPage, df, registro):
         try:
             element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
             element.send_keys(str(df['adversa']))
-        except:        
+        except:
             naoInserido['adversa'] = str(df['adversa'])
     else:
         naoInserido['adversa'] = 'Vazio'
@@ -347,9 +347,9 @@ def incluirProcesso(urlPage, df, registro):
 
     try:
         element = driver.find_element_by_id("popup_ok")
-        driver.execute_script("arguments[0].click();", element)        
+        driver.execute_script("arguments[0].click();", element)
         print('pop up OK')
-        complemento = " | A Parte adversa - {} - tem outros processos registrados no sistema!".format(str(df['adversa']))
+        complemento = " | A Parte adversa - {} - tem outros processos registrados no sistema! |".format(str(df['adversa']))
         time.sleep(0.5)
     except:
         pass
@@ -359,8 +359,9 @@ def incluirProcesso(urlPage, df, registro):
         for k, v in naoInserido.items():
             complemento = '{} {}: {} | '.format(complemento, k, v)
 
-    rf.createLog(logFile, "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento))
-    time.sleep(1.5)
+    message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
+    time.sleep(0.5)
+    return message
 
 def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, sigla, responsavel, pasta, registro):
     # Agendamentos
@@ -378,9 +379,8 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
     complementoAgendamento = ""
     cont = 0
     for x in range(5):
-        
         rf.checkPopUps(driver)
-            
+
         if (dataAudiencia != ""):  #PARA INICIAR NO 1º AGENDAMENTO
             cont = x + 1
         else:
@@ -391,16 +391,16 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             if (dataAudiencia != ""):
                 time.sleep(0.5)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
-                
+
                 # combo destinatário - abrir
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
 
-                tipoAgendamento = 'Audiência'              
+                tipoAgendamento = 'Audiência'
                 appointmentDate = dataAudiencia
                 diaAudiencia = int(dataAudiencia.day)
                 data = "{}/{}/{}".format(str(diaAudiencia), dataAudiencia.month, dataAudiencia.year)
-                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")                
+                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
                 agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
@@ -421,9 +421,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                         time.sleep(0.3)
                     if (found >= 3):
                         break
-
                     y = y + 1
-
                 time.sleep(0.3)
             else:
                 continue
@@ -432,7 +430,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             if (dataAudiencia != ""):
                 time.sleep(0.5)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
-                
+
                 # combo destinatário - abrir
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
@@ -453,7 +451,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")                
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
                 agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
-                
+
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
                 xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
                 listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
@@ -479,7 +477,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
 
-            tipoAgendamento = 'Anexar'            
+            tipoAgendamento = 'Anexar'
             dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
             dataIncrementada = dataAbPasta.date() + timedelta(days=1)
             diaAberturaPasta = int(dataIncrementada.day)
@@ -491,7 +489,8 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 diaAberturaPasta = diaAberturaPasta + 1
 
             data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")            
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "ANEXAR"
 
@@ -508,7 +507,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                     element.click()
                     time.sleep(0.3)
                     break
-                y = y + 1 
+                y = y + 1
 
         elif (x == 3): #tipo Fotocópia
             time.sleep(0.5)
@@ -530,7 +529,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 diaAberturaPasta = diaAberturaPasta + 1
 
             data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")            
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "Fotocópia integral"
 
@@ -547,7 +546,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
                     found = found + 1
-                    time.sleep(0.3)                  
+                    time.sleep(0.3)
                 if (found >= 2):
                     break
                 y = y + 1
@@ -575,7 +574,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")            
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.{}".format(sigla, complementoAgendamento)
-            
+
             #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
             xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
             listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
@@ -608,7 +607,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         # # TIPO DE AGENDAMENTO  -  recupera lista de TIPOS cadastrados no PROMAD
         xTiposAgendamentos = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[4]/td/div[2]/ul/li'.format(cont)
         listTiposAgendamentos = driver.find_elements_by_xpath(xTiposAgendamentos) #recupera os inputs abaixo dessa tag
-        
+
         y = 1
         for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
             if (item.text == tipoAgendamento):
@@ -618,7 +617,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 time.sleep(0.3)
                 break
             y = y + 1
-            
+
         # CAMPO QUANDO
         time.sleep(0.3)
         xPathElement = '//*[@id="txtDataInicialAgendaProcesso{}"]'.format(cont)
@@ -628,7 +627,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         element = rf.waitinstance(driver, xPathElement, 1, 'show')
         element.send_keys(appointmentDate)
         time.sleep(0.3)
-        
+
         try: #se o calendário estiver aberto, será fechado
             driver.execute_script("$('#ui-datepicker-div').css('display', 'none');") #torna elemento invisível novamente
         except:
@@ -666,7 +665,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 element.send_keys(horaAudienciaFormatada)
         else:
             pass
-            
+
         # campo agendamento
         time.sleep(0.3)
         xPathElement = '//*[@id="txtDescricaoAgendaProcesso{}"]'.format(cont)
@@ -729,7 +728,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['comarca']          = dfExcel[item, 8]
         df['uf']               = dfExcel[item, 9]        
         valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
-        df['vCausa']           = valorCausa.replace('.',',')        
+        df['vCausa']           = valorCausa.replace('.',',')
         df['statusProcessual'] = dfExcel[item, 11]
         df['razaoSocial']      = dfExcel[item, 12]
         df['gpCliente']        = dfExcel[item, 13]
@@ -743,7 +742,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         else:
             df['horaAudiencia'] = "00:00"
             horaAudiencia = df['horaAudiencia']
-        
+
         if (dfExcel[item, 18]):
             df['comarcaNova'] = dfExcel[item, 18]
         else:
@@ -755,27 +754,22 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         #PARA TESTES
         # incluirProcesso(urlPage, df, item)
         try:
-            incluirProcesso(urlPage, df, item)
+            messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
         except:
-            errorFound = True
             print('Erro ao incluir nova pasta')
             return False
-    
-    # criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-    driver.get(urlPage)   # Volta para a tela de pesquisa
-    
-    # if (pesquisarPasta(df['pasta']) == False):        #se NÃO existir a pasta, será feito sua abertura
-    #     driver.get(urlPage)   # Volta para a tela de pesquisa
-    #     incluirProcesso(urlPage, df, item)
-    #     criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-    #     time.sleep(0.5)            
-    # else:
-    #     rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no Promad! Cliente {} - Adverso: {}.".format(item, str(df['pasta']), str(df['razaoSocial']), str(df['adversa'])) )
-    #     time.sleep(1.5)
-    #     driver.get(urlBack)
-    
-    item = item + 1
 
+        try:
+            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+            messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+        except:
+            print('Erro ao incluir Agendamentos')
+            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+
+        rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
+        driver.get(urlPage)   # Volta para a tela de pesquisa
+
+    item = item + 1
 
     rf.createLog(logFile, '_________________________________________________________________')
     rf.createLog(logFile, 'FIM')
@@ -822,26 +816,26 @@ while True:
 
             if (os.path.isfile(logFile)):
                 linha, count = rf.checkEndFile(logFile)
-                              
+
                 if (linha == "FIM"): #ultima linha do arquivo
                     print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
                     
-                else:                              # continua o preenchimento do log já existente
+                else: # continua o preenchimento do log já existente
                     if (driverIniciado == False):
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        # rf.acessToIntegra(driver)
-                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
-                    
+                        rf.acessToIntegra(driver)
+                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+
                     abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
             else:
                 print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
-                    # rf.acessToIntegra(driver)
-                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    rf.acessToIntegra(driver)
+                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abreNovaPasta = abrePasta(arquivoAbrirPasta)
 
@@ -850,8 +844,8 @@ while True:
                     os.remove(infoLog)
                     fileExecuted = pathExecutados + "\\{}".format(file)
                     if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
-                        os.remove(fileExecuted)                    
-                    
+                        os.remove(fileExecuted)
+
                     shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
