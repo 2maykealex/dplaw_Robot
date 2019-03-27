@@ -259,18 +259,18 @@ def incluirProcesso(urlPage, df, registro):
     time.sleep(0.5)
 
     # RESPONSÁVEL
-    driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-
-    comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
-    comboResponsavel.click()  # clica e abre as opções
-
-    #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
-    xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
-    listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
-
-    # RESPONSÁVEIS
     if (df['responsavel']):   #condição para evitar percorrer a lista se for "Vazio"
         try:
+            driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
+
+            comboResponsavel = rf.waitinstance(driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
+            comboResponsavel.click()  # clica e abre as opções
+
+            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
+            xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
+            listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+
+            # CARREGA LISTA DE RESPONSÁVEIS
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
                 if (item.text == df['responsavel']):
@@ -280,13 +280,14 @@ def incluirProcesso(urlPage, df, registro):
                     time.sleep(0.3)
                     break
                 y = y + 1
+
+            comboResponsavel.click() # clica para fechar as opções do combo
+            driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
         except:
             naoInserido['responsavel'] = str(df['responsavel'])
     else:
         naoInserido['responsavel'] = 'Vazio'
-    
-    comboResponsavel.click() # clica para fechar as opções do combo
-    driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
+
     time.sleep(0.5)
 
     # Data da Contratação
@@ -760,8 +761,14 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             return False
 
         try:
-            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-            messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+            if (df['responsavel']):
+                criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                if (df['dataAudiencia'] != ""):
+                    messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+                else:
+                    messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+            else:
+                messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
         except:
             print('Erro ao incluir Agendamentos')
             messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
@@ -769,7 +776,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
         driver.get(urlPage)   # Volta para a tela de pesquisa
 
-    item = item + 1
+        item = item + 1
 
     rf.createLog(logFile, '_________________________________________________________________')
     rf.createLog(logFile, 'FIM')
