@@ -136,7 +136,7 @@ def incluirProcesso(urlPage, df, registro):
             naoInserido['cnj'] = str(df['cnj'])
     else:
         naoInserido['cnj'] = 'Vazio'
-    
+
     time.sleep(0.5)
 
     #Numero do Processo
@@ -149,7 +149,7 @@ def incluirProcesso(urlPage, df, registro):
             naoInserido['numProcesso'] = str(df['numProcesso'])
     else:
         naoInserido['numProcesso'] = 'vazio'
-    
+
     time.sleep(0.5)
 
     # Status
@@ -162,7 +162,7 @@ def incluirProcesso(urlPage, df, registro):
             naoInserido['statusProcessual'] = str(df['statusProcessual'])
     else:
         naoInserido['statusProcessual'] = 'Vazio'
-        
+
     time.sleep(0.5)
 
     ###################################### 2ª COLUNA DA PÁGINA ######################################
@@ -221,7 +221,7 @@ def incluirProcesso(urlPage, df, registro):
             naoInserido['comarca'] = str(df['comarca'])
     else:
         naoInserido['comarca'] = 'Vazio'
-    
+
         # Nova Comarca
         if (str(df['comarcaNova']) != ''):
             try:        
@@ -251,7 +251,7 @@ def incluirProcesso(urlPage, df, registro):
             element = rf.waitinstance(driver, '//*[@id="txtUf"]', 1, 'show')
             select = rf.Select(element)
             select.select_by_visible_text(str(df['uf']))
-        except:        
+        except:
             naoInserido['uf'] = str(df['uf'])
     else:
         naoInserido['uf'] = 'Vazio'
@@ -453,7 +453,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
                 agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
 
-                #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
+                #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
                 xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
                 listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
@@ -495,7 +495,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "ANEXAR"
 
-            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
+            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
             xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
             listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
@@ -534,7 +534,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "Fotocópia integral"
 
-            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
+            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
             xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
             listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
@@ -572,7 +572,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 diaAberturaPasta = diaAberturaPasta + 1
 
             data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")            
+            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.{}".format(sigla, complementoAgendamento)
 
@@ -727,7 +727,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         df['localTr']          = dfExcel[item, 6]
         df['localTramite']     = dfExcel[item, 7]
         df['comarca']          = dfExcel[item, 8]
-        df['uf']               = dfExcel[item, 9]        
+        df['uf']               = dfExcel[item, 9]
         valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
         df['vCausa']           = valorCausa.replace('.',',')
         df['statusProcessual'] = dfExcel[item, 11]
@@ -752,8 +752,8 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         time.sleep(1)
         urlBack = driver.current_url
 
-        #PARA TESTES
-        # incluirProcesso(urlPage, df, item)
+        # incluirProcesso(urlPage, df, item)   #PARA TESTES
+
         try:
             messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
         except:
@@ -832,8 +832,8 @@ while True:
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
                         driver = rf.iniciaWebdriver(False)
-                        rf.acessToIntegra(driver)
-                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        # rf.acessToIntegra(driver)
+                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                     abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
             else:
@@ -841,8 +841,8 @@ while True:
                 if (driverIniciado == False):
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
-                    rf.acessToIntegra(driver)
-                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    # rf.acessToIntegra(driver)
+                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
 
                 abreNovaPasta = abrePasta(arquivoAbrirPasta)
 
