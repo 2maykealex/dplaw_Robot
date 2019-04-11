@@ -16,6 +16,7 @@ import pyexcel as pe
 import os
 import platform
 import time
+import psutil  # to check pIDs
 
 def checkPopUps(driver):
     popupOk = False
@@ -178,22 +179,26 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
 
 def acessToIntegra(driver, login="robo@dplaw.com.br", password="dplaw00612"):
     # acessando a primeira página do sistema promad    
-    driver.maximize_window()
-    # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
-    driver.get('http://www.integra.adv.br/')
+    try:
+        driver.maximize_window()
+        # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
+        driver.get('http://www.integra.adv.br/')
 
-    # realizando o login no sistema
-    element = waitinstance(driver, "login_email", 1, 'show', 'id')
-    element.send_keys("{}".format(login))
-    driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
-    time.sleep(1)
-    # createLog(arquivo, 'FAZENDO LOGIN NO SITE')
-    element = driver.find_element_by_tag_name('button')
-    element.click()
+        # realizando o login no sistema
+        element = waitinstance(driver, "login_email", 1, 'show', 'id')
+        element.send_keys("{}".format(login))
+        driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
+        time.sleep(1)
+        # createLog(arquivo, 'FAZENDO LOGIN NO SITE')
+        element = driver.find_element_by_tag_name('button')
+        element.click()
 
-    time.sleep(1)    # Verifica se existe um pop-up no início e o fecha
+        time.sleep(1)    # Verifica se existe um pop-up no início e o fecha
 
-    checkPopUps(driver)
+        checkPopUps(driver)
+        return True
+    except:
+        return False
     
 def logoutIntegra(driver):
     driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
@@ -236,3 +241,21 @@ def acessToPJE(arquivo, driver):
     # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
     
     # createLog("", 'FAZENDO LOGIN NO SITE')
+
+def createPID(pidName, pidNumber):
+    logsPath = os.getcwd()+"\\pIDs"
+    logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
+
+    if (os.path.exists(logsPath) == False):
+        os.mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
+
+    if (not(os.path.isfile(logFile))): #se o log não existir, cria-se
+        arquivo =  open(logFile, 'w')
+        arquivo.close()
+        return True
+
+def checkPID(pidNumber):
+    if psutil.pid_exists(pidNumber):
+        print ("pid {} existe".format(pidNumber))
+        return True
+    return False
