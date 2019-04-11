@@ -42,24 +42,28 @@ def uploadFile():
 
 def pesquisarCliente(cliente):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    driver.get(urlPage)
+    try:
+        urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+        driver.get(urlPage)
 
-    rf.checkPopUps(driver)
+        rf.checkPopUps(driver)
 
-    # buscando o cliente e acessando sua pasta
-    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
-    time.sleep(0.5)
-    print("pesquisar cliente {}".format(cliente))
-    driver.find_element_by_id("btnPesquisar").click()
+        # buscando o cliente e acessando sua pasta
+        driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
+        time.sleep(0.5)
+        print("pesquisar cliente {}".format(cliente))
+        driver.find_element_by_id("btnPesquisar").click()
 
-    # ATÉ A URL NÃO MUDAR
-    time.sleep(0.5)
-    # SELECIONA O CLIENTE PESQUISADO
-    element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-    time.sleep(0.5)
-    element.click()
-    time.sleep(0.5)
+        # ATÉ A URL NÃO MUDAR
+        time.sleep(0.5)
+        # SELECIONA O CLIENTE PESQUISADO
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
+        time.sleep(0.5)
+        element.click()
+        time.sleep(0.5)
+        return True
+    except:
+        return False
 
 def pesquisarPasta(pasta):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
@@ -321,48 +325,63 @@ def incluirProcesso(urlPage, df, registro):
         naoInserido['idDoProcesso'] = 'Não recuperado'
 
     # Abre a aba Parte Adversa
-    element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
-    element.click()
-    
-    time.sleep(0.5)
-    rf.checkPopUps(driver)
+    # print('url: '+ driver.current_url)
 
-    # Parte Adversa
-    if (str(df['adversa'])):
-        try:
-            element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
-            element.send_keys(str(df['adversa']))
-        except:
-            naoInserido['adversa'] = str(df['adversa'])
-    else:
-        naoInserido['adversa'] = 'Vazio'
+    # if (rf.check_host(driver.current_url)):
+    #     pass
+    # else:
+    #     print("Sem Conexão - A execução será reiniciada!")
+    #     return False
 
-    time.sleep(0.5)
-
-    # Botão salvar
-    element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
-    element.click()
-
-    time.sleep(0.5)
-    complemento = ""
-
+    status = True
     try:
-        element = driver.find_element_by_id("popup_ok")
-        driver.execute_script("arguments[0].click();", element)
-        print('pop up OK')
-        complemento = " | A Parte adversa - {} - tem outros processos registrados no sistema! |".format(str(df['adversa']))
+        element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
+        element.click()
+        
         time.sleep(0.5)
+        rf.checkPopUps(driver)
+
+        # Parte Adversa
+        if (str(df['adversa'])):
+            try:
+                element = rf.waitinstance(driver, '//*[@id="txtNome"]', 1, 'show')
+                element.send_keys(str(df['adversa']))
+            except:
+                naoInserido['adversa'] = str(df['adversa'])
+        else:
+            naoInserido['adversa'] = 'Vazio'
+
+        time.sleep(0.5)
+
+        # Botão salvar
+        element = rf.waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
+        element.click()
+
+        time.sleep(0.5)
+        complemento = ""
+
+        try:
+            element = driver.find_element_by_id("popup_ok")
+            driver.execute_script("arguments[0].click();", element)
+            print('pop up OK')
+            complemento = " | A Parte adversa - {} - tem outros processos registrados no sistema! |".format(str(df['adversa']))
+            time.sleep(0.5)
+        except:
+            pass
+
+        if (naoInserido):
+            complemento = '{} Não foi gravado esses dados: '.format(complemento)
+            for k, v in naoInserido.items():
+                complemento = '{} {}: {} | '.format(complemento, k, v)
+
+        message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
+        # status = True
     except:
-        pass
+        message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
+        status = False
 
-    if (naoInserido):
-        complemento = '{} | Não foi gravado esses dados: '.format(complemento)
-        for k, v in naoInserido.items():
-            complemento = '{} {}: {} | '.format(complemento, k, v)
-
-    message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
     time.sleep(0.5)
-    return message
+    return status, message
 
 def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, sigla, responsavel, pasta, registro):
     # Agendamentos
@@ -706,83 +725,103 @@ def abrePasta(arquivoAbrirPasta, item = 1):
     cliente = ''
     cliente = dfExcel[1, 12]
 
-    pesquisarCliente(cliente) #Pesquisa cliente, depois faz looping no seu arquivo adicionando os seus processos
+    try:
+        searchClient = pesquisarCliente(cliente)
+    except:
+        return False
 
-    urlPage = driver.current_url
-    while (item <= count):
-        df = {}
+    if (searchClient):
+        urlPage = driver.current_url
+        while (item <= count):
+            df = {}
 
-        df['pasta']            = dfExcel[item, 0]
-        df['adversa']          = dfExcel[item, 1]
-        dataContratacao        = (dfExcel[item, 2])
-        dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
-        df['dataContratacao']  = dataContratacao
-        df['cnj']              = dfExcel[item, 3]
-        numProcesso = dfExcel[item, 4]
-        numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
-        if (numProcesso == '-....'):
-            numProcesso = ''
-        df['numProcesso']      = numProcesso
-        df['gpProcesso']       = dfExcel[item, 5]
-        df['localTr']          = dfExcel[item, 6]
-        df['localTramite']     = dfExcel[item, 7]
-        df['comarca']          = dfExcel[item, 8]
-        df['uf']               = dfExcel[item, 9]
-        valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
-        df['vCausa']           = valorCausa.replace('.',',')
-        df['statusProcessual'] = dfExcel[item, 11]
-        df['razaoSocial']      = dfExcel[item, 12]
-        df['gpCliente']        = dfExcel[item, 13]
-        df['responsavel']      = dfExcel[item, 14]
-        df['sigla']            = dfExcel[item, 15]
-        df['dataAudiencia']    = dfExcel[item, 16]
+            df['pasta']            = dfExcel[item, 0]
+            df['adversa']          = dfExcel[item, 1]
+            dataContratacao        = (dfExcel[item, 2])
+            dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
+            df['dataContratacao']  = dataContratacao
+            df['cnj']              = dfExcel[item, 3]
+            numProcesso = dfExcel[item, 4]
+            numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
+            if (numProcesso == '-....'):
+                numProcesso = ''
+            df['numProcesso']      = numProcesso
+            df['gpProcesso']       = dfExcel[item, 5]
+            df['localTr']          = dfExcel[item, 6]
+            df['localTramite']     = dfExcel[item, 7]
+            df['comarca']          = dfExcel[item, 8]
+            df['uf']               = dfExcel[item, 9]
+            valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
+            df['vCausa']           = valorCausa.replace('.',',')
+            df['statusProcessual'] = dfExcel[item, 11]
+            df['razaoSocial']      = dfExcel[item, 12]
+            df['gpCliente']        = dfExcel[item, 13]
+            df['responsavel']      = dfExcel[item, 14]
+            df['sigla']            = dfExcel[item, 15]
+            df['dataAudiencia']    = dfExcel[item, 16]
 
-        if (dfExcel[item, 17]):
-            df['horaAudiencia'] = dfExcel[item, 17]
-            horaAudiencia = df['horaAudiencia'].strftime("%H:%M")
-        else:
-            df['horaAudiencia'] = "00:00"
-            horaAudiencia = df['horaAudiencia']
-
-        if (dfExcel[item, 18]):
-            df['comarcaNova'] = dfExcel[item, 18]
-        else:
-            df['comarcaNova'] = ""
-
-        time.sleep(1)
-        urlBack = driver.current_url
-
-        # incluirProcesso(urlPage, df, item)   #PARA TESTES
-
-        try:
-            messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
-        except:
-            print('Erro ao incluir nova pasta')
-            return False
-
-        try:
-            if (df['responsavel']):
-                criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-                if (df['dataAudiencia'] != ""):
-                    messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
-                else:
-                    messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+            if (dfExcel[item, 17]):
+                df['horaAudiencia'] = dfExcel[item, 17]
+                horaAudiencia = df['horaAudiencia'].strftime("%H:%M")
             else:
-                messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
-        except:
-            print('Erro ao incluir Agendamentos')
-            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+                df['horaAudiencia'] = "00:00"
+                horaAudiencia = df['horaAudiencia']
 
-        rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
-        driver.get(urlPage)   # Volta para a tela de pesquisa
+            if (dfExcel[item, 18]):
+                df['comarcaNova'] = dfExcel[item, 18]
+            else:
+                df['comarcaNova'] = ""
 
-        item = item + 1
+            time.sleep(1)
+            urlBack = driver.current_url
 
-    rf.createLog(logFile, '_________________________________________________________________')
-    rf.createLog(logFile, 'FIM')
-    return True
+            # incluirProcesso(urlPage, df, item)   #PARA TESTES
+
+            try:
+                status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
+            except:
+                print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                return False
+
+            try: #checa se redirecionamento ocorreu 
+                element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  
+            except:
+                print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                return False
+
+            try:
+                if (status):
+                    if (df['responsavel']):
+                        criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                        if (df['dataAudiencia'] != ""):
+                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+                        else:
+                            messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+                    else:
+                        messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+                        print('Erro ao incluir Agendamentos')
+
+                    rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
+                else:
+                    return False  # 2º retorno forçado, caso não haja execeção mas o status seja False
+            except:
+                print('Erro ao incluir nova pasta')
+                return False
+
+            driver.get(urlPage)   # Volta para a tela de pesquisa
+            item = item + 1
+
+        #só encerrará o uso do arquivo se o retorno de abrir pasta for True
+        rf.createLog(logFile, '_________________________________________________________________')
+        rf.createLog(logFile, 'FIM')
+        return True
+    else:
+        return False
 
 #============================PROGRAMA PRINCIPAL==============================
+
+pidNumber = str(os.getpid())
+print(pidNumber)
 
 path     = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
 logsPath = os.getcwd() + "\\files\\abertura_pastas\\logs"
@@ -801,6 +840,8 @@ if (os.path.exists(logsPath) == False):
 os.chdir(path) # seleciona o diretório do script
 
 driverIniciado = False
+driver = None
+abreNovaPasta = None
 
 while True:
 
@@ -809,7 +850,6 @@ while True:
         files.append(file)
 
     if (files):
-     
         for file in files:
             arquivoAbrirPasta = file
             arquivoAbrirPasta = arquivoAbrirPasta[:-5]
@@ -820,7 +860,8 @@ while True:
                 arquivo.close()
 
             logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
-
+            
+            abreWebDriver = None;
             if (os.path.isfile(logFile)):
                 linha, count = rf.checkEndFile(logFile)
 
@@ -831,20 +872,30 @@ while True:
                     if (driverIniciado == False):
                         driverIniciado = True
                         print("\nINICIANDO WebDriver")
+                        rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        # rf.acessToIntegra(driver)
-                        rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
-
-                    abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
+                        abreWebDriver = rf.acessToIntegra(driver)
+                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    if (abreWebDriver):
+                        abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
+                    else:
+                        driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                        driver.quit()
+                        break
             else:
                 print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
-                    # rf.acessToIntegra(driver)
-                    rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
-
-                abreNovaPasta = abrePasta(arquivoAbrirPasta)
+                    rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
+                    abreWebDriver = rf.acessToIntegra(driver)
+                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                if (abreWebDriver):
+                    abreNovaPasta = abrePasta(arquivoAbrirPasta)
+                else:
+                    driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                    driver.quit()
+                    break
 
             if (abreNovaPasta):
                 if (file != ""):
