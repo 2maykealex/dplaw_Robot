@@ -861,7 +861,7 @@ while True:
 
             logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
             
-            abreWebDriver = None;
+            abreWebDriver = None
             if (os.path.isfile(logFile)):
                 linha, count = rf.checkEndFile(logFile)
 
@@ -875,7 +875,7 @@ while True:
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
                         abreWebDriver = rf.acessToIntegra(driver)
-                        # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        # abreWebDriver = rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
                     else:
@@ -889,7 +889,7 @@ while True:
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                     abreWebDriver = rf.acessToIntegra(driver)
-                    # rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    # abreWebDriver = rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta)
                 else:
