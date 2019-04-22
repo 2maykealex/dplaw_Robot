@@ -773,16 +773,14 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                 df['comarcaNova'] = ""
 
             time.sleep(1)
-            urlBack = driver.current_url
-
-            # incluirProcesso(urlPage, df, item)   #PARA TESTES
 
             try:
                 status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
             except:
                 print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                 return False
-
+            
+            element = None
             try: #checa se redirecionamento ocorreu 
                 element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  
             except:
