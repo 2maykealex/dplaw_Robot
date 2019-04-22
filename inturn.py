@@ -99,7 +99,7 @@ def pesquisarPasta(pasta):
 
     return retorno
 
-def incluirProcesso(urlPage, df, registro):
+def incluirProcesso(df, registro):
     # incluindo processo
     print("incluindo processo")
     rf.checkPopUps(driver)
@@ -787,7 +787,8 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
                 try:
                     driver.get(urlPage)
-                    status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
+                    time.sleep(1)
+                    status, messageInclusaoNovoProcesso = incluirProcesso(df, item)
                 except:
                     print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                     return False
@@ -817,7 +818,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                     print('Erro ao incluir nova pasta')
                     return False
             else:
-                print('A pasta {} já existe no sistema! '.format(df['pasta']))
+                rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no sistema! Favor verificar!".format(item, df['pasta']))
 
             driver.get(urlPage)   # Volta para a tela de pesquisa
             item = item + 1
