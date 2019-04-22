@@ -780,7 +780,6 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                 print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                 return False
             
-            element = None
             try: #checa se redirecionamento ocorreu 
                 element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  
             except:
