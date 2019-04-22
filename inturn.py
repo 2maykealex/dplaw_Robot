@@ -784,8 +784,9 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                 print('Não foi possível realizar uma busca')
                 return False
 
-            if (searchFolder):
+            if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
                 try:
+                    driver.get(urlPage)
                     status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
                 except:
                     print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
