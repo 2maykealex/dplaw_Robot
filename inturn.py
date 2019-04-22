@@ -751,8 +751,12 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             df['localTramite']     = dfExcel[item, 7]
             df['comarca']          = dfExcel[item, 8]
             df['uf']               = dfExcel[item, 9]
-            valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
-            df['vCausa']           = valorCausa.replace('.',',')
+            try:
+                valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
+                df['vCausa']           = valorCausa.replace('.',',')
+            except:
+                df['vCausa'] = "0"
+
             df['statusProcessual'] = dfExcel[item, 11]
             df['razaoSocial']      = dfExcel[item, 12]
             df['gpCliente']        = dfExcel[item, 13]
@@ -775,35 +779,44 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             time.sleep(1)
 
             try:
-                status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
+                searchFolder = pesquisarPasta(df['pasta'])
             except:
-                print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
-                return False
-            
-            try: #checa se redirecionamento ocorreu 
-                element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  
-            except:
-                print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                print('Não foi possível realizar uma busca')
                 return False
 
-            try:
-                if (status):
-                    if (df['responsavel']):
-                        criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-                        if (df['dataAudiencia'] != ""):
-                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+            if (searchFolder):
+                try:
+                    status, messageInclusaoNovoProcesso = incluirProcesso(urlPage, df, item)
+                except:
+                    print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                    return False
+                
+                try: #checa se redirecionamento ocorreu 
+                    element = rf.waitinstance(driver, "//*[@id='slcGrupo']", 1, 'show')  
+                except:
+                    print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                    return False
+
+                try:
+                    if (status):
+                        if (df['responsavel']):
+                            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                            if (df['dataAudiencia'] != ""):
+                                messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+                            else:
+                                messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
                         else:
-                            messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
-                    else:
-                        messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
-                        print('Erro ao incluir Agendamentos')
+                            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+                            print('Erro ao incluir Agendamentos')
 
-                    rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
-                else:
-                    return False  # 2º retorno forçado, caso não haja execeção mas o status seja False
-            except:
-                print('Erro ao incluir nova pasta')
-                return False
+                        rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
+                    else:
+                        return False  # 2º retorno forçado, caso não haja execeção mas o status seja False
+                except:
+                    print('Erro ao incluir nova pasta')
+                    return False
+            else:
+                print('A pasta {} já existe no sistema! '.format(df['pasta']))
 
             driver.get(urlPage)   # Volta para a tela de pesquisa
             item = item + 1
