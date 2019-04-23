@@ -88,46 +88,61 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
         # element.click() 
         rf.createLog(logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
         time.sleep(1)
+        return True
 
     else:
         print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
         log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! ******".format(registro, pasta)
         rf.createLog(logFile, log)
         time.sleep(1)
+        return False
        
 def enviaParametros(volumetriaMes, item = 1):
-    print('\n')
-    dfExcel = rf.abreArquivo(volumetriaMes)
-    count = dfExcel.number_of_rows()-1
-
-    while (item <= count):         #looping dentro de cada arquivo
-        pasta =  dfExcel[item, 7]
-        trySearch = 1
-
-        search = False
-        while (trySearch < 4):
-            hora = time.strftime("%H:%M:%S")
-            print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
-            search = pesquisarPasta(pasta)
-            if (search == True):
-                break
-            trySearch = trySearch + 1
+    try:
         print('\n')
-        
-        if (search == True):
-            inserirVolumetria(volumetriaMes, pasta, item)            
-        else:
-            print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-            log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
-            rf.createLog(logFile, log)
-        
-        item = item + 1
+        dfExcel = rf.abreArquivo(volumetriaMes)
+        count = dfExcel.number_of_rows()-1
 
-    rf.createLog(logFile, '_________________________________________________________________')
-    rf.createLog(logFile, 'FIM')
+        while (item <= count):         #looping dentro de cada arquivo
+            pasta =  dfExcel[item, 7]
+            trySearch = 1
+            search = False
+            while (trySearch < 4):
+                hora = time.strftime("%H:%M:%S")
+                print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
+
+                try:
+                    search = pesquisarPasta(pasta)
+                except:
+                    return False
+
+                if (search == True):
+                    break
+                trySearch = trySearch + 1
+            print('\n')
+
+            if (search == True):
+                try:
+                    inserirVolumetria(volumetriaMes, pasta, item)
+                except:
+                    return False
+            else:
+                print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
+                log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                rf.createLog(logFile, log)
+            
+            item = item + 1
+
+        rf.createLog(logFile, '_________________________________________________________________')
+        rf.createLog(logFile, 'FIM')
+        return True
+    except:
+        return False
 
 #============================PROGRAMA PRINCIPAL==============================
 #executando python volumetria.py "Volumetria 2018.09.xlsx" no TERMINAL
+pidNumber = str(os.getpid())
+print(pidNumber)
 
 path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
 logsPath = os.getcwd() + "\\files\\volumetrias\\logs"
@@ -146,15 +161,15 @@ if (os.path.exists(logsPath) == False):
 os.chdir(path) # seleciona o diretório do script
 
 driverIniciado = False
+driver = None
 
 while True:
-
-    files =  []    
-    for file in glob.glob("*.xlsx"):        
+    files = []
+    for file in glob.glob("*.xlsx"):
         files.append(file)
         
     if (files):
-       
+
         for file in files:
             volumetriaMes = file
             volumetriaMes = volumetriaMes[:-5]
@@ -166,6 +181,8 @@ while True:
             
             logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
             
+            abreWebDriver = None
+            executaVolumetria = None
             if (os.path.isfile(logFile)):
                 linha, count = rf.checkEndFile(logFile)
                               
@@ -173,26 +190,41 @@ while True:
                     print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
                     
                 else:                          # continua o preenchimento do log já existente 
-                    if (driverIniciado == False):       
+                    if (driverIniciado == False):
                         driverIniciado = True 
                         print("\nINICIANDO WebDriver")
+                        rf.createPID(volumetriaMes.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)                        
                         rf.acessToIntegra(driver)
-                        
-                    enviaParametros(volumetriaMes, count)
-                    
+
+                    executaVolumetria = enviaParametros(volumetriaMes, count)
             else:
                 print("\nINICIANDO WebDriver")
-                if (driverIniciado == False):       
+                if (driverIniciado == False):
                     driverIniciado = True 
-                    driver = rf.iniciaWebdriver(False)                        
-                    rf.acessToIntegra(driver)
+                    driver = rf.iniciaWebdriver(False)
+                    rf.createPID(volumetriaMes.upper(), pidNumber)
+                    abreWebDriver = rf.acessToIntegra(driver)
 
-                enviaParametros(volumetriaMes)
+                if (abreWebDriver):
+                    executaVolumetria = enviaParametros(volumetriaMes)
+                else:
+                    driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                    driver.quit()
+                    break
+            
+            if(executaVolumetria):
+                if (file != ""):
+                    os.remove(infoLog)
+                    fileExecuted = pathExecutados + "\\{}".format(file)
+                    if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                        os.remove(fileExecuted)
 
-            if (file != ""):
-                os.remove(infoLog)            
-                shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                    shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+            else:
+                driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                driver.quit()
+                break
         
     if (driverIniciado == True):  
         driverIniciado = False
