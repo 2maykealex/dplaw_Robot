@@ -215,20 +215,24 @@ def incluirProcesso(df, registro):
     #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
 
     # Comarca
+    comarcaExiste = False
     if (str(df['comarca']) != ""):
         try:
             element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
             select = rf.Select(element)
             select.select_by_visible_text(str(df['comarca']))
             time.sleep(0.5)
+            comarcaExiste = True
         except:
             naoInserido['comarca'] = str(df['comarca'])
     else:
         naoInserido['comarca'] = 'Vazio'
 
-        # Nova Comarca
+    # Nova Comarca
+    print (comarcaExiste)
+    if (comarcaExiste == False):
         if (str(df['comarcaNova']) != ''):
-            try:        
+            try:
                 element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
                 select = rf.Select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
@@ -886,8 +890,8 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        abreWebDriver = rf.acessToIntegra(driver)
-                        # abreWebDriver = rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                        # abreWebDriver = rf.acessToIntegra(driver)
+                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
                     else:
@@ -900,8 +904,8 @@ while True:
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    abreWebDriver = rf.acessToIntegra(driver)
-                    # abreWebDriver = rf.acessToIntegra(driver, "cop@dplaw.com.br", "dplaw00612")
+                    # abreWebDriver = rf.acessToIntegra(driver)
+                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta)
                 else:
