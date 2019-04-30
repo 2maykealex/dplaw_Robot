@@ -45,19 +45,25 @@ while True: #Fará looping infinito, buscando novos arquivos nas pastas - se enc
                     pId = int (pId[-1].replace(".pid", ""))
                     if (not(rf.checkPID(pId))): #se pID não está em execução. remover arquivos
                         pidFile = localPid+"\\{}__{}.pid".format(file[:-5].upper(), pId)
+
                         os.remove(pidFile)
-                        os.remove(logFile)
                         print("Removido o PID: {}".format(pId))
+                        try:
+                            os.remove(logFile)
+                        except:
+                            pass
             except:
                 pass
 
             if (not(os.path.isfile(logFile))):  #se o log não existir - executa o arquivo no script
-                print("{} - Uma nova instancia de {} foi aberta".format(hora, folderName.upper()))
+                print("\n{} - Uma nova instancia de {} foi aberta".format(hora, folderName.upper()))
                 if (folderName == "abertura_pastas"):
                     os.startfile('inturn.py')   #executa outro script em outro terminal - para trabalhar de forma isolada
                 elif (folderName == "volumetrias"):
                     os.startfile('volumetria.py')   #executa outro script em outro terminal - para trabalhar de forma isolada
             else:
-                print('{} - Arquivo {} já está em execução!'.format(hora, file))
+                print('{} - Arquivo {} já está em execução!\n'.format(hora, file))
             
-            time.sleep(10) #Colocado um delay para o outro script gerar o arquivo de log e não abrir outro webdriver
+            for x in range(10):
+                print('Delay {}'.format(x))
+                time.sleep(1.5) #Colocado um delay para o outro script gerar o arquivo de log e não abrir outro webdriver
