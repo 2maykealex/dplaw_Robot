@@ -50,17 +50,17 @@ def pesquisarCliente(cliente):
 
         # buscando o cliente e acessando sua pasta
         driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
-        time.sleep(0.5)
+        time.sleep(2)
         print("pesquisar cliente {}".format(cliente))
         driver.find_element_by_id("btnPesquisar").click()
 
         # ATÉ A URL NÃO MUDAR
-        time.sleep(0.5)
+        time.sleep(2)
         # SELECIONA O CLIENTE PESQUISADO
-        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-        time.sleep(0.5)
+        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 2, 'click')
+        time.sleep(2)
         element.click()
-        time.sleep(0.5)
+        time.sleep(2)
         return True
     except:
         return False
@@ -74,16 +74,16 @@ def pesquisarPasta(pasta):
 
     # selecionar opção pesquisa por pasta
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
-    time.sleep(0.3)
+    time.sleep(2)
     element.click()
-    time.sleep(0.3)
+    time.sleep(2)
 
     # buscando pasta
     driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
-    time.sleep(0.3)
+    time.sleep(2)
     print("pesquisar pasta {}".format(pasta))
     driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(0.3)
+    time.sleep(2)
 
     try:
         #Checa se não existe registros para essa pasta
@@ -217,13 +217,30 @@ def incluirProcesso(df, registro):
     # Comarca
     comarcaExiste = False
     if (str(df['comarca']) != ""):
+        comarca = str(df['comarca'])
+        comarcaExiste = True
         try:
             element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+            time.sleep(1)
             select = rf.Select(element)
-            select.select_by_visible_text(str(df['comarca']))
-            time.sleep(0.5)
-            comarcaExiste = True
+
+            try:
+                select.select_by_visible_text(comarca)
+            except:
+                try:
+                    select.select_by_visible_text(comarca.title())
+                except:
+                    try:
+                        select.select_by_visible_text(comarca.lower())
+                    except:
+                        try:
+                            select.select_by_visible_text(comarca.lower().capitalize())
+                        except:
+                            comarcaExiste = False
+                            naoInserido['comarca'] = str(df['comarca'])
+            time.sleep(1)
         except:
+            comarcaExiste = False
             naoInserido['comarca'] = str(df['comarca'])
     else:
         naoInserido['comarca'] = 'Vazio'
@@ -234,13 +251,14 @@ def incluirProcesso(df, registro):
         if (str(df['comarcaNova']) != ''):
             try:
                 element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+                time.sleep(1)
                 select = rf.Select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
-                time.sleep(0.5)
+                time.sleep(1)
 
                 element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
                 element.send_keys(str(df['comarcaNova']))
-                time.sleep(0.5)
+                time.sleep(1)
             except:
                 naoInserido['comarcaNova'] = str(df['comarcaNova'])
         else:
@@ -328,7 +346,7 @@ def incluirProcesso(df, registro):
     except:
         naoInserido['idDoProcesso'] = 'Não recuperado'
 
-    # Abre a aba Parte Adversa
+    
     # print('url: '+ driver.current_url)
 
     # if (rf.check_host(driver.current_url)):
@@ -337,11 +355,26 @@ def incluirProcesso(df, registro):
     #     print("Sem Conexão - A execução será reiniciada!")
     #     return False
 
+    # Abre a aba Parte Adversa
     status = True
     try:
         element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
         element.click()
-        
+        time.sleep(1)
+
+        try:
+            element = driver.find_element_by_id('div_txtComarca').is_displayed()
+            driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+            naoInserido['comarcaNova'] = str(df['comarcaNova'])
+
+            # TENTANDO NOVAMENTE ABRIR PARTE ADVERSA
+            element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
+            element.click()
+            time.sleep(1)
+        except:
+            pass
+
+        print('abrindo a parte adversa')
         time.sleep(0.5)
         rf.checkPopUps(driver)
 
@@ -805,15 +838,15 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
                 try:
                     if (status):
-                        if (df['responsavel']):
-                            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-                            if (df['dataAudiencia'] != ""):
-                                messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
-                            else:
-                                messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
-                        else:
-                            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
-                            print('Erro ao incluir Agendamentos')
+                        # if (df['responsavel']):
+                        #     criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                        #     if (df['dataAudiencia'] != ""):
+                        #         messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+                        #     else:
+                        #         messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+                        # else:
+                        messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+                        print('Erro ao incluir Agendamentos')
 
                         rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
                     else:
@@ -890,8 +923,8 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        # abreWebDriver = rf.acessToIntegra(driver)
-                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
+                        abreWebDriver = rf.acessToIntegra(driver)
+                        # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
                     else:
@@ -904,8 +937,8 @@ while True:
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    # abreWebDriver = rf.acessToIntegra(driver)
-                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
+                    abreWebDriver = rf.acessToIntegra(driver)
+                    # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta)
                 else:
