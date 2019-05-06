@@ -246,7 +246,6 @@ def incluirProcesso(df, registro):
         naoInserido['comarca'] = 'Vazio'
 
     # Nova Comarca
-    print (comarcaExiste)
     if (comarcaExiste == False):
         if (str(df['comarcaNova']) != ''):
             try:
