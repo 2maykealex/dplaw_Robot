@@ -216,9 +216,11 @@ def incluirProcesso(df, registro):
 
     # Comarca
     comarcaExiste = False
+    comarcaSelecionada = False
     if (str(df['comarca']) != ""):
         comarca = str(df['comarca'])
         comarcaExiste = True
+        comarcaSelecionada = True
         try:
             element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
             time.sleep(1)
@@ -233,35 +235,27 @@ def incluirProcesso(df, registro):
                     try:
                         select.select_by_visible_text(comarca.lower())
                     except:
-                        try:
-                            select.select_by_visible_text(comarca.lower().capitalize())
-                        except:
-                            comarcaExiste = False
-                            naoInserido['comarca'] = str(df['comarca'])
+                        select.select_by_visible_text(comarca.lower().capitalize())   #usado sem Tratamento para cair except externo
             time.sleep(1)
         except:
-            comarcaExiste = False
-            naoInserido['comarca'] = str(df['comarca'])
+            comarcaSelecionada = False
     else:
         naoInserido['comarca'] = 'Vazio'
 
-    # Nova Comarca
-    if (comarcaExiste == False):
-        if (str(df['comarcaNova']) != ''):
-            try:
-                element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
-                time.sleep(1)
-                select = rf.Select(element)
-                select.select_by_visible_text("--Cadastrar Novo Item--")
-                time.sleep(1)
+    # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo 
+    if (comarcaExiste == True and comarcaSelecionada == False):
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcComarca"]', 1, 'show')
+            time.sleep(1)
+            select = rf.Select(element)
+            select.select_by_visible_text("--Cadastrar Novo Item--")
+            time.sleep(1)
 
-                element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
-                element.send_keys(str(df['comarcaNova']))
-                time.sleep(1)
-            except:
-                naoInserido['comarcaNova'] = str(df['comarcaNova'])
-        else:
-            naoInserido['comarcaNova'] = 'Vazio'
+            element = rf.waitinstance(driver, '//*[@id="txtComarca"]', 1, 'show')
+            element.send_keys(str(df['comarca']))
+            time.sleep(1)
+        except:
+            naoInserido['comarca'] = str(df['comarca'])
 
         # #PARA ATUALIZAR OS DADOS
         # logAtualizaPromad = os.getcwd() + "\\logs\\_Comarcas.txt"
@@ -297,13 +291,18 @@ def incluirProcesso(df, registro):
 
             # CARREGA LISTA DE RESPONSÁVEIS
             y = 1
+            totalResp = len(df['responsavel'])
+            countResp = 0
+            print(totalResp)
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == df['responsavel']):
+                if (item.text in df['responsavel']):
                     xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
                     time.sleep(0.3)
-                    break
+                    countResp = countResp + 1
+                    if (countResp == totalResp):
+                        break
                 y = y + 1
 
             comboResponsavel.click() # clica para fechar as opções do combo
@@ -337,22 +336,13 @@ def incluirProcesso(df, registro):
 
     time.sleep(0.5)
 
-    #Obtém o Num da nova pasta a ser aberta
+    #Obtém o ID do PROMAD da nova pasta a ser aberta 
     try:
         element = rf.waitinstance(driver, "idDoProcesso", 1, 'show', 'class')
         idNovaPasta = element.get_attribute("innerHTML")
         idNovaPasta = idNovaPasta[14:].strip()
     except:
         naoInserido['idDoProcesso'] = 'Não recuperado'
-
-    
-    # print('url: '+ driver.current_url)
-
-    # if (rf.check_host(driver.current_url)):
-    #     pass
-    # else:
-    #     print("Sem Conexão - A execução será reiniciada!")
-    #     return False
 
     # Abre a aba Parte Adversa
     status = True
@@ -411,7 +401,6 @@ def incluirProcesso(df, registro):
                 complemento = '{} {}: {} | '.format(complemento, k, v)
 
         message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
-        # status = True
     except:
         message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
         status = False
@@ -434,14 +423,16 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
 
     complementoAgendamento = ""
     cont = 0
-    for x in range(5):
+    for x in range(2):
         rf.checkPopUps(driver)
-
         if (dataAudiencia != ""):  #PARA INICIAR NO 1º AGENDAMENTO
             cont = x + 1
         else:
-            cont = (x + 1) - 2  #PARA INICIAR NO 3º AGENDAMENTO
+            cont = (x + 1) - 1  #PARA INICIAR NO 2º AGENDAMENTO
             complementoAgendamento = " A audiência não foi marcada."
+        
+        # cont = cont + 1   #PARA INICIAR NO 3º AGENDAMENTO
+        # complementoAgendamento = ""
 
         if (x == 0):   #tipo audiencia
             if (dataAudiencia != ""):
@@ -466,148 +457,165 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
                 # respons. pelo cliente
+
+                
+                # for item in listInputs:  #itera inputs recuperados, checa e clica
+                #     # if (item.text == '{}'.format(responsavel) ):
+                #     if (item.text in responsavel):
+                #         xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
+                #         element = rf.waitinstance(driver, xPathItem, 1, 'click')
+                #         element.click()
+                #         time.sleep(0.3)
+                #         countResp = countResp + 1
+                #         if (countResp == totalResp):
+                #             break
+                #     y = y + 1
+                # y = 1
+                totalResp = len(responsavel)
+                countResp = 0
                 y = 1
-                found = 0
                 for item in listInputs:  #itera inputs recuperados, checa e clica
-                    if (item.text == 'GST' or item.text == 'operacoes' or item.text == '{}'.format(responsavel) ):
+                    if (item.text == 'GST' or item.text in responsavel ):
                         xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                         element = rf.waitinstance(driver, xPathItem, 1, 'click')
                         element.click()
-                        found = found + 1
                         time.sleep(0.3)
-                    if (found >= 3):
-                        break
+                        countResp = countResp + 1
+                        if (countResp == (totalResp + 1)):
+                            break
+                    # if (found >= 3):
+                    #     break
                     y = y + 1
                 time.sleep(0.3)
             else:
                 continue
 
-        elif (x == 1): #tipo Instruções para a Audiência
-            if (dataAudiencia != ""):
-                time.sleep(0.5)
-                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
+        # elif (x == 1): #tipo Instruções para a Audiência
+        #     if (dataAudiencia != ""):
+        #         time.sleep(0.5)
+        #         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
 
-                # combo destinatário - abrir
-                element = rf.waitinstance(driver, xPathElement, 1, 'click')
-                element.click()
+        #         # combo destinatário - abrir
+        #         element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        #         element.click()
 
-                tipoAgendamento = 'Instruções para a Audiência'
-                dAudiencia = "{}/{}/{}".format(str(dataAudiencia.day), dataAudiencia.month, dataAudiencia.year)
-                data1 = datetime.datetime.strptime(dAudiencia, "%d/%m/%Y")
-                dataIncrementada = data1.date() - timedelta(days=7)
-                diaAudiencia = int(dataIncrementada.day)
-                wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAudiencia)
+        #         tipoAgendamento = 'Instruções para a Audiência'
+        #         dAudiencia = "{}/{}/{}".format(str(dataAudiencia.day), dataAudiencia.month, dataAudiencia.year)
+        #         data1 = datetime.datetime.strptime(dAudiencia, "%d/%m/%Y")
+        #         dataIncrementada = data1.date() - timedelta(days=7)
+        #         diaAudiencia = int(dataIncrementada.day)
+        #         wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAudiencia)
 
-                if (wDay == 5):   #sábado
-                    diaAudiencia = diaAudiencia - 1
-                elif (wDay == 6): #domingo
-                    diaAudiencia = diaAudiencia - 2
+        #         if (wDay == 5):   #sábado
+        #             diaAudiencia = diaAudiencia - 1
+        #         elif (wDay == 6): #domingo
+        #             diaAudiencia = diaAudiencia - 2
 
-                data = "{}/{}/{}".format(str(diaAudiencia), dataIncrementada.month, dataIncrementada.year)
-                appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")                
-                appointmentDate = format(appointmentDate, "%d/%m/%Y")
-                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
+        #         data = "{}/{}/{}".format(str(diaAudiencia), dataIncrementada.month, dataIncrementada.year)
+        #         appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")                
+        #         appointmentDate = format(appointmentDate, "%d/%m/%Y")
+        #         agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
 
-                #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
-                xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
-                listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+        #         #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
+        #         xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
+        #         listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
-                # operações
-                y = 1
-                for item in listInputs:  #itera inputs recuperados, checa e clica
-                    if (item.text == 'operacoes'):
-                        xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
-                        element = rf.waitinstance(driver, xPathItem, 1, 'click')
-                        element.click()
-                        time.sleep(0.3)
-                        break
-                    y = y + 1
-            else:
-                continue
+        #         # operações
+        #         y = 1
+        #         for item in listInputs:  #itera inputs recuperados, checa e clica
+        #             if (item.text == 'operacoes'):
+        #                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
+        #                 element = rf.waitinstance(driver, xPathItem, 1, 'click')
+        #                 element.click()
+        #                 time.sleep(0.3)
+        #                 break
+        #             y = y + 1
+        #     else:
+        #         continue
 
-        elif (x == 2): #tipo Anexar
-            time.sleep(0.5)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
+        # elif (x == 2): #tipo Anexar
+        #     time.sleep(0.5)
+        #     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
 
-            # combo destinatário - abrir
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+        #     # combo destinatário - abrir
+        #     element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        #     element.click()
 
-            tipoAgendamento = 'Anexar'
-            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-            diaAberturaPasta = int(dataIncrementada.day)
-            wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+        #     tipoAgendamento = 'Anexar'
+        #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+        #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+        #     diaAberturaPasta = int(dataIncrementada.day)
+        #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
 
-            if (wDay == 5):   #sábado
-                diaAberturaPasta = diaAberturaPasta + 2
-            elif (wDay == 6): #domingo
-                diaAberturaPasta = diaAberturaPasta + 1
+        #     if (wDay == 5):   #sábado
+        #         diaAberturaPasta = diaAberturaPasta + 2
+        #     elif (wDay == 6): #domingo
+        #         diaAberturaPasta = diaAberturaPasta + 1
 
-            data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+        #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+        #     appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
 
-            appointmentDate = format(appointmentDate, "%d/%m/%Y")
-            agendamento = "ANEXAR"
+        #     appointmentDate = format(appointmentDate, "%d/%m/%Y")
+        #     agendamento = "ANEXAR"
 
-            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
-            xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
-            listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+        #     #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
+        #     xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
+        #     listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
-           # operações
-            y = 1
-            for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'operacoes'):
-                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
-                    element = rf.waitinstance(driver, xPathItem, 1, 'click')
-                    element.click()
-                    time.sleep(0.3)
-                    break
-                y = y + 1
+        #    # operações
+        #     y = 1
+        #     for item in listInputs:  #itera inputs recuperados, checa e clica
+        #         if (item.text == 'operacoes'):
+        #             xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
+        #             element = rf.waitinstance(driver, xPathItem, 1, 'click')
+        #             element.click()
+        #             time.sleep(0.3)
+        #             break
+        #         y = y + 1
 
-        elif (x == 3): #tipo Fotocópia
-            time.sleep(0.5)
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
+        # elif (x == 3): #tipo Fotocópia
+        #     time.sleep(0.5)
+        #     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
 
-            # combo destinatário - abrir
-            element = rf.waitinstance(driver, xPathElement, 1, 'click')
-            element.click()
+        #     # combo destinatário - abrir
+        #     element = rf.waitinstance(driver, xPathElement, 1, 'click')
+        #     element.click()
 
-            tipoAgendamento = 'Fotocópia'
-            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-            diaAberturaPasta = int(dataIncrementada.day)
-            wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+        #     tipoAgendamento = 'Fotocópia'
+        #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+        #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+        #     diaAberturaPasta = int(dataIncrementada.day)
+        #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
 
-            if (wDay == 5):   #sábado
-                diaAberturaPasta = diaAberturaPasta + 2
-            elif (wDay == 6): #domingo
-                diaAberturaPasta = diaAberturaPasta + 1
+        #     if (wDay == 5):   #sábado
+        #         diaAberturaPasta = diaAberturaPasta + 2
+        #     elif (wDay == 6): #domingo
+        #         diaAberturaPasta = diaAberturaPasta + 1
 
-            data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
-            appointmentDate = format(appointmentDate, "%d/%m/%Y")
-            agendamento = "Fotocópia integral"
+        #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+        #     appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+        #     appointmentDate = format(appointmentDate, "%d/%m/%Y")
+        #     agendamento = "Fotocópia integral"
 
-            #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
-            xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
-            listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+        #     #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
+        #     xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
+        #     listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
-            # GST e OPERAÇÕES
-            y = 1
-            found = 0
-            for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'GST' or item.text == 'operacoes'):
-                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
-                    element = rf.waitinstance(driver, xPathItem, 1, 'click')
-                    element.click()
-                    found = found + 1
-                    time.sleep(0.3)
-                if (found >= 2):
-                    break
-                y = y + 1
+        #     # GST e OPERAÇÕES
+        #     y = 1
+        #     found = 0
+        #     for item in listInputs:  #itera inputs recuperados, checa e clica
+        #         if (item.text == 'GST' or item.text == 'operacoes'):
+        #             xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
+        #             element = rf.waitinstance(driver, xPathItem, 1, 'click')
+        #             element.click()
+        #             found = found + 1
+        #             time.sleep(0.3)
+        #         if (found >= 2):
+        #             break
+        #         y = y + 1
 
-        elif (x == 4): #tipo Ciencia de novo processo
+        elif (x == 1): #tipo Ciencia de novo processo
             time.sleep(0.5)
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/button'.format(cont)
 
@@ -629,23 +637,70 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
             appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
-            agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.{}".format(sigla, complementoAgendamento)
+            # agendamento = "{} - Pasta aberta, certificar os agendamentos, agendar contestação e pedir OBF caso tenha liminar deferida.{}".format(sigla, complementoAgendamento)
+            agendamento = "{} - Certificar abertura, risco e promover agendamentos.{}".format(sigla, complementoAgendamento)
 
             #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
             xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
             listInputs = driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
             # respons. pelo cliente
+            totalResp = len(responsavel)
+            countResp = 0
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == '{}'.format(responsavel) ):
+                # if (item.text == '{}'.format(responsavel) ):
+                if (item.text in responsavel):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
                     time.sleep(0.3)
-                    break
+                    countResp = countResp + 1
+                    if (countResp == totalResp):
+                        break
                 y = y + 1
 
+        # if (x == 0): #DOCUMENTO ANEXADO
+        #     tipoAgendamento = 'Documento anexado'
+        #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+        #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+        #     diaAberturaPasta = int(dataIncrementada.day)
+        #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+        #     if (wDay == 3):   #quinta
+        #         diaAberturaPasta = diaAberturaPasta + 4
+        #     elif (wDay == 4): #sexta
+        #         diaAberturaPasta = diaAberturaPasta + 3
+        #     elif (wDay == 5):   #sábado
+        #         diaAberturaPasta = diaAberturaPasta + 2
+        #     elif (wDay == 6): #domingo
+        #         diaAberturaPasta = diaAberturaPasta + 1
+
+        #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+        #     appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+        #     appointmentDate = format(appointmentDate, "%d/%m/%Y")
+        #     agendamento = "{} - Certificar protocolos de subs.{}".format(sigla, complementoAgendamento)
+
+        # elif (x == 1): #CERTIFICAR ABERTURA DE PASTAS
+        #     tipoAgendamento = 'Certificar Abertura de Pasta'
+        #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+        #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+        #     diaAberturaPasta = int(dataIncrementada.day)
+        #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+        #     if (wDay == 3):   #quinta
+        #         diaAberturaPasta = diaAberturaPasta + 4
+        #     elif (wDay == 4): #sexta
+        #         diaAberturaPasta = diaAberturaPasta + 3
+        #     elif (wDay == 5):   #sábado
+        #         diaAberturaPasta = diaAberturaPasta + 2
+        #     elif (wDay == 6): #domingo
+        #         diaAberturaPasta = diaAberturaPasta + 1
+
+        #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+        #     appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
+        #     appointmentDate = format(appointmentDate, "%d/%m/%Y")
+        #     agendamento = "{} - Certificar abertura, risco e promover agendamentos.{}".format(sigla, complementoAgendamento)
         time.sleep(0.3)
 
         # combo destinatário - fechar
@@ -738,7 +793,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         element = rf.waitinstance(driver, xPathElement, 1, 'show')
         element.send_keys(agendamento[:30])
 
-        if (x < 4):
+        if (x < 1):
             element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')  #abrir novo agendamento
             element.click()
 
@@ -776,12 +831,25 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             dataContratacao        = (dfExcel[item, 2])
             dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
             df['dataContratacao']  = dataContratacao
-            df['cnj']              = dfExcel[item, 3]
+
             numProcesso = dfExcel[item, 4]
+
+            numProcesso = numProcesso.replace('.', '')
+
+            num = len(numProcesso)
+
+            if (num > 20):   #se maior que 20, obter até o caracter n.º 20
+                numProcesso = numProcesso[:20]
+            elif (num < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
+                qtdZero = 20 - len(numProcesso)
+                for x in range(qtdZero):
+                    numProcesso = "0{}".format(numProcesso)
+
             numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
             if (numProcesso == '-....'):
                 numProcesso = ''
             df['numProcesso']      = numProcesso
+            df['cnj']              = numProcesso #dfExcel[item, 3]
             df['gpProcesso']       = dfExcel[item, 5]
             df['localTr']          = dfExcel[item, 6]
             df['localTramite']     = dfExcel[item, 7]
@@ -796,26 +864,34 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             df['statusProcessual'] = dfExcel[item, 11]
             df['razaoSocial']      = dfExcel[item, 12]
             df['gpCliente']        = dfExcel[item, 13]
-            df['responsavel']      = dfExcel[item, 14]
+
+            responsavel = dfExcel[item, 14].split(';')
+
+            df['responsavel']      = responsavel          #dfExcel[item, 14]
             df['sigla']            = dfExcel[item, 15]
             df['dataAudiencia']    = dfExcel[item, 16]
 
-            if (dfExcel[item, 17]):
-                df['horaAudiencia'] = dfExcel[item, 17]
-                horaAudiencia = df['horaAudiencia'].strftime("%H:%M")
-            else:
+            try:
+                if (dfExcel[item, 17]):
+                    df['horaAudiencia'] = dfExcel[item, 17]
+                    horaAudiencia = df['horaAudiencia'].strftime("%H:%M")
+                else:
+                    df['horaAudiencia'] = "00:00"
+                    horaAudiencia = df['horaAudiencia']
+            except:
                 df['horaAudiencia'] = "00:00"
                 horaAudiencia = df['horaAudiencia']
 
-            if (dfExcel[item, 18]):
-                df['comarcaNova'] = dfExcel[item, 18]
-            else:
-                df['comarcaNova'] = ""
+            # if (dfExcel[item, 18]):
+            #     df['comarcaNova'] = dfExcel[item, 18]
+            # else:
+            #     df['comarcaNova'] = ""
 
             time.sleep(1)
 
             try:
-                searchFolder = pesquisarPasta(df['pasta'])
+                searchFolder = False
+                # searchFolder = pesquisarPasta(df['pasta'])
             except:
                 print('Não foi possível realizar uma busca')
                 return False
@@ -837,15 +913,15 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
                 try:
                     if (status):
-                        # if (df['responsavel']):
-                        #     criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-                        #     if (df['dataAudiencia'] != ""):
-                        #         messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
-                        #     else:
-                        #         messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
-                        # else:
-                        messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
-                        print('Erro ao incluir Agendamentos')
+                        if (df['responsavel']):
+                            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                            if (df['dataAudiencia'] != ""):
+                                messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
+                            else:
+                                messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+                        else:
+                            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
+                            print('Erro ao incluir Agendamentos')
 
                         rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
                     else:
@@ -923,7 +999,8 @@ while True:
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
                         # abreWebDriver = rf.acessToIntegra(driver)
-                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
+                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                        # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
                     else:
@@ -937,7 +1014,8 @@ while True:
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                     # abreWebDriver = rf.acessToIntegra(driver)
-                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "dplaw00612")
+                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                    # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta)
                 else:
