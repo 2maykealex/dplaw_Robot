@@ -834,7 +834,11 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
             numProcesso = dfExcel[item, 4]
 
-            numProcesso = numProcesso.replace('.', '')
+            try:
+                numProcesso = numProcesso.replace('.', '')
+                numProcesso = numProcesso.replace('-', '')
+            except:
+                pass
 
             num = len(numProcesso)
 
