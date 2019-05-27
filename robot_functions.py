@@ -54,7 +54,7 @@ def waitinstance(driver, object, poll, type, form = 'xpath'):
 
     timeOut = 40 #segundos
     count = 1
-    while (count < 5):
+    while (count < 8):
         try:
             if type == 'click':
                 if form == 'xpath':
