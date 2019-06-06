@@ -829,9 +829,13 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             df['pasta']            = dfExcel[item, 0]
             df['adversa']          = dfExcel[item, 1]
             dataContratacao        = (dfExcel[item, 2])
-            dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
+            
+            try:
+                dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
+            except:
+                pass
             df['dataContratacao']  = dataContratacao
-
+            print(df['dataContratacao'])
             numProcesso = dfExcel[item, 4]
 
             try:
