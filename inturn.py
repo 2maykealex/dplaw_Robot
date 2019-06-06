@@ -857,16 +857,15 @@ def abrePasta(arquivoAbrirPasta, item = 1):
         while (item <= count):
             df = {}
 
-            df['pasta']            = dfExcel[item, 0]
-            df['adversa']          = dfExcel[item, 1]
-            dataContratacao        = (dfExcel[item, 2])            
+            df['pasta']            = dfExcel[item, 0].strip()
+            df['adversa']          = dfExcel[item, 1].strip()
+            dataContratacao        = (dfExcel[item, 2]).strip()
             try:
                 dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
             except:
                 pass
             df['dataContratacao']  = dataContratacao
-            print(df['dataContratacao'])
-            numProcesso = dfExcel[item, 4]
+            numProcesso = dfExcel[item, 4].strip()
 
             try:
                 numProcesso = numProcesso.replace('.', '')
@@ -888,34 +887,34 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                 numProcesso = ''
             df['numProcesso']      = numProcesso
             df['cnj']              = numProcesso #dfExcel[item, 3]
-            df['gpProcesso']       = dfExcel[item, 5]
-            df['localTr']          = dfExcel[item, 6]
-            df['localTramite']     = dfExcel[item, 7]
-            df['comarca']          = dfExcel[item, 8]
-            df['uf']               = dfExcel[item, 9]
+            df['gpProcesso']       = dfExcel[item, 5].strip()
+            df['localTr']          = dfExcel[item, 6].strip()
+            df['localTramite']     = dfExcel[item, 7].strip()
+            df['comarca']          = dfExcel[item, 8].strip()
+            df['uf']               = dfExcel[item, 9].strip()
             try:
-                valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10] , 0)
+                valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10].strip() , 0)
                 df['vCausa']           = valorCausa.replace('.',',')
             except:
                 df['vCausa'] = "0"
 
-            df['statusProcessual'] = dfExcel[item, 11]
-            df['razaoSocial']      = dfExcel[item, 12]
-            df['gpCliente']        = dfExcel[item, 13]
+            df['statusProcessual'] = dfExcel[item, 11].strip()
+            df['razaoSocial']      = dfExcel[item, 12].strip()
+            df['gpCliente']        = dfExcel[item, 13].strip()
 
             responsavel = dfExcel[item, 14].split(';')
 
             df['responsavel']      = responsavel          #dfExcel[item, 14]
-            df['sigla']            = dfExcel[item, 15]
+            df['sigla']            = dfExcel[item, 15].strip()
 
             try:
-                df['dataAudiencia']    = dfExcel[item, 16]
+                df['dataAudiencia']    = dfExcel[item, 16].strip()
             except:
                 df['dataAudiencia'] = ""
 
             try:
                 if (dfExcel[item, 17]):
-                    df['horaAudiencia'] = dfExcel[item, 17]
+                    df['horaAudiencia'] = dfExcel[item, 17].strip()
                     horaAudiencia = df['horaAudiencia'].strftime("%H:%M")
                 else:
                     df['horaAudiencia'] = "00:00"
