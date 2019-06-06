@@ -223,15 +223,15 @@ def incluirProcesso(df, registro):
     else:
         naoInserido['localTramite'] = 'Vazio'
     
-    if (str(df['localTramite'])):
-        try:
-            element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
-            select = rf.Select(element)
-            select.select_by_visible_text(str(df['localTramite']))
-        except:    
-            naoInserido['localTramite'] = str(df['localTramite'])
-    else:
-        naoInserido['localTramite'] = 'Vazio'
+    # if (str(df['localTramite'])):
+    #     try:
+    #         element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
+    #         select = rf.Select(element)
+    #         select.select_by_visible_text(str(df['localTramite']))
+    #     except:    
+    #         naoInserido['localTramite'] = str(df['localTramite'])
+    # else:
+    #     naoInserido['localTramite'] = 'Vazio'
 
     time.sleep(0.5)
 
