@@ -450,7 +450,10 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
-                agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
+                if (horaAudienciaFormatada != "00:00"):
+                    agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
+                else:
+                    agendamento = "{} - Audiência designada para dia {}".format(sigla, str(appointmentDate))
 
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
                 xInputs = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li'.format(cont)
@@ -828,8 +831,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
             df['pasta']            = dfExcel[item, 0]
             df['adversa']          = dfExcel[item, 1]
-            dataContratacao        = (dfExcel[item, 2])
-            
+            dataContratacao        = (dfExcel[item, 2])            
             try:
                 dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
             except:
