@@ -873,7 +873,11 @@ def abrePasta(arquivoAbrirPasta, item = 1):
 
             df['responsavel']      = responsavel          #dfExcel[item, 14]
             df['sigla']            = dfExcel[item, 15]
-            df['dataAudiencia']    = dfExcel[item, 16]
+
+            try:
+                df['dataAudiencia']    = dfExcel[item, 16]
+            except:
+                df['dataAudiencia'] = ""
 
             try:
                 if (dfExcel[item, 17]):
