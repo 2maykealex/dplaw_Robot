@@ -195,6 +195,34 @@ def incluirProcesso(df, registro):
     time.sleep(0.5)
     
     # Local trâmite - Campo 2
+    if (str(df['localTramite']) != ""):
+        localTramite = str(df['localTramite'])
+        try:
+            element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
+            time.sleep(1)
+            select = rf.Select(element)
+
+            try:
+                select.select_by_visible_text(localTramite)
+            except:
+                try:
+                    select.select_by_visible_text(localTramite.title())
+                except:
+                    try:
+                        select.select_by_visible_text(localTramite.lower())
+                    except:
+                        try:
+                            select.select_by_visible_text(localTramite.lower().capitalize())   #usado sem Tratamento para cair except externo
+                        except:
+                            elemCadastro = rf.waitinstance(driver, "//*[@id='slcLocalTramite']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
+                            elemCadastro.click()
+                            driver.execute_script("document.getElementById('txtLocalTramite').value='{}' ".format(str(localTramite)))
+            time.sleep(1)
+        except:
+            naoInserido['localTramite'] = localTramite
+    else:
+        naoInserido['localTramite'] = 'Vazio'
+    
     if (str(df['localTramite'])):
         try:
             element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
