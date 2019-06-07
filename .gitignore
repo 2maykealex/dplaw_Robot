@@ -5,4 +5,5 @@
 *.lnk
 *.xlsx#
 *.xlsx
+*.xlsm
 *.pid
