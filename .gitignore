@@ -4,4 +4,4 @@
 *.txt
 *.lnk
 *.pid
-[^.]*
+*.xlsx
