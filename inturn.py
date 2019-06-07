@@ -950,24 +950,19 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                     print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                     return False
 
-                try:
-                    if (status):
-                        if (df['responsavel']):
-                            criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
-                            if (df['dataAudiencia'] != ""):
-                                messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
-                            else:
-                                messageInclusaoNovoProcesso = "{} Agendamentos criados! |".format(messageInclusaoNovoProcesso)
+                if (df['responsavel']):
+                    try:
+                        criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item)
+                        if (df['dataAudiencia'] != ""):
+                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
                         else:
-                            messageInclusaoNovoProcesso = "{} Não foi possível criar os agendamentos! |".format(messageInclusaoNovoProcesso)
-                            print('Erro ao incluir Agendamentos')
-
-                        rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
-                    else:
-                        return False  # 2º retorno forçado, caso não haja execeção mas o status seja False
-                except:
-                    print('Erro ao incluir nova pasta')
-                    return False
+                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência está marcada!".format(messageInclusaoNovoProcesso)
+                    except:
+                        messageInclusaoNovoProcesso = "{} ERRO AO CRIAR OS AGENDAMENTOS! FAZÊ-LOS MANUALMENTE! |".format(messageInclusaoNovoProcesso)
+                else:
+                    messageInclusaoNovoProcesso = "{} NÃO É POSSÍVEL CRIAR AGENDAMENTOS SEM RESPONSÁVEL! VERIFIQUE! |".format(messageInclusaoNovoProcesso)
+                    print('Erro ao incluir Agendamentos')
+                rf.createLog(logFile, "{}".format(messageInclusaoNovoProcesso))
             else:
                 rf.createLog(logFile, "REGISTRO {}: A pasta {} já existe no sistema! Favor verificar!".format(item, df['pasta']))
 
