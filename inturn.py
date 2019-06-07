@@ -79,7 +79,7 @@ def pesquisarPasta(pasta):
     time.sleep(2)
 
     # buscando pasta
-    driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
+    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(pasta))
     time.sleep(2)
     print("pesquisar pasta {}".format(pasta))
     driver.find_element_by_id("btnPesquisar").click()
@@ -473,8 +473,11 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
 
                 tipoAgendamento = 'Audiência'
                 appointmentDate = dataAudiencia
-                diaAudiencia = int(dataAudiencia.day)
-                data = "{}/{}/{}".format(str(diaAudiencia), dataAudiencia.month, dataAudiencia.year)
+
+                appointmentDate = datetime.datetime.strptime(dataAudiencia, "%d/%m/%Y")
+                # diaAudiencia = int(appointmentDate.day)
+
+                data = "{}/{}/{}".format(str(appointmentDate.day), str(appointmentDate.month), str(appointmentDate.year))
                 appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
@@ -865,7 +868,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             except:
                 pass
             df['dataContratacao']  = dataContratacao
-            numProcesso = dfExcel[item, 4].strip()
+            numProcesso = dfExcel[item, 4]
 
             try:
                 numProcesso = numProcesso.replace('.', '')
@@ -888,7 +891,7 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             df['numProcesso']      = numProcesso
             df['cnj']              = numProcesso #dfExcel[item, 3]
             df['gpProcesso']       = dfExcel[item, 5].strip()
-            df['localTr']          = dfExcel[item, 6].strip()
+            df['localTr']          = dfExcel[item, 6]
             df['localTramite']     = dfExcel[item, 7].strip()
             df['comarca']          = dfExcel[item, 8].strip()
             df['uf']               = dfExcel[item, 9].strip()
@@ -898,17 +901,17 @@ def abrePasta(arquivoAbrirPasta, item = 1):
             except:
                 df['vCausa'] = "0"
 
-            df['statusProcessual'] = dfExcel[item, 11].strip()
-            df['razaoSocial']      = dfExcel[item, 12].strip()
-            df['gpCliente']        = dfExcel[item, 13].strip()
+            df['statusProcessual'] = dfExcel[item, 11]
+            df['razaoSocial']      = dfExcel[item, 12]
+            df['gpCliente']        = dfExcel[item, 13]
 
             responsavel = dfExcel[item, 14].split(';')
 
-            df['responsavel']      = responsavel          #dfExcel[item, 14]
+            df['responsavel']      = responsavel
             df['sigla']            = dfExcel[item, 15].strip()
 
             try:
-                df['dataAudiencia']    = dfExcel[item, 16].strip()
+                df['dataAudiencia'] = dfExcel[item, 16].strip()
             except:
                 df['dataAudiencia'] = ""
 
@@ -923,16 +926,11 @@ def abrePasta(arquivoAbrirPasta, item = 1):
                 df['horaAudiencia'] = "00:00"
                 horaAudiencia = df['horaAudiencia']
 
-            # if (dfExcel[item, 18]):
-            #     df['comarcaNova'] = dfExcel[item, 18]
-            # else:
-            #     df['comarcaNova'] = ""
-
             time.sleep(1)
 
             try:
-                searchFolder = False
-                # searchFolder = pesquisarPasta(df['pasta'])
+                # searchFolder = False
+                searchFolder = pesquisarPasta(df['pasta'])
             except:
                 print('Não foi possível realizar uma busca')
                 return False
