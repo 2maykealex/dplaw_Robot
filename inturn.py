@@ -841,10 +841,10 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
     except:
         pass
 
-def abrePasta(arquivoAbrirPasta, item = 1):
+def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
     urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
     
-    dfExcel = rf.abreArquivo(arquivoAbrirPasta)
+    dfExcel = rf.abreArquivo(arquivoAbrirPasta, extensao)
     count = dfExcel.number_of_rows()-1
 
     cliente = ''
@@ -1004,16 +1004,18 @@ abreNovaPasta = None
 while True:
 
     files =  []
-    for file in glob.glob("*.xlsx"):
+    for file in glob.glob("*.xls*"):
         files.append(file)
 
     if (files):
         for file in files:
-            arquivoAbrirPasta = file
-            arquivoAbrirPasta = arquivoAbrirPasta[:-5]
+            file = file.split('.')
+            arquivoAbrirPasta = file[0]
+            extensao = file[1]
+            # arquivoAbrirPasta = arquivoAbrirPasta[:-5]
             
-            if (file != ""):
-                infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
+            if (file[0] != ""):
+                infoLog = "EXECUTANDO {}.txt".format(file[0].upper())  #criando o nome do arquivo INFOLOG
                 arquivo = open(infoLog, 'w+')
                 arquivo.close()
 
@@ -1036,7 +1038,7 @@ while True:
                         abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                         # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
-                        abreNovaPasta = abrePasta(arquivoAbrirPasta, count)
+                        abreNovaPasta = abrePasta(arquivoAbrirPasta, count, extensao)
                     else:
                         driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                         driver.quit()
@@ -1051,20 +1053,20 @@ while True:
                     abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                     # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
-                    abreNovaPasta = abrePasta(arquivoAbrirPasta)
+                    abreNovaPasta = abrePasta(arquivoAbrirPasta, extensao=extensao)
                 else:
                     driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                     driver.quit()
                     break
 
             if (abreNovaPasta):
-                if (file != ""):
+                if (file[0] != ""):
                     os.remove(infoLog)
-                    fileExecuted = pathExecutados + "\\{}".format(file)
+                    fileExecuted = pathExecutados + "\\{}".format(file[0])
                     if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                         os.remove(fileExecuted)
 
-                    shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                    shutil.move(file[0], pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 driver.quit()
