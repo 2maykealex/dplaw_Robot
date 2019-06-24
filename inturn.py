@@ -1034,11 +1034,11 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        # abreWebDriver = rf.acessToIntegra(driver)
-                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                        abreWebDriver = rf.acessToIntegra(driver)
+                        # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                         # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                     if (abreWebDriver):
-                        abreNovaPasta = abrePasta(arquivoAbrirPasta, count, extensao)
+                        abreNovaPasta = abrePasta(arquivoAbrirPasta, count, extensao=extensao)
                     else:
                         driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                         driver.quit()
@@ -1049,8 +1049,8 @@ while True:
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    # abreWebDriver = rf.acessToIntegra(driver)
-                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                    abreWebDriver = rf.acessToIntegra(driver)
+                    # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                     # abreWebDriver = rf.acessToIntegra(driver, "cbv@dplaw.com.br", "dplaw00612")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta, extensao=extensao)
