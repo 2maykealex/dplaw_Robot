@@ -97,10 +97,10 @@ def inserirVolumetria(volumetriaMes, pasta, registro):
         time.sleep(1)
         return False
        
-def enviaParametros(volumetriaMes, item = 1):
+def enviaParametros(volumetriaMes, item = 1, extensao="xlsx"):
     try:
         print('\n')
-        dfExcel = rf.abreArquivo(volumetriaMes)
+        dfExcel = rf.abreArquivo(volumetriaMes, extensao)
         count = dfExcel.number_of_rows()-1
 
         while (item <= count):         #looping dentro de cada arquivo
@@ -169,13 +169,13 @@ while True:
         files.append(file)
         
     if (files):
-
         for file in files:
-            volumetriaMes = file
-            volumetriaMes = volumetriaMes[:-5]
+            file = file.split('.')
+            volumetriaMes = '.'.join(file[:-1])#file[0]
+            extensao = file[-1]
             
             if (file != ""):
-                infoLog = "EXECUTANDO {}.txt".format(file.upper())
+                infoLog = "EXECUTANDO {}.txt".format(file[0].upper())
                 arquivo = open(infoLog, 'w+')
                 arquivo.close() 
             
@@ -194,10 +194,10 @@ while True:
                         driverIniciado = True 
                         print("\nINICIANDO WebDriver")
                         rf.createPID(volumetriaMes.upper(), pidNumber)
-                        driver = rf.iniciaWebdriver(False)                        
+                        driver = rf.iniciaWebdriver(False)
                         rf.acessToIntegra(driver)
 
-                    executaVolumetria = enviaParametros(volumetriaMes, count)
+                    executaVolumetria = enviaParametros(volumetriaMes, count, extensao=extensao)
             else:
                 print("\nINICIANDO WebDriver")
                 if (driverIniciado == False):
@@ -207,20 +207,20 @@ while True:
                     abreWebDriver = rf.acessToIntegra(driver)
 
                 if (abreWebDriver):
-                    executaVolumetria = enviaParametros(volumetriaMes)
+                    executaVolumetria = enviaParametros(volumetriaMes, extensao=extensao)
                 else:
                     driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                     driver.quit()
                     break
             
             if(executaVolumetria):
-                if (file != ""):
+                if (file[0] != ""):
                     os.remove(infoLog)
-                    fileExecuted = pathExecutados + "\\{}".format(file)
+                    fileExecuted = pathExecutados + "\\{}".format(file[0])
                     if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                         os.remove(fileExecuted)
 
-                    shutil.move(file, pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                    shutil.move(file[0], pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 driver.quit()
