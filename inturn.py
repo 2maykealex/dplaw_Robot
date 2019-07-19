@@ -927,6 +927,7 @@ while True:
 
                 if (linha == "FIM"): #ultima linha do arquivo
                     print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
+                    abreNovaPasta = True # Avança no looping apagando o arquivo existente
                     
                 else: # continua o preenchimento do log já existente
                     if (driverIniciado == False):
@@ -964,7 +965,7 @@ while True:
                     if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                         os.remove(fileExecuted)
 
-                    shutil.move(file[0], pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                    shutil.move("{}.{}".format(file[0],file[-1]), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 driver.quit()
