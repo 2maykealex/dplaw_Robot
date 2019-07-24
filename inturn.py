@@ -512,23 +512,23 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
 
+            # if (dataCiencia == ""):
+            #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+            #     diaAberturaPasta = int(dataIncrementada.day)
+            #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+            #     if (wDay == 5):   #sábado
+            #         diaAberturaPasta = diaAberturaPasta + 2
+            #     elif (wDay == 6): #domingo
+            #         diaAberturaPasta = diaAberturaPasta + 1
+            #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+            # else:
+
             tipoAgendamento = 'Ciencia de novo processo'
-            if (dataCiencia == ""):
-                dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-                dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-                diaAberturaPasta = int(dataIncrementada.day)
-                wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-                if (wDay == 5):   #sábado
-                    diaAberturaPasta = diaAberturaPasta + 2
-                elif (wDay == 6): #domingo
-                    diaAberturaPasta = diaAberturaPasta + 1
-                data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            else:
-                dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
-                dataIncrementada = dataAbPasta.date()
-                data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
-
+            dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
+            dataIncrementada = dataAbPasta.date()
+            data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
             appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "{} - Certificar abertura, risco e promover agendamentos.{}".format(sigla, complementoAgendamento)
@@ -556,20 +556,24 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
 
+            # if (dataCiencia == ""):
+            #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+            #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+            #     diaAberturaPasta = int(dataIncrementada.day)
+            #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+            #     if (wDay == 5):   #sábado
+            #         diaAberturaPasta = diaAberturaPasta + 2
+            #     elif (wDay == 6): #domingo
+            #         diaAberturaPasta = diaAberturaPasta + 1
+            #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+            # else:
+            
             tipoAgendamento = 'Anexar'
-            dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-            diaAberturaPasta = int(dataIncrementada.day)
-            wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-            if (wDay == 5):   #sábado
-                diaAberturaPasta = diaAberturaPasta + 2
-            elif (wDay == 6): #domingo
-                diaAberturaPasta = diaAberturaPasta + 1
-
-            data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+            dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
+            dataIncrementada = dataAbPasta.date()
+            data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
             appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
-
             appointmentDate = format(appointmentDate, "%d/%m/%Y")
             agendamento = "ANEXAR"
 
@@ -600,18 +604,23 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
 
+                
+                # dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
+                # dataIncrementada = dataAbPasta.date() + timedelta(days=1)
+                # diaAberturaPasta = int(dataIncrementada.day)
+                # wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
+
+                # if (wDay == 5):   #sábado
+                #     diaAberturaPasta = diaAberturaPasta + 2
+                # elif (wDay == 6): #domingo
+                #     diaAberturaPasta = diaAberturaPasta + 1
+
+                # data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+                
                 tipoAgendamento = 'Fotocópia'
-                dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-                dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-                diaAberturaPasta = int(dataIncrementada.day)
-                wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-                if (wDay == 5):   #sábado
-                    diaAberturaPasta = diaAberturaPasta + 2
-                elif (wDay == 6): #domingo
-                    diaAberturaPasta = diaAberturaPasta + 1
-
-                data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
+                dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
+                dataIncrementada = dataAbPasta.date()
+                data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
                 appointmentDate = datetime.datetime.strptime("{}".format(data), "%d/%m/%Y")
                 appointmentDate = format(appointmentDate, "%d/%m/%Y")
                 agendamento = "Fotocópia integral"
@@ -830,8 +839,8 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
             time.sleep(1)
 
             try:
-                searchFolder = False
-                # searchFolder = pesquisarPasta(df['pasta'])
+                #searchFolder = False
+                searchFolder = pesquisarPasta(df['pasta'])
             except:
                 print('Não foi possível realizar uma busca')
                 return False
@@ -877,10 +886,23 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
     else:
         return False
 
+def checkIfTest():
+    pathRootScript = os.path.abspath(os.path.dirname(__file__))
+    pathFileTeste = pathRootScript + "\\teste.txt"
+    if (os.path.isfile(pathFileTeste)):
+        print('\n------------EM MODO DE TESTE------------')
+        login="robo@dplaw.com.br"
+        password="dplaw00612"
+        return login, password
+    else:
+        
+        return "erro", "erro"
+
+
 #============================PROGRAMA PRINCIPAL==============================
 
 pidNumber = str(os.getpid())
-print(pidNumber)
+print("\n pID: {}".format(pidNumber))
 
 path     = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
 logsPath = os.getcwd() + "\\files\\abertura_pastas\\logs"
@@ -901,6 +923,12 @@ os.chdir(path) # seleciona o diretório do script
 driverIniciado = False
 driver = None
 abreNovaPasta = None
+
+login, password = checkIfTest()
+
+print("\n-----------------------------------------")
+print("Login utilizado: {}".format(login))
+print("-----------------------------------------\n")
 
 while True:
 
@@ -935,8 +963,7 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        # abreWebDriver = rf.acessToIntegra(driver)
-                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                        abreWebDriver = rf.acessToIntegra(driver, login, password)
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count, extensao=extensao)
                     else:
@@ -949,8 +976,7 @@ while True:
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    # abreWebDriver = rf.acessToIntegra(driver)
-                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                    abreWebDriver = rf.acessToIntegra(driver, login, password)
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta, extensao=extensao)
                 else:
