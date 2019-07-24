@@ -177,7 +177,7 @@ def slowInternet(driver, active = False):   # Para simular internet Lenta
         download_throughput= 50 * 1024,  # maximal throughput
         upload_throughput= 50 * 1024)  # maximal throughput
 
-def acessToIntegra(driver, login="robo@dplaw.com.br", password="dplaw00612"):
+def acessToIntegra(driver, login, password):
     # acessando a primeira página do sistema promad    
     try:
         driver.maximize_window()
