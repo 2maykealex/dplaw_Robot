@@ -373,7 +373,6 @@ def incluirProcesso(df, registro):
         naoInserido['idDoProcesso'] = 'Não recuperado'
 
     # Abre a aba Parte Adversa
-    status = True
     try:
         element = rf.waitinstance(driver, "//*[@id='div_menu17']", 1, 'show')
         element.click()
@@ -431,7 +430,6 @@ def incluirProcesso(df, registro):
         message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
     except:
         message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
-        status = False
 
     time.sleep(0.5)
     return message
@@ -890,14 +888,20 @@ def checkIfTest():
     pathRootScript = os.path.abspath(os.path.dirname(__file__))
     pathFileTeste = pathRootScript + "\\teste.txt"
     if (os.path.isfile(pathFileTeste)):
+        return True
+    else:
+        return False
+
+def checkLogin():
+    checarTeste = checkIfTest()
+    if (checarTeste):
         print('\n------------EM MODO DE TESTE------------')
         login="robo@dplaw.com.br"
         password="dplaw00612"
-        return login, password
     else:
-        
-        return "erro", "erro"
-
+        login="cgst@dplaw.com.br"
+        password="gestao0"
+    return login, password
 
 #============================PROGRAMA PRINCIPAL==============================
 
@@ -924,7 +928,7 @@ driverIniciado = False
 driver = None
 abreNovaPasta = None
 
-login, password = checkIfTest()
+login, password = checkLogin()
 
 print("\n-----------------------------------------")
 print("Login utilizado: {}".format(login))
