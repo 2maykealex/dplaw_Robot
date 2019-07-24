@@ -935,8 +935,8 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        abreWebDriver = rf.acessToIntegra(driver)
-                        # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                        # abreWebDriver = rf.acessToIntegra(driver)
+                        abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                     if (abreWebDriver):
                         abreNovaPasta = abrePasta(arquivoAbrirPasta, count, extensao=extensao)
                     else:
@@ -949,8 +949,8 @@ while True:
                     driverIniciado = True
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    abreWebDriver = rf.acessToIntegra(driver)
-                    # abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
+                    # abreWebDriver = rf.acessToIntegra(driver)
+                    abreWebDriver = rf.acessToIntegra(driver, "cgst@dplaw.com.br", "gestao0")
                 if (abreWebDriver):
                     abreNovaPasta = abrePasta(arquivoAbrirPasta, extensao=extensao)
                 else:
