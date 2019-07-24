@@ -837,8 +837,10 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
             time.sleep(1)
 
             try:
-                #searchFolder = False
-                searchFolder = pesquisarPasta(df['pasta'])
+                if checkIfTest():
+                    searchFolder = False
+                else:
+                    searchFolder = pesquisarPasta(df['pasta'])
             except:
                 print('Não foi possível realizar uma busca')
                 return False
