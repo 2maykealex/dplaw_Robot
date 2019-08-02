@@ -163,6 +163,8 @@ os.chdir(path) # seleciona o diretório do script
 driverIniciado = False
 driver = None
 
+login, password = "robo@dplaw.com.br" ,"dplaw00612"
+
 while True:
     files = []
     for file in glob.glob("*.xlsx"):
