@@ -22,7 +22,7 @@ def checkPopUps(driver):
     popupOk = False
     try:
         driver.execute_script("$('.popup_block').css('display', 'none');")
-        popupOk = True        
+        popupOk = True
     except:
         pass
     
@@ -41,7 +41,12 @@ def checkPopUps(driver):
     try:
         driver.execute_script("$('#backgroundPopup').css('display', 'none');")
         popupOk = True
+    except:
+        pass
 
+    try:
+        driver.execute_script("$('#carregando').css('display', 'none');")
+        popupOk = True
     except:
         pass
     
@@ -89,7 +94,7 @@ def waitinstance(driver, object, poll, type, form = 'xpath'):
         except:
             count = count + 1
             hora = time.strftime("%H:%M:%S")
-            print('{} - Elemento ainda não foi encontrado!'.format(hora))
+            print('{} - {} - Elemento ainda não foi encontrado!'.format(count, hora))
     
 def iniciaWebdriver(modSilent = False, monitor = 2):
 
@@ -230,17 +235,6 @@ def acessToPJE(arquivo, driver):
     # TRF 1ª Região - 2º grau
     # TRT 14 - 1º grau
     # TRT 14 - 2º grau
-
-
-
-
-
-    # # realizando o login no sistema
-    # element = waitinstance(driver, "login_email", 1, 'show', 'id')
-    # element.send_keys('robo@dplaw.com.br')
-    # driver.find_element_by_id("login_senha").send_keys('dplaw00612')
-    
-    # createLog("", 'FAZENDO LOGIN NO SITE')
 
 def createPID(pidName, pidNumber):
     logsPath = os.getcwd()+"\\pIDs"
