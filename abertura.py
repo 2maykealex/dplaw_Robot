@@ -1,7 +1,6 @@
 import datetime
 from datetime import date
 from datetime import timedelta
-import calendar
 import locale
 import time
 from time import strftime
@@ -222,16 +221,6 @@ def incluirProcesso(df, registro):
             naoInserido['localTramite'] = localTramite
     else:
         naoInserido['localTramite'] = 'Vazio'
-    
-    # if (str(df['localTramite'])):
-    #     try:
-    #         element = rf.waitinstance(driver, '//*[@id="slcLocalTramite"]', 1, 'show')
-    #         select = rf.Select(element)
-    #         select.select_by_visible_text(str(df['localTramite']))
-    #     except:    
-    #         naoInserido['localTramite'] = str(df['localTramite'])
-    # else:
-    #     naoInserido['localTramite'] = 'Vazio'
 
     time.sleep(0.5)
 
@@ -443,10 +432,6 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
     element = rf.waitinstance(driver, "btnAgendarSalvar", 1, 'show', id)  #checa se redirecionamento ocorreu para agendamentos
     rf.checkPopUps(driver)
 
-    dataAberturaPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-    dataAberturaPasta = dataAberturaPasta.date() + timedelta(days=1)
-    dataAberturaPasta = format(dataAberturaPasta, "%d/%m/%Y")
-
     complementoAgendamento = ""
     cont = 0
     for x in range(4):
@@ -510,19 +495,6 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
 
-            # if (dataCiencia == ""):
-            #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-            #     diaAberturaPasta = int(dataIncrementada.day)
-            #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-            #     if (wDay == 5):   #sábado
-            #         diaAberturaPasta = diaAberturaPasta + 2
-            #     elif (wDay == 6): #domingo
-            #         diaAberturaPasta = diaAberturaPasta + 1
-            #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            # else:
-
             tipoAgendamento = 'Ciencia de novo processo'
             dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
             dataIncrementada = dataAbPasta.date()
@@ -553,19 +525,6 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # combo destinatário - abrir
             element = rf.waitinstance(driver, xPathElement, 1, 'click')
             element.click()
-
-            # if (dataCiencia == ""):
-            #     dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-            #     dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-            #     diaAberturaPasta = int(dataIncrementada.day)
-            #     wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-            #     if (wDay == 5):   #sábado
-            #         diaAberturaPasta = diaAberturaPasta + 2
-            #     elif (wDay == 6): #domingo
-            #         diaAberturaPasta = diaAberturaPasta + 1
-            #     data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-            # else:
             
             tipoAgendamento = 'Anexar'
             dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
@@ -602,19 +561,6 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
                 element = rf.waitinstance(driver, xPathElement, 1, 'click')
                 element.click()
 
-                
-                # dataAbPasta = datetime.datetime.strptime(dataAberturaPasta, "%d/%m/%Y")
-                # dataIncrementada = dataAbPasta.date() + timedelta(days=1)
-                # diaAberturaPasta = int(dataIncrementada.day)
-                # wDay = calendar.weekday(dataIncrementada.year, dataIncrementada.month, diaAberturaPasta)
-
-                # if (wDay == 5):   #sábado
-                #     diaAberturaPasta = diaAberturaPasta + 2
-                # elif (wDay == 6): #domingo
-                #     diaAberturaPasta = diaAberturaPasta + 1
-
-                # data = "{}/{}/{}".format(str(diaAberturaPasta), dataIncrementada.month, dataIncrementada.year)
-                
                 tipoAgendamento = 'Fotocópia'
                 dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
                 dataIncrementada = dataAbPasta.date()
