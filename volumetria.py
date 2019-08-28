@@ -197,7 +197,7 @@ while True:
                         print("\nINICIANDO WebDriver")
                         rf.createPID(volumetriaMes.upper(), pidNumber)
                         driver = rf.iniciaWebdriver(False)
-                        rf.acessToIntegra(driver)
+                        abreWebDriver = rf.acessToIntegra(driver, login, password)
 
                     executaVolumetria = enviaParametros(volumetriaMes, count, extensao=extensao)
             else:
@@ -206,7 +206,7 @@ while True:
                     driverIniciado = True 
                     driver = rf.iniciaWebdriver(False)
                     rf.createPID(volumetriaMes.upper(), pidNumber)
-                    abreWebDriver = rf.acessToIntegra(driver)
+                    abreWebDriver = rf.acessToIntegra(driver, login, password)
 
                 if (abreWebDriver):
                     executaVolumetria = enviaParametros(volumetriaMes, extensao=extensao)
