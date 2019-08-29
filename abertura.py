@@ -192,6 +192,8 @@ def incluirProcesso(df, registro):
         naoInserido['localTr'] = 'Vazio'
 
     time.sleep(0.5)
+
+    # //*[@id="div_txtLocalTramite"]
     
     # Local trâmite - Campo 2
     if (str(df['localTramite']) != ""):
@@ -510,7 +512,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # respons. pelo cliente
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'cbradesco'):
+                if (item.text == 'CBV'): #cbradesco
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
@@ -542,7 +544,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             countResp = 0
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'ESTAGBRA' or item.text == 'cbradesco'):
+                if (item.text == 'CBV'): #if (item.text == 'ESTAGBRA' or item.text == 'cbradesco'):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
@@ -679,9 +681,12 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
         element = rf.waitinstance(driver, xPathElement, 1, 'show')
         element.send_keys(agendamento[:30])
 
-        if (x < 3):
-            element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')  #abrir novo agendamento
-            element.click()
+        if (x < 3): #em fotocópia já não clica mais
+            if (x < 2 or (x == 2 and agendFotocopia == "1")):  #se é menor que 2  ou  se for igual a 2 e agendFotocopia = '1'
+                element = rf.waitinstance(driver, '//*[@id="divAgendaCadastrarIncluir"]/a', 1, 'show')  #abrir novo agendamento
+                element.click()
+            else:
+                break
 
     element = rf.waitinstance(driver, '//*[@id="btnAgendarSalvar"]', 1, 'click')
     element.click()
@@ -836,7 +841,7 @@ def checkIfTest():
     pathRootScript = os.path.abspath(os.path.dirname(__file__))
     pathFileTeste = pathRootScript + "\\teste.txt"
     if (os.path.isfile(pathFileTeste)):
-        return True
+        return False
     else:
         return False
 
