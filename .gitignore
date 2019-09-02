@@ -5,3 +5,26 @@
 *.lnk
 *.pid
 *.xlsx
+files/abertura_pastas/modelo/C3-PLAW - Copia.xlsm
+files/abertura_pastas/arquivos_executados/*
+files/abertura_pastas/backup/*
+files/abertura_pastas/logs/*
+files/abertura_pastas/pIDs/*
+
+files/volumetrias/arquivos_executados/*
+files/volumetrias/backup/*
+files/volumetrias/logs/*
+files/volumetrias/pIDs/*
+
+files/atualizacao/arquivos_executados/*
+files/atualizacao/backup/*
+files/atualizacao/logs/*
+files/atualizacao/pIDs/*
+
+files/fechamento/arquivos_executados/*
+files/fechamento/backup/*
+files/fechamento/logs/*
+files/fechamento/pIDs/*
+
+
+
