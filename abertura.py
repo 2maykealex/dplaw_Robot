@@ -434,6 +434,11 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
     element = rf.waitinstance(driver, "btnAgendarSalvar", 1, 'show', id)  #checa se redirecionamento ocorreu para agendamentos
     rf.checkPopUps(driver)
 
+    if (sigla =='BRA'):
+        respCiencia = 'cbradesco'
+    elif (sigla == 'BV'):
+        respCiencia = 'CBV'
+
     complementoAgendamento = ""
     cont = 0
     for x in range(4):
@@ -512,7 +517,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             # respons. pelo cliente
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'CBV'): #cbradesco
+                if (item.text == respCiencia):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
@@ -544,7 +549,7 @@ def criarAgendamentos(dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, 
             countResp = 0
             y = 1
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text == 'CBV'): #if (item.text == 'ESTAGBRA' or item.text == 'cbradesco'):
+                if (item.text == 'ESTAGBRA' or item.text == respCiencia):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso{}"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(cont, y)
                     element = rf.waitinstance(driver, xPathItem, 1, 'click')
                     element.click()
