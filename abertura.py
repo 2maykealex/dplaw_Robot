@@ -846,7 +846,7 @@ def checkIfTest():
     pathRootScript = os.path.abspath(os.path.dirname(__file__))
     pathFileTeste = pathRootScript + "\\teste.txt"
     if (os.path.isfile(pathFileTeste)):
-        return False
+        return True
     else:
         return False
 
