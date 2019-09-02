@@ -820,9 +820,9 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
                     try:
                         criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item, df['dataCiencia'], df['agendFotocopia'])
                         if (df['dataAudiencia'] != ""):
-                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência não marcada!".format(messageInclusaoNovoProcesso)
-                        else:
                             messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência está marcada!".format(messageInclusaoNovoProcesso)
+                        else:
+                            messageInclusaoNovoProcesso = "{} Agendamentos criados! | Audiência NÃO está marcada!".format(messageInclusaoNovoProcesso)
                     except:
                         messageInclusaoNovoProcesso = "{} ERRO AO CRIAR OS AGENDAMENTOS! FAZÊ-LOS MANUALMENTE! |".format(messageInclusaoNovoProcesso)
                 else:
