@@ -763,8 +763,13 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
                 df['vCausa'] = "0"
 
             df['statusProcessual'] = dfExcel[item, 11]
-            df['razaoSocial']      = dfExcel[item, 12]
-            df['gpCliente']        = dfExcel[item, 13]
+
+            if (checkIfTest()):  #se for teste
+                df['razaoSocial']      = "Cliente teste"
+                df['gpCliente']        = "Grupo Teste"
+            else:
+                df['razaoSocial']      = dfExcel[item, 12]
+                df['gpCliente']        = dfExcel[item, 13]
 
             responsavel = dfExcel[item, 14].split(';')
 
