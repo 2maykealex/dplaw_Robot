@@ -8,7 +8,7 @@
             "name": "Python: ATUALIZAÇÃO.py",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/update.py",
+            "program": "${workspaceFolder}/atualizacao.py",
             "console": "integratedTerminal"
         },
         
