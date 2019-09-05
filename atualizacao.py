@@ -19,8 +19,8 @@ def pesquisarPasta(pasta):
     element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
     element.click()
     time.sleep(0.5)
-    # buscando pasta    
-    driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
+    # buscando pasta
+    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(pasta))
     # element = rf.waitinstance(driver, 'txtPesquisa', 1, 'show', 'id')
     # element.send_keys(str(pasta))
     
@@ -76,7 +76,7 @@ def fazerAtualizacao(dadosAtualizacao):
                         driver.execute_script("document.getElementById('txtAssunto').value='{}' ".format(str(dadosAtualizacao['assunto'])))
 
     try:
-        comboAssunto.click()  # clica e abre as opções
+        # comboAssunto.click()  # clica e abre as opções
         print("Preenchendo com assunto '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['assunto'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
     except:
         pass
@@ -105,7 +105,7 @@ def fazerAtualizacao(dadosAtualizacao):
                         driver.execute_script("document.getElementById('txtDetalhes').value='{}' ".format(str(dadosAtualizacao['detalhe'])))
 
     try:
-        comboDetalhe.click()  # clica e abre as opções
+        # comboDetalhe.click()  # clica e abre as opções
         print("Preenchendo com o detalhe '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['detalhe'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
     except:
         pass
@@ -134,16 +134,16 @@ def enviaParametros(atualizacaoPasta, item = 1, extensao="xlsx"):
         count = dfExcel.number_of_rows()-1
 
         while (item <= count):         #looping dentro de cada arquivo
-            pasta    =  dfExcel[item, 4]
-            assunto  =  dfExcel[item, 25]
-            detalhe =  dfExcel[item, 27]
+            pasta   = dfExcel[item, 0]
+            assunto = dfExcel[item, 1]
+            detalhe = dfExcel[item, 2]
 
             dadosAtualizacao = {}
             dadosAtualizacao['atualizacaoPasta']  = atualizacaoPasta
             dadosAtualizacao['item']     = item
-            dadosAtualizacao['pasta']    = pasta     #dfExcel[item, 4]
-            dadosAtualizacao['assunto']  = assunto   #dfExcel[item, 25]
-            dadosAtualizacao['detalhe']  = detalhe  #dfExcel[item, 27]
+            dadosAtualizacao['pasta']    = pasta
+            dadosAtualizacao['assunto']  = assunto
+            dadosAtualizacao['detalhe']  = detalhe
 
             trySearch = 1
             search = False
