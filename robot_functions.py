@@ -251,3 +251,97 @@ def checkPID(pidNumber):
         print ("pid {} existe".format(pidNumber))
         return True
     return False
+
+def pesquisarPasta(driver, pasta):
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
+
+    checkPopUps(driver)
+
+    # selecionar opção pesquisa por pasta
+    element = waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
+    element.click()
+    time.sleep(0.5)
+
+    # buscando pasta
+    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(pasta))
+    time.sleep(2)
+    print("pesquisar pasta {}".format(pasta))
+    driver.find_element_by_id("btnPesquisar").click()
+    time.sleep(2)
+
+    try:
+        #Checa se não existe registros para essa pasta
+        element = driver.find_element_by_id('loopVazio').is_displayed()
+        hora = time.strftime("%H:%M:%S")
+        print('{} - Não encontrou a pasta'.format(hora))
+        retorno = False
+
+    except:
+        # SELECIONA O CLIENTE PESQUISADO
+        element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'show')
+        retorno = True
+
+    return retorno
+
+def pesquisarCliente(driver, cliente):
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    try:
+        urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+        driver.get(urlPage)
+
+        checkPopUps(driver)
+
+        # buscando o cliente e acessando sua pasta
+        driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
+        time.sleep(2)
+        print("pesquisar cliente {}".format(cliente))
+        driver.find_element_by_id("btnPesquisar").click()
+
+        # ATÉ A URL NÃO MUDAR
+        time.sleep(2)
+        # SELECIONA O CLIENTE PESQUISADO
+        element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 2, 'click')
+        time.sleep(2)
+        element.click()
+        time.sleep(2)
+        return True
+    except:
+        return False
+
+def uploadFile(driver):
+    checkPopUps(driver)
+    # ACESSAR ÁREA DE DOWNLOADS
+    driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
+
+    # TODO FAZER LOOPING PARA ADD TODOS OS ARQUIVOS PERTINENTES AO PROCESSO/CLIENTE
+    time.sleep(6)
+    path = 'C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/pdf.pdf' # CAMINHO DO ARQUIVO
+    # TODO MONTAR CAMINHO DINAMICAMENTE # driver.send_keys(os.getcwd() + "/tests/sample_files/Figure1.tif")
+
+    # driver.switch_to.frame(1)
+    driver.switch_to.frame(driver.find_element_by_tag_name("iframe")) #ACESSANDO CONTEUDO DE UM FRAME
+
+    element = driver.find_element_by_xpath('//*[@id="realupload"]')
+    element.send_keys(path)
+
+    driver.switch_to.default_content()   #VOLTAR PARA O CONTEUDO PRINCIPAL
+
+    #Botão salvar
+    time.sleep(6)
+    element = waitinstance(driver, '//*[@id="btnSalvar"]', 1, 'show')
+    element.click()
+    # POP UP (OK)
+    time.sleep(1)
+    element = waitinstance(driver, '//*[@id="popup_ok"]', 1, 'show')
+    element.click()
+
+def checkIfTest():
+    pathRootScript = os.path.abspath(os.path.dirname(__file__))
+    pathFileTeste = pathRootScript + "\\teste.txt"
+    if (os.path.isfile(pathFileTeste)):
+        return True
+    else:
+        return False
+

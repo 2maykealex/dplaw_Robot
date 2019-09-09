@@ -7,43 +7,6 @@ import glob
 import shutil
 import robot_functions as rf
 
-def pesquisarPasta(pasta):
-    
-    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    driver.get(urlPage)
-
-    rf.checkPopUps(driver)
-
-    # selecionar opção pesquisa por pasta
-    element = rf.waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
-    element.click()
-    time.sleep(0.5)
-    # buscando pasta    
-    driver.execute_script("document.getElementById('txtPesquisa').value={} ".format(pasta))
-    # element = rf.waitinstance(driver, 'txtPesquisa', 1, 'show', 'id')
-    # element.send_keys(str(pasta))
-    
-    time.sleep(0.5)
-
-    driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(1)
-
-    try:
-        # SELECIONA O CLIENTE PESQUISADO
-        time.sleep(2)    
-        element = rf.waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'click')
-        element.click()
-        retorno = True
-
-    except:
-        # element = driver.find_element_by_id('loopVazio')  #se encontrar este elemento, é porque não há registros 
-        hora = time.strftime("%H:%M:%S")
-        print('{} - Não encontrou a pasta'.format(hora))
-        retorno = False
-        
-    return retorno
-
 def inserirVolumetria(volumetriaMes, pasta, registro):
 
     rf.checkPopUps(driver)
@@ -112,7 +75,7 @@ def enviaParametros(volumetriaMes, item = 1, extensao="xlsx"):
                 print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                 try:
-                    search = pesquisarPasta(pasta)
+                    search = rf.pesquisarPasta(driver, pasta)
                 except:
                     return False
 
