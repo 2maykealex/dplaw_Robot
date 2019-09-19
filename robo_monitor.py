@@ -11,10 +11,10 @@ local_Volumetria  = os.getcwd() + "\\Volumetria.py"  # obtem o caminho do script
 local_Update      = os.getcwd() + "\\atualizacao.py" # obtem o caminho do script Atualização de pastas
 local_CloseFolder = os.getcwd() + "\\fechamento.py"  # obtem o caminho do script Encerramento de pastas
 
-OpenFolderPath = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-VolumetriaPath = os.getcwd() + "\\files\\volumetrias"     # obtem o caminho do script e add a pasta abertura_pastas
-UpdatePath     = os.getcwd() + "\\files\\atualizacao"     # obtem o caminho do script e add a pasta abertura_pastas
-ClosePath      = os.getcwd() + "\\files\\fechamento"      # obtem o caminho do script e add a pasta abertura_pastas
+OpenFolderPath    = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
+VolumetriaPath    = os.getcwd() + "\\files\\volumetrias"     # obtem o caminho do script e add a pasta abertura_pastas
+UpdatePath        = os.getcwd() + "\\files\\atualizacao"     # obtem o caminho do script e add a pasta abertura_pastas
+ClosePath         = os.getcwd() + "\\files\\fechamento"      # obtem o caminho do script e add a pasta abertura_pastas
 
 while True:      #Fará looping infinito, buscando novos arquivos nas pastas - se encontrar, abrirá o seu respectivo script
     time.sleep(3)
