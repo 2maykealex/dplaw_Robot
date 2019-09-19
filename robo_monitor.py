@@ -1,6 +1,7 @@
 import os
 import time
 import glob
+from datetime import date
 import robot_functions as rf
 
 #============================ ROBO PRINCIPAL==============================
@@ -18,9 +19,8 @@ ClosePath         = os.getcwd() + "\\files\\fechamento"      # obtem o caminho d
 
 while True:      #Fará looping infinito, buscando novos arquivos nas pastas - se encontrar, abrirá o seu respectivo script
     time.sleep(3)
-    hora = time.strftime("%H:%M:%S")
-    print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(hora))
-    
+    print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
+
     files =  {}
     for file in glob.glob("{}\\*.xlsx".format(OpenFolderPath)):
         fileName = file.split("\\")
@@ -68,7 +68,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 pass
 
             if (not(os.path.isfile(logFile))):      #se o log não existir - executa o arquivo no script
-                print("\n{} - Uma nova instancia de {} foi aberta".format(hora, folderName.upper()))
+                print("\n{} - {} - Uma nova instancia de {} foi aberta".format(date(), time.strftime("%H:%M:%S"), folderName.upper()))
                 if (folderName == "abertura_pastas"):
                     os.startfile('abertura.py')     #executa outro script em outro terminal - para trabalhar de forma isolada
                 elif (folderName == "volumetrias"):
@@ -78,7 +78,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 elif (folderName == "fechamento"):
                     os.startfile('fechamento.py')   #executa outro script em outro terminal - para trabalhar de forma isolada
             else:
-                print('{} - Arquivo {} já está em execução!\n'.format(hora, file))
+                print('{} - {} - Arquivo {} já está em execução!\n'.format(date(), time.strftime("%H:%M:%S"), file))
             
             for x in range(10):
                 print('Delay {}'.format(x))
