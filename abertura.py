@@ -635,7 +635,7 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
 
             df['pasta']            = dfExcel[item, 0]
             df['adversa']          = dfExcel[item, 1].strip()
-            dataContratacao        = dfExcel[item, 2]
+            dataContratacao        = dfExcel[item, 2].strip()
             try:
                 dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
             except:
