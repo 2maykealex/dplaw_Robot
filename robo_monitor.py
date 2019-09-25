@@ -22,22 +22,22 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
 
     files =  {}
-    for file in glob.glob("{}\\*.xlsx".format(OpenFolderPath)):
+    for file in glob.glob("{}\\*.xls*".format(OpenFolderPath)):
         fileName = file.split("\\")
         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
         files[OpenFolderPath] = fileName
 
-    for file in glob.glob("{}\\*.xlsx".format(VolumetriaPath)):
+    for file in glob.glob("{}\\*.xls*".format(VolumetriaPath)):
         fileName = file.split("\\")
         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
         files[VolumetriaPath] = fileName
 
-    for file in glob.glob("{}\\*.xlsx".format(UpdatePath)):
+    for file in glob.glob("{}\\*.xls*".format(UpdatePath)):
         fileName = file.split("\\")
         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
         files[VolumetriaPath] = fileName
 
-    for file in glob.glob("{}\\*.xlsx".format(ClosePath)):
+    for file in glob.glob("{}\\*.xls*".format(ClosePath)):
         fileName = file.split("\\")
         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
         files[VolumetriaPath] = fileName
@@ -68,7 +68,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 pass
 
             if (not(os.path.isfile(logFile))):      #se o log não existir - executa o arquivo no script
-                print("\n{} - {} - Uma nova instancia de {} foi aberta".format(date(), time.strftime("%H:%M:%S"), folderName.upper()))
+                print("\n{} - {} - Uma nova instancia de {} foi aberta".format(date.today(), time.strftime("%H:%M:%S"), folderName.upper()))
                 if (folderName == "abertura_pastas"):
                     os.startfile('abertura.py')     #executa outro script em outro terminal - para trabalhar de forma isolada
                 elif (folderName == "volumetrias"):
@@ -78,7 +78,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 elif (folderName == "fechamento"):
                     os.startfile('fechamento.py')   #executa outro script em outro terminal - para trabalhar de forma isolada
             else:
-                print('{} - {} - Arquivo {} já está em execução!\n'.format(date(), time.strftime("%H:%M:%S"), file))
+                print('{} - {} - Arquivo {} já está em execução!\n'.format(date.today(), time.strftime("%H:%M:%S"), file))
             
             for x in range(10):
                 print('Delay {}'.format(x))
