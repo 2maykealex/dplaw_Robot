@@ -279,9 +279,17 @@ def pesquisarPasta(driver, pasta):
         retorno = False
 
     except:
-        # SELECIONA O CLIENTE PESQUISADO
-        element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 1, 'show')
+        # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
+        try:
+            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]", 1, 'click')
+        except:
+            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]/div", 1, 'click')
         retorno = True
+
+        try:
+            element.click()
+        except:
+            retorno = False
 
     return retorno
 
