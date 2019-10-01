@@ -207,6 +207,15 @@ def incluirProcesso(df, registro):
         naoInserido['uf'] = 'Vazio'
 
     time.sleep(0.5)
+    
+    # PROGRAMAÇÃO TEMPORÁRIA #############################################
+    try:
+        element = rf.waitinstance(driver, 'slcLocalizador', 1, 'show', 'id')
+        select = rf.Select(element)
+        select.select_by_visible_text(str('Bradesco Migração'))
+    except:
+        naoInserido['localizador'] = str('Bradesco Migração')
+    ######################################################################
 
     # RESPONSÁVEL
     if (df['responsavel']):   #condição para evitar percorrer a lista se for "Vazio"
