@@ -209,12 +209,12 @@ def incluirProcesso(df, registro):
     time.sleep(0.5)
     
     # PROGRAMAÇÃO TEMPORÁRIA #############################################
-    try:
-        element = rf.waitinstance(driver, 'slcLocalizador', 1, 'show', 'id')
-        select = rf.Select(element)
-        select.select_by_visible_text(str('Bradesco Migração'))
-    except:
-        naoInserido['localizador'] = str('Bradesco Migração')
+    # try:
+    #     element = rf.waitinstance(driver, 'slcLocalizador', 1, 'show', 'id')
+    #     select = rf.Select(element)
+    #     select.select_by_visible_text(str('Bradesco Migração'))
+    # except:
+    #     naoInserido['localizador'] = str('Bradesco Migração')
     ######################################################################
 
     # RESPONSÁVEL
