@@ -207,15 +207,13 @@ def incluirProcesso(df, registro):
         naoInserido['uf'] = 'Vazio'
 
     time.sleep(0.5)
-    
-    # PROGRAMAÇÃO TEMPORÁRIA #############################################
-    # try:
-    #     element = rf.waitinstance(driver, 'slcLocalizador', 1, 'show', 'id')
-    #     select = rf.Select(element)
-    #     select.select_by_visible_text(str('Bradesco Migração'))
-    # except:
-    #     naoInserido['localizador'] = str('Bradesco Migração')
-    ######################################################################
+
+    try:
+        element = rf.waitinstance(driver, 'slcLocalizador', 1, 'show', 'id')
+        select = rf.Select(element)
+        select.select_by_visible_text(str(df['localizador']))
+    except:
+        naoInserido['localizador'] = str(df['localizador'])
 
     # RESPONSÁVEL
     if (df['responsavel']):   #condição para evitar percorrer a lista se for "Vazio"
@@ -715,6 +713,7 @@ def abrePasta(arquivoAbrirPasta, item = 1, extensao ="xlsx"):
 
             df['dataCiencia'] = dfExcel[item, 18]
             df['agendFotocopia'] = dfExcel[item, 19]
+            df['localizador'] = dfExcel[item, 20]
 
             time.sleep(1)
 
