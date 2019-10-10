@@ -353,3 +353,5 @@ def checkIfTest():
     else:
         return False
 
+def pprint(message, tName):
+    print('{} - {}'.format(tName, message))
