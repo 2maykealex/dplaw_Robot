@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: robo_monitor.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/robo_monitor.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: ATUALIZAÇÃO.py",
             "type": "python",
             "request": "launch",
