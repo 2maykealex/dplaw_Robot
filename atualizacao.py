@@ -115,7 +115,7 @@ def enviaParametros(atualizacaoPasta, item = 1, extensao="xlsx"):
                 print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                 try:
-                    search = rf.pesquisarPasta(pasta)
+                    search = rf.pesquisarPasta(driver, pasta)
                 except:
                     return False
 
