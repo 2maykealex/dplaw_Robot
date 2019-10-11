@@ -132,8 +132,9 @@ def iniciaWebdriver(modSilent = False, monitor = 2):
     slowInternet(driver, slow)    
     return driver
 
-def abreArquivo(arquivo, extensao):
-    fileName = (arquivo + '.' + extensao)
+def abreArquivo(arquivo, extensao, path=""):
+    fileName = "{}\\{}.{}".format(path, arquivo, extensao)
+    # fileName = (arquivo + '.' + extensao)
     dfExcel = pe.get_sheet(file_name=fileName) 
     return dfExcel
 
