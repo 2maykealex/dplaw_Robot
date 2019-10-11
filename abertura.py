@@ -622,10 +622,10 @@ class Abertura (object):
         except:
             pass
 
-    def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx"):
+    def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx", path=""):
         urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
         
-        dfExcel = rf.abreArquivo(arquivoAbrirPasta, extensao)
+        dfExcel = rf.abreArquivo(arquivoAbrirPasta, extensao, path=path)
         count = dfExcel.number_of_rows()-1
 
         cliente = ''
@@ -779,27 +779,25 @@ class Abertura (object):
             password="gestao0"
         return login, password
 
-    def controle(self, file):
-
+    def controle(self, file, path):
         pidNumber = str(os.getpid())
         print("\n pID: {}".format(pidNumber))
 
         infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
 
-        path     = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
-        logsPath = os.getcwd() + "\\files\\abertura_pastas\\logs"
+        logsPath = path + "\\logs"
         pathExecutados = path + "\\arquivos_executados"
 
         if (os.path.exists(pathExecutados) == False):
             os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
-        if (os.path.exists(path) == False):
-            os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
+        # if (os.path.exists(path) == False):
+        #     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
 
         if (os.path.exists(logsPath) == False):
             os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado - 
 
-        os.chdir(path) # seleciona o diretório do script
+        # os.chdir(path) # seleciona o diretório do script
 
         driverIniciado = False
         self.driver = None
@@ -846,7 +844,7 @@ class Abertura (object):
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
-                    abreNovaPasta = self.abrePasta(arquivoAbrirPasta, count, extensao=extensao)
+                    abreNovaPasta = self.abrePasta(arquivoAbrirPasta, count, extensao=extensao, path=path)
                 else:
                     driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                     self.driver.quit()
@@ -859,7 +857,7 @@ class Abertura (object):
                 rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                 abreWebDriver = rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
-                abreNovaPasta = self.abrePasta(arquivoAbrirPasta, extensao=extensao)
+                abreNovaPasta = self.abrePasta(arquivoAbrirPasta, extensao=extensao, path=path)
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 self.driver.quit()
@@ -867,15 +865,17 @@ class Abertura (object):
 
         if (abreNovaPasta):
             if (file[0] != ""):
-                os.remove(infoLog)
-                fileExecuted = pathExecutados + "\\{}".format(file[0])
+                os.remove("{}\\{}".format(path, infoLog))
+                fileExecuted = pathExecutados + "\\{}.{}".format(arquivoAbrirPasta, extensao)
                 if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                     os.remove(fileExecuted)
-
-                shutil.move("{}.{}".format(file[0],file[-1]), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                shutil.move("{}\\{}.{}".format(path, arquivoAbrirPasta,extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
-            self.driver.quit()
+            try:
+                self.driver.quit()
+            except:
+                pass
             # break
 
         if (driverIniciado == True):
