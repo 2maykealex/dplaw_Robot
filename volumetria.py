@@ -44,10 +44,6 @@ class Volumetria (object):
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
 
-            # # SALVAR ALTERAÇÃO - POP_UP
-            # time.sleep(2)
-            # element = rf.waitinstance(self.driver, 'popup_ok', 1, 'show', 'id')
-            # element.click() 
             rf.createLog(self.logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
             time.sleep(1)
             return True
@@ -92,7 +88,7 @@ class Volumetria (object):
                     print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
                     log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
                     rf.createLog(self.logFile, log)
-                
+
                 item = item + 1
 
             rf.createLog(self.logFile, '_________________________________________________________________')
@@ -104,23 +100,15 @@ class Volumetria (object):
     def controle(self, file, path):
         pidNumber = str(os.getpid())
         print(pidNumber)
-
         infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
-
-        # path = os.getcwd() + "\\files\\volumetrias" # obtem o caminho do script e add a pasta volumetrias
         logsPath = path + "\\logs"
         pathExecutados = path + "\\arquivos_executados"
 
         if (os.path.exists(pathExecutados) == False):
             os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
-        # if (os.path.exists(path) == False):
-        #     os.mkdir(path)   # Se o diretório Volumetrias não existir, será criado - 
-
         if (os.path.exists(logsPath) == False):
             os.mkdir(logsPath)   # Se o diretório \Volumetrias\files não existir, será criado - 
-
-        # os.chdir(path) # seleciona o diretório do script
 
         driverIniciado = False
         self.driver = None
@@ -132,32 +120,20 @@ class Volumetria (object):
         print("Login utilizado: {}".format(login))
         print("-----------------------------------------\n")
 
-        # while True:
-        #     files = []
-        #     for file in glob.glob("*.xlsx"):
-        #         files.append(file)
-                
-        #     if (files):
-        #         for file in files:
         file = file.split('.')
-        volumetriaMes = '.'.join(file[:-1])#file[0]
+        volumetriaMes = '.'.join(file[:-1])
         extensao = file[-1]
-        
-        # if (file != ""):
-        #     infoLog = "EXECUTANDO {}.txt".format(file[0].upper())
-        #     arquivo = open(infoLog, 'w+')
-        #     arquivo.close() 
-        
+
         self.logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
         
         abreWebDriver = None
         if (os.path.isfile(self.logFile)):
             linha, count = rf.checkEndFile(self.logFile)
-                        
+
             if (linha == "FIM"): #ultima linha do arquivo
                 print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
-                
-            else:                          # continua o preenchimento do log já existente 
+
+            else: # continua o preenchimento do log já existente 
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
@@ -194,8 +170,8 @@ class Volumetria (object):
                 self.driver.quit()
             except:
                 pass
-    
-        if (driverIniciado == True):  
+
+        if (driverIniciado == True):
             driverIniciado = False
             rf.logoutIntegra(self.driver)
 

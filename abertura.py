@@ -1,3 +1,4 @@
+# coding=utf-8
 import datetime
 from datetime import date
 from datetime import timedelta
@@ -106,8 +107,6 @@ class Abertura (object):
 
         time.sleep(0.5)
 
-        # //*[@id="div_txtLocalTramite"]
-        
         # Local trâmite - Campo 2
         if (str(df['localTramite']) != ""):
             localTramite = str(df['localTramite'])
@@ -669,32 +668,32 @@ class Abertura (object):
                 numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
                 if (numProcesso == '-....'):
                     numProcesso = ''
-                df['numProcesso']      = numProcesso
-                df['cnj']              = numProcesso #dfExcel[item, 3]
-                df['gpProcesso']       = dfExcel[item, 5].strip()
-                df['localTr']          = dfExcel[item, 6]
-                df['localTramite']     = dfExcel[item, 7].strip()
-                df['comarca']          = dfExcel[item, 8].strip()
-                df['uf']               = dfExcel[item, 9].strip()
+                df['numProcesso']  = numProcesso
+                df['cnj']          = numProcesso
+                df['gpProcesso']   = dfExcel[item, 5].strip()
+                df['localTr']      = dfExcel[item, 6]
+                df['localTramite'] = dfExcel[item, 7].strip()
+                df['comarca']      = dfExcel[item, 8].strip()
+                df['uf']           = dfExcel[item, 9].strip()
                 try:
-                    valorCausa             = locale.format_string("%1.2f", dfExcel[item, 10].strip() , 0)
-                    df['vCausa']           = valorCausa.replace('.',',')
+                    valorCausa     = locale.format_string("%1.2f", dfExcel[item, 10].strip() , 0)
+                    df['vCausa']   = valorCausa.replace('.',',')
                 except:
                     df['vCausa'] = "0"
 
                 df['statusProcessual'] = dfExcel[item, 11]
 
                 if (rf.checkIfTest()):  #se for teste
-                    df['razaoSocial']      = "Cliente teste"
-                    df['gpCliente']        = "Grupo Teste"
+                    df['razaoSocial']  = "Cliente teste"
+                    df['gpCliente']    = "Grupo Teste"
                 else:
-                    df['razaoSocial']      = dfExcel[item, 12]
-                    df['gpCliente']        = dfExcel[item, 13]
+                    df['razaoSocial']  = dfExcel[item, 12]
+                    df['gpCliente']    = dfExcel[item, 13]
 
                 responsavel = dfExcel[item, 14].split(';')
 
-                df['responsavel']      = responsavel
-                df['sigla']            = dfExcel[item, 15].strip()
+                df['responsavel']  = responsavel
+                df['sigla']        = dfExcel[item, 15].strip()
 
                 try:
                     df['dataAudiencia'] = dfExcel[item, 16].strip()
@@ -791,13 +790,8 @@ class Abertura (object):
         if (os.path.exists(pathExecutados) == False):
             os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
 
-        # if (os.path.exists(path) == False):
-        #     os.mkdir(path)   # Se o diretório Abertura_pastas não existir, será criado - 
-
         if (os.path.exists(logsPath) == False):
             os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado - 
-
-        # os.chdir(path) # seleciona o diretório do script
 
         driverIniciado = False
         self.driver = None
@@ -809,25 +803,12 @@ class Abertura (object):
         print("Login utilizado: {}".format(login))
         print("-----------------------------------------\n")
 
-        # while True:
-
-        #     files =  []
-        #     for file in glob.glob("*.xls*"):
-        #         files.append(file)
-
-        #     if (files):
-        #         for file in files:
         file = file.split('.')
         arquivoAbrirPasta = '.'.join(file[:-1])
         extensao = file[-1]
-        
-        # if (file[0] != ""):
-        
-        #     arquivo = open(infoLog, 'w+')
-        #     arquivo.close()
 
         self.logFile = logsPath + "\\_log_{}.txt".format(arquivoAbrirPasta)
-        
+
         abreWebDriver = None
         if (os.path.isfile(self.logFile)):    # se existir o log em andamento
             linha, count = rf.checkEndFile(self.logFile)
@@ -835,7 +816,7 @@ class Abertura (object):
             if (linha == "FIM"): #ultima linha do arquivo
                 print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
                 abreNovaPasta = True # Avança no looping apagando o arquivo existente
-                
+
             else: # continua o preenchimento do log já existente
                 if (driverIniciado == False):
                     driverIniciado = True
@@ -876,18 +857,9 @@ class Abertura (object):
                 self.driver.quit()
             except:
                 pass
-            # break
 
         if (driverIniciado == True):
             driverIniciado = False
             rf.logoutIntegra(self.driver)
-        
+
         return True
-
-    # time.sleep(1.5)
-    # hora = time.strftime("%H:%M:%S")
-    # print('{} - VERIFICANDO SE HÁ NOVOS ARQUIVOS\n'.format(hora))
-    # time.sleep(1.5)
-
-        # #FIM DO 
-        # return True
