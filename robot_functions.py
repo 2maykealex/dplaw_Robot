@@ -287,12 +287,7 @@ def pesquisarPasta(driver, pasta):
             element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]/div", 1, 'click')
         retorno = True
 
-        try:
-            element.click()
-        except:
-            retorno = False
-
-    return retorno
+    return retorno, element
 
 def pesquisarCliente(driver, cliente):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
