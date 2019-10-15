@@ -70,11 +70,15 @@ class Volumetria (object):
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                     try:
-                        search = rf.pesquisarPasta(self.driver, pasta)
+                        search, element = rf.pesquisarPasta(self.driver, pasta)
                     except:
                         return False
 
                     if (search == True):
+                        try:
+                            element.click()  # clica na pasta para inserir a volumetria
+                        except:
+                            search = False
                         break
                     trySearch = trySearch + 1
                 print('\n')

@@ -721,7 +721,7 @@ class Abertura (object):
                     if rf.checkIfTest():
                         searchFolder = False
                     else:
-                        searchFolder = rf.pesquisarPasta(self.driver, df['pasta'])
+                        searchFolder, element = rf.pesquisarPasta(self.driver, df['pasta'])
                 except:
                     print('Não foi possível realizar uma busca')
                     return False
