@@ -8,9 +8,98 @@ import robot_functions as rf
 
 class Contrato (object):
 
+    def inserirContrato(self, contratoMes, pasta, registro):
+        rf.checkPopUps(self.driver)
 
+        element = rf.waitinstance(self.driver, 'backgroundPopup', 1, 'show', 'id')
+        if (element.value_of_css_property('display') == 'block'):
+            self.driver.execute_script("$('#backgroundPopup').css('display', 'none');") # torna elemento visível
 
+        element = rf.waitinstance(self.driver, 'carregando', 1, 'show', 'id')
+        if (element.value_of_css_property('display') == 'block'):
+            self.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
+        element = rf.waitinstance(self.driver, 'txtCampoLivre4', 1, 'show', 'id')
+        if (element.get_attribute('value') ==  ''):
+            print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
+            time.sleep(2) 
+
+            self.driver.execute_script("document.getElementById('txtCampoLivre4').value='{}' ".format(contratoMes) )
+            time.sleep(2)
+
+            # checando se o elemento CNJ está preenchido
+            element = rf.waitinstance(self.driver, 'txtNroCnj', 1, 'show', 'id')
+            if (element.get_attribute("value") != ''):
+                # Segredo de Justiça  #por padrão, será marcado não
+                element = rf.waitinstance(self.driver, 'segredoJusticaN', 1, 'show', 'id')
+                self.driver.execute_script("arguments[0].click();", element)
+                time.sleep(2)
+
+                element = rf.waitinstance(self.driver, 'capturarAndamentosS', 1, 'show', 'id')
+                self.driver.execute_script("arguments[0].click();", element)
+                time.sleep(2) 
+
+            # SALVAR ALTERAÇÃO
+            time.sleep(2)
+            element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
+            element.click()
+
+            rf.createLog(self.logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
+            time.sleep(1)
+            return True
+
+        else:
+            print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
+            log = "REGISTRO {}: A pasta {} já está com o contrato correspondente preenchido! (campo livre 4) ******".format(registro, pasta)
+            rf.createLog(self.logFile, log)
+            time.sleep(1)
+            return False
+
+    def enviaParametros(self, contratoMes, item = 1, extensao="xlsx", path=""):
+        try:
+            print('\n')
+            dfExcel = rf.abreArquivo(contratoMes, extensao, path=path)
+            count = dfExcel.number_of_rows()-1
+
+            while (item <= count):         #looping dentro de cada arquivo
+                pasta =  dfExcel[item, 0]
+                trySearch = 1
+                search = False
+                while (trySearch < 4):
+                    hora = time.strftime("%H:%M:%S")
+                    print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
+
+                    try:
+                        search, element = rf.pesquisarPasta(self.driver, pasta)
+                    except:
+                        return False
+
+                    if (search == True):
+                        try:
+                            element.click()  # clica na pasta para inserir o contrato
+                        except:
+                            search = False
+                        break
+                    trySearch = trySearch + 1
+                print('\n')
+
+                if (search == True):
+                    try:
+                        self.inserirContrato(contratoMes, pasta, item)
+                    except:
+                        return False
+                else:
+                    print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
+                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                    rf.createLog(self.logFile, log)
+
+                item = item + 1
+
+            rf.createLog(self.logFile, '_________________________________________________________________')
+            rf.createLog(self.logFile, 'FIM')
+            return True
+        except:
+            return False
 
     def controle(self, file, path):
         pidNumber = str(os.getpid())

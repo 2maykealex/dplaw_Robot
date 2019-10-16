@@ -7,6 +7,7 @@ import robot_functions as rf
 import threading
 from abertura import Abertura
 from volumetria import Volumetria
+from contrato import Contrato
 
 def checkIFexecuting():
     deletingFiles = []
@@ -25,6 +26,8 @@ def abrirRobo(tipo, file, path):
         robo = Abertura()
     elif (tipo == '2'):
         robo = Volumetria()
+    elif (tipo == '3'):
+        robo = Contrato()
     # elif (tipo == '3'):
     #     robo = Atualizacao()
     # elif (tipo == '4'):
@@ -35,15 +38,16 @@ def abrirRobo(tipo, file, path):
         pass
 
 
-#============================ ROBO PRINCIPAL==============================
-
+#============================ ROBO PRINCIPAL====================================================
 localRobot        = os.getcwd() # obtem o caminho do Robô
 local_OpenFolder  = os.getcwd() + "\\abertura.py"    # obtem o caminho do script Abertura de pastas
-local_Volumetria  = os.getcwd() + "\\Volumetria.py"  # obtem o caminho do script Volumetria de pastas
+local_Contract    = os.getcwd() + "\\contrato.py"  # obtem o caminho do script Volumetria de pastas
+local_Volumetria  = os.getcwd() + "\\volumetria.py"  # obtem o caminho do script Volumetria de pastas
 local_Update      = os.getcwd() + "\\atualizacao.py" # obtem o caminho do script Atualização de pastas
 local_CloseFolder = os.getcwd() + "\\fechamento.py"  # obtem o caminho do script Encerramento de pastas
 
 OpenFolderPath    = os.getcwd() + "\\files\\abertura_pastas" # obtem o caminho do script e add a pasta abertura_pastas
+ContractPath      = os.getcwd() + "\\files\\contrato"     # obtem o caminho do script e add a pasta abertura_pastas
 VolumetriaPath    = os.getcwd() + "\\files\\volumetrias"     # obtem o caminho do script e add a pasta abertura_pastas
 UpdatePath        = os.getcwd() + "\\files\\atualizacao"     # obtem o caminho do script e add a pasta abertura_pastas
 ClosePath         = os.getcwd() + "\\files\\fechamento"      # obtem o caminho do script e add a pasta abertura_pastas
@@ -71,6 +75,13 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
             fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
             if (fileName not in executingFiles):
                 files[VolumetriaPath] = fileName
+
+    for file in glob.glob("{}\\*.xls*".format(ContractPath)):
+        if (file[-3:] != 'txt'):
+            fileName = file.split("\\")
+            fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
+            if (fileName not in executingFiles):
+                files[ContractPath] = fileName
 
     # for file in glob.glob("{}\\*.xls*".format(UpdatePath)):
     #     if (file[-3:] != 'txt'):
@@ -116,10 +127,12 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("1", file, localFile))
             elif (folderName == "volumetrias"):
                 executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("2", file, localFile))
+            elif (folderName == "contrato"):
+                executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("3", file, localFile))
             # elif (folderName == "atualizacao"):
-            #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("3", file))
+            #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("4", file, localFile))
             # elif (folderName == "fechamento"):
-            #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("4", file))
+            #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("5", file, localFile))
 
             try:
                 executeRobot.start()
