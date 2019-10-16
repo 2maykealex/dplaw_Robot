@@ -50,7 +50,7 @@ class Volumetria (object):
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-            log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! ******".format(registro, pasta)
+            log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! (campo livre 3) ******".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
