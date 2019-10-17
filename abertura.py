@@ -850,7 +850,7 @@ class Abertura (object):
                 fileExecuted = pathExecutados + "\\{}.{}".format(arquivoAbrirPasta, extensao)
                 if (os.path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                     os.remove(fileExecuted)
-                shutil.move("{}\\{}.{}".format(path, arquivoAbrirPasta,extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                shutil.move("{}\\{}.{}".format(path, arquivoAbrirPasta, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
             try:
