@@ -8,6 +8,7 @@ import threading
 from abertura import Abertura
 from volumetria import Volumetria
 from contrato import Contrato
+from atualizacao import Atualizacao
 
 def checkIFexecuting():
     deletingFiles = []
@@ -28,9 +29,9 @@ def abrirRobo(tipo, file, path):
         robo = Volumetria()
     elif (tipo == '3'):
         robo = Contrato()
-    # elif (tipo == '3'):
-    #     robo = Atualizacao()
-    # elif (tipo == '4'):
+    elif (tipo == '4'):
+        robo = Atualizacao()
+    # elif (tipo == '5'):
     #     robo = Fechamento()
     try:
         robo.controle(file, path)
@@ -83,12 +84,12 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
             if (fileName not in executingFiles):
                 files[ContractPath] = fileName
 
-    # for file in glob.glob("{}\\*.xls*".format(UpdatePath)):
-    #     if (file[-3:] != 'txt'):
-    #         fileName = file.split("\\")
-    #         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
-    #         if (fileName not in executingFiles):
-    #             files[UpdatePath] = fileName
+    for file in glob.glob("{}\\*.xls*".format(UpdatePath)):
+        if (file[-3:] != 'txt'):
+            fileName = file.split("\\")
+            fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
+            if (fileName not in executingFiles):
+                files[UpdatePath] = fileName
 
     # for file in glob.glob("{}\\*.xls*".format(ClosePath)):
     #     if (file[-3:] != 'txt'):
@@ -129,8 +130,8 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                 executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("2", file, localFile))
             elif (folderName == "contrato"):
                 executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("3", file, localFile))
-            # elif (folderName == "atualizacao"):
-            #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("4", file, localFile))
+            elif (folderName == "atualizacao"):
+                executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("4", file, localFile))
             # elif (folderName == "fechamento"):
             #     executeRobot = threading.Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=abrirRobo, args=("5", file, localFile))
 
