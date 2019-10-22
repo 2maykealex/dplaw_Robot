@@ -21,7 +21,7 @@ class Contrato (object):
 
         element = rf.waitinstance(self.driver, 'txtCampoLivre4', 1, 'show', 'id')
         if (element.get_attribute('value') ==  ''):
-            print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
+            print("Preenchendo com '{}' na pasta/processo {} - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
             time.sleep(2) 
 
             self.driver.execute_script("document.getElementById('txtCampoLivre4').value='{}' ".format(contratoMes) )
@@ -70,7 +70,10 @@ class Contrato (object):
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                     try:
-                        search, element = rf.pesquisarPasta(self.driver, pasta)
+                        if (len(pasta)>= 14):
+                            search, element = rf.pesquisarProcesso(self.driver, pasta)  #pesquisa por processo
+                        else:
+                            search, element = rf.pesquisarPasta(self.driver, pasta)  #pesquisa por pasta
                     except:
                         return False
 
