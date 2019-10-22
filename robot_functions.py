@@ -289,6 +289,42 @@ def pesquisarPasta(driver, pasta):
 
     return retorno, element
 
+def pesquisarProcesso(driver, processo):
+    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
+    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    driver.get(urlPage)
+
+    checkPopUps(driver)
+
+    # selecionar opção pesquisa por processo
+    element = waitinstance(driver, '//*[@id="chkPesquisa137"]', 1, 'show')
+    element.click()
+    time.sleep(0.5)
+
+    # buscando processo
+    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(processo))
+    time.sleep(2)
+    print("pesquisar processo {}".format(processo))
+    driver.find_element_by_id("btnPesquisar").click()
+    time.sleep(2)
+
+    try:
+        #Checa se não existe registros para essa processo
+        element = driver.find_element_by_id('loopVazio').is_displayed()
+        hora = time.strftime("%H:%M:%S")
+        print('{} - Não encontrou a processo'.format(hora))
+        retorno = False
+
+    except:
+        # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
+        try:
+            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]", 1, 'click')
+        except:
+            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]/div", 1, 'click')
+        retorno = True
+
+    return retorno, element
+
 def pesquisarCliente(driver, cliente):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
     try:
