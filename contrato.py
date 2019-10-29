@@ -70,7 +70,8 @@ class Contrato (object):
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                     try:
-                        if (len(pasta)>= 14):
+                        countChar = len(str(pasta))
+                        if (countChar >= 14):
                             search, element = rf.pesquisarProcesso(self.driver, pasta)  #pesquisa por processo
                         else:
                             search, element = rf.pesquisarPasta(self.driver, pasta)  #pesquisa por pasta
