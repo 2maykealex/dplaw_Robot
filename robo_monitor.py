@@ -57,7 +57,7 @@ executeRobot = None
 executingFiles =  {}
 while True:      #Fará looping infinito, buscando novos arquivos nas pastas - se encontrar, abrirá o seu respectivo script
     time.sleep(3)
-    print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
+    # print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
     checkIFexecuting()
     files =  {}
     # filesInFolder = set(glob.glob("{}\\*.xls*".format(OpenFolderPath))) - set(glob.glob("{}\\*.txt".format(OpenFolderPath)))
