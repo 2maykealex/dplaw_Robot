@@ -235,8 +235,8 @@ def acessToPJE(arquivo, driver):
     # TRT 14 - 1º grau
     # TRT 14 - 2º grau
 
-def createPID(pidName, pidNumber, path):
-    logsPath = "{}\\pIDs".format(path)
+def createPID(pidName, pidNumber):
+    logsPath = "{}\\pIDs".format(os.getcwd())
     logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
 
     if (os.path.exists(logsPath) == False):
