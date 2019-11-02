@@ -821,7 +821,7 @@ class Abertura (object):
                 if (driverIniciado == False):
                     driverIniciado = True
                     print("\nINICIANDO WebDriver")
-                    rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
+                    rf.createPID(arquivoAbrirPasta.upper(), pidNumber, path)
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
@@ -835,7 +835,7 @@ class Abertura (object):
             if (driverIniciado == False):
                 driverIniciado = True
                 self.driver = rf.iniciaWebdriver(False)
-                rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
+                rf.createPID(arquivoAbrirPasta.upper(), pidNumber, path)
                 abreWebDriver = rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
                 abreNovaPasta = self.abrePasta(arquivoAbrirPasta, extensao=extensao, path=path)

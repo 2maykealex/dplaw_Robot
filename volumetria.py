@@ -141,7 +141,7 @@ class Volumetria (object):
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
-                    rf.createPID(volumetriaMes.upper(), pidNumber)
+                    rf.createPID(volumetriaMes.upper(), pidNumber, path)
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
 
@@ -151,7 +151,7 @@ class Volumetria (object):
             if (driverIniciado == False):
                 driverIniciado = True 
                 self.driver = rf.iniciaWebdriver(False)
-                rf.createPID(volumetriaMes.upper(), pidNumber)
+                rf.createPID(volumetriaMes.upper(), pidNumber, path)
                 abreWebDriver = rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
                 executaVolumetria = self.enviaParametros(volumetriaMes, extensao=extensao, path=path)

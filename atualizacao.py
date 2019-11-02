@@ -187,7 +187,7 @@ class Atualizacao (object):
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
-                    rf.createPID(atualizacaoPasta.upper(), pidNumber)
+                    rf.createPID(atualizacaoPasta.upper(), pidNumber, path)
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
@@ -200,7 +200,7 @@ class Atualizacao (object):
             if (driverIniciado == False):
                 driverIniciado = True 
                 self.driver = rf.iniciaWebdriver(False)
-                rf.createPID(atualizacaoPasta.upper(), pidNumber)
+                rf.createPID(atualizacaoPasta.upper(), pidNumber, path)
                 abreWebDriver =  rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
                 executaAtualizacao = self.enviaParametros(atualizacaoPasta, extensao=extensao, path=path)

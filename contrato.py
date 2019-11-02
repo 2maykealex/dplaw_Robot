@@ -145,7 +145,7 @@ class Contrato (object):
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
-                    rf.createPID(contratoMes.upper(), pidNumber)
+                    rf.createPID(contratoMes.upper(), pidNumber, path)
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
 
@@ -155,7 +155,7 @@ class Contrato (object):
             if (driverIniciado == False):
                 driverIniciado = True 
                 self.driver = rf.iniciaWebdriver(False)
-                rf.createPID(contratoMes.upper(), pidNumber)
+                rf.createPID(contratoMes.upper(), pidNumber, path)
                 abreWebDriver = rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
                 executaContrato = self.enviaParametros(contratoMes, extensao=extensao, path=path)
