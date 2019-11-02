@@ -37,6 +37,7 @@ def abrirRobo(tipo, file, path):
         robo.controle(file, path)
     except:
         pass
+    print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
 
 
 #============================ ROBO PRINCIPAL====================================================
@@ -55,9 +56,9 @@ ClosePath         = os.getcwd() + "\\files\\fechamento"      # obtem o caminho d
 
 executeRobot = None
 executingFiles =  {}
+print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
 while True:      #Fará looping infinito, buscando novos arquivos nas pastas - se encontrar, abrirá o seu respectivo script
     time.sleep(3)
-    # print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), time.strftime("%H:%M:%S")))
     checkIFexecuting()
     files =  {}
     # filesInFolder = set(glob.glob("{}\\*.xls*".format(OpenFolderPath))) - set(glob.glob("{}\\*.txt".format(OpenFolderPath)))
@@ -102,7 +103,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
         for localFile, file in files.items():
             folderName = localFile.split("\\")
             folderName = folderName[-1]
-            localPid = localFile + "\\pIDs"
+            localPid = "{}\\pIDs".format(os.getcwd())
 
             infoLog = "\\EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
             infoLog = localFile + infoLog
@@ -111,10 +112,9 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                     pId = fileEpid.split("__")
                     pId = int (pId[-1].replace(".pid", ""))
                     if (not(rf.checkPID(pId))): #se pID não está em execução. remover arquivos
-                        pidFile = localPid+"\\{}__{}.pid".format(file[:-5].upper(), pId)
-                        os.remove(pidFile)
-                        print("Removido o PID: {}".format(pId))
                         try:
+                            os.remove(fileEpid)
+                            print("Removido o PID: {}".format(pId))
                             os.remove(infoLog)
                         except:
                             pass
