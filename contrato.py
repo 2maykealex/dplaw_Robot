@@ -21,7 +21,7 @@ class Contrato (object):
 
         element = rf.waitinstance(self.driver, 'txtCampoLivre4', 1, 'show', 'id')
         if (element.get_attribute('value') ==  ''):
-            print("Preenchendo com '{}' na pasta/processo {} - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
+            print("Preenchendo com '{}' na pasta/processo '{}' - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
             time.sleep(2) 
 
             self.driver.execute_script("document.getElementById('txtCampoLivre4').value='{}' ".format(contratoMes) )
@@ -44,13 +44,13 @@ class Contrato (object):
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
+            rf.createLog(self.logFile, "REGISTRO {}: '{}' foi preenchido na pasta/processo '{}'".format(registro, contratoMes.upper(), pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
-            log = "REGISTRO {}: A pasta {} já está com o contrato correspondente preenchido! (campo livre 4) ******".format(registro, pasta)
+            log = "REGISTRO {}: ****** O contrato para a pasta/processo '{}' já foi preenchido! ******".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False

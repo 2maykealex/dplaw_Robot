@@ -327,7 +327,7 @@ class Abertura (object):
                 element = self.driver.find_element_by_id("popup_ok")
                 self.driver.execute_script("arguments[0].click();", element)
                 print('pop up OK')
-                complemento = " | A Parte adversa - {} - tem outros processos registrados no sistema! |".format(str(df['adversa']))
+                complemento = " | A Parte adversa - '{}' - tem outros processos registrados no sistema! |".format(str(df['adversa']))
                 time.sleep(0.5)
             except:
                 pass
@@ -337,7 +337,7 @@ class Abertura (object):
                 for k, v in naoInserido.items():
                     complemento = '{} {}: {} | '.format(complemento, k, v)
 
-            message = "REGISTRO {}: Gravando a nova pasta {}: id Promad: {}.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
+            message = "REGISTRO {}: Nova pasta '{}': id Promad: '{}'.{}".format(registro, str(df['pasta']), idNovaPasta, complemento)
         except:
             message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
 
@@ -755,7 +755,7 @@ class Abertura (object):
                         print('Erro ao incluir Agendamentos')
                     rf.createLog(self.logFile, "{}".format(messageInclusaoNovoProcesso))
                 else:
-                    rf.createLog(self.logFile, "REGISTRO {}: A pasta {} já existe no sistema! Favor verificar!".format(item, df['pasta']))
+                    rf.createLog(self.logFile, "REGISTRO {}: A pasta '{}' já existe no sistema! Favor verificar!".format(item, df['pasta']))
 
                 self.driver.get(urlPage)   # Volta para a tela de pesquisa
                 item = item + 1

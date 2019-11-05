@@ -83,7 +83,7 @@ class Atualizacao (object):
             element = rf.waitinstance(self.driver, 'popup_ok', 1, 'show', 'id')
             element.click() 
             
-            message = "REGISTRO {}: Salvando alterações na pasta {} - ASSUNTO: {} - DETALHE: {}".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'], dadosAtualizacao['assunto'], dadosAtualizacao['detalhe'])
+            message = "REGISTRO {}: A Pasta '{}' foi atualizada com o ASSUNTO: '{}' e DETALHE: '{}'".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'], dadosAtualizacao['assunto'], dadosAtualizacao['detalhe'])
             rf.createLog(self.logFile, message)   #poderia acontecer de salvar, e não aparecer (por neste momento falhar a conexão)
         except:
             pass
@@ -133,7 +133,7 @@ class Atualizacao (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(atualizacaoPasta))
-                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'])
+                    log  =  "REGISTRO {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'])
                     rf.createLog(self.logFile, log)
                 
                 item = item + 1

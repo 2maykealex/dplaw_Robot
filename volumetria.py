@@ -44,13 +44,13 @@ class Volumetria (object):
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REGISTRO {}: Salvando alterações na pasta {}".format(registro, pasta))
+            rf.createLog(self.logFile, "REGISTRO {}: O dado '{}' foi preenchido na pasta '{}'".format(registro, volumetriaMes, pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-            log = "REGISTRO {}: A pasta {} já está com a volumetria correspondente preenchida! (campo livre 3) ******".format(registro, pasta)
+            log = "REGISTRO {}: ****** A volumetria para a pasta '{}' já foi preenchida! ******".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
@@ -90,7 +90,7 @@ class Volumetria (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                    log  =  "REGISTRO {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
                     rf.createLog(self.logFile, log)
 
                 item = item + 1
