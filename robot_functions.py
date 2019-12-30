@@ -47,6 +47,12 @@ def checkPopUps(driver):
         popupOk = True
     except:
         pass
+
+    try:
+        driver.execute_script("$('#card').css('display', 'none');")
+        popupOk = True
+    except:
+        pass
     
     if (popupOk == True):
         time.sleep(2)
