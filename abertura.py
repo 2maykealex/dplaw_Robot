@@ -638,6 +638,7 @@ class Abertura (object):
         if (searchClient):
             urlPage = self.driver.current_url
             while (item <= count):
+                print ('FALTAM {} REGISTROS A EXECUTAR.'.format(count-item))
                 df = {}
 
                 df['pasta']            = dfExcel[item, 0]

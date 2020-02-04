@@ -65,6 +65,7 @@ class Contrato (object):
                 pasta =  dfExcel[item, 0]
                 trySearch = 1
                 search = False
+                print ('FALTAM {} REGISTROS A EXECUTAR.'.format(count-item))
                 while (trySearch < 4):
                     hora = time.strftime("%H:%M:%S")
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))

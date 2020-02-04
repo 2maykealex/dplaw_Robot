@@ -95,6 +95,7 @@ class Atualizacao (object):
             count = dfExcel.number_of_rows()-1
 
             while (item <= count):         #looping dentro de cada arquivo
+                print ('FALTAM {} REGISTROS A EXECUTAR.'.format(count-item))
                 pasta   = dfExcel[item, 0]
                 assunto = dfExcel[item, 1]
                 detalhe = dfExcel[item, 2]
