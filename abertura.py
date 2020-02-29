@@ -781,7 +781,7 @@ class Abertura (object):
 
     def controle(self, file, path):
         pidNumber = str(os.getpid())
-        print("\n pID: {}".format(pidNumber))
+        print("\npID: {}".format(pidNumber))
 
         infoLog = "EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
 

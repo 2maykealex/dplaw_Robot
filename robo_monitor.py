@@ -141,7 +141,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
 
             try:
                 executeRobot.start()
-                print(executeRobot.name,'\n')
+                print('\n', executeRobot.name,'\n')
             except Exception as err:
                 print('\n ERRO EM {}'.format(executeRobot.name))
                 pass
