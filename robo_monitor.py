@@ -108,6 +108,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
             infoLog = "\\EXECUTANDO {}.txt".format(file.upper())  #criando o nome do arquivo INFOLOG
             infoLog = localFile + infoLog
             try:
+                fileEpid = 0
                 for fileEpid in glob.glob("{}\\*.pid".format(localPid)):
                     pId = fileEpid.split("__")
                     pId = int (pId[-1].replace(".pid", ""))
@@ -118,6 +119,9 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                             os.remove(infoLog)
                         except:
                             pass
+                if (not (fileEpid)):  #se FileEpid não existir, Remova o infoLog.
+                    if (os.path.isfile(infoLog)): 
+                        os.remove(infoLog)
             except:
                 pass
             print("\n{} - {} - Uma nova instancia de {} foi aberta".format(date.today(), time.strftime("%H:%M:%S"), folderName.upper()))
