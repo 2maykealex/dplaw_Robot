@@ -110,11 +110,8 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
             try:
                 fileEpid = 0
                 for fileEpid in glob.glob("{}\\*.pid".format(localPid)):
-
                     pId = fileEpid.split("\\")[-1]
                     pId = pId.split("__")
-
-                    print(file.split('.')[0])
                     if (pId[0] == file.split('.')[0]): #só vai remover o pID referente ao arquivo em execução
                         pId = int (pId[-1].replace(".pid", ""))
                         if (not(rf.checkPID(pId))): #se pID não está em execução. remover arquivos
