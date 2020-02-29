@@ -698,7 +698,6 @@ class Abertura (object):
 
                 try:
                     df['dataAudiencia'] = dfExcel[item, 16].strip()
-                    print('teste data {}'.format(df['dataAudiencia']))
                 except:
                     df['dataAudiencia'] = ""
 
