@@ -192,7 +192,8 @@ def acessToIntegra(driver, login, password):
     try:
         driver.maximize_window()
         # createLog(arquivo, '>>>>>>>>> ACESSANDO O SITE http://www.integra.adv.br/... <<<<<<<<<')
-        driver.get('http://www.integra.adv.br/')
+        driver.get('https://integra.adv.br/login-integra.asp')
+        # driver.get('http://www.integra.adv.br/')
 
         # realizando o login no sistema
         element = waitinstance(driver, "login_email", 1, 'show', 'id')
