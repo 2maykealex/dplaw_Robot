@@ -622,8 +622,6 @@ class Abertura (object):
             pass
 
     def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx", path=""):
-        urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-        
         dfExcel = rf.abreArquivo(arquivoAbrirPasta, extensao, path=path)
         count = dfExcel.number_of_rows()-1
 
