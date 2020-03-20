@@ -262,8 +262,17 @@ def checkPID(pidNumber):
 
 def pesquisarPasta(driver, pasta):
     # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    driver.get(urlPage)
+    # urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
+    # driver.get(urlPage)
+
+    #menu CLIENTES
+    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+    time.sleep(1)
+    element.click()
+    #submenu PESQUISAR CLIENTE
+    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+    time.sleep(1)
+    element.click()
 
     checkPopUps(driver)
 
