@@ -31,7 +31,7 @@ class Abertura (object):
             except:
                 naoInserido['gpProcesso'] = str(df['gpProcesso'])
         else:
-            naoInserido['gpProcesso'] = 'Vazio'
+            naoInserido['gpProcesso'] = ''
 
         time.sleep(0.5)
 
@@ -52,7 +52,7 @@ class Abertura (object):
             except:
                 naoInserido['cnj'] = str(df['cnj'])
         else:
-            naoInserido['cnj'] = 'Vazio'
+            naoInserido['cnj'] = ''
 
         time.sleep(0.5)
 
@@ -65,7 +65,7 @@ class Abertura (object):
             except:
                 naoInserido['numProcesso'] = str(df['numProcesso'])
         else:
-            naoInserido['numProcesso'] = 'vazio'
+            naoInserido['numProcesso'] = ''
 
         time.sleep(0.5)
 
@@ -78,7 +78,7 @@ class Abertura (object):
             except:
                 naoInserido['statusProcessual'] = str(df['statusProcessual'])
         else:
-            naoInserido['statusProcessual'] = 'Vazio'
+            naoInserido['statusProcessual'] = ''
 
         time.sleep(0.5)
 
@@ -90,7 +90,7 @@ class Abertura (object):
             except:
                 naoInserido['pasta'] = str(df['pasta'])
         else:
-            naoInserido['pasta'] = 'Vazio'
+            naoInserido['pasta'] = ''
             
         time.sleep(0.5)
 
@@ -103,7 +103,7 @@ class Abertura (object):
             except:
                 naoInserido['localTr'] = str(df['localTr'])
         else:
-            naoInserido['localTr'] = 'Vazio'
+            naoInserido['localTr'] = ''
 
         time.sleep(0.5)
 
@@ -134,7 +134,7 @@ class Abertura (object):
             except:
                 naoInserido['localTramite'] = localTramite
         else:
-            naoInserido['localTramite'] = 'Vazio'
+            naoInserido['localTramite'] = ''
 
         time.sleep(0.5)
 
@@ -171,7 +171,7 @@ class Abertura (object):
             except:
                 comarcaSelecionada = False
         else:
-            naoInserido['comarca'] = 'Vazio'
+            naoInserido['comarca'] = ''
 
         # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo 
         if (comarcaExiste == True and comarcaSelecionada == False):
@@ -204,7 +204,7 @@ class Abertura (object):
             except:
                 naoInserido['uf'] = str(df['uf'])
         else:
-            naoInserido['uf'] = 'Vazio'
+            naoInserido['uf'] = ''
 
         time.sleep(0.5)
 
@@ -216,7 +216,7 @@ class Abertura (object):
             naoInserido['localizador'] = str(df['localizador'])
 
         # RESPONSÁVEL
-        if (df['responsavel']):   #condição para evitar percorrer a lista se for "Vazio"
+        if (df['responsavel']):   #condição para evitar percorrer a lista se for ""
             try:
                 self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
@@ -248,7 +248,7 @@ class Abertura (object):
             except:
                 naoInserido['responsavel'] = str(df['responsavel'])
         else:
-            naoInserido['responsavel'] = 'Vazio'
+            naoInserido['responsavel'] = ''
 
         time.sleep(0.5)
 
@@ -259,7 +259,7 @@ class Abertura (object):
             except:
                 naoInserido['dataContratacao'] = str(df['dataContratacao'])
         else:
-            naoInserido['dataContratacao'] = 'Vazio'
+            naoInserido['dataContratacao'] = ''
 
         time.sleep(0.5)
 
@@ -270,7 +270,7 @@ class Abertura (object):
             except:            
                 naoInserido['vCausa'] = str(df['vCausa'])
         else:
-            naoInserido['vCausa'] = 'Vazio'
+            naoInserido['vCausa'] = ''
 
         time.sleep(0.5)
 
@@ -312,7 +312,7 @@ class Abertura (object):
                 except:
                     naoInserido['adversa'] = str(df['adversa'])
             else:
-                naoInserido['adversa'] = 'Vazio'
+                naoInserido['adversa'] = ''
 
             time.sleep(0.5)
 
