@@ -333,7 +333,7 @@ class Abertura (object):
                 pass
 
             if (naoInserido):
-                complemento = '{} Não foi gravado esses dados: '.format(complemento)
+                complemento = '{} Não foram gravados esses dados: '.format(complemento)
                 for k, v in naoInserido.items():
                     complemento = '{} {}: {} | '.format(complemento, k, v)
 
