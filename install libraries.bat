@@ -1,7 +1,7 @@
 python -m pip install --upgrade pip
 
-pip install selenium
-pip install pyexcel
-pip install pyexcel-xls
-pip install pyexcel-xlsx
-pip install psutil
+pip3 install selenium
+pip3 install pyexcel
+pip3 install pyexcel-xls
+pip3 install pyexcel-xlsx
+pip3 install psutil
