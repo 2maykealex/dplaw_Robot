@@ -61,9 +61,9 @@ def checkPopUps(driver):
 
 def waitinstance(driver, object, poll, type, form = 'xpath'):
 
-    timeOut = 40 #segundos
+    timeOut = 10 #segundos
     count = 1
-    while (count < 8):
+    while (count < 6):
         try:
             if type == 'click':
                 if form == 'xpath':
@@ -99,6 +99,8 @@ def waitinstance(driver, object, poll, type, form = 'xpath'):
             count = count + 1
             hora = time.strftime("%H:%M:%S")
             print('{} - {} - Elemento ainda não foi encontrado!'.format(count, hora))
+
+    return False
     
 def iniciaWebdriver(modSilent = False, monitor = 2):
 
@@ -146,12 +148,12 @@ def abreArquivo(arquivo, extensao, path=""):
 
 def checkEndFile(log):
     arquivo =  open(log, 'r')
-    arquivoLinhas = arquivo.readlines() 
+    message = arquivo.readlines() 
     arquivo.close()
 
-    lastLine = arquivoLinhas[len(arquivoLinhas)-1]
-    count = len(open(log).readlines()) + 1
-    return (lastLine, count)
+    lastLine = message[len(message)-1]
+    # count = len(open(log).readlines()) + 1
+    return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
     
@@ -159,18 +161,18 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
         arquivo =  open(logFile, 'a')
     else:
         arquivo = open(logFile, tipo)
-
-    hoje = "%s" % (time.strftime("%Y-%m-%d"))
-    hora = time.strftime("%H:%M:%S")
-    horaStr = hora.replace(':', '-')
     
-    if (message == "FIM"):
-        writeLog = "{}".format(message) 
-    else:
-        if (onlyText == False):
-            writeLog = "{}__{}: {}\n".format(hoje, horaStr, message)
-        else:
-            writeLog = "{}".format(message)
+    writeLog = "{}".format(message)
+
+    # if (message == "FIM"):
+    #     writeLog = "{}".format(message)
+    # else:
+        # message = "{}".format(message)
+        # if (onlyText == False):
+        #     # writeLog = "{}__{}: {}\n".format(hoje, horaStr, message)
+        #     writeLog = "{}".format(message)
+        # else:
+        #     writeLog = "{}".format(message)
     
     if (arquivo != ""):
         arquivo.writelines(writeLog)
@@ -266,14 +268,22 @@ def pesquisarPasta(driver, pasta):
     # driver.get(urlPage)
 
     #menu CLIENTES
-    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-    time.sleep(1)
-    element.click()
+    try:
+        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+        time.sleep(1.5)
+        element.click()
+    except:
+        print("ERRO AO CLICAR NO MENU CLIENTES")
+    
     #submenu PESQUISAR CLIENTE
-    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-    time.sleep(1)
-    element.click()
+    try:
+        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+        time.sleep(1.5)
+        element.click()
+    except:
+        print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
 
+    time.sleep(2)
     checkPopUps(driver)
 
     # selecionar opção pesquisa por pasta
@@ -311,13 +321,29 @@ def pesquisarProcesso(driver, processo):
     # driver.get(urlPage)
 
     #menu CLIENTES
-    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-    time.sleep(1)
-    element.click()
+    try:
+        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+        time.sleep(1.5)
+        element.click()
+    except:
+        print("ERRO AO CLICAR NO MENU CLIENTES")
+    
     #submenu PESQUISAR CLIENTE
-    element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-    time.sleep(1)
-    element.click()
+    try:
+        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+        time.sleep(1.5)
+        element.click()
+    except:
+        print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
+
+    # #menu CLIENTES
+    # element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+    # time.sleep(1)
+    # element.click()
+    # #submenu PESQUISAR CLIENTE
+    # element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+    # time.sleep(1)
+    # element.click()
 
     checkPopUps(driver)
 
@@ -358,11 +384,11 @@ def pesquisarCliente(driver, cliente):
 
         #menu CLIENTES
         element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-        time.sleep(1)
+        time.sleep(1.5)
         element.click()
         #submenu PESQUISAR CLIENTE
         element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-        time.sleep(1)
+        time.sleep(1.5)
         element.click()
 
         checkPopUps(driver)
@@ -370,13 +396,13 @@ def pesquisarCliente(driver, cliente):
         # buscando o cliente e acessando sua pasta
         driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
         time.sleep(2)
-        print("pesquisar cliente {}".format(cliente))
         driver.find_element_by_id("btnPesquisar").click()
 
         # ATÉ A URL NÃO MUDAR
         time.sleep(2)
         # SELECIONA O CLIENTE PESQUISADO
         element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 2, 'click')
+        print("CLIENTE SELECIONADO: {}".format(cliente.upper()))
         time.sleep(2)
         element.click()
         time.sleep(2)

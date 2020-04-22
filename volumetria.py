@@ -20,6 +20,8 @@ class Volumetria (object):
             self.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
         element = rf.waitinstance(self.driver, 'txtCampoLivre3', 1, 'show', 'id')
+        print(element.text)
+        print(element.get_attribute('value'))
         if (element.get_attribute('value') ==  ''):
             print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(volumetriaMes, pasta, volumetriaMes))
             time.sleep(2) 
@@ -41,16 +43,21 @@ class Volumetria (object):
 
             # SALVAR ALTERAÇÃO
             time.sleep(2)
-            element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
+            element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'click', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REGISTRO {}: O dado '{}' foi preenchido na pasta '{}'".format(registro, volumetriaMes, pasta))
+            # SALVAR ALTERAÇÃO - popup
+            time.sleep(2)
+            element = rf.waitinstance(self.driver, 'popup_ok', 1, 'click', 'id')
+            element.click()
+
+            rf.createLog(self.logFile, "REG {}: O dado '{}' foi preenchido na pasta '{}'".format(registro, volumetriaMes, pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-            log = "REGISTRO {}: ****** A volumetria para a pasta '{}' já foi preenchida! ******".format(registro, pasta)
+            log = "REG {}: ****** A volumetria para a pasta '{}' já foi preenchida! ******".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
@@ -66,7 +73,7 @@ class Volumetria (object):
                 trySearch = 1
                 search = False
                 print ('FALTAM {} REGISTROS A EXECUTAR.'.format(count-item))
-                while (trySearch < 4):
+                while (trySearch < 2):
                     hora = time.strftime("%H:%M:%S")
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
@@ -91,8 +98,10 @@ class Volumetria (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-                    log  =  "REGISTRO {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                    log  =  "REG {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
                     rf.createLog(self.logFile, log)
+                    # print("Não encontrado")
+                    # return False
 
                 item = item + 1
 
@@ -133,12 +142,14 @@ class Volumetria (object):
         
         abreWebDriver = None
         if (os.path.isfile(self.logFile)):
-            linha, count = rf.checkEndFile(self.logFile)
+            registro = rf.checkEndFile(self.logFile)
 
-            if (linha == "FIM"): #ultima linha do arquivo
+            if (registro == "FIM"): #ultima registro do arquivo
                 print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(volumetriaMes))
+                executaVolumetria = True
 
-            else: # continua o preenchimento do log já existente 
+            else: # continua o preenchimento do log já existente
+                registro = int(registro.split(":")[0][4:]) + 1     #obtém o valor do último registro lançado para dar continuidade
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
@@ -146,7 +157,7 @@ class Volumetria (object):
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
 
-                executaVolumetria = self.enviaParametros(volumetriaMes, count, extensao=extensao, path=path)
+                executaVolumetria = self.enviaParametros(volumetriaMes, registro, extensao=extensao, path=path)
         else:
             print("\nINICIANDO WebDriver")
             if (driverIniciado == False):
@@ -159,6 +170,7 @@ class Volumetria (object):
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 self.driver.quit()
+                os.remove("{}\\{}".format(path, infoLog))
 
         
         if (executaVolumetria):
@@ -173,6 +185,7 @@ class Volumetria (object):
 
             try:
                 self.driver.quit()
+                os.remove("{}\\{}".format(path, infoLog))
             except:
                 pass
 
