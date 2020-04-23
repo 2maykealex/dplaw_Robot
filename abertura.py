@@ -790,6 +790,7 @@ class Abertura (object):
                         self.driver.get(urlPage)
                         time.sleep(1)
                         message = self.incluirProcesso(df, item)
+                        rf.createLog(self.logFile, "\nREG {}: =================================================================\n".format(item))
                         rf.createLog(self.logFile, "{}".format(message.upper()))
                         message = ""
                     except:
@@ -807,7 +808,6 @@ class Abertura (object):
                     else:
                         message = "\nREG {}: NÃO FO POSSÍVEL CRIAR OS AGENDAMENTOS - NÃO EXISTEM RESPONSAVEIS! |".format(item)
                         rf.createLog(self.logFile, "{}".format(message.upper()))
-                    rf.createLog(self.logFile, "\nREG {}: =================================================================\n".format(item))
                 else:
                     rf.createLog(self.logFile, "\nREG {}: A pasta '{}' já existe no sistema! Favor verificar!".format(item, df['pasta']))
 
