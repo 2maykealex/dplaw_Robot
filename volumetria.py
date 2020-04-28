@@ -51,13 +51,13 @@ class Volumetria (object):
             element = rf.waitinstance(self.driver, 'popup_ok', 1, 'click', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REG {}: O dado '{}' foi preenchido na pasta '{}'".format(registro, volumetriaMes, pasta))
+            rf.createLog(self.logFile, "REG {}: O dado '{}' foi preenchido na pasta '{}'\n".format(registro, volumetriaMes, pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-            log = "REG {}: ****** A volumetria para a pasta '{}' já foi preenchida! ******".format(registro, pasta)
+            log = "REG {}: ****** A volumetria para a pasta '{}' já foi preenchida! ******\n".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
