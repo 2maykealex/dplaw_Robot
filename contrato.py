@@ -20,7 +20,7 @@ class Contrato (object):
             self.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
 
         element = rf.waitinstance(self.driver, 'txtCampoLivre4', 1, 'show', 'id')
-        if (element.get_attribute('value') ==  ''):
+        if True: # (element.get_attribute('value') ==  ''):
             print("Preenchendo com '{}' na pasta/processo '{}' - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
             time.sleep(2) 
 
