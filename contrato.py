@@ -21,6 +21,7 @@ class Contrato (object):
 
         element = rf.waitinstance(self.driver, 'txtCampoLivre4', 1, 'show', 'id')
         if True: # (element.get_attribute('value') ==  ''):
+            element.clear()
             print("Preenchendo com '{}' na pasta/processo '{}' - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
             time.sleep(2) 
 
