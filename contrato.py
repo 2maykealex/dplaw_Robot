@@ -139,7 +139,7 @@ class Contrato (object):
         if (os.path.isfile(self.logFile)):
             registro = rf.checkEndFile(self.logFile)
 
-            if (linha == "FIM"): #ultima linha do arquivo
+            if (registro == "FIM"): #ultimo registro do arquivo
                 print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(contratoMes))
                 executaContrato = True
 
