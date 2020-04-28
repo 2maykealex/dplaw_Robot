@@ -44,6 +44,14 @@ class Contrato (object):
             time.sleep(2)
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
+            time.sleep(2)
+
+            # SALVAR ALTERAÇÃO - popup
+            try:
+                element = rf.waitinstance(self.driver, 'popup_ok', 1, 'click', 'id')
+                element.click()
+            except:
+                pass
 
             rf.createLog(self.logFile, "REG {}: '{}' foi preenchido na pasta/processo '{}'\n".format(registro, contratoMes.upper(), pasta))
             time.sleep(1)
