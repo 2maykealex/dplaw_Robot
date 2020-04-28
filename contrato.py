@@ -44,13 +44,13 @@ class Contrato (object):
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REGISTRO {}: '{}' foi preenchido na pasta/processo '{}'".format(registro, contratoMes.upper(), pasta))
+            rf.createLog(self.logFile, "REGISTRO {}: '{}' foi preenchido na pasta/processo '{}'\n".format(registro, contratoMes.upper(), pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
-            log = "REGISTRO {}: ****** O contrato para a pasta/processo '{}' já foi preenchido! ******".format(registro, pasta)
+            log = "REGISTRO {}: ****** O contrato para a pasta/processo '{}' já foi preenchido! ******\n".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
