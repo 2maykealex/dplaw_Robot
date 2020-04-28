@@ -44,13 +44,13 @@ class Contrato (object):
             element = rf.waitinstance(self.driver, 'btnSalvar', 1, 'show', 'id')
             element.click()
 
-            rf.createLog(self.logFile, "REGISTRO {}: '{}' foi preenchido na pasta/processo '{}'\n".format(registro, contratoMes.upper(), pasta))
+            rf.createLog(self.logFile, "REG {}: '{}' foi preenchido na pasta/processo '{}'\n".format(registro, contratoMes.upper(), pasta))
             time.sleep(1)
             return True
 
         else:
             print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
-            log = "REGISTRO {}: ****** O contrato para a pasta/processo '{}' já foi preenchido! ******\n".format(registro, pasta)
+            log = "REG {}: ****** O contrato para a pasta/processo '{}' já foi preenchido! ******\n".format(registro, pasta)
             rf.createLog(self.logFile, log)
             time.sleep(1)
             return False
@@ -95,7 +95,7 @@ class Contrato (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
-                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========\n".format(item, pasta)
+                    log  =  "REG {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========\n".format(item, pasta)
                     rf.createLog(self.logFile, log)
 
                 item = item + 1
