@@ -95,12 +95,12 @@ class Contrato (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(contratoMes))
-                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                    log  =  "REGISTRO {}: ========= A pasta {} NÃO EXISTE NO PROMAD!!! =========\n".format(item, pasta)
                     rf.createLog(self.logFile, log)
 
                 item = item + 1
 
-            rf.createLog(self.logFile, '_________________________________________________________________')
+            rf.createLog(self.logFile, '_________________________________________________________________\n')
             rf.createLog(self.logFile, 'FIM')
             return True
         except:

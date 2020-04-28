@@ -98,14 +98,14 @@ class Volumetria (object):
                         return False
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
-                    log  =  "REG {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(item, pasta)
+                    log  =  "REG {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========\n".format(item, pasta)
                     rf.createLog(self.logFile, log)
                     # print("Não encontrado")
                     # return False
 
                 item = item + 1
 
-            rf.createLog(self.logFile, '_________________________________________________________________')
+            rf.createLog(self.logFile, '_________________________________________________________________\n')
             rf.createLog(self.logFile, 'FIM')
             return True
         except:
