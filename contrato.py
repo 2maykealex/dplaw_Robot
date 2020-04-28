@@ -137,20 +137,25 @@ class Contrato (object):
         
         abreWebDriver = None
         if (os.path.isfile(self.logFile)):
-            linha, count = rf.checkEndFile(self.logFile)
+            registro = rf.checkEndFile(self.logFile)
 
             if (linha == "FIM"): #ultima linha do arquivo
                 print('O arquivo {}.xlsx já foi executado! Indo à próxima instrução!'.format(contratoMes))
+                executaContrato = True
 
             else: # continua o preenchimento do log já existente 
+                registro = int(registro.split(":")[0][4:]) + 1     #obtém o valor do último registro lançado (+1) para dar continuidade
                 if (driverIniciado == False):
                     driverIniciado = True 
                     print("\nINICIANDO WebDriver")
                     rf.createPID(contratoMes.upper(), pidNumber)
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
-
-                executaContrato = self.enviaParametros(contratoMes, count, extensao=extensao, path=path)
+                if (abreWebDriver):
+                    executaContrato = self.enviaParametros(contratoMes, count, extensao=extensao, path=path)
+                else:
+                    driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                    self.driver.quit()                
         else:
             print("\nINICIANDO WebDriver")
             if (driverIniciado == False):
@@ -163,6 +168,7 @@ class Contrato (object):
             else:
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 self.driver.quit()
+                os.remove("{}\\{}".format(path, infoLog))
 
         
         if (executaContrato):
@@ -174,9 +180,9 @@ class Contrato (object):
                 shutil.move("{}\\{}.{}".format(path, contratoMes, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
-
             try:
                 self.driver.quit()
+                os.remove("{}\\{}".format(path, infoLog))
             except:
                 pass
 
