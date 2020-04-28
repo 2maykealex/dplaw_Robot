@@ -152,7 +152,7 @@ class Contrato (object):
                     self.driver = rf.iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
-                    executaContrato = self.enviaParametros(contratoMes, count, extensao=extensao, path=path)
+                    executaContrato = self.enviaParametros(contratoMes, registro, extensao=extensao, path=path)
                 else:
                     driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                     self.driver.quit()                
