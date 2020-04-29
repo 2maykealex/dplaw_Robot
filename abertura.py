@@ -818,7 +818,7 @@ class Abertura (object):
                 item = item + 1
 
             #só encerrará o uso do arquivo se o retorno de abrir pasta for True
-            rf.createLog(self.logFile, 'FIM')
+            rf.createLog(self.logFile, '\nFIM')
             return True
         else:
             return False
