@@ -303,12 +303,14 @@ class Abertura (object):
             time.sleep(0.5)
             rf.checkPopUps(self.driver)
 
+            complemento = ""
             # Parte Adversa
             if (str(df['adversa'])):
                 try:
                     element = rf.waitinstance(self.driver, '//*[@id="txtNome"]', 1, 'show')
                     element.send_keys(str(df['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(registro, str(df['adversa'])))
+                    complemento = "REG {}: PARTE ADVERSA: {}".format(registro, str(df['adversa']))
                 except:
                     naoInserido['adversa'] = str(df['adversa'])
             else:
@@ -320,27 +322,26 @@ class Abertura (object):
             element = rf.waitinstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
             element.click()
 
-            complemento = ""
-
             try:  #popup Ok em que a parte Adversa já possui outros processos.
                 time.sleep(1.5)
                 element = self.driver.find_element_by_id("popup_ok")
                 self.driver.execute_script("arguments[0].click();", element)
-                complemento = "REG {}: {} - TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA!\n".format(registro, str(df['adversa']))
+                complemento = "{} -> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA!\n".format(complemento)
                 time.sleep(0.5)
             except:
-                pass
+                complemento = "{}\n".format(complemento)
+                print(complemento)
 
             if (naoInserido):
                 complemento = '{}REG {}: NÃO FORAM INSERIDOS: '.format(complemento, registro)
                 for k, v in naoInserido.items():
                     complemento = '{} {}: "{}" | '.format(complemento, k, v)
 
-            hoje = "%s" % (time.strftime("%Y-%m-%d"))
+            hoje = "%s" % (time.strftime("%d-%m-%Y"))
             hora = time.strftime("%H:%M:%S")
             horaStr = hora.replace(':', '-')
 
-            message = "REG {}: {}__{}".format(registro, hoje, horaStr)
+            message = "REG {}: {}__{}".format(registro, hoje, horaStr)  #Insere a primeira linha do registro no log
             message = "{}\nREG {}: A PASTA '{}' FOI CRIADA!\nREG {}: ID PROMAD: '{}'.\n{}".format(message, registro, str(df['pasta']), registro, idNovaPasta, complemento)
         except:
             message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
