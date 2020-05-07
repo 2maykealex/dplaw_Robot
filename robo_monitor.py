@@ -82,8 +82,14 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
         if (file[-3:] != 'txt'):
             fileName = file.split("\\")
             fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
-            if (fileName not in executingFiles):
-                files[ContractPath] = fileName
+            checkValor = fileName.split(' ')
+            if (checkValor[0] != 'Contrato'): #Renomeia o Arquivo
+                oldFileName = fileName
+                fileName = fileName.replace('{}'.format(checkValor[0]), 'Contrato')
+                os.rename(os.path.join(ContractPath, oldFileName), os.path.join(ContractPath, fileName))  # Old - New
+            else:
+                if (fileName not in executingFiles):
+                    files[ContractPath] = fileName
 
     for file in glob.glob("{}\\*.xls*".format(UpdatePath)):
         if (file[-3:] != 'txt'):
