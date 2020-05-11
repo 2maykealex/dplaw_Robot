@@ -114,7 +114,7 @@ class Atualizacao (object):
                     print('{} - {}ª tentativa de busca... pasta {}'.format(hora, trySearch, pasta))
 
                     try:
-                        search, element = rf.pesquisarPasta(self.driver, pasta)
+                        search, element = rf.pesquisarCliente(self.driver, pasta, 'pasta')
                     except:
                         return False
 

@@ -687,16 +687,17 @@ class Abertura (object):
         cliente = dfExcel[1, 12]
 
         try:
-            searchClient = rf.pesquisarCliente(self.driver, cliente)
+            searchClient, elemPesquisado = rf.pesquisarCliente(self.driver, cliente, 'cliente')
         except:
             return False
-        
-        total = (count if (item==1) else ((count - item)+1)) # se não rodou, Total=Count||Sse rodou (item>1 -> Subtrai item de count e add 1)
-
-        print ('REG {}: TOTAL DE REGISTROS A EXECUTAR: {}'.format(item, total))
 
         if (searchClient):
-            urlPage = self.driver.current_url
+            total = (count if (item==1) else ((count - item)+1)) # se não rodou, Total=Count||Sse rodou (item>1 -> Subtrai item de count e add 1)
+            print ('REG {}: TOTAL DE REGISTROS A EXECUTAR: {}'.format(item, total))
+
+            elemPesquisado.click()
+            urlPage = self.driver.current_url            
+
             while (item <= count):
                 df = {}
 
@@ -781,7 +782,7 @@ class Abertura (object):
                     if rf.checkIfTest():
                         searchFolder = False
                     else:
-                        searchFolder, element = rf.pesquisarPasta(self.driver, df['pasta'])
+                        searchFolder, element = rf.pesquisarCliente(self.driver, df['pasta'], 'pasta')
                 except:
                     print('Não foi possível realizar uma busca')
                     return False

@@ -262,153 +262,83 @@ def checkPID(pidNumber):
         return True
     return False
 
-def pesquisarPasta(driver, pasta):
-    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    # urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    # driver.get(urlPage)
-
+def acessaMenuPesquisa(driver):
     #menu CLIENTES
+    time.sleep(1)
     try:
         element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
         time.sleep(1.5)
         element.click()
     except:
         print("ERRO AO CLICAR NO MENU CLIENTES")
-    
-    #submenu PESQUISAR CLIENTE
-    try:
-        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-        time.sleep(1.5)
-        element.click()
-    except:
-        print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
-
-    time.sleep(2)
-    checkPopUps(driver)
-
-    # selecionar opção pesquisa por pasta
-    element = waitinstance(driver, '//*[@id="chkPesquisa139"]', 1, 'show')
-    element.click()
-    time.sleep(0.5)
-
-    # buscando pasta
-    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(pasta))
-    time.sleep(2)
-    print("pesquisar pasta {}".format(pasta))
-    driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(2)
-
-    try:
-        #Checa se não existe registros para essa pasta
-        element = driver.find_element_by_id('loopVazio').is_displayed()
-        hora = time.strftime("%H:%M:%S")
-        print('{} - Não encontrou a pasta'.format(hora))
-        retorno = False
-
-    except:
-        # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
-        try:
-            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]", 1, 'click')
-        except:
-            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]/div", 1, 'click')
-        retorno = True
-
-    return retorno, element
-
-def pesquisarProcesso(driver, processo):
-    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    # urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-    # driver.get(urlPage)
-
-    #menu CLIENTES
-    try:
-        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-        time.sleep(1.5)
-        element.click()
-    except:
-        print("ERRO AO CLICAR NO MENU CLIENTES")
-    
-    #submenu PESQUISAR CLIENTE
-    try:
-        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-        time.sleep(1.5)
-        element.click()
-    except:
-        print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
-
-    # #menu CLIENTES
-    # element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-    # time.sleep(1)
-    # element.click()
-    # #submenu PESQUISAR CLIENTE
-    # element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-    # time.sleep(1)
-    # element.click()
-
-    checkPopUps(driver)
-
-    # selecionar opção pesquisa por processo
-    element = waitinstance(driver, '//*[@id="chkPesquisa137"]', 1, 'show')
-    element.click()
-    time.sleep(0.5)
-
-    # buscando processo
-    driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(processo))
-    time.sleep(2)
-    print("pesquisar processo {}".format(processo))
-    driver.find_element_by_id("btnPesquisar").click()
-    time.sleep(2)
-
-    try:
-        #Checa se não existe registros para essa processo
-        element = driver.find_element_by_id('loopVazio').is_displayed()
-        hora = time.strftime("%H:%M:%S")
-        print('{} - Não encontrou a processo'.format(hora))
-        retorno = False
-
-    except:
-        # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
-        try:
-            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]", 1, 'click')
-        except:
-            element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[6]/div", 1, 'click')
-        retorno = True
-
-    return retorno, element
-
-def pesquisarCliente(driver, cliente):
-    # ACESSANDO DIRETAMENTE A PÁGINA DE PESQUISA NO SISTEMA
-    try:
-        # urlPage =  "https://www.integra.adv.br/integra4/modulo/21/default.asp"
-        # driver.get(urlPage)
-
-        #menu CLIENTES
-        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-        time.sleep(1.5)
-        element.click()
-        #submenu PESQUISAR CLIENTE
-        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-        time.sleep(1.5)
-        element.click()
-
-        checkPopUps(driver)
-
-        # buscando o cliente e acessando sua pasta
-        driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(cliente) )
-        time.sleep(2)
-        driver.find_element_by_id("btnPesquisar").click()
-
-        # ATÉ A URL NÃO MUDAR
-        time.sleep(2)
-        # SELECIONA O CLIENTE PESQUISADO
-        element = waitinstance(driver, "//*[@id='divCliente']/div[3]/table/tbody/tr/td[5]", 2, 'click')
-        print("CLIENTE SELECIONADO: {}".format(cliente.upper()))
-        time.sleep(2)
-        element.click()
-        time.sleep(2)
-        return True
-    except:
         return False
+    
+    #submenu PESQUISAR CLIENTE
+    try:
+        element = waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+        time.sleep(1.5)
+        element.click()
+    except:
+        print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
+        return False
+    return True
+
+def pesquisarCliente(driver, search, tipoPesquisa):
+    
+    menuPesquisa = acessaMenuPesquisa(driver)
+
+    if (menuPesquisa):
+        time.sleep(2)
+        checkPopUps(driver)
+        xPathOption = ''
+
+        #tipo de pesquisa (opções)
+        if (tipoPesquisa == 'pasta'):
+            xPathOption = '//*[@id="chkPesquisa139"]'
+            xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
+        elif (tipoPesquisa == 'cliente'):
+            xPathOption = '//*[@id="chkPesquisa133"]'
+            xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[4]'
+        elif (tipoPesquisa == 'processo'):
+            xPathOption = '//*[@id="chkPesquisa137"]'
+            xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
+
+        element = waitinstance(driver, '{}'.format(xPathOption), 1, 'click')
+        element.click()
+        time.sleep(0.5)
+
+        # valor do parâmetro
+        driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
+        time.sleep(2)
+        print("pesquisar pasta {}".format(search))
+        #botão pesquisar
+        driver.find_element_by_id("btnPesquisar").click()
+        time.sleep(2)
+
+        try:
+            #Checa se não existe registros para essa pasta
+            element = driver.find_element_by_id('loopVazio').is_displayed()
+            hora = time.strftime("%H:%M:%S")
+            print('{} - Não encontrou a pasta'.format(hora))
+            retorno = False
+
+        except:
+            # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
+            try:
+                element = waitinstance(driver, "{}/div".format(xPathClick), 1, 'click')
+            except:
+                try:
+                    element = waitinstance(driver, "{}/div".format(xPathClick), 1, 'click')
+                except:
+                    pass
+                    # element = waitinstance(driver, '//*[@id="divCliente"]/div[3]/table/tbody/tr', 1, 'click')  #clica no registro -> abre a pasta
+            retorno = True
+
+    else:
+        retorno = False
+        element = ''
+
+    return retorno, element
 
 def uploadFile(driver):
     checkPopUps(driver)

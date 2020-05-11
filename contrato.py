@@ -82,9 +82,9 @@ class Contrato (object):
                     try:
                         countChar = len(str(pasta))
                         if (countChar >= 14):
-                            search, element = rf.pesquisarProcesso(self.driver, pasta)  #pesquisa por processo
+                            search, element = rf.pesquisarCliente(self.driver, pasta, 'processo')  #pesquisa por processo
                         else:
-                            search, element = rf.pesquisarPasta(self.driver, pasta)  #pesquisa por pasta
+                            search, element = rf.pesquisarCliente(self.driver, pasta, 'pasta')  #pesquisa por pasta
                     except:
                         return False
 
