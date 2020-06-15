@@ -10,12 +10,17 @@ import sys
 import os
 import shutil
 import robot_functions as rf
+from selenium_functions import SeleniumFunctions
 
 class Abertura (object):
+    def __init__(self):
+        self.selenium = SeleniumFunctions()
+        self.waitInstance = self.selenium.waitinstance
+
     def incluirProcesso(self, df, registro):
         rf.checkPopUps(self.driver)
 
-        element = rf.waitinstance(self.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
+        element = self.waitInstance(self.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
         element.click()
 
         naoInserido = {}
@@ -23,8 +28,8 @@ class Abertura (object):
         # Grupo internodd
         if (str(df['gpProcesso'])):
             try:
-                element = rf.waitinstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')
-                select = rf.Select(element)
+                element = self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')
+                select = self.selenium.select(element)
                 select.select_by_visible_text(str(df['gpProcesso']))
             except:
                 naoInserido['gpProcesso'] = str(df['gpProcesso'])
@@ -36,7 +41,7 @@ class Abertura (object):
         #Numero do CNJ
         if (df['cnj'] != ''):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
+                element = self.waitInstance(self.driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
                 element.clear()
                 element.send_keys(str(df['cnj']))
 
@@ -57,7 +62,7 @@ class Abertura (object):
         #Numero do Processo
         if (str(df['numProcesso']) != ''):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
+                element = self.waitInstance(self.driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
                 element.clear()
                 element.send_keys(str(df['numProcesso']))
             except:
@@ -70,8 +75,8 @@ class Abertura (object):
         # Status
         if (str(df['statusProcessual'])):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
-                select = rf.Select(element)
+                element = self.waitInstance(self.driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
+                select = self.selenium.select(element)
                 select.select_by_visible_text(str(df['statusProcessual']))
             except:
                 naoInserido['statusProcessual'] = str(df['statusProcessual'])
@@ -89,14 +94,14 @@ class Abertura (object):
                 naoInserido['pasta'] = str(df['pasta'])
         else:
             naoInserido['pasta'] = ''
-            
+
         time.sleep(0.5)
 
         # Local trâmite - Campo 1
         if (df['localTr'] != ''):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="slcNumeroVara"]', 1, 'show')
-                select = rf.Select(element)
+                element = self.waitInstance(self.driver, '//*[@id="slcNumeroVara"]', 1, 'show')
+                select = self.selenium.select(element)
                 select.select_by_visible_text(str(df['localTr']))
             except:
                 naoInserido['localTr'] = str(df['localTr'])
@@ -109,9 +114,9 @@ class Abertura (object):
         if (str(df['localTramite']) != ""):
             localTramite = str(df['localTramite'])
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="slcLocalTramite"]', 1, 'show')
+                element = self.waitInstance(self.driver, '//*[@id="slcLocalTramite"]', 1, 'show')
                 time.sleep(1)
-                select = rf.Select(element)
+                select = self.selenium.select(element)
 
                 try:
                     select.select_by_visible_text(localTramite)
@@ -125,7 +130,7 @@ class Abertura (object):
                             try:
                                 select.select_by_visible_text(localTramite.lower().capitalize())   #usado sem Tratamento para cair except externo
                             except:
-                                elemCadastro = rf.waitinstance(self.driver, "//*[@id='slcLocalTramite']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
+                                elemCadastro = self.waitInstance(self.driver, "//*[@id='slcLocalTramite']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
                                 elemCadastro.click()
                                 self.driver.execute_script("document.getElementById('txtLocalTramite').value='{}' ".format(str(localTramite)))
                 time.sleep(1)
@@ -151,9 +156,9 @@ class Abertura (object):
             comarcaExiste = True
             comarcaSelecionada = True
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="slcComarca"]', 1, 'show')
+                element = self.waitInstance(self.driver, '//*[@id="slcComarca"]', 1, 'show')
                 time.sleep(1)
-                select = rf.Select(element)
+                select = self.selenium.select(element)
 
                 try:
                     select.select_by_visible_text(comarca)
@@ -171,16 +176,16 @@ class Abertura (object):
         else:
             naoInserido['comarca'] = ''
 
-        # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo 
+        # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo
         if (comarcaExiste == True and comarcaSelecionada == False):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="slcComarca"]', 1, 'show')
+                element = self.waitInstance(self.driver, '//*[@id="slcComarca"]', 1, 'show')
                 time.sleep(1)
-                select = rf.Select(element)
+                select = self.selenium.select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
                 time.sleep(1)
 
-                element = rf.waitinstance(self.driver, '//*[@id="txtComarca"]', 1, 'show')
+                element = self.waitInstance(self.driver, '//*[@id="txtComarca"]', 1, 'show')
                 element.send_keys(str(df['comarca']))
                 time.sleep(1)
             except:
@@ -196,8 +201,8 @@ class Abertura (object):
         # UF
         if (str(df['uf'])):
             try:
-                element = rf.waitinstance(self.driver, '//*[@id="txtUf"]', 1, 'show')
-                select = rf.Select(element)
+                element = self.waitInstance(self.driver, '//*[@id="txtUf"]', 1, 'show')
+                select = self.selenium.select(element)
                 select.select_by_visible_text(str(df['uf']))
             except:
                 naoInserido['uf'] = str(df['uf'])
@@ -207,8 +212,8 @@ class Abertura (object):
         time.sleep(0.5)
 
         try:
-            element = rf.waitinstance(self.driver, 'slcLocalizador', 1, 'show', 'id')
-            select = rf.Select(element)
+            element = self.waitInstance(self.driver, 'slcLocalizador', 1, 'show', 'id')
+            select = self.selenium.select(element)
             select.select_by_visible_text(str(df['localizador']))
         except:
             naoInserido['localizador'] = str(df['localizador'])
@@ -218,7 +223,7 @@ class Abertura (object):
             try:
                 self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
-                comboResponsavel = rf.waitinstance(self.driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
+                comboResponsavel = self.waitInstance(self.driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
                 comboResponsavel.click()  # clica e abre as opções
 
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
@@ -232,7 +237,7 @@ class Abertura (object):
                 for item in listInputs:  #itera inputs recuperados, checa e clica
                     if (item.text in df['responsavel']):
                         xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                        element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                         element.click()
                         time.sleep(1)
                         countResp = countResp + 1
@@ -264,16 +269,16 @@ class Abertura (object):
         if (str(df['vCausa'])):
             try:
                 self.driver.execute_script("document.getElementById('txtValorCausa').value='{}' ".format(str(df['vCausa'])) )
-            except:            
+            except:
                 naoInserido['vCausa'] = str(df['vCausa'])
         else:
             naoInserido['vCausa'] = ''
 
         time.sleep(0.5)
 
-        #Obtém o ID do PROMAD da nova pasta a ser aberta 
+        #Obtém o ID do PROMAD da nova pasta a ser aberta
         try:
-            element = rf.waitinstance(self.driver, "idDoProcesso", 1, 'show', 'class')
+            element = self.waitInstance(self.driver, "idDoProcesso", 1, 'show', 'class')
             idNovaPasta = element.get_attribute("innerHTML")
             idNovaPasta = idNovaPasta[14:].strip()
         except:
@@ -283,7 +288,7 @@ class Abertura (object):
 
         # Abre a aba Parte Adversa
         try:
-            element = rf.waitinstance(self.driver, "//*[@id='div_menu17']", 1, 'show')
+            element = self.waitInstance(self.driver, "//*[@id='div_menu17']", 1, 'show')
             element.click()
             time.sleep(2)
 
@@ -293,7 +298,7 @@ class Abertura (object):
                 naoInserido['comarcaNova'] = str(df['comarcaNova'])
 
                 # TENTANDO NOVAMENTE ABRIR PARTE ADVERSA
-                element = rf.waitinstance(self.driver, "//*[@id='div_menu17']", 1, 'show')
+                element = self.waitInstance(self.driver, "//*[@id='div_menu17']", 1, 'show')
                 element.click()
                 time.sleep(2)
             except:
@@ -307,7 +312,7 @@ class Abertura (object):
             # Parte Adversa
             if (str(df['adversa'])):
                 try:
-                    element = rf.waitinstance(self.driver, '//*[@id="txtNome"]', 1, 'show')
+                    element = self.waitInstance(self.driver, '//*[@id="txtNome"]', 1, 'show')
                     element.send_keys(str(df['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(registro, str(df['adversa'])))
                     complemento = "REG {}: PARTE ADVERSA: {}".format(registro, str(df['adversa']))
@@ -319,7 +324,7 @@ class Abertura (object):
             time.sleep(1)
 
             # Botão salvar
-            element = rf.waitinstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
+            element = self.waitInstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
             element.click()
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
@@ -355,11 +360,11 @@ class Abertura (object):
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(registro))
         while (True):
             try:
-                element = rf.waitinstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+                element = self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
                 self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
                 time.sleep(1)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                elementComboDestinatario = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                elementComboDestinatario = self.waitInstance(self.driver, xPathElement, 1, 'show')
                 if (elementComboDestinatario == False):
                     print("erro: Elemento da página não foi encontrado!")
                 break
@@ -392,15 +397,15 @@ class Abertura (object):
             while (True):
                 tipoAgendamento = ""
                 agendamento = ""
-                
+
                 # Elemento recebido no início da função
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                elementComboDestinatario = rf.waitinstance(self.driver, xPathElement, 1, 'click')
+                elementComboDestinatario = self.waitInstance(self.driver, xPathElement, 1, 'click')
                 elementComboDestinatario.click()
 
                 try:
                     if (x == 0):   #tipo audiencia
-                        if (dataAudiencia != ""):                            
+                        if (dataAudiencia != ""):
                             tipoAgendamento = 'Audiência'
                             appointmentDate = dataAudiencia
                             data = "{}/{}/{}".format(str(appointmentDate.day), str(appointmentDate.month), str(appointmentDate.year))
@@ -424,7 +429,7 @@ class Abertura (object):
                             for item in listInputs:  #itera inputs recuperados, checa e clica
                                 if (item.text == 'GST' or item.text in responsavel ):
                                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                    element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                                    element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                                     element.click()
                                     time.sleep(1)
                                     countResp = countResp + 1
@@ -440,7 +445,7 @@ class Abertura (object):
                 except:
                     print("erro X=0")
                     continue
-                    
+
                 try:
                     if (x == 1): #tipo Ciencia de novo processo
                         tipoAgendamento = 'Ciencia de novo processo'
@@ -460,7 +465,7 @@ class Abertura (object):
                         for item in listInputs:  #itera inputs recuperados, checa e clica
                             if (item.text == respCiencia):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                                element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                                 element.click()
                                 time.sleep(1)
                                 break
@@ -469,7 +474,7 @@ class Abertura (object):
                     print("erro X=1")
 
                 try:
-                    if (x == 2): #tipo Anexar                    
+                    if (x == 2): #tipo Anexar
                         tipoAgendamento = 'Anexar'
                         dataAbPasta = datetime.datetime.strptime(dataCiencia, "%d/%m/%Y")
                         dataIncrementada = dataAbPasta.date()
@@ -488,7 +493,7 @@ class Abertura (object):
                         for item in listInputs:  #itera inputs recuperados, checa e clica
                             if (item.text == 'ESTAGBRA' or item.text == respCiencia):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                                element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                                 element.click()
                                 time.sleep(1)
                                 countResp = countResp + 1
@@ -519,7 +524,7 @@ class Abertura (object):
                             for item in listInputs:  #itera inputs recuperados, checa e clica
                                 if (item.text == 'GST' or item.text == 'operacoes'):
                                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                    element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                                    element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                                     element.click()
                                     found = found + 1
                                     time.sleep(1)
@@ -538,7 +543,7 @@ class Abertura (object):
 
                     # combo TIPO - ABRIR
                     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'click')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'click')
                     element.click()
                     time.sleep(1)
 
@@ -550,7 +555,7 @@ class Abertura (object):
                     for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
                         if (item.text == tipoAgendamento):
                             xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
-                            element = rf.waitinstance(self.driver, xPathItem, 1, 'click')
+                            element = self.waitInstance(self.driver, xPathItem, 1, 'click')
                             element.click()
                             time.sleep(1)
                             break
@@ -559,10 +564,10 @@ class Abertura (object):
                     # CAMPO QUANDO
                     time.sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                     element.clear()
                     time.sleep(1)
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                     element.send_keys(appointmentDate)
                     time.sleep(1)
 
@@ -577,28 +582,28 @@ class Abertura (object):
                             # com HORA
                             time.sleep(1)
                             xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
-                            element = rf.waitinstance(self.driver, xPathElement, 1, 'click')
+                            element = self.waitInstance(self.driver, xPathElement, 1, 'click')
                             time.sleep(1)
                             element.click()
-                            
+
                             time.sleep(1)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                            element = rf.waitinstance(self.driver, xPathElement, 1, 'click')
+                            element = self.waitInstance(self.driver, xPathElement, 1, 'click')
                             element.clear()
 
                             time.sleep(1)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                            element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                            element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                             element.send_keys(horaAudienciaFormatada)
 
                             time.sleep(1)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                            element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                            element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                             element.clear()
 
                             time.sleep(1)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                            element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                            element = self.waitInstance(self.driver, xPathElement, 1, 'show')
 
                             time.sleep(1)
                             element.send_keys(horaAudienciaFormatada)
@@ -608,24 +613,24 @@ class Abertura (object):
                     # campo agendamento
                     time.sleep(1)
                     xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                     element.clear()
                     element.send_keys(agendamento)
 
                     # campo resumo
                     time.sleep(1)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                     element.clear()
                     time.sleep(1)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-                    element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                    element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                     element.send_keys(agendamento[:30])
                 except:
                     print("erro de preenchimento nos campos")
 
                 try:
-                    element = rf.waitinstance(self.driver, '//*[@id="btnAgendarSalvar"]', 1, 'click')
+                    element = self.waitInstance(self.driver, '//*[@id="btnAgendarSalvar"]', 1, 'click')
                     element.click()
                     time.sleep(2)
                 except:
@@ -633,12 +638,12 @@ class Abertura (object):
                     pass
 
                 try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
-                    element = rf.waitinstance(self.driver, 'idCampoValidateAgendar', 1, 'show', 'id')
+                    element = self.waitInstance(self.driver, 'idCampoValidateAgendar', 1, 'show', 'id')
                     if (element.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
-                        element = rf.waitinstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+                        element = self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
                         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
                         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                        element = rf.waitinstance(self.driver, xPathElement, 1, 'show')
+                        element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                         if (element == False):
                             print("erro: Elemento da página não foi encontrado!")
                         rf.checkPopUps(self.driver)
@@ -655,14 +660,14 @@ class Abertura (object):
 
                 try: #Clicar no PopUp - Deseja salvar
                     time.sleep(2)
-                    element = rf.waitinstance(self.driver, '//*[@id="popup_ok"]', 1, 'click')
+                    element = self.waitInstance(self.driver, '//*[@id="popup_ok"]', 1, 'click')
                     element.click()
                     message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
                     print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
                     time.sleep(2)
                 except:
                     print("erro POPUP SALVAR")
-                    pass     
+                    pass
 
                 try: #remove agendamentos já executados
                     agendNaoAbertos.remove(tipoAgendamento)
@@ -696,7 +701,7 @@ class Abertura (object):
             print ('REG {}: TOTAL DE REGISTROS A EXECUTAR: {}'.format(item, total))
 
             elemPesquisado.click()
-            urlPage = self.driver.current_url            
+            urlPage = self.driver.current_url
 
             while (item <= count):
                 df = {}
@@ -798,9 +803,9 @@ class Abertura (object):
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                         return False
-                    
-                    try: #checa se redirecionamento ocorreu 
-                        element = rf.waitinstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')  
+
+                    try: #checa se redirecionamento ocorreu
+                        element = self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                         return False
@@ -845,10 +850,10 @@ class Abertura (object):
         pathExecutados = path + "\\arquivos_executados"
 
         if (os.path.exists(pathExecutados) == False):
-            os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado - 
+            os.mkdir(pathExecutados)   # Se o diretório Volumetrias não existir, será criado -
 
         if (os.path.exists(logsPath) == False):
-            os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado - 
+            os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado -
 
         driverIniciado = False
         self.driver = None
@@ -880,7 +885,7 @@ class Abertura (object):
                     driverIniciado = True
                     print("\nINICIANDO WebDriver")
                     rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    self.driver = rf.iniciaWebdriver(False)
+                    self.driver = SeleniumFunctions().iniciaWebdriver(False)
                     abreWebDriver = rf.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
                     abreNovaPasta = self.abrePasta(arquivoAbrirPasta, registro, extensao=extensao, path=path)
@@ -892,7 +897,7 @@ class Abertura (object):
             print("\nINICIANDO WebDriver")
             if (driverIniciado == False):
                 driverIniciado = True
-                self.driver = rf.iniciaWebdriver(False)
+                self.driver = SeleniumFunctions().iniciaWebdriver(False)
                 rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
                 abreWebDriver = rf.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
