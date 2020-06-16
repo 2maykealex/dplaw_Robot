@@ -830,17 +830,6 @@ class Abertura (object):
         else:
             return False
 
-    def checkLogin(self):
-        checarTeste = self.integra.checkIfTest()
-        if (checarTeste):
-            print('\n------------EM MODO DE TESTE------------')
-            login="robo@dplaw.com.br"
-            password="dplaw00612"
-        else:
-            login="cgst@dplaw.com.br"
-            password="gestao0"
-        return login, password
-
     def controle(self, file, path):
         pidNumber = str(os.getpid())
         print("\npID: {}".format(pidNumber))
@@ -858,7 +847,7 @@ class Abertura (object):
 
         driverIniciado = False
         abreNovaPasta = None
-        login, password = self.checkLogin()
+        login, password = self.integra.checkLogin()
 
         print("\n-----------------------------------------")
         print("Login utilizado: {}".format(login))
