@@ -46,9 +46,14 @@ class IntegraFunctions(object):
         #menu CLIENTES
         time.sleep(1)
         try:
-            element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+            # element = self.driver.execute_script("document.getElementById('header')")
+
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]')
+
+            # element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
             time.sleep(1.5)
-            element.click()
+            if (element):
+                element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
             return False
@@ -191,7 +196,93 @@ class IntegraFunctions(object):
         if (popupOk == True):
             time.sleep(2)
 
-#==================================================================================
+    def waitingElement(self, element):
+        while True:
+            try:
+                element = self.waitInstance(self.driver, element, 2, 'click')
+            except:
+                print('teste  - não encontrado ainda!!!!')
+                pass
+
+
+        def abreArquivo(self, arquivo, extensao, path=""):
+            fileName = "{}\\{}.{}".format(path, arquivo, extensao)
+            # fileName = (arquivo + '.' + extensao)
+            dfExcel = pe.get_sheet(file_name=fileName)
+            return dfExcel
+
+        def checkEndFile(self, log):
+            arquivo =  open(log, 'r')
+            message = arquivo.readlines()
+            arquivo.close()
+
+            lastLine = message[len(message)-1]
+            # count = len(open(log).readlines()) + 1
+            return (lastLine)
+
+        def createLog(self, logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
+            if (os.path.isfile(logFile)): #se o log não existir, cria-se
+                arquivo =  open(logFile, 'a')
+            else:
+                arquivo = open(logFile, tipo)
+
+            writeLog = "{}".format(message)
+
+            if (arquivo != ""):
+                arquivo.writelines(writeLog)
+            if (printOut):
+                print(writeLog)
+
+            arquivo.close()
+
+        def checkIfTest(self):
+            pathRootScript = os.path.abspath(os.path.dirname(__file__))
+            pathFileTeste = pathRootScript + "\\teste.txt"
+            if (os.path.isfile(pathFileTeste)):
+                return True
+            else:
+                return False
+
+        def pprint(self, message, tName):
+            print('{} - {}'.format(tName, message))
+
+        def checkPID(self, pidNumber):
+            if psutil.pid_exists(pidNumber):
+                print ("pid {} existe".format(pidNumber))
+                return True
+            return False
+
+        def createPID(self, pidName, pidNumber):
+            logsPath = "{}\\pIDs".format(os.getcwd())
+            logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
+
+            if (os.path.exists(logsPath) == False):
+                os.mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
+
+            if (not(os.path.isfile(logFile))): #se o log não existir, cria-se
+                arquivo =  open(logFile, 'w')
+                arquivo.close()
+                return True
+
+    def checkLogin(self):
+        checarTeste = self.checkIfTest()
+        if (checarTeste):
+            print('\n------------EM MODO DE TESTE------------')
+            login="robo@dplaw.com.br"
+            password="dplaw00612"
+        else:
+            login="cgst@dplaw.com.br"
+            password="gestao0"
+        return login, password
+
+    def checkIfTest(self):
+        pathRootScript = os.path.abspath(os.path.dirname(__file__))
+        pathFileTeste = pathRootScript + "\\teste.txt"
+        if (os.path.isfile(pathFileTeste)):
+            return True
+        else:
+            return False
+
     def abreArquivo(self, arquivo, extensao, path=""):
         fileName = "{}\\{}.{}".format(path, arquivo, extensao)
         # fileName = (arquivo + '.' + extensao)
@@ -208,6 +299,7 @@ class IntegraFunctions(object):
         return (lastLine)
 
     def createLog(self, logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
+
         if (os.path.isfile(logFile)): #se o log não existir, cria-se
             arquivo =  open(logFile, 'a')
         else:
@@ -222,23 +314,6 @@ class IntegraFunctions(object):
 
         arquivo.close()
 
-    def checkIfTest(self):
-        pathRootScript = os.path.abspath(os.path.dirname(__file__))
-        pathFileTeste = pathRootScript + "\\teste.txt"
-        if (os.path.isfile(pathFileTeste)):
-            return True
-        else:
-            return False
-
-    def pprint(self, message, tName):
-        print('{} - {}'.format(tName, message))
-
-    def checkPID(self, pidNumber):
-        if psutil.pid_exists(pidNumber):
-            print ("pid {} existe".format(pidNumber))
-            return True
-        return False
-
     def createPID(self, pidName, pidNumber):
         logsPath = "{}\\pIDs".format(os.getcwd())
         logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
@@ -250,6 +325,13 @@ class IntegraFunctions(object):
             arquivo =  open(logFile, 'w')
             arquivo.close()
             return True
+
+    def checkPID(self, pidNumber):
+        if psutil.pid_exists(pidNumber):
+            print ("pid {} existe".format(pidNumber))
+            return True
+
+
 
 # PJE - FAZER EM OUTRO ARQUIVO
 
