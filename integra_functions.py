@@ -146,6 +146,47 @@ class IntegraFunctions(object):
         time.sleep(2)
         self.driver.quit()
 
+    def checkPopUps(self):
+        popupOk = False
+        try:
+            self.driver.execute_script("$('.popup_block').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        try:
+            self.driver.execute_script("$('#menuvaimudar').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        try:
+            self.driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        try:
+            self.driver.execute_script("$('#backgroundPopup').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        try:
+            self.driver.execute_script("$('#carregando').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        try:
+            self.driver.execute_script("$('#card').css('display', 'none');")
+            popupOk = True
+        except:
+            pass
+
+        if (popupOk == True):
+            time.sleep(2)
+
 #==================================================================================
     def abreArquivo(self, arquivo, extensao, path=""):
         fileName = "{}\\{}.{}".format(path, arquivo, extensao)
@@ -187,47 +228,6 @@ class IntegraFunctions(object):
 
     def pprint(self, message, tName):
         print('{} - {}'.format(tName, message))
-
-    def checkPopUps(self):
-        popupOk = False
-        try:
-            self.driver.execute_script("$('.popup_block').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        try:
-            self.driver.execute_script("$('#menuvaimudar').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        try:
-            self.driver.execute_script("$('#divFecharAvisoPopUp').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        try:
-            self.driver.execute_script("$('#backgroundPopup').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        try:
-            self.driver.execute_script("$('#carregando').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        try:
-            self.driver.execute_script("$('#card').css('display', 'none');")
-            popupOk = True
-        except:
-            pass
-
-        if (popupOk == True):
-            time.sleep(2)
 
     def checkPID(self, pidNumber):
         if psutil.pid_exists(pidNumber):
