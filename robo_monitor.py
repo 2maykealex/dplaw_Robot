@@ -3,7 +3,6 @@ import os
 import time
 import glob
 from datetime import date
-import robot_functions as rf
 import threading
 from abertura import Abertura
 from volumetria import Volumetria
@@ -15,7 +14,7 @@ def checkIFexecuting():
     for arquivo, logFile in executingFiles.items():
         if (not(os.path.isfile(logFile))):
             deletingFiles.append(arquivo)
-            
+
     for file in deletingFiles:
         del executingFiles[file]
         print('===O ARQUIVO {} FOI REMOVIDO DA LISTA==='.format(arquivo))
@@ -104,7 +103,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
     #         fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
     #         if (fileName not in executingFiles):
     #             files[ClosePath] = fileName
-    
+
     if (files):
         for localFile, file in files.items():
             folderName = localFile.split("\\")
@@ -128,7 +127,7 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
                             except:
                                 pass
                 if (not (fileEpid)):  #se FileEpid não existir, Remova o infoLog.
-                    if (os.path.isfile(infoLog)): 
+                    if (os.path.isfile(infoLog)):
                         os.remove(infoLog)
             except:
                 pass
