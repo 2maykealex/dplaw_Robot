@@ -18,14 +18,18 @@ import os
 import platform
 import time
 import psutil  # to check pIDs
+from selenium_functions import SeleniumFunctions
 
 class IntegraFunctions(object):
 
-    def __init__(self, driver):
-        self.driver = driver
+    def __init__(self):
+        self.selenium = SeleniumFunctions()
+        self.waitInstance = self.selenium.waitInstance
+        self.driver = None
 
     def acessToIntegra(self, login, password):
         try:
+            self.driver = self.selenium.iniciaWebdriver()
             self.driver.maximize_window()
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
@@ -33,7 +37,7 @@ class IntegraFunctions(object):
             time.sleep(0.2)
             self.driver.find_element_by_tag_name('button').click()
             time.sleep(0.2)
-            checkPopUps(driver)
+            self.checkPopUps()
             return True
         except:
             return False
@@ -42,7 +46,7 @@ class IntegraFunctions(object):
         #menu CLIENTES
         time.sleep(1)
         try:
-            element = SeleniumFunctions().waitinstance(driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
+            element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
             time.sleep(1.5)
             element.click()
         except:
@@ -51,7 +55,7 @@ class IntegraFunctions(object):
 
         #submenu PESQUISAR CLIENTE
         try:
-            element = SeleniumFunctions().waitinstance(driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
+            element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
             time.sleep(1.5)
             element.click()
         except:
@@ -77,7 +81,7 @@ class IntegraFunctions(object):
                 xPathOption = '//*[@id="chkPesquisa137"]'
                 xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
 
-            element = SeleniumFunctions().waitinstance(self.driver, '{}'.format(xPathOption), 1, 'click')
+            element = self.waitInstance(self.driver, '{}'.format(xPathOption), 1, 'click')
             element.click()
             time.sleep(0.5)
 
@@ -99,13 +103,13 @@ class IntegraFunctions(object):
             except:
                 # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
                 try:
-                    element = SeleniumFunctions().waitinstance(driver, "{}/div".format(xPathClick), 1, 'click')
+                    element = self.waitInstance(self.driver, "{}/div".format(xPathClick), 1, 'click')
                 except:
                     try:
-                        element = SeleniumFunctions().waitinstance(driver, "{}/div".format(xPathClick), 1, 'click')
+                        element = self.waitInstance(self.driver, "{}/div".format(xPathClick), 1, 'click')
                     except:
                         pass
-                        # element = SeleniumFunctions().waitinstance(driver, '//*[@id="divCliente"]/div[3]/table/tbody/tr', 1, 'click')  #clica no registro -> abre a pasta
+                        # element = self.waitInstance(self.driver, '//*[@id="divCliente"]/div[3]/table/tbody/tr', 1, 'click')  #clica no registro -> abre a pasta
                 retorno = True
 
         else:
@@ -134,11 +138,11 @@ class IntegraFunctions(object):
 
         #Botão salvar
         time.sleep(6)
-        element = SeleniumFunctions().waitinstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
+        element = self.waitInstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
         element.click()
         # POP UP (OK)
         time.sleep(1)
-        element = SeleniumFunctions().waitinstance(self.driver, '//*[@id="popup_ok"]', 1, 'show')
+        element = self.waitInstance(self.driver, '//*[@id="popup_ok"]', 1, 'show')
         element.click()
 
     def logoutIntegra(self):
@@ -257,12 +261,12 @@ class IntegraFunctions(object):
 #     self.driver.get('http://www.pje.jus.br/navegador/')
 
 #     # selecionando o estado
-#     element = SeleniumFunctions().waitinstance(driver, "/html/body/div[3]/div/div[1]/select", 1, 'show')
+#     element = self.waitInstance(self.driver, "/html/body/div[3]/div/div[1]/select", 1, 'show')
 #     select = Select(element)
 #     select.select_by_visible_text(str('Rondônia'))
 
 #     # selecionando o Tribunal
-#     element = SeleniumFunctions().waitinstance(driver, "/html/body/div[3]/div/div[2]/select", 1, 'show')
+#     element = self.waitInstance(self.driver, "/html/body/div[3]/div/div[2]/select", 1, 'show')
 #     select = Select(element)
 #     select.select_by_visible_text(str('TJRO - 1º grau'))
 

@@ -10,14 +10,13 @@ import sys
 import os
 import shutil
 from integra_functions import IntegraFunctions
-from selenium_functions import SeleniumFunctions
+# from selenium_functions import SeleniumFunctions
 
 class Abertura (object):
     def __init__(self):
-        self.selenium = SeleniumFunctions()
-        self.waitInstance = self.selenium.waitinstance
-        self.driver = self.selenium.iniciaWebdriver()
-        self.integra = IntegraFunctions(self.driver)
+        self.integra = IntegraFunctions()
+        self.waitInstance = self.integra. waitInstance
+        self.driver = self.integra.driver
 
     def incluirProcesso(self, df, registro):
         self.integra.checkPopUps()
@@ -308,7 +307,7 @@ class Abertura (object):
                 pass
 
             time.sleep(0.5)
-            self.integra.checkPopUps(self.driver)
+            self.integra.checkPopUps()
 
             complemento = ""
             # Parte Adversa
@@ -372,7 +371,7 @@ class Abertura (object):
                 break
             except:
                 print("erro de redirecionamento")
-        self.integra.checkPopUps(self.driver)
+        self.integra.checkPopUps()
 
         if (sigla =='BRA'):
             respCiencia = 'cbradesco'
@@ -648,7 +647,7 @@ class Abertura (object):
                         element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                         if (element == False):
                             print("erro: Elemento da página não foi encontrado!")
-                        self.integra.checkPopUps(self.driver)
+                        self.integra.checkPopUps()
                         time.sleep(2)
                         refazAgendamento = refazAgendamento + 1
                         if (refazAgendamento <= 3): # limita a 3 tentativas para o agendamento
@@ -694,7 +693,7 @@ class Abertura (object):
         cliente = dfExcel[1, 12]
 
         try:
-            searchClient, elemPesquisado = self.integra.pesquisarCliente(self.driver, cliente, 'cliente')
+            searchClient, elemPesquisado = self.integra.pesquisarCliente(cliente, 'cliente')
         except:
             return False
 
@@ -730,7 +729,7 @@ class Abertura (object):
                     numProcesso = numProcesso[:20]
                 elif (num < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
                     qtdZero = 20 - len(numProcesso)
-                    for x in range(qtdZero):
+                    for _x in range(qtdZero):
                         numProcesso = "0{}".format(numProcesso)
 
                 numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
@@ -789,7 +788,7 @@ class Abertura (object):
                     if self.integra.checkIfTest():
                         searchFolder = False
                     else:
-                        searchFolder, element = self.integra.pesquisarCliente(self.driver, df['pasta'], 'pasta')
+                        searchFolder, _element = self.integra.pesquisarCliente(df['pasta'], 'pasta')
                 except:
                     print('Não foi possível realizar uma busca')
                     return False
@@ -807,7 +806,7 @@ class Abertura (object):
                         return False
 
                     try: #checa se redirecionamento ocorreu
-                        element = self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')
+                        self.waitInstance(self.driver, "//*[@id='slcGrupo']", 1, 'show')
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                         return False
@@ -858,9 +857,7 @@ class Abertura (object):
             os.mkdir(logsPath)   # Se o diretório Abertura_pastas não existir, será criado -
 
         driverIniciado = False
-        self.driver = None
         abreNovaPasta = None
-
         login, password = self.checkLogin()
 
         print("\n-----------------------------------------")
@@ -887,21 +884,20 @@ class Abertura (object):
                     driverIniciado = True
                     print("\nINICIANDO WebDriver")
                     self.integra.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                    self.driver = SeleniumFunctions().iniciaWebdriver(False)
-                    abreWebDriver = self.integra.acessToIntegra(self.driver, login, password)
+                    # self.driver = SeleniumFunctions().iniciaWebdriver(False)
+                    abreWebDriver = self.integra.acessToIntegra(login, password)
                 if (abreWebDriver):
                     abreNovaPasta = self.abrePasta(arquivoAbrirPasta, registro, extensao=extensao, path=path)
                 else:
                     driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                     self.driver.quit()
-                    # break
         else:
             print("\nINICIANDO WebDriver")
             if (driverIniciado == False):
                 driverIniciado = True
-                self.driver = SeleniumFunctions().iniciaWebdriver(False)
+                # self.driver = SeleniumFunctions().iniciaWebdriver(False)
                 self.integra.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                abreWebDriver = self.integra.acessToIntegra(self.driver, login, password)
+                abreWebDriver = self.integra.acessToIntegra(login, password)
             if (abreWebDriver):
                 abreNovaPasta = self.abrePasta(arquivoAbrirPasta, extensao=extensao, path=path)
             else:
@@ -931,6 +927,6 @@ class Abertura (object):
 
         if (driverIniciado == True):
             driverIniciado = False
-            self.integra.logoutIntegra(self.driver)
+            self.integra.logoutIntegra()
 
         return True
