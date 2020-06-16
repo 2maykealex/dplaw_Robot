@@ -11,6 +11,7 @@
 # from selenium.self.webdriver.remote.remote_connection import LOGGER
 
 from selenium_functions import SeleniumFunctions
+from datetime import datetime
 
 import pyexcel as pe
 import logging
@@ -196,73 +197,20 @@ class IntegraFunctions(object):
         if (popupOk == True):
             time.sleep(2)
 
-    def waitingElement(self, element):
+    def waitingElement(self, elementName):
+        timeNow = datetime.now()
+        print(timeNow + 10)
         while True:
             try:
-                element = self.waitInstance(self.driver, element, 2, 'click')
+                element = self.waitInstance(self.driver, elementName, 2, 'click')
+                return element
             except:
-                print('teste  - não encontrado ainda!!!!')
+                if timeNow <= timeNow + 10:
+                    print('Tempo Esgotado!!! Saindo!')
+                    return False
+                else:
+                    print('teste  - não encontrado ainda!!!!')
                 pass
-
-
-        def abreArquivo(self, arquivo, extensao, path=""):
-            fileName = "{}\\{}.{}".format(path, arquivo, extensao)
-            # fileName = (arquivo + '.' + extensao)
-            dfExcel = pe.get_sheet(file_name=fileName)
-            return dfExcel
-
-        def checkEndFile(self, log):
-            arquivo =  open(log, 'r')
-            message = arquivo.readlines()
-            arquivo.close()
-
-            lastLine = message[len(message)-1]
-            # count = len(open(log).readlines()) + 1
-            return (lastLine)
-
-        def createLog(self, logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
-            if (os.path.isfile(logFile)): #se o log não existir, cria-se
-                arquivo =  open(logFile, 'a')
-            else:
-                arquivo = open(logFile, tipo)
-
-            writeLog = "{}".format(message)
-
-            if (arquivo != ""):
-                arquivo.writelines(writeLog)
-            if (printOut):
-                print(writeLog)
-
-            arquivo.close()
-
-        def checkIfTest(self):
-            pathRootScript = os.path.abspath(os.path.dirname(__file__))
-            pathFileTeste = pathRootScript + "\\teste.txt"
-            if (os.path.isfile(pathFileTeste)):
-                return True
-            else:
-                return False
-
-        def pprint(self, message, tName):
-            print('{} - {}'.format(tName, message))
-
-        def checkPID(self, pidNumber):
-            if psutil.pid_exists(pidNumber):
-                print ("pid {} existe".format(pidNumber))
-                return True
-            return False
-
-        def createPID(self, pidName, pidNumber):
-            logsPath = "{}\\pIDs".format(os.getcwd())
-            logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
-
-            if (os.path.exists(logsPath) == False):
-                os.mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
-
-            if (not(os.path.isfile(logFile))): #se o log não existir, cria-se
-                arquivo =  open(logFile, 'w')
-                arquivo.close()
-                return True
 
     def checkLogin(self):
         checarTeste = self.checkIfTest()
