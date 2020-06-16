@@ -9,16 +9,18 @@ import glob
 import sys
 import os
 import shutil
-import robot_functions as rf
+from integra_functions import IntegraFunctions
 from selenium_functions import SeleniumFunctions
 
 class Abertura (object):
     def __init__(self):
         self.selenium = SeleniumFunctions()
         self.waitInstance = self.selenium.waitinstance
+        self.driver = self.selenium.iniciaWebdriver()
+        self.integra = IntegraFunctions(self.driver)
 
     def incluirProcesso(self, df, registro):
-        rf.checkPopUps(self.driver)
+        self.integra.checkPopUps()
 
         element = self.waitInstance(self.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
         element.click()
@@ -143,10 +145,10 @@ class Abertura (object):
 
         # #PARA ATUALIZAR OS DADOS
         # logAtualizaPromad = os.getcwd() + "\\logs\\_Locais.txt"
-        # rf.createLog(logAtualizaPromad)
+        # self.integra.createLog(logAtualizaPromad)
         # for elemento in element.find_elements_by_tag_name('option'):
         #     texto = "{}\n".format(elemento.text)
-        #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
+        #     self.integra.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
 
         # Comarca
         comarcaExiste = False
@@ -193,10 +195,10 @@ class Abertura (object):
 
             # #PARA ATUALIZAR OS DADOS
             # logAtualizaPromad = os.getcwd() + "\\logs\\_Comarcas.txt"
-            # rf.createLog(logAtualizaPromad)
+            # self.integra.createLog(logAtualizaPromad)
             # for elemento in element.find_elements_by_tag_name('option'):
             #     texto = "{}\n".format(elemento.text)
-            #     rf.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
+            #     self.integra.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
 
         # UF
         if (str(df['uf'])):
@@ -306,7 +308,7 @@ class Abertura (object):
                 pass
 
             time.sleep(0.5)
-            rf.checkPopUps(self.driver)
+            self.integra.checkPopUps(self.driver)
 
             complemento = ""
             # Parte Adversa
@@ -370,7 +372,7 @@ class Abertura (object):
                 break
             except:
                 print("erro de redirecionamento")
-        rf.checkPopUps(self.driver)
+        self.integra.checkPopUps(self.driver)
 
         if (sigla =='BRA'):
             respCiencia = 'cbradesco'
@@ -646,7 +648,7 @@ class Abertura (object):
                         element = self.waitInstance(self.driver, xPathElement, 1, 'show')
                         if (element == False):
                             print("erro: Elemento da página não foi encontrado!")
-                        rf.checkPopUps(self.driver)
+                        self.integra.checkPopUps(self.driver)
                         time.sleep(2)
                         refazAgendamento = refazAgendamento + 1
                         if (refazAgendamento <= 3): # limita a 3 tentativas para o agendamento
@@ -682,17 +684,17 @@ class Abertura (object):
 
         if (messageFinal):
             message = "{}\n{}".format(message, messageFinal)
-        rf.createLog(self.logFile, "{}".format(message.upper()))
+        self.integra.createLog(self.logFile, "{}".format(message.upper()))
 
     def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx", path=""):
-        dfExcel = rf.abreArquivo(arquivoAbrirPasta, extensao, path=path)
+        dfExcel = self.integra.abreArquivo(arquivoAbrirPasta, extensao, path=path)
         count = dfExcel.number_of_rows()-1
 
         cliente = ''
         cliente = dfExcel[1, 12]
 
         try:
-            searchClient, elemPesquisado = rf.pesquisarCliente(self.driver, cliente, 'cliente')
+            searchClient, elemPesquisado = self.integra.pesquisarCliente(self.driver, cliente, 'cliente')
         except:
             return False
 
@@ -749,7 +751,7 @@ class Abertura (object):
 
                 df['statusProcessual'] = dfExcel[item, 11]
 
-                if (rf.checkIfTest()):  #se for teste
+                if (self.integra.checkIfTest()):  #se for teste
                     df['razaoSocial']  = "Cliente teste"
                     df['gpCliente']    = "Grupo Teste"
                 else:
@@ -784,10 +786,10 @@ class Abertura (object):
                 time.sleep(1)
 
                 try:
-                    if rf.checkIfTest():
+                    if self.integra.checkIfTest():
                         searchFolder = False
                     else:
-                        searchFolder, element = rf.pesquisarCliente(self.driver, df['pasta'], 'pasta')
+                        searchFolder, element = self.integra.pesquisarCliente(self.driver, df['pasta'], 'pasta')
                 except:
                     print('Não foi possível realizar uma busca')
                     return False
@@ -797,8 +799,8 @@ class Abertura (object):
                         self.driver.get(urlPage)
                         time.sleep(1)
                         message = self.incluirProcesso(df, item)
-                        rf.createLog(self.logFile, "\nREG {}: =================================================================\n".format(item))
-                        rf.createLog(self.logFile, "{}".format(message.upper()))
+                        self.integra.createLog(self.logFile, "\nREG {}: =================================================================\n".format(item))
+                        self.integra.createLog(self.logFile, "{}".format(message.upper()))
                         message = ""
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
@@ -814,9 +816,9 @@ class Abertura (object):
                         self.criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item, df['dataCiencia'], df['agendFotocopia'], message)
                     else:
                         message = "\nREG {}: NÃO FO POSSÍVEL CRIAR OS AGENDAMENTOS - NÃO EXISTEM RESPONSAVEIS! |".format(item)
-                        rf.createLog(self.logFile, "{}".format(message.upper()))
+                        self.integra.createLog(self.logFile, "{}".format(message.upper()))
                 else:
-                    rf.createLog(self.logFile, "\nREG {}: A pasta '{}' já existe no sistema! Favor verificar!".format(item, df['pasta']))
+                    self.integra.createLog(self.logFile, "\nREG {}: A pasta '{}' já existe no sistema! Favor verificar!".format(item, df['pasta']))
 
                 if (item < count):
                     print ('REG {}: FALTAM {} REGISTROS A EXECUTAR DO ARQUIVO "{}.{}"\n'.format(item, count-item, arquivoAbrirPasta, extensao))
@@ -824,13 +826,13 @@ class Abertura (object):
                 item = item + 1
 
             #só encerrará o uso do arquivo se o retorno de abrir pasta for True
-            rf.createLog(self.logFile, '\nFIM')
+            self.integra.createLog(self.logFile, '\nFIM')
             return True
         else:
             return False
 
     def checkLogin(self):
-        checarTeste = rf.checkIfTest()
+        checarTeste = self.integra.checkIfTest()
         if (checarTeste):
             print('\n------------EM MODO DE TESTE------------')
             login="robo@dplaw.com.br"
@@ -873,7 +875,7 @@ class Abertura (object):
 
         abreWebDriver = None
         if (os.path.isfile(self.logFile)):    # se existir o log em andamento
-            registro = rf.checkEndFile(self.logFile)
+            registro = self.integra.checkEndFile(self.logFile)
 
             if (registro == "FIM"): # checa se no registro do arquivo encerra a operação
                 print('O arquivo {}.xlsx já foi executado!\n'.format(arquivoAbrirPasta.upper()))
@@ -884,9 +886,9 @@ class Abertura (object):
                 if (driverIniciado == False):
                     driverIniciado = True
                     print("\nINICIANDO WebDriver")
-                    rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
+                    self.integra.createPID(arquivoAbrirPasta.upper(), pidNumber)
                     self.driver = SeleniumFunctions().iniciaWebdriver(False)
-                    abreWebDriver = rf.acessToIntegra(self.driver, login, password)
+                    abreWebDriver = self.integra.acessToIntegra(self.driver, login, password)
                 if (abreWebDriver):
                     abreNovaPasta = self.abrePasta(arquivoAbrirPasta, registro, extensao=extensao, path=path)
                 else:
@@ -898,8 +900,8 @@ class Abertura (object):
             if (driverIniciado == False):
                 driverIniciado = True
                 self.driver = SeleniumFunctions().iniciaWebdriver(False)
-                rf.createPID(arquivoAbrirPasta.upper(), pidNumber)
-                abreWebDriver = rf.acessToIntegra(self.driver, login, password)
+                self.integra.createPID(arquivoAbrirPasta.upper(), pidNumber)
+                abreWebDriver = self.integra.acessToIntegra(self.driver, login, password)
             if (abreWebDriver):
                 abreNovaPasta = self.abrePasta(arquivoAbrirPasta, extensao=extensao, path=path)
             else:
@@ -929,6 +931,6 @@ class Abertura (object):
 
         if (driverIniciado == True):
             driverIniciado = False
-            rf.logoutIntegra(self.driver)
+            self.integra.logoutIntegra(self.driver)
 
         return True
