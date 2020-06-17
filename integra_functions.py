@@ -1,27 +1,8 @@
-#coding=utf-8
-# from selenium import webdriver
-# from selenium.self.webdriver.common.by import By
-# from selenium.self.webdriver.support.ui import WebDriverWait
-# from selenium.self.webdriver.support import expected_conditions as EC
-# from selenium.self.webdriver.common.action_chains import ActionChains
-# from selenium.self.webdriver.support.ui import Select
-# from selenium.common.exceptions import *
-# from selenium.common.exceptions import TimeoutException
-# from selenium.self.webdriver.common.keys import Keys
-# from selenium.self.webdriver.remote.remote_connection import LOGGER
-
 from selenium_functions import SeleniumFunctions
 from datetime import datetime
 from datetime import timedelta
-
-
-import pyexcel as pe
-import logging
-import os
-import platform
-import time
-import psutil  # to check pIDs
-from selenium_functions import SeleniumFunctions
+from time import strftime
+from time import sleep
 
 class IntegraFunctions(object):
 
@@ -37,9 +18,9 @@ class IntegraFunctions(object):
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
-            time.sleep(0.2)
+            sleep(0.2)
             self.driver.find_element_by_tag_name('button').click()
-            time.sleep(0.2)
+            sleep(0.2)
             self.checkPopUps()
             return True
         except:
@@ -47,10 +28,10 @@ class IntegraFunctions(object):
 
     def acessaMenuPesquisa(self):
         #menu CLIENTES
-        time.sleep(1)
+        sleep(1)
         try:
             element = self.waitingElement('//*[@id="header"]/ul/li[1]')
-            # time.sleep(.5)
+            # sleep(.5)
             element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
@@ -68,7 +49,7 @@ class IntegraFunctions(object):
     def pesquisarCliente(self, search, tipoPesquisa):
         menuPesquisa = self.acessaMenuPesquisa()
         if (menuPesquisa):
-            time.sleep(2)
+            sleep(2)
             self.checkPopUps()
             xPathOption = ''
 
@@ -85,20 +66,20 @@ class IntegraFunctions(object):
 
             element = self.waitInstance(self.driver, '{}'.format(xPathOption), 1, 'click')
             element.click()
-            time.sleep(0.5)
+            sleep(0.5)
 
             # valor do parâmetro
             self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
-            time.sleep(2)
+            sleep(2)
             print("pesquisar pasta {}".format(search))
             #botão pesquisar
             self.driver.find_element_by_id("btnPesquisar").click()
-            time.sleep(2)
+            sleep(2)
 
             try:
                 #Checa se não existe registros para essa pasta
                 element = self.driver.find_element_by_id('loopVazio').is_displayed()
-                hora = time.strftime("%H:%M:%S")
+                hora = strftime("%H:%M:%S")
                 print('{} - Não encontrou a pasta'.format(hora))
                 retorno = False
 
@@ -126,7 +107,7 @@ class IntegraFunctions(object):
         self.driver.execute_script("clickMenuCadastro(108,'processoDocumento.asp');")
 
         # TODO FAZER LOOPING PARA ADD TODOS OS ARQUIVOS PERTINENTES AO PROCESSO/CLIENTE
-        time.sleep(6)
+        sleep(6)
         path = 'C:/Users/DPLAW-BACKUP/Desktop/dprobot/dpRobot/dplaw_Robot/pdf.pdf' # CAMINHO DO ARQUIVO
         # TODO MONTAR CAMINHO DINAMICAMENTE # self.driver.send_keys(os.getcwd() + "/tests/sample_files/Figure1.tif")
 
@@ -139,17 +120,17 @@ class IntegraFunctions(object):
         self.driver.switch_to.default_content()   #VOLTAR PARA O CONTEUDO PRINCIPAL
 
         #Botão salvar
-        time.sleep(6)
+        sleep(6)
         element = self.waitInstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
         element.click()
         # POP UP (OK)
-        time.sleep(1)
+        sleep(1)
         element = self.waitInstance(self.driver, '//*[@id="popup_ok"]', 1, 'show')
         element.click()
 
     def logoutIntegra(self):
         self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
-        time.sleep(2)
+        sleep(2)
         self.driver.quit()
 
     def checkPopUps(self):
@@ -191,11 +172,10 @@ class IntegraFunctions(object):
             pass
 
         if (popupOk == True):
-            time.sleep(2)
+            sleep(2)
 
     def waitingElement(self, elementName):
         tempo = datetime.now().second + 15
-        print (tempo)
         while True:
             try:
                 element = self.waitInstance(self.driver, elementName, 2, 'click')
@@ -208,72 +188,72 @@ class IntegraFunctions(object):
                     print('teste  - não encontrado ainda!!!!')
                 pass
 
-    def checkLogin(self):
-        checarTeste = self.checkIfTest()
-        if (checarTeste):
-            print('\n------------EM MODO DE TESTE------------')
-            login="robo@dplaw.com.br"
-            password="dplaw00612"
-        else:
-            login="cgst@dplaw.com.br"
-            password="gestao0"
-        return login, password
+    # def checkLogin(self):
+    #     checarTeste = self.checkIfTest()
+    #     if (checarTeste):
+    #         print('\n------------EM MODO DE TESTE------------')
+    #         login="robo@dplaw.com.br"
+    #         password="dplaw00612"
+    #     else:
+    #         login="cgst@dplaw.com.br"
+    #         password="gestao0"
+    #     return login, password
 
-    def checkIfTest(self):
-        pathRootScript = os.path.abspath(os.path.dirname(__file__))
-        pathFileTeste = pathRootScript + "\\teste.txt"
-        if (os.path.isfile(pathFileTeste)):
-            return True
-        else:
-            return False
+    # def checkIfTest(self):
+    #     pathRootScript = os.path.abspath(os.path.dirname(__file__))
+    #     pathFileTeste = pathRootScript + "\\teste.txt"
+    #     if (os.path.isfile(pathFileTeste)):
+    #         return True
+    #     else:
+    #         return False
 
-    def abreArquivo(self, arquivo, extensao, path=""):
-        fileName = "{}\\{}.{}".format(path, arquivo, extensao)
-        # fileName = (arquivo + '.' + extensao)
-        dfExcel = pe.get_sheet(file_name=fileName)
-        return dfExcel
+    # def abreArquivo(self, arquivo, extensao, path=""):
+    #     fileName = "{}\\{}.{}".format(path, arquivo, extensao)
+    #     # fileName = (arquivo + '.' + extensao)
+    #     dfExcel = pe.get_sheet(file_name=fileName)
+    #     return dfExcel
 
-    def checkEndFile(self, log):
-        arquivo =  open(log, 'r')
-        message = arquivo.readlines()
-        arquivo.close()
+    # def checkEndFile(self, log):
+    #     arquivo =  open(log, 'r')
+    #     message = arquivo.readlines()
+    #     arquivo.close()
 
-        lastLine = message[len(message)-1]
-        # count = len(open(log).readlines()) + 1
-        return (lastLine)
+    #     lastLine = message[len(message)-1]
+    #     # count = len(open(log).readlines()) + 1
+    #     return (lastLine)
 
-    def createLog(self, logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
+    # def createLog(self, logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
 
-        if (os.path.isfile(logFile)): #se o log não existir, cria-se
-            arquivo =  open(logFile, 'a')
-        else:
-            arquivo = open(logFile, tipo)
+    #     if (os.path.isfile(logFile)): #se o log não existir, cria-se
+    #         arquivo =  open(logFile, 'a')
+    #     else:
+    #         arquivo = open(logFile, tipo)
 
-        writeLog = "{}".format(message)
+    #     writeLog = "{}".format(message)
 
-        if (arquivo != ""):
-            arquivo.writelines(writeLog)
-        if (printOut):
-            print(writeLog)
+    #     if (arquivo != ""):
+    #         arquivo.writelines(writeLog)
+    #     if (printOut):
+    #         print(writeLog)
 
-        arquivo.close()
+    #     arquivo.close()
 
-    def createPID(self, pidName, pidNumber):
-        logsPath = "{}\\pIDs".format(os.getcwd())
-        logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
+    # def createPID(self, pidName, pidNumber):
+    #     logsPath = "{}\\pIDs".format(os.getcwd())
+    #     logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
 
-        if (os.path.exists(logsPath) == False):
-            os.mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
+    #     if (os.path.exists(logsPath) == False):
+    #         os.mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
 
-        if (not(os.path.isfile(logFile))): #se o log não existir, cria-se
-            arquivo =  open(logFile, 'w')
-            arquivo.close()
-            return True
+    #     if (not(os.path.isfile(logFile))): #se o log não existir, cria-se
+    #         arquivo =  open(logFile, 'w')
+    #         arquivo.close()
+    #         return True
 
-    def checkPID(self, pidNumber):
-        if psutil.pid_exists(pidNumber):
-            print ("pid {} existe".format(pidNumber))
-            return True
+    # def checkPID(self, pidNumber):
+    #     if psutil.pid_exists(pidNumber):
+    #         print ("pid {} existe".format(pidNumber))
+    #         return True
 
 
 
