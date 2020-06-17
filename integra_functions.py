@@ -12,6 +12,8 @@
 
 from selenium_functions import SeleniumFunctions
 from datetime import datetime
+from datetime import timedelta
+
 
 import pyexcel as pe
 import logging
@@ -47,22 +49,16 @@ class IntegraFunctions(object):
         #menu CLIENTES
         time.sleep(1)
         try:
-            # element = self.driver.execute_script("document.getElementById('header')")
-
             element = self.waitingElement('//*[@id="header"]/ul/li[1]')
-
-            # element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]', 2, 'click')
-            time.sleep(1.5)
-            if (element):
-                element.click()
+            # time.sleep(.5)
+            element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
             return False
 
         #submenu PESQUISAR CLIENTE
         try:
-            element = self.waitInstance(self.driver, '//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 2, 'click')  # ==>> https://www.integra.adv.br/integra4/modulo/21/default.asp
-            time.sleep(1.5)
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p')
             element.click()
         except:
             print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
@@ -198,14 +194,14 @@ class IntegraFunctions(object):
             time.sleep(2)
 
     def waitingElement(self, elementName):
-        timeNow = datetime.now()
-        print(timeNow + 10)
+        tempo = datetime.now().second + 15
+        print (tempo)
         while True:
             try:
                 element = self.waitInstance(self.driver, elementName, 2, 'click')
                 return element
             except:
-                if timeNow <= timeNow + 10:
+                if (datetime.now().second <= tempo):
                     print('Tempo Esgotado!!! Saindo!')
                     return False
                 else:
