@@ -44,18 +44,15 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
         arquivo =  open(logFile, 'a')
     else:
         arquivo = open(logFile, tipo)
-
     writeLog = "{}".format(message)
-
     if (arquivo != ""):
         arquivo.writelines(writeLog)
     if (printOut):
         print(writeLog)
-
     arquivo.close()
 
 def createPID(pidName, pidNumber):
-    logsPath = "{}\\pIDs".format(os.getcwd())
+    logsPath = "{}\\pIDs".format(osGetCWD())
     logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
 
     if (osPath.exists(logsPath) == False):
