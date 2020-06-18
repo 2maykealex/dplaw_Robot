@@ -671,10 +671,11 @@ class Abertura (object):
 
                 try: #remove agendamentos já executados
                     agendNaoAbertremove(tipoAgendamento)
-                    break #sai do While TRUE
                 except:
                     print('erro AgendNaoAbertos: {}'.format(tipoAgendamento))
+                break #sai do While TRUE
 
+        # APÓS O LOOPING
         if (agendNaoAbertos):
             message = "{}\nREG {}: AGENDAMENTOS NÃO ABERTOS!: ".format(message, registro)
             for x in agendNaoAbertos:
@@ -683,6 +684,19 @@ class Abertura (object):
         if (messageFinal):
             message = "{}\n{}".format(message, messageFinal)
         basic_functions.createLog(self.logFile, "{}".format(message.upper()))
+
+    def removeAgendamentos(self): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
+        trash = '/html/body/div[13]/table/tbody/tr[2]/td/form/div/fieldset/div[2]/table[2]/tbody/tr/td/fieldset/div[2]/div/table/tbody/tr/td[1]/div'
+        while True:
+            try:
+                trash = self.integra.waitInstance(self.integra.driver, trash, 2, 'click')
+                trash.click()
+                sleep(1)
+                botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
+                botaoPopup.click()
+            except:
+                break
+        print('OS AGENDAMENTOS FORAM EXCLUÍDOS COM SUCESSO!')
 
     def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx", path=""):
         dfExcel = basic_functions.abreArquivo(arquivoAbrirPasta, extensao, path=path)
@@ -784,7 +798,8 @@ class Abertura (object):
                 sleep(1)
 
                 try:
-                    if basic_functions.checkIfTest():
+                    isTest = basic_functions.checkIfTest()
+                    if (isTest):
                         searchFolder = False
                     else:
                         searchFolder, _element = self.integra.pesquisarCliente(df['pasta'], 'pasta')
@@ -812,6 +827,8 @@ class Abertura (object):
 
                     if (df['responsavel']):
                         self.criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item, df['dataCiencia'], df['agendFotocopia'], message)
+                        if (isTest):
+                            self.removeAgendamentos()
                     else:
                         message = "\nREG {}: NÃO FO POSSÍVEL CRIAR OS AGENDAMENTOS - NÃO EXISTEM RESPONSAVEIS! |".format(item)
                         basic_functions.createLog(self.logFile, "{}".format(message.upper()))
@@ -823,8 +840,8 @@ class Abertura (object):
 
                 item = item + 1
 
-            #só encerrará o uso do arquivo se o retorno de abrir pasta for True
-            basic_functions.createLog(self.logFile, '\nFIM')
+            if (not(isTest)):
+                basic_functions.createLog(self.logFile, '\nFIM')
             return True
         else:
             return False
