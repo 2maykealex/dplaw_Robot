@@ -408,9 +408,6 @@ class Abertura (object):
                         if (dataAudiencia != ""):
                             tipoAgendamento = 'Audiência'
                             appointmentDate = dataAudiencia
-                            data = "{}/{}/{}".format(str(appointmentDate.day), str(appointmentDate.month), str(appointmentDate.year))
-                            appointmentDate = datetime.strptime("{}".format(data), "%d/%m/%Y")
-                            appointmentDate = format(appointmentDate, "%d/%m/%Y")
 
                             if (horaAudienciaFormatada != "00:00"):
                                 agendamento = "{} - Audiência designada para dia {} às {}".format(sigla, str(appointmentDate), horaAudienciaFormatada)
@@ -444,16 +441,11 @@ class Abertura (object):
                             break
                 except:
                     print("erro X=0")
-                    continue
 
                 try:
                     if (x == 1): #tipo Ciencia de novo processo
                         tipoAgendamento = 'Ciencia de novo processo'
-                        dataAbPasta = datetime.strptime(dataCiencia, "%d/%m/%Y")
-                        dataIncrementada = dataAbPasta.date()
-                        data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
-                        appointmentDate = datetime.strptime("{}".format(data), "%d/%m/%Y")
-                        appointmentDate = format(appointmentDate, "%d/%m/%Y")
+                        appointmentDate = dataCiencia
                         agendamento = "{} - Certificar abertura, risco e promover agendamentos.{}".format(sigla, complementoAgendamento)
 
                         #recupera lista de DESTINATÁRIOS cadastrados no PROMAD  - OBTÉM SOMENTE DO PRIMEIRO SELECT-DESTINATÁRIO, POIS OS DEMAIS SÃO IGUAIS
@@ -476,11 +468,7 @@ class Abertura (object):
                 try:
                     if (x == 2): #tipo Anexar
                         tipoAgendamento = 'Anexar'
-                        dataAbPasta = datetime.strptime(dataCiencia, "%d/%m/%Y")
-                        dataIncrementada = dataAbPasta.date()
-                        data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
-                        appointmentDate = datetime.strptime("{}".format(data), "%d/%m/%Y")
-                        appointmentDate = format(appointmentDate, "%d/%m/%Y")
+                        appointmentDate = dataCiencia
                         agendamento = "ANEXAR"
 
                         #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
@@ -507,11 +495,7 @@ class Abertura (object):
                     if (x == 3): #tipo Fotocópia
                         if (agendFotocopia == "1"):
                             tipoAgendamento = 'Fotocópia'
-                            dataAbPasta = datetime.strptime(dataCiencia, "%d/%m/%Y")
-                            dataIncrementada = dataAbPasta.date()
-                            data = "{}/{}/{}".format(dataIncrementada.day, dataIncrementada.month, dataIncrementada.year)
-                            appointmentDate = datetime.strptime("{}".format(data), "%d/%m/%Y")
-                            appointmentDate = format(appointmentDate, "%d/%m/%Y")
+                            appointmentDate = dataCiencia
                             agendamento = "Fotocópia integral"
 
                             #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
@@ -686,17 +670,20 @@ class Abertura (object):
         basic_functions.createLog(self.logFile, "{}".format(message.upper()))
 
     def removeAgendamentos(self): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
-        trash = '/html/body/div[13]/table/tbody/tr[2]/td/form/div/fieldset/div[2]/table[2]/tbody/tr/td/fieldset/div[2]/div/table/tbody/tr/td[1]/div'
+        xInputs = '//*[@id="divAgendaListar"]/div/table/tbody/tr'
         while True:
             try:
-                trash = self.integra.waitInstance(self.integra.driver, trash, 2, 'click')
-                trash.click()
-                sleep(1)
-                botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
-                botaoPopup.click()
+                listaAgendamentos = self.integra.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+                agendItem = listaAgendamentos[-1].find_element_by_tag_name('a')
+                agendItem.click()
+                sleep(.5)
+                for _x in range(2):
+                    botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
+                    botaoPopup.click()
+                    sleep(.5) #tempo maior para continuar no próximo item
             except:
                 break
-        print('OS AGENDAMENTOS FORAM EXCLUÍDOS COM SUCESSO!')
+        print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
 
     def abrePasta(self, arquivoAbrirPasta, item = 1, extensao ="xlsx", path=""):
         dfExcel = basic_functions.abreArquivo(arquivoAbrirPasta, extensao, path=path)
@@ -919,7 +906,8 @@ class Abertura (object):
                 if (pathFolder.isfile(fileExecuted)):
                     remove(fileExecuted)
 
-                move("{}\\{}.{}".format(path, arquivoAbrirPasta, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                if (not(basic_functions.checkIfTest())):
+                    move("{}\\{}.{}".format(path, arquivoAbrirPasta, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
             try:
