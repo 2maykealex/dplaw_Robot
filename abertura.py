@@ -28,7 +28,7 @@ class Abertura (object):
         if (str(df['gpProcesso'])):
             try:
                 element = self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['gpProcesso']))
             except:
                 naoInserido['gpProcesso'] = str(df['gpProcesso'])
@@ -75,7 +75,7 @@ class Abertura (object):
         if (str(df['statusProcessual'])):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['statusProcessual']))
             except:
                 naoInserido['statusProcessual'] = str(df['statusProcessual'])
@@ -100,7 +100,7 @@ class Abertura (object):
         if (df['localTr'] != ''):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcNumeroVara"]', 1, 'show')
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['localTr']))
             except:
                 naoInserido['localTr'] = str(df['localTr'])
@@ -115,7 +115,7 @@ class Abertura (object):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcLocalTramite"]', 1, 'show')
                 sleep(1)
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
 
                 try:
                     select.select_by_visible_text(localTramite)
@@ -157,7 +157,7 @@ class Abertura (object):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
                 sleep(1)
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
 
                 try:
                     select.select_by_visible_text(comarca)
@@ -180,7 +180,7 @@ class Abertura (object):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
                 sleep(1)
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
                 sleep(1)
 
@@ -202,7 +202,7 @@ class Abertura (object):
         if (str(df['uf'])):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtUf"]', 1, 'show')
-                select = self.selenium.select(element)
+                select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['uf']))
             except:
                 naoInserido['uf'] = str(df['uf'])
@@ -213,7 +213,7 @@ class Abertura (object):
 
         try:
             element = self.integra.waitInstance(self.integra.driver, 'slcLocalizador', 1, 'show', 'id')
-            select = self.selenium.select(element)
+            select = self.integra.selenium.select(element)
             select.select_by_visible_text(str(df['localizador']))
         except:
             naoInserido['localizador'] = str(df['localizador'])
