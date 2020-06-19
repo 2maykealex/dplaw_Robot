@@ -8,6 +8,7 @@ from time import strftime
 from time import sleep
 from glob import glob
 from datetime import date
+from datetime import datetime
 from threading import Thread
 from basic_functions import checkPID
 from abertura import Abertura
@@ -87,10 +88,11 @@ while True:      #Fará looping infinito, buscando novos arquivos nas pastas - s
         if (file[-3:] != 'txt'):
             fileName = file.split("\\")
             fileName = fileName[-1] #obtem o ultimo elemento da lista, no caso, o nome do arquivo
+            extension = fileName.split('.')[-1]
             checkValor = fileName.split(' ')
             if (checkValor[0] != 'Contrato'): #Renomeia o Arquivo
                 oldFileName = fileName
-                fileName = fileName.replace('{}'.format(checkValor[0]), 'Contrato')
+                fileName = fileName.replace('{}'.format(checkValor[0]), 'Contrato PA_{}.{}'.format(datetime.now().strftime("%Y_%m"), extension))
                 osRename(osPath.join(ContractPath, oldFileName), osPath.join(ContractPath, fileName))  # Old - New
             else:
                 if (fileName not in executingFiles):
