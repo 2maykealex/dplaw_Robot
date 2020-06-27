@@ -17,44 +17,36 @@ class Contrato (object):
     def inserirContrato(self, contratoMes, pasta, registro):
         self.integra.checkPopUps()
 
-        element = self.integra.waitInstance('backgroundPopup', 1, 'show', 'id')
-        if (element.value_of_css_property('display') == 'block'):
-            self.driver.execute_script("$('#backgroundPopup').css('display', 'none');") # torna elemento visível
-
-        element = self.integra.waitInstance('carregando', 1, 'show', 'id')
-        if (element.value_of_css_property('display') == 'block'):
-            self.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
-
-        element = self.integra.waitInstance('txtCampoLivre4', 1, 'show', 'id')
+        element = self.integra.waitingElement('txtCampoLivre4', 'id')
         if (element.get_attribute('value') ==  ''):
             # element.clear()
             print("Preenchendo com '{}' na pasta/processo '{}' - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
             sleep(2)
 
-            self.driver.execute_script("document.getElementById('txtCampoLivre4').value='{}' ".format(contratoMes) )
+            self.integra.driver.execute_script("document.getElementById('txtCampoLivre4').value='{}' ".format(contratoMes) )
             sleep(2)
 
             # checando se o elemento CNJ está preenchido
-            element = self.integra.waitInstance('txtNroCnj', 1, 'show', 'id')
+            element = self.integra.waitingElement('txtNroCnj', 'id')
             if (element.get_attribute("value") != ''):
                 # Segredo de Justiça  #por padrão, será marcado não
-                element = self.integra.waitInstance('segredoJusticaN', 1, 'show', 'id')
-                self.driver.execute_script("arguments[0].click();", element)
+                element = self.integra.waitingElement('segredoJusticaN', 'id')
+                self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
-                element = self.integra.waitInstance('capturarAndamentosS', 1, 'show', 'id')
-                self.driver.execute_script("arguments[0].click();", element)
+                element = self.integra.waitingElement('capturarAndamentosS', 'id')
+                self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
             # SALVAR ALTERAÇÃO
             sleep(2)
-            element = self.integra.waitInstance('btnSalvar', 1, 'show', 'id')
+            element = self.integra.waitingElement('btnSalvar', 'id')
             element.click()
             sleep(2)
 
             # SALVAR ALTERAÇÃO - popup
             try:
-                element = self.integra.waitInstance('popup_ok', 1, 'click', 'id')
+                element = self.integra.waitingElement('popup_ok', 1, 'click', 'id')
                 element.click()
             except:
                 pass
@@ -73,7 +65,7 @@ class Contrato (object):
     def enviaParametros(self, contratoMes, item = 1, extensao="xlsx", path=""):
         try:
             print('\n')
-            dfExcel = self.integra.abreArquivo(contratoMes, extensao, path=path)
+            dfExcel = basic_functions.abreArquivo(contratoMes, extensao, path=path)
             count = dfExcel.number_of_rows()-1
 
             while (item <= count):         #looping dentro de cada arquivo
@@ -135,7 +127,6 @@ class Contrato (object):
             mkdir(logsPath)   # Se o diretório \Volumetrias\files não existir, será criado -
 
         driverIniciado = False
-        self.driver = None
         executaContrato = None
 
         login, password = "robo@dplaw.com.br" ,"dplaw00612"
@@ -151,7 +142,7 @@ class Contrato (object):
         self.logFile = logsPath + "\\_log_{}.txt".format(contratoMes)
 
         abreWebDriver = None
-        if (path.isfile(self.logFile)):
+        if (pathFolder.isfile(self.logFile)):
             registro = basic_functions.checkEndFile(self.logFile)
 
             if (registro == "FIM"): #ultimo registro do arquivo
@@ -187,7 +178,7 @@ class Contrato (object):
             if (file[0] != ""):
                 remove("{}\\{}".format(path, infoLog))
                 fileExecuted = pathExecutados + "\\{}.{}".format(contratoMes, extensao)
-                if (path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                if (pathFolder.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                     remove(fileExecuted)
                 move("{}\\{}.{}".format(path, contratoMes, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:

@@ -13,91 +13,108 @@ class Atualizacao (object):
 
     def __init__(self):
         self.integra = IntegraFunctions()
+        self.isTest = basic_functions.checkIfTest()
 
     def fazerAtualizacao(self, dadosAtualizacao):
         self.integra.checkPopUps()
-        element = self.integra.waitInstance(self.driver, 'carregando', 1, 'show', 'id')
-        if (element.value_of_css_property('display') == 'block'):
-            self.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
-
         #ASSUNTO
         try:
-            comboAssunto = self.integra.waitInstance(self.driver, "//*[@id='slcAssunto']", 1, 'show')
-            select = self.integra.Select(comboAssunto)
-            select.select_by_visible_text(str(dadosAtualizacao['assunto']))
-        except:
-            try:
-                select.select_by_visible_text(dadosAtualizacao['assunto'])
-            except:
-                try:
-                    select.select_by_visible_text(dadosAtualizacao['assunto'].title())
-                except:
-                    try:
-                        select.select_by_visible_text(dadosAtualizacao['assunto'].lower())
-                    except:
-                        try:
-                            select.select_by_visible_text(dadosAtualizacao['assunto'].lower().capitalize())   #usado sem Tratamento para cair except externo
-                        except:
-                            comboAssunto.click()
-                            elemCadastro = self.integra.waitInstance(self.driver, "//*[@id='slcAssunto']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
-                            elemCadastro.click()
-                            self.driver.execute_script("document.getElementById('txtAssunto').value='{}' ".format(str(dadosAtualizacao['assunto'])))
-
-        try:
-            # comboAssunto.click()  # clica e abre as opções
-            print("Preenchendo com assunto '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['assunto'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
+            comboAssunto = self.integra.waitingElement("//*[@id='slcAssunto']")
+            select = self.integra.selenium.select(comboAssunto)
+            if (select.first_selected_option.get_attribute("innerHTML")):
+                if (select.first_selected_option.get_attribute("innerHTML") == str(dadosAtualizacao['assunto'])):
+                    isEmpty = False # se for igual, marca FALSE para não selecionar novamente.
+                else:
+                    isEmpty = True # se não for igual, marca TRUE para selecionar o correto
+            else:
+                isEmpty = True
         except:
             pass
+
+        if (isEmpty):
+            try:
+                select.select_by_visible_text(str(dadosAtualizacao['assunto']))
+            except:
+                try:
+                    select.select_by_visible_text(dadosAtualizacao['assunto'])
+                except:
+                    try:
+                        select.select_by_visible_text(dadosAtualizacao['assunto'].title())
+                    except:
+                        try:
+                            select.select_by_visible_text(dadosAtualizacao['assunto'].lower())
+                        except:
+                            try:
+                                select.select_by_visible_text(dadosAtualizacao['assunto'].lower().capitalize())   #usado sem Tratamento para cair except externo
+                            except:
+                                comboAssunto.click()
+                                elemCadastro = self.integra.waitingElement("//*[@id='slcAssunto']/option[2]") # CADASTRAR NOVO ITEM
+                                elemCadastro.click()
+                                self.integra.driver.execute_script("document.getElementById('txtAssunto').value='{}' ".format(str(dadosAtualizacao['assunto'])))
+            try:
+                print("Preenchendo com assunto '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['assunto'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
+            except:
+                pass
 
         #DETALHES
         try:
-            comboDetalhe = self.integra.waitInstance(self.driver, "//*[@id='slcDetalhes']", 1, 'show')
-            select = self.integra.Select(comboDetalhe)
-            select.select_by_visible_text(str(dadosAtualizacao['detalhe']))
-        except:
-            try:
-                select.select_by_visible_text(dadosAtualizacao['detalhe'])
-            except:
-                try:
-                    select.select_by_visible_text(dadosAtualizacao['detalhe'].title())
-                except:
-                    try:
-                        select.select_by_visible_text(dadosAtualizacao['detalhe'].lower())
-                    except:
-                        try:
-                            select.select_by_visible_text(dadosAtualizacao['detalhe'].lower().capitalize())   #usado sem Tratamento para cair except externo
-                        except:
-                            comboDetalhe.click()
-                            elemCadastro = self.integra.waitInstance(self.driver, "//*[@id='slcDetalhes']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
-                            elemCadastro.click()
-                            self.driver.execute_script("document.getElementById('txtDetalhes').value='{}' ".format(str(dadosAtualizacao['detalhe'])))
-
-        try:
-            # comboDetalhe.click()  # clica e abre as opções
-            print("Preenchendo com o detalhe '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['detalhe'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
+            comboDetalhe = self.integra.waitingElement("//*[@id='slcDetalhes']")
+            select = self.integra.selenium.select(comboDetalhe)
+            if (select.first_selected_option.get_attribute("innerHTML")):
+                if (select.first_selected_option.get_attribute("innerHTML") == str(dadosAtualizacao['detalhe'])):
+                    isEmpty = False # se for igual, marca FALSE para não selecionar novamente.
+                else:
+                    isEmpty = True # se não for igual, marca TRUE para selecionar o correto
+            else:
+                isEmpty = True
         except:
             pass
 
+        if (isEmpty):
+            try:
+                select.select_by_visible_text(str(dadosAtualizacao['detalhe']))
+            except:
+                try:
+                    select.select_by_visible_text(dadosAtualizacao['detalhe'])
+                except:
+                    try:
+                        select.select_by_visible_text(dadosAtualizacao['detalhe'].title())
+                    except:
+                        try:
+                            select.select_by_visible_text(dadosAtualizacao['detalhe'].lower())
+                        except:
+                            try:
+                                select.select_by_visible_text(dadosAtualizacao['detalhe'].lower().capitalize())   #usado sem Tratamento para cair except externo
+                            except:
+                                comboDetalhe.click()
+                                elemCadastro = self.integra.waitingElement("//*[@id='slcDetalhes']/option[2]") # CADASTRAR NOVO ITEM
+                                elemCadastro.click()
+                                self.integra.driver.execute_script("document.getElementById('txtDetalhes').value='{}' ".format(str(dadosAtualizacao['detalhe'])))
+            try:
+                print("Preenchendo com o detalhe '{}' na pasta '{}' - ARQUIVO {}.XLSX\n".format(dadosAtualizacao['detalhe'], dadosAtualizacao['pasta'], dadosAtualizacao['atualizacaoPasta']))
+            except:
+                pass
+
         # SALVAR ALTERAÇÃO
         sleep(2)
-        element = self.integra.waitInstance(self.driver, 'btnSalvar', 1, 'show', 'id')
+        element = self.integra.waitingElement('btnSalvar', form='id')
         element.click()
         sleep(0.5)
 
         # # SALVAR ALTERAÇÃO - POP_UP
         try:
-            element = self.integra.waitInstance(self.driver, 'popup_ok', 1, 'show', 'id')
+            element = self.integra.waitingElement('popup_ok', form='id')
             element.click()
 
             message = "REGISTRO {}: A Pasta '{}' foi atualizada com o ASSUNTO: '{}' e DETALHE: '{}'".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'], dadosAtualizacao['assunto'], dadosAtualizacao['detalhe'])
-            self.integra.createLog(self.logFile, message)   #poderia acontecer de salvar, e não aparecer (por neste momento falhar a conexão)
+            basic_functions.createLog(self.logFile, message)   #poderia acontecer de salvar, e não aparecer (por neste momento falhar a conexão)
         except:
             pass
 
     def enviaParametros(self, atualizacaoPasta, item = 1, extensao="xlsx", path=""):
         try:
             print('\n')
-            dfExcel = self.integra.abreArquivo(atualizacaoPasta, extensao, path=path)
+            dfExcel = basic_functions.abreArquivo(atualizacaoPasta, extensao, path=path)
             count = dfExcel.number_of_rows()-1
 
             while (item <= count):         #looping dentro de cada arquivo
@@ -141,12 +158,11 @@ class Atualizacao (object):
                 else:
                     print("--- ARQUIVO {}.XLSX\n".format(atualizacaoPasta))
                     log  =  "REGISTRO {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========".format(dadosAtualizacao['item'], dadosAtualizacao['pasta'])
-                    self.integra.createLog(self.logFile, log)
+                    basic_functions.createLog(self.logFile, log)
 
                 item = item + 1
 
-            self.integra.createLog(self.logFile, '_________________________________________________________________')
-            self.integra.createLog(self.logFile, 'FIM')
+            basic_functions.createLog(self.logFile, '\nFIM')
             return True
         except:
             return False
@@ -167,7 +183,6 @@ class Atualizacao (object):
             mkdir(logsPath)   # Se o diretório \Volumetrias\files não existir, será criado -
 
         driverIniciado = False
-        self.driver = None
         executaAtualizacao = None
 
         login, password = "robo@dplaw.com.br" ,"dplaw00612"
@@ -183,7 +198,7 @@ class Atualizacao (object):
         self.logFile = logsPath + "\\_log_{}.txt".format(atualizacaoPasta)
 
         abreWebDriver = None
-        if (path.isfile(self.logFile)):
+        if (pathFolder.isfile(self.logFile)):
             linha, count = basic_functions.checkEndFile(self.logFile)
 
             if (linha == "FIM"): #ultima linha do arquivo
@@ -216,12 +231,12 @@ class Atualizacao (object):
 
         if (executaAtualizacao):
             if (file[0] != ""):
-                remove("{}\\{}".format(path, infoLog))
-                # fileExecuted = pathExecutados + "\\{}".format(file[0])
                 fileExecuted = pathExecutados + "\\{}.{}".format(atualizacaoPasta, extensao)
-                if (path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                if (pathFolder.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                     remove(fileExecuted)
-                move("{}\\{}.{}".format(path, atualizacaoPasta, extensao), pathExecutados)
+                if (not(self.isTest)):
+                    move("{}\\{}.{}".format(path, atualizacaoPasta, extensao), pathExecutados)
+                remove("{}\\{}".format(path, infoLog))
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
             try:

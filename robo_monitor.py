@@ -11,6 +11,7 @@ from datetime import date
 from datetime import datetime
 from threading import Thread
 from basic_functions import checkPID
+from basic_functions import checkIfTest
 from abertura import Abertura
 from volumetria import Volumetria
 from contrato import Contrato

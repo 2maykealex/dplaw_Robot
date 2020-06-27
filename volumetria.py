@@ -17,17 +17,7 @@ class Volumetria (object):
     def inserirVolumetria(self, volumetriaMes, pasta, registro):
         self.integra.checkPopUps()
 
-        element = self.integra.waitInstance('backgroundPopup', 1, 'show', 'id')
-        if (element.value_of_css_property('display') == 'block'):
-            self.integra.driver.execute_script("$('#backgroundPopup').css('display', 'none');") # torna elemento visível
-
-        element = self.integra.waitInstance('carregando', 1, 'show', 'id')
-        if (element.value_of_css_property('display') == 'block'):
-            self.integra.driver.execute_script("$('#carregando').css('display', 'none');") # torna elemento visível
-
-        element = self.integra.waitInstance('txtCampoLivre3', 1, 'show', 'id')
-        print(element.text)
-        print(element.get_attribute('value'))
+        element = self.integra.waitingElement('txtCampoLivre3', form='id')
         if (element.get_attribute('value') ==  ''):
             print("Preenchendo com '{}' na pasta {} - ARQUIVO {}.XLSX\n".format(volumetriaMes, pasta, volumetriaMes))
             sleep(2)
@@ -36,25 +26,25 @@ class Volumetria (object):
             sleep(2)
 
             # checando se o elemento CNJ está preenchido
-            element = self.integra.waitInstance('txtNroCnj', 1, 'show', 'id')
+            element = self.integra.waitingElement('txtNroCnj', form='id')
             if (element.get_attribute("value") != ''):
                 # Segredo de Justiça  #por padrão, será marcado não
-                element = self.integra.waitInstance('segredoJusticaN', 1, 'show', 'id')
+                element = self.integra.waitingElement('segredoJusticaN', form='id')
                 self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
-                element = self.integra.waitInstance('capturarAndamentosS', 1, 'show', 'id')
+                element = self.integra.waitingElement('capturarAndamentosS', form='id')
                 self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
             # SALVAR ALTERAÇÃO
             sleep(2)
-            element = self.integra.waitInstance('btnSalvar', 1, 'click', 'id')
+            element = self.integra.waitingElement('btnSalvar', form='id')
             element.click()
 
             # SALVAR ALTERAÇÃO - popup
             sleep(2)
-            element = self.integra.waitInstance('popup_ok', 1, 'click', 'id')
+            element = self.integra.waitingElement('popup_ok', form='id')
             element.click()
 
             basic_functions.createLog(self.logFile, "REG {}: O dado '{}' foi preenchido na pasta '{}'\n".format(registro, volumetriaMes, pasta))
@@ -71,7 +61,7 @@ class Volumetria (object):
     def enviaParametros(self, volumetriaMes, item = 1, extensao="xlsx", path=""):
         try:
             print('\n')
-            dfExcel = self.integra.abreArquivo(volumetriaMes, extensao, path=path)
+            dfExcel = basic_functions.abreArquivo(volumetriaMes, extensao, path=path)
             count = dfExcel.number_of_rows()-1
 
             while (item <= count):         #looping dentro de cada arquivo
@@ -106,8 +96,6 @@ class Volumetria (object):
                     print("--- ARQUIVO {}.XLSX\n".format(volumetriaMes))
                     log  =  "REG {}: ========= A pasta '{}' NÃO EXISTE NO PROMAD!!! =========\n".format(item, pasta)
                     basic_functions.createLog(self.logFile, log)
-                    # print("Não encontrado")
-                    # return False
 
                 item = item + 1
 
@@ -131,7 +119,6 @@ class Volumetria (object):
             mkdir(logsPath)   # Se o diretório \Volumetrias\files não existir, será criado -
 
         driverIniciado = False
-        self.driver = None
         executaVolumetria = None
 
         login, password = "robo@dplaw.com.br" ,"dplaw00612"
@@ -147,7 +134,7 @@ class Volumetria (object):
         self.logFile = logsPath + "\\_log_{}.txt".format(volumetriaMes)
 
         abreWebDriver = None
-        if (path.isfile(self.logFile)):
+        if (pathFolder.isfile(self.logFile)):
             registro = basic_functions.checkEndFile(self.logFile)
 
             if (registro == "FIM"): #ultima registro do arquivo
@@ -181,7 +168,7 @@ class Volumetria (object):
             if (file[0] != ""):
                 remove("{}\\{}".format(path, infoLog))
                 fileExecuted = pathExecutados + "\\{}.{}".format(volumetriaMes, extensao)
-                if (path.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
+                if (pathFolder.isfile(fileExecuted)): #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
                     remove(fileExecuted)
                 move("{}\\{}.{}".format(path, volumetriaMes, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
         else:

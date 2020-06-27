@@ -31,7 +31,6 @@ class IntegraFunctions(object):
         sleep(1)
         try:
             element = self.waitingElement('//*[@id="header"]/ul/li[1]')
-            # sleep(.5)
             element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
@@ -64,7 +63,7 @@ class IntegraFunctions(object):
                 xPathOption = '//*[@id="chkPesquisa137"]'
                 xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
 
-            element = self.waitInstance(self.driver, '{}'.format(xPathOption), 1, 'click')
+            element = self.waitingElement('{}'.format(xPathOption))
             element.click()
             sleep(0.5)
 
@@ -86,13 +85,13 @@ class IntegraFunctions(object):
             except:
                 # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
                 try:
-                    element = self.waitInstance(self.driver, "{}/div".format(xPathClick), 1, 'click')
+                    element = self.waitingElement("{}/div".format(xPathClick))
                 except:
                     try:
-                        element = self.waitInstance(self.driver, "{}/div".format(xPathClick), 1, 'click')
+                        element = self.waitingElement("{}/div".format(xPathClick))
                     except:
                         pass
-                        # element = self.waitInstance(self.driver, '//*[@id="divCliente"]/div[3]/table/tbody/tr', 1, 'click')  #clica no registro -> abre a pasta
+                        # element = self.waitingElement('//*[@id="divCliente"]/div[3]/table/tbody/tr')  #clica no registro -> abre a pasta
                 retorno = True
 
         else:
@@ -121,11 +120,11 @@ class IntegraFunctions(object):
 
         #Botão salvar
         sleep(6)
-        element = self.waitInstance(self.driver, '//*[@id="btnSalvar"]', 1, 'show')
+        element = self.waitingElement('//*[@id="btnSalvar"]', 1, 'show')
         element.click()
         # POP UP (OK)
         sleep(1)
-        element = self.waitInstance(self.driver, '//*[@id="popup_ok"]', 1, 'show')
+        element = self.waitingElement('//*[@id="popup_ok"]', 1, 'show')
         element.click()
 
     def logoutIntegra(self):
@@ -174,16 +173,16 @@ class IntegraFunctions(object):
         if (popupOk == True):
             sleep(2)
 
-    def waitingElement(self, elementName):
-        tempo = datetime.now().second + 15
+    def waitingElement(self, elementName, tipo='click', form='xpath'):
+        # tempo = datetime.now().second + 15
         while True:
             try:
-                element = self.waitInstance(self.driver, elementName, 2, 'click')
+                element = self.waitInstance(self.driver, elementName, 2, tipo, form)
                 return element
             except:
-                if (datetime.now().second <= tempo):
-                    print('Tempo Esgotado!!! Saindo!')
-                    return False
-                else:
-                    print('teste  - não encontrado ainda!!!!')
+                # if (datetime.now().second <= tempo):
+                #     print('Tempo Esgotado!!! Saindo!')
+                #     return False
+                # else:
+                #     print('teste  - não encontrado ainda!!!!')
                 pass
