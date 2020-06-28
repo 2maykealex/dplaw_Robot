@@ -1,10 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}
-ABERTURA DE PASTAS
-{% endblock %}
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+
 
 {% block content %}
-    <h1>ABERTURA DE PASTAS</h1>
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 text-center">
+        <h3>SELECIONE O CLIENTE</h3>
+        <div class="list-group">
+            <a href="{request.url_rule.rule}/bradesco" class="mt-5 list-group-item list-group-item-action list-group-item-primary">BRADESCO</a>
+            <a href="{request.url_rule.rule}/bv" class="mt-5 list-group-item list-group-item-action list-group-item-primary">BV</a>
+            <a href="{request.url_rule.rule}/oi" class="mt-5 list-group-item list-group-item-action list-group-item-primary">OI</a>
+        </div>
+    </div>
+    <div class="col-md-6"></div>
+</div>]
+
 
 {% endblock %}
