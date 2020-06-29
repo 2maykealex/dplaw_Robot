@@ -3,23 +3,33 @@
 {% set title = "ABERTURA DE PASTAS" %}
 {% set subtitle = title %}
 
-{% block content %}
+{% block scripts %}
 
+    <script>
+        function desabilitaBotao(elemento) {
+            elemento.disabled  = true;
+        };
+        function recarregarPagina() {
+            window.location.reload()
+        }
+    </script>
+
+{% endblock%}
+
+{% block content %}
 <div class="content text-center">
     <h3>BRADESCO</h3>
 </div>
 
 <div class="row">
     <div class="col-md-10">
-        <textarea class="mt-5 ml-5 md-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!"></textarea>
+        <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!"></textarea>
     </div>
     <div class="col-md-2">
-        <button class="btn btn-success mt-5 ">CONVERTER</button>
+        <button class="btn btn-primary mt-5 btn-block" onclick="desabilitaBotao(this)">COLAR</button>
+        <button class="btn btn-success mt-2 btn-block">CONVERTER</button>
+        <button class="btn btn-warning mt-2 btn-block" onclick="recarregarPagina()">ATUALIZAR</button>
     </div>
-
-
-
-
 </div>
 
 {% endblock %}
