@@ -8,10 +8,59 @@
     <script>
         function desabilitaBotao(elemento) {
             elemento.disabled  = true;
+            paste();
         };
+
         function recarregarPagina() {
             window.location.reload()
-        }
+        };
+
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            for(var i = 0;i < lines.length;i++){
+                criaObjeto(lines[i]);
+            };
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            var dataHoje = new Date();
+            var dataHoje = ("0" + dataHoje.getDate()).substr(-2) + "/"
+                + ("0" + (dataHoje.getMonth() + 1)).substr(-2) + "/" + dataHoje.getFullYear();
+
+            //IMPORTADOS DO E-MAIL
+            objLine['pasta']           = linha.split('/')[0].split('      ')[0];
+            adversa  = linha.split('/')[0].split('      ')[1];
+            isNumber = parseInt(adversa.slice(-2));
+            if (isNumber){
+                adversa = adversa.split(isNumber)[0].trim()
+            };
+            objLine['adversa']         = adversa;
+            objLine['dataContratacao'] = dataHoje;
+            objLine['numProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            objLine['cnj']             = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            objLine['comarca']         = linha.split('/').slice(-2)[0].trim();
+            objLine['uf']              = linha.split('/').slice(-1)[0].trim();
+
+            // console.log(linha);
+            console.log(objLine);
+        };
+
     </script>
 
 {% endblock%}
@@ -27,7 +76,7 @@
     </div>
     <div class="col-md-2">
         <button class="btn btn-primary mt-5 btn-block" onclick="desabilitaBotao(this)">COLAR</button>
-        <button class="btn btn-success mt-2 btn-block">CONVERTER</button>
+        <button class="btn btn-success mt-2 btn-block" onclick="converter()">CONVERTER</button>
         <button class="btn btn-warning mt-2 btn-block" onclick="recarregarPagina()">ATUALIZAR</button>
     </div>
 </div>
