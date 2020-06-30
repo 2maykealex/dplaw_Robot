@@ -31,25 +31,34 @@
 
         function converter(){
             var lines = $('textarea').val().split('\n');
-            var ObjectList = {};
-            for(var i = 0;i < lines.length;i++){
-                criaObjeto(lines[i]);
-            };
+            var ObjectList = new Array();
+            for (var i = 0; i < lines.length; i++){
+                if (lines[i]){
+                    ObjectList.push(criaObjeto(lines[i]));
+                    console.log(i);
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            console.log(ObjectList);
+
         };
 
         function criaObjeto(linha){
             var objLine = {};
+            var adversa = String;
+            var isNumber = String;
             var dataHoje = new Date();
             var dataHoje = ("0" + dataHoje.getDate()).substr(-2) + "/"
                 + ("0" + (dataHoje.getMonth() + 1)).substr(-2) + "/" + dataHoje.getFullYear();
 
             //IMPORTADOS DO E-MAIL
-            objLine['pasta']           = linha.split('/')[0].split('      ')[0];
+            objLine['pasta'] = linha.split('/')[0].split('      ')[0];
             adversa  = linha.split('/')[0].split('      ')[1];
-            isNumber = parseInt(adversa.slice(-2));
+            isNumber = parseInt(adversa.slice(-2, -1));
+
             if (isNumber){
                 adversa = adversa.split(isNumber)[0].trim()
             };
+
             objLine['adversa']         = adversa;
             objLine['dataContratacao'] = dataHoje;
             objLine['numProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
@@ -57,8 +66,7 @@
             objLine['comarca']         = linha.split('/').slice(-2)[0].trim();
             objLine['uf']              = linha.split('/').slice(-1)[0].trim();
 
-            // console.log(linha);
-            console.log(objLine);
+            return (objLine);
         };
 
     </script>
