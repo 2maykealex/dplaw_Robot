@@ -5,6 +5,8 @@
 *.pid
 *.xlsx
 *.xls
+*.old
+*.OLD
 
 files/abertura_pastas/modelo/C3-PLAW - Copia.xlsm
 files/abertura_pastas/arquivos_executados/*
