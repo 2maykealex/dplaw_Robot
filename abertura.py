@@ -20,14 +20,14 @@ class Abertura (object):
     def incluirProcesso(self, df, registro):
         self.integra.checkPopUps()
 
-        element = self.integra.waitInstance(self.integra.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
+        element = self.integra.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'show')
         element.click()
         naoInserido = {}
 
         # Grupo internodd
         if (str(df['gpProcesso'])):
             try:
-                element = self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')
+                element = self.integra.waitingElement("//*[@id='slcGrupo']", 'show')
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['gpProcesso']))
             except:
@@ -40,7 +40,7 @@ class Abertura (object):
         #Numero do CNJ
         if (df['cnj'] != ''):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtNroCnj"]', 1, 'show', 'xpath')
+                element = self.integra.waitingElement('//*[@id="txtNroCnj"]', 'show')
                 element.clear()
                 element.send_keys(str(df['cnj']))
 
@@ -61,7 +61,7 @@ class Abertura (object):
         #Numero do Processo
         if (str(df['numProcesso']) != ''):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtNroProcesso"]', 1, 'show', 'xpath')
+                element = self.integra.waitingElement('//*[@id="txtNroProcesso"]', 'show')
                 element.clear()
                 element.send_keys(str(df['numProcesso']))
             except:
@@ -74,7 +74,7 @@ class Abertura (object):
         # Status
         if (str(df['statusProcessual'])):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcStatusProcessual"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="slcStatusProcessual"]', 'show')
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['statusProcessual']))
             except:
@@ -99,7 +99,7 @@ class Abertura (object):
         # Local trâmite - Campo 1
         if (df['localTr'] != ''):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcNumeroVara"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="slcNumeroVara"]', 'show')
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['localTr']))
             except:
@@ -113,7 +113,7 @@ class Abertura (object):
         if (str(df['localTramite']) != ""):
             localTramite = str(df['localTramite'])
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcLocalTramite"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="slcLocalTramite"]', 'show')
                 sleep(1)
                 select = self.integra.selenium.select(element)
 
@@ -129,7 +129,7 @@ class Abertura (object):
                             try:
                                 select.select_by_visible_text(localTramite.lower().capitalize())   #usado sem Tratamento para cair except externo
                             except:
-                                elemCadastro = self.integra.waitInstance(self.integra.driver, "//*[@id='slcLocalTramite']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
+                                elemCadastro = self.integra.waitingElement("//*[@id='slcLocalTramite']/option[2]", 'click') # CADASTRAR NOVO ITEM
                                 elemCadastro.click()
                                 self.integra.driver.execute_script("document.getElementById('txtLocalTramite').value='{}' ".format(str(localTramite)))
                 sleep(1)
@@ -155,7 +155,7 @@ class Abertura (object):
             comarcaExiste = True
             comarcaSelecionada = True
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="slcComarca"]', 'show')
                 sleep(1)
                 select = self.integra.selenium.select(element)
 
@@ -178,13 +178,13 @@ class Abertura (object):
         # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo
         if (comarcaExiste == True and comarcaSelecionada == False):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="slcComarca"]', 'show')
                 sleep(1)
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
                 sleep(1)
 
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtComarca"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="txtComarca"]', 'show')
                 element.send_keys(str(df['comarca']))
                 sleep(1)
             except:
@@ -201,7 +201,7 @@ class Abertura (object):
         # UF
         if (str(df['uf'])):
             try:
-                element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtUf"]', 1, 'show')
+                element = self.integra.waitingElement('//*[@id="txtUf"]', 'show')
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text(str(df['uf']))
             except:
@@ -212,7 +212,7 @@ class Abertura (object):
         sleep(0.5)
 
         try:
-            element = self.integra.waitInstance(self.integra.driver, 'slcLocalizador', 1, 'show', 'id')
+            element = self.integra.waitingElement('slcLocalizador', 'show', 'id')
             select = self.integra.selenium.select(element)
             select.select_by_visible_text(str(df['localizador']))
         except:
@@ -223,7 +223,7 @@ class Abertura (object):
             try:
                 self.integra.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
 
-                comboResponsavel = self.integra.waitInstance(self.integra.driver, '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 1, 'show')
+                comboResponsavel = self.integra.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button', 'show')
                 comboResponsavel.click()  # clica e abre as opções
 
                 #recupera lista de DESTINATÁRIOS cadastrados no PROMAD
@@ -237,7 +237,7 @@ class Abertura (object):
                 for item in listInputs:  #itera inputs recuperados, checa e clica
                     if (item.text in df['responsavel']):
                         xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                        element = self.integra.waitingElement(xPathItem, 'click')
                         element.click()
                         sleep(1)
                         countResp = countResp + 1
@@ -278,7 +278,7 @@ class Abertura (object):
 
         #Obtém o ID do PROMAD da nova pasta a ser aberta
         try:
-            element = self.integra.waitInstance(self.integra.driver, "idDoProcesso", 1, 'show', 'class')
+            element = self.integra.waitingElement("idDoProcesso", 'show', 'class')
             idNovaPasta = element.get_attribute("innerHTML")
             idNovaPasta = idNovaPasta[14:].strip()
         except:
@@ -288,7 +288,7 @@ class Abertura (object):
 
         # Abre a aba Parte Adversa
         try:
-            element = self.integra.waitInstance(self.integra.driver, "//*[@id='div_menu17']", 1, 'show')
+            element = self.integra.waitingElement("//*[@id='div_menu17']", 'show')
             element.click()
             sleep(2)
 
@@ -298,7 +298,7 @@ class Abertura (object):
                 naoInserido['comarcaNova'] = str(df['comarcaNova'])
 
                 # TENTANDO NOVAMENTE ABRIR PARTE ADVERSA
-                element = self.integra.waitInstance(self.integra.driver, "//*[@id='div_menu17']", 1, 'show')
+                element = self.integra.waitingElement("//*[@id='div_menu17']", 'show')
                 element.click()
                 sleep(2)
             except:
@@ -312,7 +312,7 @@ class Abertura (object):
             # Parte Adversa
             if (str(df['adversa'])):
                 try:
-                    element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtNome"]', 1, 'show')
+                    element = self.integra.waitingElement('//*[@id="txtNome"]', 'show')
                     element.send_keys(str(df['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(registro, str(df['adversa'])))
                     complemento = "REG {}: PARTE ADVERSA: {}".format(registro, str(df['adversa']))
@@ -324,7 +324,7 @@ class Abertura (object):
             sleep(1)
 
             # Botão salvar
-            element = self.integra.waitInstance(self.integra.driver, '//*[@id="btnSalvar"]', 1, 'show')
+            element = self.integra.waitingElement('//*[@id="btnSalvar"]', 'show')
             element.click()
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
@@ -360,11 +360,11 @@ class Abertura (object):
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(registro))
         while (True):
             try:
-                element = self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+                element = self.integra.waitingElement("//*[@id='slcGrupo']", 'show')  #checa se redirecionamento ocorreu
                 self.integra.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
                 sleep(1)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                elementComboDestinatario = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                elementComboDestinatario = self.integra.waitingElement(xPathElement, 'show')
                 if (elementComboDestinatario == False):
                     print("erro: Elemento da página não foi encontrado!")
                 break
@@ -400,7 +400,7 @@ class Abertura (object):
 
                 # Elemento recebido no início da função
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                elementComboDestinatario = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
+                elementComboDestinatario = self.integra.waitingElement(xPathElement, 'click')
                 elementComboDestinatario.click()
 
                 try:
@@ -422,11 +422,12 @@ class Abertura (object):
 
                             totalResp = len(responsavel)
                             countResp = 0
+                            sleep(1)
                             y = 1
                             for item in listInputs:  #itera inputs recuperados, checa e clica
                                 if (item.text == 'GST' or item.text in responsavel ):
                                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                    element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                                    element = self.integra.waitingElement(xPathItem, 'click')
                                     element.click()
                                     sleep(1)
                                     countResp = countResp + 1
@@ -453,11 +454,12 @@ class Abertura (object):
                         listInputs = self.integra.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
 
                         # respons. pelo cliente
+                        sleep(1)
                         y = 1
                         for item in listInputs:  #itera inputs recuperados, checa e clica
                             if (item.text == respCiencia):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                                element = self.integra.waitingElement(xPathItem, 'click')
                                 element.click()
                                 sleep(1)
                                 break
@@ -477,11 +479,12 @@ class Abertura (object):
 
                         totalResp = 2
                         countResp = 0
+                        sleep(1)
                         y = 1
                         for item in listInputs:  #itera inputs recuperados, checa e clica
                             if (item.text == 'ESTAGBRA' or item.text == respCiencia):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                                element = self.integra.waitingElement(xPathItem, 'click')
                                 element.click()
                                 sleep(1)
                                 countResp = countResp + 1
@@ -505,10 +508,11 @@ class Abertura (object):
                             # GST e OPERAÇÕES
                             y = 1
                             found = 0
+                            sleep(1)
                             for item in listInputs:  #itera inputs recuperados, checa e clica
                                 if (item.text == 'GST' or item.text == 'operacoes'):
                                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                                    element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                                    element = self.integra.waitingElement(xPathItem, 'click')
                                     element.click()
                                     found = found + 1
                                     sleep(1)
@@ -527,7 +531,7 @@ class Abertura (object):
 
                     # combo TIPO - ABRIR
                     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
+                    element = self.integra.waitingElement(xPathElement, 'click')
                     element.click()
                     sleep(1)
 
@@ -539,7 +543,7 @@ class Abertura (object):
                     for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
                         if (item.text == tipoAgendamento):
                             xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
-                            element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
+                            element = self.integra.waitingElement(xPathItem, 'click')
                             element.click()
                             sleep(1)
                             break
@@ -548,10 +552,10 @@ class Abertura (object):
                     # CAMPO QUANDO
                     sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                    element = self.integra.waitingElement(xPathElement, 'show')
                     element.clear()
                     sleep(1)
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                    element = self.integra.waitingElement(xPathElement, 'show')
                     element.send_keys(appointmentDate)
                     sleep(1)
 
@@ -566,28 +570,28 @@ class Abertura (object):
                             # com HORA
                             sleep(1)
                             xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
-                            element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
+                            element = self.integra.waitingElement(xPathElement, 'click')
                             sleep(1)
                             element.click()
 
                             sleep(1)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                            element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
+                            element = self.integra.waitingElement(xPathElement, 'click')
                             element.clear()
 
                             sleep(1)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                            element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                            element = self.integra.waitingElement(xPathElement, 'show')
                             element.send_keys(horaAudienciaFormatada)
 
                             sleep(1)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                            element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                            element = self.integra.waitingElement(xPathElement, 'show')
                             element.clear()
 
                             sleep(1)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                            element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                            element = self.integra.waitingElement(xPathElement, 'show')
 
                             sleep(1)
                             element.send_keys(horaAudienciaFormatada)
@@ -597,24 +601,24 @@ class Abertura (object):
                     # campo agendamento
                     sleep(1)
                     xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                    element = self.integra.waitingElement(xPathElement, 'show')
                     element.clear()
                     element.send_keys(agendamento)
 
                     # campo resumo
                     sleep(1)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                    element = self.integra.waitingElement(xPathElement, 'show')
                     element.clear()
                     sleep(1)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-                    element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                    element = self.integra.waitingElement(xPathElement, 'show')
                     element.send_keys(agendamento[:30])
                 except:
                     print("erro de preenchimento nos campos")
 
                 try:
-                    element = self.integra.waitInstance(self.integra.driver, '//*[@id="btnAgendarSalvar"]', 1, 'click')
+                    element = self.integra.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
                     element.click()
                     sleep(2)
                 except:
@@ -622,12 +626,12 @@ class Abertura (object):
                     pass
 
                 try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
-                    element = self.integra.waitInstance(self.integra.driver, 'idCampoValidateAgendar', 1, 'show', 'id')
+                    element = self.integra.waitingElement('idCampoValidateAgendar', 'show', 'id')
                     if (element.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
-                        element = self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
+                        element = self.integra.waitingElement("//*[@id='slcGrupo']", 'show')  #checa se redirecionamento ocorreu
                         self.integra.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
                         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                        element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
+                        element = self.integra.waitingElement(xPathElement, 'show')
                         if (element == False):
                             print("erro: Elemento da página não foi encontrado!")
                         self.integra.checkPopUps()
@@ -644,7 +648,7 @@ class Abertura (object):
 
                 try: #Clicar no PopUp - Deseja salvar
                     sleep(2)
-                    element = self.integra.waitInstance(self.integra.driver, '//*[@id="popup_ok"]', 1, 'click')
+                    element = self.integra.waitingElement('//*[@id="popup_ok"]', 'click')
                     element.click()
                     message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
                     print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
@@ -654,7 +658,7 @@ class Abertura (object):
                     pass
 
                 try: #remove agendamentos já executados
-                    agendNaoAbertremove(tipoAgendamento)
+                    agendNaoAbertos.remove(tipoAgendamento)
                 except:
                     print('erro AgendNaoAbertos: {}'.format(tipoAgendamento))
                 break #sai do While TRUE
@@ -678,7 +682,7 @@ class Abertura (object):
                 agendItem.click()
                 sleep(.5)
                 for _x in range(2):
-                    botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
+                    botaoPopup = self.integra.waitingElement('popup_ok', 'click', 'id')
                     botaoPopup.click()
                     sleep(.5) #tempo maior para continuar no próximo item
             except:
@@ -807,7 +811,7 @@ class Abertura (object):
                         return False
 
                     try: #checa se redirecionamento ocorreu
-                        self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')
+                        self.integra.waitingElement("//*[@id='slcGrupo']", 'show')
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                         return False
