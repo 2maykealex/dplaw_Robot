@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+{% endblock%}
+
+{% block content %}
+<div class="content text-center">
+    <h3>DEFININDO PADRÕES</h3>
+</div>
+
+<div class="row">
+    {% if (data)    %}
+        <h1><b>ENCONTROU</b></h1>
+        <p></p>
+        {% print(data) %}
+    {% endif %}
+</div>
+
+{% endblock %}
