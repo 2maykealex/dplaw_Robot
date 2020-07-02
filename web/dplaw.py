@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, json
+from pprint import pprint
 
 app = Flask(__name__)
 
@@ -17,6 +18,12 @@ def abertura():
 @app.route("/abertura/bradesco")
 def abertura_bradesco():
     return render_template('abertura_bradesco.html')
+
+@app.route("/abertura/bradesco/default", methods=['POST'])
+def abertura_check():
+    data = request.form.to_dict()
+    pprint(data)
+    return render_template('abertura_default.html', data=data)
 
 @app.route("/atualizacao")
 def atualizacao():
