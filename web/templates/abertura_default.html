@@ -12,12 +12,31 @@
     <h3>DEFININDO PADRÕES</h3>
 </div>
 
-<div class="row">
-    {% if (data)    %}
-        <h1><b>ENCONTROU</b></h1>
-        <p></p>
-        {% print(data) %}
-    {% endif %}
-</div>
+<div class="content ml-5 mr-5">
+    <div class="row">
+        {% if (data)    %}
+            <table style="width:100%" class="table table-hover">
+                <tr>
+                    <th>PASTA</th>
+                    <th>ADVERSA</th>
+                    <th>DATA</th>
+                    <th>NUM PROCESSO</th>
+                    <th>NUM CNJ</th>
+                    <th>COMARCA</th>
+                    <th>UF</th>
+                </tr>
+                {% for dict_item in data.items() %}
+                    <tr>
+                        {% for k, v in dict_item[1].items() %}
+                            <td>{{v}}</td>
+                        {% endfor %}
+                    </tr>
 
+                {% endfor %}
+
+
+            </table>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
