@@ -22,7 +22,9 @@ def abertura_bradesco():
 @app.route("/abertura/bradesco/default", methods=['POST'])
 def abertura_check():
     data = request.form.to_dict()
-    pprint(data)
+    data = data['txtAbertura']
+    data = json.loads(data)
+
     return render_template('abertura_default.html', data=data)
 
 @app.route("/atualizacao")
