@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, json
 from pprint import pprint
+from os import getcwd
+from os import path
+# from basic_functions import abreArquivo
 
 app = Flask(__name__)
 
@@ -21,11 +24,29 @@ def abertura_bradesco():
 
 @app.route("/abertura/bradesco/default", methods=['POST'])
 def abertura_check():
+    dados = path.dirname(getcwd())+'\\dados'
+    #importando dados base
+    clientes = dados+'\\'+'clientes.txt'
+    clientes = open(clientes, 'r')
+    gruposprocessos = dados+'\\'+'gruposprocessos.txt'
+    gruposprocessos = open(gruposprocessos, 'r')
+    locaistramites = dados+'\\'+'locaistramites.txt'
+    locaistramites = open(locaistramites, 'r')
+    localizadores = dados+'\\'+'localizadores.txt'
+    localizadores = open(localizadores, 'r')
+    responsaveis = dados+'\\'+'responsaveis.txt'
+    resp1 = open(responsaveis, 'r')
+    resp2 = open(responsaveis, 'r')
+    resp3 = open(responsaveis, 'r')
+    status = dados+'\\'+'status.txt'
+    status = open(status, 'r')
+    varas = dados+'\\'+'varas.txt'
+    varas = open(varas, 'r')
+
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
-
-    return render_template('abertura_default.html', data=data)
+    return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1,resp2=resp2,resp3=resp3, status=status, varas=varas)
 
 @app.route("/atualizacao")
 def atualizacao():
