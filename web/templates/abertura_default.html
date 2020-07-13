@@ -6,13 +6,31 @@
 {% block scripts %}
     <script>
         window.onload = function() {
-            // document.getElementById('preencher').remove();
+            ocultar(document.getElementById('preencher'));
         };
 
-        function mostrar(){
-            // var p = document.getElementById('corpo');
-            // var newElement = document.createElement('div');
-            // p.appendChild(newElement);
+        function mostrar(element){
+            element.style.display = "block";
+        };
+
+        function ocultar(element){
+            element.style.display = "none";
+        };
+
+        function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
+            obj = {{ data|tojson }};
+            for (var i = 0; i < Object.keys(obj).length; i++){
+                obj[i]['razaoSocial'] = 'cliente';
+                obj[i]['sigla']       = 'sigla';
+                obj[i]['gpCliente']   = 'gpCliente';
+                obj[i]['statusProcessual'] = 'statusProcessual';
+                obj[i]['gpProcesso']  = 'gpProcesso';
+                obj[i]['localizador'] = 'localizador';
+                obj[i]['responsavel'] = 'responsavel'; //juntar o valor dos 3 selects
+                obj[i]['dataCiencia'] = 'dataCiencia';
+            }
+            mostrar(document.getElementById('preencher'));
+            ocultar(document.getElementById('padroes'));
         };
 
     </script>
@@ -23,108 +41,107 @@
     <h3>DEFININDO PADRÕES</h3>
 </div>
 
-<div class="content ml-5 mr-5" id='corpo'>
-    {% if (data)  %}
+<div class="content ml-5 mr-5 mt-5" id='corpo'>
+    {% if (data) %}
         <div id="padroes" class="form-group row">
             <div class="col-md-1"></div>
             <div class="col-md-10">
-                <!-- <form action="{{request.url_rule.rule}}/default" method="post" class="form-group mt-4"> -->
-                    <div class="row">
-                        <div class="col-md-8 mb-3">
-                            <label for="listclientes">CLIENTE</label>
-                            <select name="listclientes" id="listclientes" class="form-control">
-                                <option value="-1">SELECIONE O CLIENTE</option>
-                                {% for cliente in clientes %}
-                                    <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="sigla">SIGLA</label>
-                                    <input name="sigla" id="sigla" type="text" value="BRA" class="form-control" disabled>
-                                </div>
-                                <div class="col-md-8">
-                                    <label for="grupocli">GRUPO</label>
-                                    <input name="grupocli" id="grupocli" type="text" value="BRA" class="form-control" disabled>
-                                </div>
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label for="listclientes">CLIENTE</label>
+                        <select name="listclientes" id="listclientes" class="form-control">
+                            <option value="-1">SELECIONE O CLIENTE</option>
+                            {% for cliente in clientes %}
+                                <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="sigla">SIGLA</label>
+                                <input name="sigla" id="sigla" type="text" value="BRA" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-8">
+                                <label for="grupocli">GRUPO</label>
+                                <input name="grupocli" id="grupocli" type="text" value="BRA" class="form-control" disabled>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4  mb-3">
-                            <label for="statusprocesso">STATUS DO PROCESSO</label>
-                            <select name="statusprocesso" id="statusprocesso" class="form-control">
-                                <option value="">SELECIONE O STATUS DO PROCESSO</option>
-                                {% for statusproc in status %}
-                                    <option value="{{statusproc}}">{{statusproc}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <label for="grupoprocesso">GRUPO DO PROCESSO</label>
-                            <select name="grupoprocesso" id="grupoprocesso" class="form-control">
-                                <option value="">SELECIONE O GRUPO DO PROCESSO</option>
-                                {% for grupoprocesso in gruposprocessos %}
-                                    <option value="{{grupoprocesso}}">{{grupoprocesso}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <label for="localizador">LOCALIZADOR</label>
-                            <select name="localizador" id="localizador" class="form-control">
-                                <option value="">SELECIONE O LOCALIZADOR</option>
-                                {% for localizador in localizadores %}
-                                    <option value="{{localizador}}">{{localizador}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4  mb-3">
+                        <label for="statusprocesso">STATUS DO PROCESSO</label>
+                        <select name="statusprocesso" id="statusprocesso" class="form-control">
+                            <option value="">SELECIONE O STATUS DO PROCESSO</option>
+                            {% for statusproc in status %}
+                                <option value="{{statusproc}}">{{statusproc}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4  mb-3">
-                            <label for="resp1">RESPONSÁVEL</label>
-                            <select name="resp1" id="resp1" class="form-control">
-                                <option value="">SELECIONE O RESPONSÁVEL</option>
-                                {% for responsavel in resp1 %}
-                                    <option value="{{responsavel}}">{{responsavel}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <label for="resp2">RESPONSÁVEL</label>
-                            <select name="resp2" id="resp2" class="form-control">
-                                <option value="">SELECIONE O RESPONSÁVEL</option>
-                                {% for responsavel in resp2 %}
-                                    <option value="{{responsavel}}">{{responsavel}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <label for="resp3">RESPONSÁVEL</label>
-                            <select name="resp3" id="resp3" class="form-control">
-                                <option value="">SELECIONE O RESPONSÁVEL</option>
-                                {% for responsavel in resp3 %}
-                                    <option value="{{responsavel}}">{{responsavel}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    <div class="col-md-4  mb-3">
+                        <label for="grupoprocesso">GRUPO DO PROCESSO</label>
+                        <select name="grupoprocesso" id="grupoprocesso" class="form-control">
+                            <option value="">SELECIONE O GRUPO DO PROCESSO</option>
+                            {% for grupoprocesso in gruposprocessos %}
+                                <option value="{{grupoprocesso}}">{{grupoprocesso}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4  mb-3">
-                            <label for="dataciencia">DATA DE CIÊNCIA</label>
-                            <input name="dataciencia" id="dataciencia" type="text" value="" class="form-control">
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mostrar()">Definir padrões</button>
-                        </div>
-                        <div class="col-md-4  mb-3">
-                            <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
-                        </div>
+                    <div class="col-md-4  mb-3">
+                        <label for="localizador">LOCALIZADOR</label>
+                        <select name="localizador" id="localizador" class="form-control">
+                            <option value="">SELECIONE O LOCALIZADOR</option>
+                            {% for localizador in localizadores %}
+                                <option value="{{localizador}}">{{localizador}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                <!-- </form> -->
+                </div>
+                <div class="row">
+                    <div class="col-md-4  mb-3">
+                        <label for="resp1">RESPONSÁVEL</label>
+                        <select name="resp1" id="resp1" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel in resp1 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4  mb-3">
+                        <label for="resp2">RESPONSÁVEL</label>
+                        <select name="resp2" id="resp2" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel in resp2 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4  mb-3">
+                        <label for="resp3">RESPONSÁVEL</label>
+                        <select name="resp3" id="resp3" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel in resp3 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4  mb-3">
+                        <label for="dataciencia">DATA DE CIÊNCIA</label>
+                        <input name="dataciencia" id="dataciencia" type="text" value="" class="form-control">
+                    </div>
+                    <div class="col-md-4  mb-3">
+                        <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">Definir padrões</button>
+                    </div>
+                    <div class="col-md-4  mb-3">
+                        <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
+                    </div>
+                </div>
             </div>
         </div>
+
         <div id="preencher">
             <form action="" method="post">
                 <div class="row mb-2">
@@ -220,23 +237,3 @@
 {% endblock %}
 
 
-
-            <!-- <div class="col-md-6"></div> -->
-            <!-- <table style="width:100%" class="table table-hover">
-                <tr>
-                    <th>PASTA</th>
-                    <th>ADVERSA</th>
-                    <th>DATA</th>
-                    <th>NUM PROCESSO</th>
-                    <th>NUM CNJ</th>
-                    <th>COMARCA</th>
-                    <th>UF</th>
-                </tr>
-                {% for dict_item in data.items() %}
-                    <tr>
-                        {% for k, v in dict_item[1].items() %}
-                            <td>{{v}}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table> -->
