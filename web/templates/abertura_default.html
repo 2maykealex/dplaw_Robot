@@ -17,18 +17,30 @@
             element.style.display = "none";
         };
 
+        function atualizaGrupoSigla(element){
+            if (element.value != '-1'){
+                valor = element.value.split('*');
+                document.getElementById('sigla').value    = valor[1];
+                document.getElementById('grupocli').value = valor[2];
+            }else{
+                document.getElementById('sigla').value    = '';
+                document.getElementById('grupocli').value = '';
+            }
+        };
+
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
             obj = {{ data|tojson }};
             for (var i = 0; i < Object.keys(obj).length; i++){
-                obj[i]['razaoSocial'] = 'cliente';
-                obj[i]['sigla']       = 'sigla';
-                obj[i]['gpCliente']   = 'gpCliente';
-                obj[i]['statusProcessual'] = 'statusProcessual';
-                obj[i]['gpProcesso']  = 'gpProcesso';
-                obj[i]['localizador'] = 'localizador';
-                obj[i]['responsavel'] = 'responsavel'; //juntar o valor dos 3 selects
-                obj[i]['dataCiencia'] = 'dataCiencia';
+                obj[i]['razaoSocial'] = document.getElementById('listclientes').value.split('*')[0].trim();
+                obj[i]['sigla']       = document.getElementById('sigla').value.trim();
+                obj[i]['gpCliente']   = document.getElementById('grupocli').value.trim();
+                obj[i]['statusProcessual'] = document.getElementById('statusprocesso').value.trim();
+                obj[i]['gpProcesso']  = document.getElementById('grupoprocesso').value.trim();
+                obj[i]['localizador'] = document.getElementById('localizador').value.trim();
+                obj[i]['responsavel'] = [document.getElementById('resp1').value.trim(), document.getElementById('resp2').value.trim(), document.getElementById('resp3').value.trim()]; //juntar o valor dos 3 selects
+                obj[i]['dataCiencia'] = document.getElementById('dataciencia').value.trim();
             }
+            console.log(obj);
             mostrar(document.getElementById('preencher'));
             ocultar(document.getElementById('padroes'));
         };
@@ -49,22 +61,22 @@
                 <div class="row">
                     <div class="col-md-8 mb-3">
                         <label for="listclientes">CLIENTE</label>
-                        <select name="listclientes" id="listclientes" class="form-control">
+                        <select name="listclientes" id="listclientes" class="form-control" onclick="atualizaGrupoSigla(this)">
                             <option value="-1">SELECIONE O CLIENTE</option>
                             {% for cliente in clientes %}
-                                <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
+                                <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}">{{cliente.split(';')[0]}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-4">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <label for="sigla">SIGLA</label>
-                                <input name="sigla" id="sigla" type="text" value="BRA" class="form-control" disabled>
+                                <input name="sigla" id="sigla" type="text" value="" class="form-control" disabled>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-7">
                                 <label for="grupocli">GRUPO</label>
-                                <input name="grupocli" id="grupocli" type="text" value="BRA" class="form-control" disabled>
+                                <input name="grupocli" id="grupocli" type="text" value="" class="form-control" disabled>
                             </div>
                         </div>
                     </div>
