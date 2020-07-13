@@ -64,16 +64,24 @@
             isNumber = parseInt(adversa.slice(-2, -1));
 
             if (isNumber){
-                adversa = adversa.split(isNumber)[0].trim()
+                adversa = adversa.split(isNumber)[0].trim();
             };
 
+            checkAudiencia =  Number.isInteger(parseInt(linha.slice(-2)));
             objLine['adversa']         = adversa;
             objLine['dataContratacao'] = dataHoje;
             objLine['numProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
             objLine['cnj']             = linha.split('/')[2].split('      ')[1].split('    ')[0];
-            objLine['comarca']         = linha.split('/').slice(-2)[0].trim();
-            objLine['uf']              = linha.split('/').slice(-1)[0].trim();
 
+            if (checkAudiencia){
+                objLine['comarca']         = linha.split('/')[3].trim();
+                objLine['uf']              = linha.split('/')[4].split(' ')[0];
+                objLine['dataAudiencia']   = linha.slice(-10);
+            }
+            else{
+                objLine['comarca']         = linha.split('/').slice(-2)[0].trim();
+                objLine['uf']              = linha.split('/').slice(-1)[0].trim();
+            };
             return (objLine);
         };
 
