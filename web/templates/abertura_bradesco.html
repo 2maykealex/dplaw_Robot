@@ -6,13 +6,9 @@
 {% block scripts %}
 
     <script>
-        function desabilitaBotao(elemento) {
-            elemento.disabled  = true;
-            paste();
-        };
-
-        function recarregarPagina() {
-            window.location.reload();
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
         };
 
         function paste() {
@@ -37,17 +33,14 @@
                     ObjectList[i] = (criaObjeto(lines[i]));
                 }//else{console.log(i, ' - linha vazia: ', lines[i]);}
             }
-            // console.log(ObjectList);
             ObjectList = JSON.stringify(ObjectList);
             return (ObjectList)
         };
 
         function enviarDados(){
             ObjectList = converter();
-            console.log(ObjectList);
             document.getElementById('txtAbertura').innerHTML = '';
             document.getElementById('txtAbertura').innerHTML = ObjectList;
-
         };
 
         function criaObjeto(linha){
@@ -84,7 +77,6 @@
             };
             return (objLine);
         };
-
     </script>
 
 {% endblock%}
@@ -100,9 +92,9 @@
                 <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!"></textarea>
             </div>
             <div class="col-md-2 form-group">
-                <button class="btn btn-primary mt-5 btn-block" onclick="desabilitaBotao(this)">COLAR</button>
-                <button class="btn btn-warning mt-2 btn-block" onclick="recarregarPagina()">ATUALIZAR</button>
-                <button type="submit" class="btn btn-success mt-2 btn-block" onclick="enviarDados()">CONVERTER</button>
+                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
+                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
             </div>
         </div>
     </form>
