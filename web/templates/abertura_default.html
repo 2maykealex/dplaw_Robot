@@ -25,20 +25,54 @@
             }else{
                 document.getElementById('sigla').value    = '';
                 document.getElementById('grupocli').value = '';
+            };
+        };
+
+        function checkElementValue(element){ //checa se existe valor no elemento
+            if (document.getElementById(element).value == '-1' || document.getElementById(element).value == ''){
+                return false;
+            } else {
+                return true;
             }
         };
 
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
-            obj = {{ data|tojson }};
+            obj = {{ data|tojson }}; // verificar se ao invés de adicionar em cada objeto, fosse criado outro só com os padrões
             for (var i = 0; i < Object.keys(obj).length; i++){
-                obj[i]['razaoSocial'] = document.getElementById('listclientes').value.split('*')[0].trim();
-                obj[i]['sigla']       = document.getElementById('sigla').value.trim();
-                obj[i]['gpCliente']   = document.getElementById('grupocli').value.trim();
-                obj[i]['statusProcessual'] = document.getElementById('statusprocesso').value.trim();
-                obj[i]['gpProcesso']  = document.getElementById('grupoprocesso').value.trim();
-                obj[i]['localizador'] = document.getElementById('localizador').value.trim();
-                obj[i]['responsavel'] = [document.getElementById('resp1').value.trim(), document.getElementById('resp2').value.trim(), document.getElementById('resp3').value.trim()]; //juntar o valor dos 3 selects
-                obj[i]['dataCiencia'] = document.getElementById('dataciencia').value.trim();
+                if (checkElementValue('listclientes') == true){
+                    obj[i]['razaoSocial'] = document.getElementById('listclientes').value.split('*')[0].trim();
+                };
+                if (checkElementValue('sigla') == true){
+                    obj[i]['sigla']       = document.getElementById('sigla').value.trim();
+                };
+                if (checkElementValue('grupocli') == true){
+                    obj[i]['gpCliente']   = document.getElementById('grupocli').value.trim();
+                };
+                if (checkElementValue('statusprocesso') == true){
+                    obj[i]['statusProcessual'] = document.getElementById('statusprocesso').value.trim();
+                };
+                if (checkElementValue('grupoprocesso') == true){
+                    obj[i]['gpProcesso']  = document.getElementById('grupoprocesso').value.trim();
+                };
+                if (checkElementValue('localizador') == true){
+                    obj[i]['localizador'] = document.getElementById('localizador').value.trim();
+                };
+                var responsavel = [];
+                if (checkElementValue('resp1') == true){
+                    responsavel.push(document.getElementById('resp1').value.trim());
+                };
+                if (checkElementValue('resp2') == true){
+                    responsavel.push(document.getElementById('resp2').value.trim());
+                };
+                if (checkElementValue('resp3') == true){
+                    responsavel.push(document.getElementById('resp3').value.trim());
+                };
+                if (responsavel.length > 0){
+                    obj[i]['responsavel'] = responsavel;
+                };
+                if (checkElementValue('dataciencia') == true){
+                    obj[i]['dataCiencia'] = document.getElementById('dataciencia').value.trim();
+                };
             }
             console.log(obj);
             mostrar(document.getElementById('preencher'));
