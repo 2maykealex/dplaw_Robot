@@ -80,18 +80,46 @@
             mostrar(document.getElementById('preencher'));
             ocultar(document.getElementById('padroes'));
             objNovo = obj;
+            console.log(objNovo);
             mudaRegistro(2);
         };
 
         function preencherRegistros(){
             document.getElementById('regnum').value = i + 1;
-            document.getElementById('pasta').value = objNovo[i]['pasta'];
-            document.getElementById('adversa').value = objNovo[i]['adversa'];
-            document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];
-            document.getElementById('cnj').value = objNovo[i]['cnj'];
-            document.getElementById('grupoprocesso1').value = objNovo[i]['grupoprocesso1'];
-            document.getElementById('vcausa').value = objNovo[i]['vcausa'];
-            document.getElementById('numvara').value = objNovo[i]['numvara'];
+            if (objNovo[i]['pasta']){
+                document.getElementById('pasta').value = objNovo[i]['pasta'];}
+            if (objNovo[i]['adversa']){
+                document.getElementById('adversa').value = objNovo[i]['adversa'];}
+            if (objNovo[i]['numProcesso'])
+                {document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];}
+            if (objNovo[i]['cnj'])
+                {document.getElementById('cnj').value = objNovo[i]['cnj'];}
+            if (objNovo[i]['gpProcesso'])
+                {document.getElementById('grupoprocesso1').value = objNovo[i]['gpProcesso'];}
+            if (objNovo[i]['statusProcessual'])
+                {document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];}
+            if (objNovo[i]['vcausa'])
+                {document.getElementById('vcausa').value = objNovo[i]['vcausa'];}
+            if (objNovo[i]['numvara'])
+                {document.getElementById('numvara').value = objNovo[i]['numvara'];}
+            if (objNovo[i]['tramite'])
+                {document.getElementById('tramite').value = objNovo[i]['tramite'];}
+            if (objNovo[i]['comarca'])
+                {document.getElementById('comarca').value = objNovo[i]['comarca'];}
+            if (objNovo[i]['uf'])
+                {document.getElementById('uf').value = objNovo[i]['uf'];}
+            if (objNovo[i]['razaoSocial'])
+                {document.getElementById('cliente1').value = objNovo[i]['razaoSocial'];}
+            if (objNovo[i]['localizador'])
+                {document.getElementById('localizador1').value = objNovo[i]['localizador'];}
+            if (objNovo[i]['responsavel']){
+                var respId = '';
+                var respArr = objNovo[i]['responsavel'];
+                for (var j = 0; j < respArr.length; j++){
+                    respId = 'responsavel'+(j+1)
+                    document.getElementById(respId).value = respArr[j];
+                }
+            }
         }
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
@@ -242,91 +270,91 @@
                 <div class="row mb-2">
                     <div class="col-md-1">
                         <label for="regnum">REGISTRO</label>
-                        <input name="regnum" id="regnum" type="text" class="form-control" value="" style="font-weight: bold; text-align: right; font-size: 16px;" disabled>
+                        <input name="regnum" id="regnum" type="text" class="form-control" style="font-weight: bold; text-align: right; font-size: 16px;" disabled>
                     </div>
                     <div class="col-md-2">
                         <label for="pasta">PASTA</label>
-                        <input name="pasta" id="pasta" type="text" class="form-control" value="" disabled>
+                        <input name="pasta" id="pasta" type="text" class="form-control" disabled>
                     </div>
                     <div class="col-md-5">
                         <label for="adversa">NOME</label>
-                        <input name="adversa" id="adversa" type="text" class="form-control" value="" disabled>
+                        <input name="adversa" id="adversa" type="text" class="form-control" disabled>
                     </div>
                     <div class="col-md-2">
                         <label for="numProcesso">N.º PROCESSO</label>
-                        <input name="numProcesso" id="numProcesso" type="text" class="form-control" value="" disabled>
+                        <input name="numProcesso" id="numProcesso" type="text" class="form-control" disabled>
                     </div>
                     <div class="col-md-2">
                         <label for="cnj">N.º CNJ</label>
-                        <input name="cnj" id="cnj" type="text" class="form-control" value="" disabled>
+                        <input name="cnj" id="cnj" type="text" class="form-control" disabled>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-2">
                         <label for="grupoprocesso1">GRUPO DE PROCESSO</label>
-                        <input name="grupoprocesso1" id="grupoprocesso1" type="text" class="form-control" value="">
+                        <input name="grupoprocesso1" id="grupoprocesso1" type="text" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label for="status">STATUS</label>
-                        <input name="status" id="status" type="text" class="form-control" value="">
+                        <label for="statusProcessual">STATUS</label>
+                        <input name="statusProcessual" id="statusProcessual" type="text" class="form-control">
                     </div>
                     <div class="col-md-2">
                         <label for="vcausa">VALOR DA CAUSA</label>
-                        <input name="vcausa" id="vcausa" type="text" class="form-control" value="">
+                        <input name="vcausa" id="vcausa" type="text" class="form-control">
                     </div>
                     <div class="col-md-2">
                         <label for="numvara">N.º VARA</label>
-                        <input name="numvara" id="numvara" type="text" class="form-control" value="">
+                        <input name="numvara" id="numvara" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label for="tramite">LOCAL DE TRÂMITE</label>
-                        <input name="tramite" id="tramite" type="text" class="form-control" value="">
+                        <input name="tramite" id="tramite" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="comarca">COMARCA</label>
-                        <input name="comarca" id="comarca" type="text" class="form-control" value="">
+                        <input name="comarca" id="comarca" type="text" class="form-control">
                     </div>
                     <div class="col-md-1">
                         <label for="uf">UF</label>
-                        <input name="uf" id="uf" type="text" class="form-control" value="">
+                        <input name="uf" id="uf" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label for="cliente1">CLIENTE</label>
-                        <input name="cliente1" id="cliente1" type="text" class="form-control" value="">
+                        <input name="cliente1" id="cliente1" type="text" class="form-control">
                     </div>
                     <div class="col-md-3">
                         <label for="localizador1">LOCALIZADOR</label>
-                        <input name="localizador1" id="localizador1" type="text" class="form-control" value="">
+                        <input name="localizador1" id="localizador1" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
-                        <label for="resp1">RESPONSÁVEL</label>
-                        <input name="resp1" id="resp1" type="text" class="form-control" value="">
+                        <label for="responsavel1">RESPONSÁVEL</label>
+                        <input name="responsavel1" id="responsavel1" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label for="resp2">RESPONSÁVEL</label>
-                        <input name="resp2" id="resp2" type="text" class="form-control" value="">
+                        <label for="responsavel2">RESPONSÁVEL</label>
+                        <input name="responsavel2" id="responsavel2" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label for="resp3">RESPONSÁVEL</label>
-                        <input name="resp3" id="resp3" type="text" class="form-control" value="">
+                        <label for="responsavel3">RESPONSÁVEL</label>
+                        <input name="responsavel3" id="responsavel3" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="dataaudiencia">DATA AUDIENCIA</label>
-                        <input name="dataaudiencia" id="dataaudiencia" type="text" class="form-control" value="">
+                        <input name="dataaudiencia" id="dataaudiencia" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label for="horaaudiencia">HORA AUDIENCIA</label>
-                        <input name="horaaudiencia" id="horaaudiencia" type="text" class="form-control" value="">
+                        <input name="horaaudiencia" id="horaaudiencia" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label for="fotocopia">FOTOCÓPIA</label>
-                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control" value="">
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control">
                     </div>
                 </div>
             </form>
