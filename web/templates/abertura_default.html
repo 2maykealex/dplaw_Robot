@@ -5,6 +5,9 @@
 
 {% block scripts %}
     <script>
+        var objNovo = {};
+        var i = 0;
+        var first = true;
         window.onload = function() {
             ocultar(document.getElementById('preencher'));
         };
@@ -76,8 +79,44 @@
             }
             mostrar(document.getElementById('preencher'));
             ocultar(document.getElementById('padroes'));
+            objNovo = obj;
+            mudaRegistro(2);
         };
 
+        function preencherRegistros(){
+            document.getElementById('regnum').value = i + 1;
+            document.getElementById('pasta').value = objNovo[i]['pasta'];
+            document.getElementById('adversa').value = objNovo[i]['adversa'];
+            document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];
+            document.getElementById('cnj').value = objNovo[i]['cnj'];
+            document.getElementById('grupoprocesso1').value = objNovo[i]['grupoprocesso1'];
+            document.getElementById('vcausa').value = objNovo[i]['vcausa'];
+            document.getElementById('numvara').value = objNovo[i]['numvara'];
+        }
+
+        function mudaRegistro(tipo){//1 - anterior  //2 - próximo
+            qtdRegistros = Object.keys(objNovo).length;
+            if (tipo == 1){ //fazer um ternário
+                if (first == true) {
+                    first = false;
+                }else {
+                    i--;
+                    if (i < 0){
+                        i = qtdRegistros-1;
+                    };
+                }
+            }else { //próximo registros
+                if (first == true) {
+                    first = false;
+                }else{
+                    i++;
+                    if (i == qtdRegistros){
+                        i = 0;
+                    };
+                }
+            };
+            preencherRegistros();
+        }
     </script>
 {% endblock%}
 
@@ -178,23 +217,38 @@
                         <input name="dataciencia" id="dataciencia" type="text" value="" class="form-control">
                     </div>
                     <div class="col-md-4  mb-3">
-                        <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">Definir padrões</button>
+                        <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">Definir padrões</button>
                     </div>
                     <div class="col-md-4  mb-3">
-                        <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
+                        <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="preencher">
+            <div class="row">
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(1);"> <<< Registro Anterior</button>
+                </div>
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(2);">Próximo Registro >>></button>
+                </div>
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">EXECUTAR ABERTURAS</button>
+                </div>
+            </div>
             <form action="" method="post">
                 <div class="row mb-2">
+                    <div class="col-md-1">
+                        <label for="regnum">REGISTRO</label>
+                        <input name="regnum" id="regnum" type="text" class="form-control" value="" style="font-weight: bold; text-align: right; font-size: 16px;" disabled>
+                    </div>
                     <div class="col-md-2">
                         <label for="pasta">PASTA</label>
                         <input name="pasta" id="pasta" type="text" class="form-control" value="" disabled>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <label for="adversa">NOME</label>
                         <input name="adversa" id="adversa" type="text" class="form-control" value="" disabled>
                     </div>
@@ -202,7 +256,7 @@
                         <label for="numProcesso">N.º PROCESSO</label>
                         <input name="numProcesso" id="numProcesso" type="text" class="form-control" value="" disabled>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="cnj">N.º CNJ</label>
                         <input name="cnj" id="cnj" type="text" class="form-control" value="" disabled>
                     </div>
