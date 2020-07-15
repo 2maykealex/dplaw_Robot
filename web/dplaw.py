@@ -46,7 +46,7 @@ def abertura_check():
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
-    return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1,resp2=resp2,resp3=resp3, status=status, varas=varas)
+    return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites)
 
 @app.route("/atualizacao")
 def atualizacao():

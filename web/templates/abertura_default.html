@@ -3,6 +3,11 @@
 {% set title = "ABERTURA DE PASTAS" %}
 {% set subtitle = title %}
 
+{% block styles %}
+    <style>
+    </style>
+{% endblock %}
+
 {% block scripts %}
     <script>
         var objNovo = {};
@@ -311,7 +316,12 @@
                     </div>
                     <div class="col-md-4">
                         <label for="tramite">LOCAL DE TRÂMITE</label>
-                        <input name="tramite" id="tramite" type="text" class="form-control">
+                        <select name="tramite" id="tramite" class="form-control">
+                            <option value="">SELECIONE O LOCAL DE TRÂMITE</option>
+                            {% for localtramite in locaistramites %}
+                                <option value="{{localtramite}}">{{localtramite}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-2">
