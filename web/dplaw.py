@@ -23,7 +23,7 @@ def abertura_bradesco():
     return render_template('abertura_bradesco.html')
 
 @app.route("/abertura/bradesco/default", methods=['POST'])
-def abertura_check():
+def abertura_default():
     dados = path.dirname(getcwd())+'\\dados'
     #importando dados base
     clientes = dados+'\\'+'clientes.txt'
@@ -47,6 +47,35 @@ def abertura_check():
     data = data['txtAbertura']
     data = json.loads(data)
     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites)
+
+@app.route("/abertura/bradesco/default/part2", methods=['POST'])
+def abertura_default2():
+    dados = path.dirname(getcwd())+'\\dados'
+    #importando dados base
+    clientes = dados+'\\'+'clientes.txt'
+    clientes = open(clientes, 'r')
+    gruposprocessos = dados+'\\'+'gruposprocessos.txt'
+    gruposprocessos = open(gruposprocessos, 'r')
+    locaistramites = dados+'\\'+'locaistramites.txt'
+    locaistramites = open(locaistramites, 'r')
+    localizadores = dados+'\\'+'localizadores.txt'
+    localizadores = open(localizadores, 'r')
+    responsaveis = dados+'\\'+'responsaveis.txt'
+    resp1 = open(responsaveis, 'r')
+    resp2 = open(responsaveis, 'r')
+    resp3 = open(responsaveis, 'r')
+    status = dados+'\\'+'status.txt'
+    status = open(status, 'r')
+    varas = dados+'\\'+'varas.txt'
+    varas = open(varas, 'r')
+
+    # for item in locaistramites:
+    #     print(item)
+
+    data = request.form.to_dict()
+    data = data['txtAbertura']
+    data = json.loads(data)
+    return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites)
 
 @app.route("/atualizacao")
 def atualizacao():
