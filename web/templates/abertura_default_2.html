@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block styles %}
+    <style>
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var objNovo = {};
+        var i = 0;
+        var first = true;
+        window.onload = function() {
+            objNovo = {{ data|tojson }};
+            mudaRegistro(2);
+        };
+
+        function preencherRegistros(){
+            document.getElementById('regnum').value = i + 1;
+            if (objNovo[i]['pasta']){
+                document.getElementById('pasta').value = objNovo[i]['pasta'];}
+            if (objNovo[i]['adversa']){
+                document.getElementById('adversa').value = objNovo[i]['adversa'];}
+            if (objNovo[i]['numProcesso'])
+                {document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];}
+            if (objNovo[i]['cnj'])
+                {document.getElementById('cnj').value = objNovo[i]['cnj'];}
+            if (objNovo[i]['gpProcesso'])
+                {document.getElementById('grupoprocesso1').value = objNovo[i]['gpProcesso'];}
+            if (objNovo[i]['statusProcessual'])
+                {document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];}
+            if (objNovo[i]['vcausa'])
+                {document.getElementById('vcausa').value = objNovo[i]['vcausa'];}
+            if (objNovo[i]['numvara'])
+                {document.getElementById('numvara').value = objNovo[i]['numvara'];}
+            if (objNovo[i]['tramite'])
+                {document.getElementById('tramite').value = objNovo[i]['tramite'];}
+            if (objNovo[i]['comarca'])
+                {document.getElementById('comarca').value = objNovo[i]['comarca'];}
+            if (objNovo[i]['uf'])
+                {document.getElementById('uf').value = objNovo[i]['uf'];}
+            if (objNovo[i]['razaoSocial'])
+                {document.getElementById('cliente1').value = objNovo[i]['razaoSocial'];}
+            if (objNovo[i]['localizador'])
+                {document.getElementById('localizador1').value = objNovo[i]['localizador'];}
+            if (objNovo[i]['responsavel']){
+                var respId = '';
+                var respArr = objNovo[i]['responsavel'];
+                for (var j = 0; j < respArr.length; j++){
+                    respId = 'responsavel'+(j+1)
+                    document.getElementById(respId).value = respArr[j];
+                }
+            }
+        }
+
+        function mudaRegistro(tipo){//1 - anterior  //2 - próximo
+            qtdRegistros = Object.keys(objNovo).length;
+            if (tipo == 1){ //fazer um ternário
+                if (first == true) {
+                    first = false;
+                }else {
+                    i--;
+                    if (i < 0){
+                        i = qtdRegistros-1;
+                    };
+                }
+            }else { //próximo registros
+                if (first == true) {
+                    first = false;
+                }else{
+                    i++;
+                    if (i == qtdRegistros){
+                        i = 0;
+                    };
+                }
+            };
+            preencherRegistros();
+        }
+    </script>
+{% endblock%}
+
+{% block content %}
+<div class="content text-center">
+    <h3>INCREMENTAR REGISTROS ANTES DE ENVIAR</h3>
+</div>
+
+<div class="content ml-5 mr-5 mt-5" id='corpo'>
+    {% if (data) %}
+        <div id="preencher">
+            <div class="row">
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(1);"> <<< Registro Anterior</button>
+                </div>
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(2);">Próximo Registro >>></button>
+                </div>
+                <div class="col-md-4  mb-3">
+                    <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">EXECUTAR ABERTURAS</button>
+                </div>
+            </div>
+            <form action="" method="post">
+                <div class="row mb-2">
+                    <div class="col-md-1">
+                        <label for="regnum">REGISTRO</label>
+                        <input name="regnum" id="regnum" type="text" class="form-control" style="font-weight: bold; text-align: right; font-size: 16px;" disabled>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="pasta">PASTA</label>
+                        <input name="pasta" id="pasta" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="adversa">NOME</label>
+                        <input name="adversa" id="adversa" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="numProcesso">N.º PROCESSO</label>
+                        <input name="numProcesso" id="numProcesso" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="cnj">N.º CNJ</label>
+                        <input name="cnj" id="cnj" type="text" class="form-control" disabled>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2">
+                        <label for="grupoprocesso1">GRUPO DE PROCESSO</label>
+                        <input name="grupoprocesso1" id="grupoprocesso1" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="statusProcessual">STATUS</label>
+                        <input name="statusProcessual" id="statusProcessual" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="vcausa">VALOR DA CAUSA</label>
+                        <input name="vcausa" id="vcausa" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="numvara">N.º VARA</label>
+                        <select name="numvara" id="numvara" class="form-control">
+                            <option value="">SELECIONE A VARA</option>
+                            {% for vara in varas %}
+                                <option value="{{vara}}">{{vara}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="tramite">LOCAL DE TRÂMITE</label>
+                        <select name="tramite" id="tramite" class="form-control">
+                            <option value="">SELECIONE O LOCAL DE TRÂMITE</option>
+                            {% for localtramite in locaistramites %}
+                                <option value="{{localtramite}}">{{localtramite}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="comarca">COMARCA</label>
+                        <input name="comarca" id="comarca" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="uf">UF</label>
+                        <input name="uf" id="uf" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="cliente1">CLIENTE</label>
+                        <select name="cliente1" id="cliente1" class="form-control">
+                            <option value="-1">SELECIONE O CLIENTE</option>
+                            {% for cliente in clientes %}
+                                <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="localizador1">LOCALIZADOR</label>
+                        <input name="localizador1" id="localizador1" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="responsavel1">RESPONSÁVEL</label>
+                        <input name="responsavel1" id="responsavel1" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="responsavel2">RESPONSÁVEL</label>
+                        <input name="responsavel2" id="responsavel2" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="responsavel3">RESPONSÁVEL</label>
+                        <input name="responsavel3" id="responsavel3" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="dataaudiencia">DATA AUDIENCIA</label>
+                        <input name="dataaudiencia" id="dataaudiencia" type="date" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="horaaudiencia">HORA AUDIENCIA</label>
+                        <input name="horaaudiencia" id="horaaudiencia" type="time" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fotocopia">FOTOCÓPIA</label>
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control">
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
