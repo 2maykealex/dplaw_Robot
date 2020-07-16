@@ -69,9 +69,6 @@ def abertura_default2():
     varas = dados+'\\'+'varas.txt'
     varas = open(varas, 'r')
 
-    # for item in locaistramites:
-    #     print(item)
-
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
