@@ -5,3 +5,7 @@
 textarea {
     font-size: 1em;
 }
+
+select:hover, input:hover, textarea:hover {
+    background-color: khaki;
+}
