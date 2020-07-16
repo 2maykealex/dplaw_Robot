@@ -29,7 +29,7 @@
             if (objNovo[i]['cnj'])
                 {document.getElementById('cnj').value = objNovo[i]['cnj'];}
             if (objNovo[i]['gpProcesso'])
-                {document.getElementById('grupoprocesso1').value = objNovo[i]['gpProcesso'];}
+                {document.getElementById('grupoprocesso').value = objNovo[i]['gpProcesso'];}
             if (objNovo[i]['statusProcessual'])
                 {document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];}
             if (objNovo[i]['vcausa'])
@@ -43,17 +43,26 @@
             if (objNovo[i]['uf'])
                 {document.getElementById('uf').value = objNovo[i]['uf'];}
             if (objNovo[i]['razaoSocial'])
-                {document.getElementById('cliente1').value = objNovo[i]['razaoSocial'];}
+                {document.getElementById('cliente').value = objNovo[i]['razaoSocial'];}
             if (objNovo[i]['localizador'])
-                {document.getElementById('localizador1').value = objNovo[i]['localizador'];}
+                {document.getElementById('localizador').value = objNovo[i]['localizador'];}
             if (objNovo[i]['responsavel']){
                 var respId = '';
                 var respArr = objNovo[i]['responsavel'];
                 for (var j = 0; j < respArr.length; j++){
                     respId = 'responsavel'+(j+1)
                     document.getElementById(respId).value = respArr[j];
-                }
+                }}
+
+            if (objNovo[i]['dataAudiencia']){
+                var data = objNovo[i]['dataAudiencia'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
+                document.getElementById('dataAudiencia').value = data;
+            }else{
+                document.getElementById('dataAudiencia').value = '';
             }
+
+            if (objNovo[i]['dataCiencia'])
+                {document.getElementById('dataCiencia').value = objNovo[i]['dataCiencia'];}
         }
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
@@ -84,7 +93,7 @@
 
 {% block content %}
 <div class="content text-center">
-    <h3>INCREMENTAR REGISTROS ANTES DE ENVIAR</h3>
+    <h3>INCREMENTAR REGISTROS</h3>
 </div>
 
 <div class="content ml-5 mr-5 mt-5" id='corpo'>
@@ -126,12 +135,22 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-2">
-                        <label for="grupoprocesso1">GRUPO DE PROCESSO</label>
-                        <input name="grupoprocesso1" id="grupoprocesso1" type="text" class="form-control">
+                        <label for="grupoprocesso">GRUPO DE PROCESSO</label>
+                        <select name="grupoprocesso" id="grupoprocesso" class="form-control">
+                            <option value="">SELECIONE O GPROCESSO</option>
+                            {% for gpProcess in gruposprocessos %}
+                                <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <label for="statusProcessual">STATUS</label>
-                        <input name="statusProcessual" id="statusProcessual" type="text" class="form-control">
+                        <select name="statusProcessual" id="statusProcessual" class="form-control">
+                            <option value="">SELECIONE O STATUS</option>
+                            {% for state in status %}
+                                <option value="{{state.strip()}}">{{state.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <label for="vcausa">VALOR DA CAUSA</label>
@@ -166,8 +185,8 @@
                         <input name="uf" id="uf" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label for="cliente1">CLIENTE</label>
-                        <select name="cliente1" id="cliente1" class="form-control">
+                        <label for="cliente">CLIENTE</label>
+                        <select name="cliente" id="cliente" class="form-control">
                             <option value="-1">SELECIONE O CLIENTE</option>
                             {% for cliente in clientes %}
                                 <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
@@ -175,34 +194,58 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="localizador1">LOCALIZADOR</label>
-                        <input name="localizador1" id="localizador1" type="text" class="form-control">
+                        <label for="localizador">LOCALIZADOR</label>
+                        <select name="localizador" id="localizador" class="form-control">
+                            <option value="">SELECIONE O LOCALIZADOR</option>
+                            {% for localizador in localizadores %}
+                                <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="responsavel1">RESPONSÁVEL</label>
-                        <input name="responsavel1" id="responsavel1" type="text" class="form-control">
+                        <select name="responsavel1" id="responsavel1" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel1 in resp1 %}
+                                <option value="{{responsavel1.strip()}}">{{responsavel1.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-4">
                         <label for="responsavel2">RESPONSÁVEL</label>
-                        <input name="responsavel2" id="responsavel2" type="text" class="form-control">
+                        <select name="responsavel2" id="responsavel2" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel2 in resp2 %}
+                                <option value="{{responsavel2.strip()}}">{{responsavel2.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-4">
                         <label for="responsavel3">RESPONSÁVEL</label>
-                        <input name="responsavel3" id="responsavel3" type="text" class="form-control">
+                        <select name="responsavel3" id="responsavel3" class="form-control">
+                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            {% for responsavel3 in resp3 %}
+                                <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-4">
-                        <label for="dataaudiencia">DATA AUDIENCIA</label>
-                        <input name="dataaudiencia" id="dataaudiencia" type="date" class="form-control">
+                    <div class="col-md-3">
+                        <label for="dataCiencia">DATA DA CIÊNCIA</label>
+                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control">
                     </div>
-                    <div class="col-md-4">
-                        <label for="horaaudiencia">HORA AUDIENCIA</label>
+                    <div class="col-md-3">
+                        <label for="dataAudiencia">DATA DA AUDIENCIA</label>
+                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="horaaudiencia">HORA DA AUDIENCIA</label>
                         <input name="horaaudiencia" id="horaaudiencia" type="time" class="form-control">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="fotocopia">FOTOCÓPIA</label>
                         <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control">
                     </div>
