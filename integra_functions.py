@@ -18,9 +18,9 @@ class IntegraFunctions(object):
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
-            sleep(0.2)
+            sleep(2)
             self.driver.find_element_by_tag_name('button').click()
-            sleep(0.2)
+            sleep(2)
             self.checkPopUps()
             return True
         except:
@@ -28,7 +28,7 @@ class IntegraFunctions(object):
 
     def acessaMenuPesquisa(self):
         #menu CLIENTES
-        sleep(1)
+        sleep(2)
         try:
             element = self.waitingElement('//*[@id="header"]/ul/li[1]')
             element.click()
@@ -65,7 +65,7 @@ class IntegraFunctions(object):
 
             element = self.waitingElement('{}'.format(xPathOption))
             element.click()
-            sleep(0.5)
+            sleep(2)
 
             # valor do parâmetro
             self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
@@ -123,7 +123,7 @@ class IntegraFunctions(object):
         element = self.waitingElement('//*[@id="btnSalvar"]', 1, 'show')
         element.click()
         # POP UP (OK)
-        sleep(1)
+        sleep(2)
         element = self.waitingElement('//*[@id="popup_ok"]', 1, 'show')
         element.click()
 

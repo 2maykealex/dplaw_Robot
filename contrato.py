@@ -17,7 +17,7 @@ class Contrato (object):
     def inserirContrato(self, contratoMes, pasta, registro):
         self.integra.checkPopUps()
 
-        element = self.integra.waitingElement('txtCampoLivre4', 'id')
+        element = self.integra.waitingElement('txtCampoLivre4', form='id')
         if (element.get_attribute('value') ==  ''):
             # element.clear()
             print("Preenchendo com '{}' na pasta/processo '{}' - ARQUIVO {}.XLSX\n".format(contratoMes, pasta, contratoMes))
@@ -27,26 +27,26 @@ class Contrato (object):
             sleep(2)
 
             # checando se o elemento CNJ está preenchido
-            element = self.integra.waitingElement('txtNroCnj', 'id')
+            element = self.integra.waitingElement('txtNroCnj', form='id')
             if (element.get_attribute("value") != ''):
                 # Segredo de Justiça  #por padrão, será marcado não
-                element = self.integra.waitingElement('segredoJusticaN', 'id')
+                element = self.integra.waitingElement('segredoJusticaN', form='id')
                 self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
-                element = self.integra.waitingElement('capturarAndamentosS', 'id')
+                element = self.integra.waitingElement('capturarAndamentosS', form='id')
                 self.integra.driver.execute_script("arguments[0].click();", element)
                 sleep(2)
 
             # SALVAR ALTERAÇÃO
             sleep(2)
-            element = self.integra.waitingElement('btnSalvar', 'id')
+            element = self.integra.waitingElement('btnSalvar', form='id')
             element.click()
             sleep(2)
 
             # SALVAR ALTERAÇÃO - popup
             try:
-                element = self.integra.waitingElement('popup_ok', 1, 'click', 'id')
+                element = self.integra.waitingElement('popup_ok', form='id')
                 element.click()
             except:
                 pass
