@@ -162,25 +162,20 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label for="localizador">LOCALIZADOR</label>
-                        <select name="localizador" id="localizador" class="form-control">
-                            <option value="">SELECIONE</option>
-                            {% for localizador in localizadores %}
-                                <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <label for="comarca">COMARCA</label>
+                                <input name="comarca" id="comarca" type="text" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="uf">UF</label>
+                                <input name="uf" id="uf" type="text" class="form-control">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
-                        <label for="comarca">COMARCA</label>
-                        <input name="comarca" id="comarca" type="text" class="form-control">
-                    </div>
-                    <div class="col-md-1">
-                        <label for="uf">UF</label>
-                        <input name="uf" id="uf" type="text" class="form-control">
-                    </div>
-                    <div class="col-md-3">
                         <label for="responsavel1">RESPONSÁVEL</label>
                         <select name="responsavel1" id="responsavel1" class="form-control">
                             <option value="">SELECIONE</option>
@@ -189,7 +184,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="responsavel2">RESPONSÁVEL</label>
                         <select name="responsavel2" id="responsavel2" class="form-control">
                             <option value="">SELECIONE</option>
@@ -198,7 +193,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <label for="responsavel3">RESPONSÁVEL</label>
                         <select name="responsavel3" id="responsavel3" class="form-control">
                             <option value="">SELECIONE</option>
@@ -209,9 +204,14 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-2">
-                        <label for="vcausa">VALOR DA CAUSA</label>
-                        <input name="vcausa" id="vcausa" type="text" class="form-control">
+                    <div class="col-md-4">
+                        <label for="localizador">LOCALIZADOR</label>
+                        <select name="localizador" id="localizador" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for localizador in localizadores %}
+                                <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <label for="numvara">N.º VARA</label>
@@ -231,21 +231,25 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="col-md-2">
+                        <label for="vcausa">VALOR DA CAUSA</label>
+                        <input name="vcausa" id="vcausa" type="text" class="form-control">
+                    </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="dataCiencia">DATA DA CIÊNCIA</label>
                         <input name="dataCiencia" id="dataCiencia" type="date" class="form-control">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="dataAudiencia">DATA DA AUDIENCIA</label>
                         <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="horaaudiencia">HORA DA AUDIENCIA</label>
                         <input name="horaaudiencia" id="horaaudiencia" type="time" class="form-control">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-1">
                         <label for="fotocopia">FOTOCÓPIA</label>
                         <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control">
                     </div>
