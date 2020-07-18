@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 from time import strftime
 from time import sleep
-
 class IntegraFunctions(object):
 
     def __init__(self):
@@ -18,9 +17,9 @@ class IntegraFunctions(object):
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
-            sleep(2)
+            sleep(1.5)
             self.driver.find_element_by_tag_name('button').click()
-            sleep(2)
+            sleep(1.5)
             self.checkPopUps()
             return True
         except:
@@ -28,7 +27,7 @@ class IntegraFunctions(object):
 
     def acessaMenuPesquisa(self):
         #menu CLIENTES
-        sleep(2)
+        sleep(1.5)
         try:
             element = self.waitingElement('//*[@id="header"]/ul/li[1]')
             element.click()
@@ -37,6 +36,7 @@ class IntegraFunctions(object):
             return False
 
         #submenu PESQUISAR CLIENTE
+        sleep(1.5)
         try:
             element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p')
             element.click()
@@ -48,7 +48,7 @@ class IntegraFunctions(object):
     def pesquisarCliente(self, search, tipoPesquisa):
         menuPesquisa = self.acessaMenuPesquisa()
         if (menuPesquisa):
-            sleep(2)
+            sleep(1.5)
             self.checkPopUps()
             xPathOption = ''
 
@@ -65,15 +65,15 @@ class IntegraFunctions(object):
 
             element = self.waitingElement('{}'.format(xPathOption))
             element.click()
-            sleep(2)
+            sleep(1.5)
 
             # valor do parâmetro
             self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
-            sleep(2)
+            sleep(1.5)
             print("pesquisar pasta {}".format(search))
             #botão pesquisar
             self.driver.find_element_by_id("btnPesquisar").click()
-            sleep(2)
+            sleep(1.5)
 
             try:
                 #Checa se não existe registros para essa pasta
@@ -123,13 +123,13 @@ class IntegraFunctions(object):
         element = self.waitingElement('//*[@id="btnSalvar"]', 1, 'show')
         element.click()
         # POP UP (OK)
-        sleep(2)
+        sleep(1.5)
         element = self.waitingElement('//*[@id="popup_ok"]', 1, 'show')
         element.click()
 
     def logoutIntegra(self):
         self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
-        sleep(2)
+        sleep(1.5)
         self.driver.quit()
 
     def checkPopUps(self):
@@ -171,7 +171,7 @@ class IntegraFunctions(object):
             pass
 
         if (popupOk == True):
-            sleep(2)
+            sleep(1.5)
 
     def waitingElement(self, elementName, tipo='click', form='xpath'):
         # tempo = datetime.now().second + 15
