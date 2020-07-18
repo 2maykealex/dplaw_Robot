@@ -17,12 +17,18 @@ class Abertura (object):
     def __init__(self):
         self.integra = IntegraFunctions()
 
-    def incluirProcesso(self, df, registro):
+    def incluirProcesso(self, df, registro):  # criar alguns testes de valores - basicFunctions/integraFunctions
         self.integra.checkPopUps()
-
+        sleep(1.5)
         element = self.integra.waitInstance(self.integra.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
         element.click()
         naoInserido = {}
+
+        hoje = "%s" % (strftime("%d-%m-%Y"))
+        hora = strftime("%H:%M:%S")
+        horaStr = hora.replace(':', '-')
+
+        message = "REG {}: {}__{}".format(registro, hoje, horaStr)  #Insere a primeira linha do registro no log
 
         # Grupo internodd
         if (str(df['gpProcesso'])):
@@ -35,7 +41,7 @@ class Abertura (object):
         else:
             naoInserido['gpProcesso'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         #Numero do CNJ
         if (df['cnj'] != ''):
@@ -48,7 +54,7 @@ class Abertura (object):
                 element = self.integra.driver.find_element_by_id("segredoJusticaN")
                 self.integra.driver.execute_script("arguments[0].click();", element)
 
-                sleep(3.5)
+                sleep(0.3)
                 element = self.integra.driver.find_element_by_id("capturarAndamentosS")
                 self.integra.driver.execute_script("arguments[0].click();", element)
             except:
@@ -56,7 +62,7 @@ class Abertura (object):
         else:
             naoInserido['cnj'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         #Numero do Processo
         if (str(df['numProcesso']) != ''):
@@ -69,7 +75,7 @@ class Abertura (object):
         else:
             naoInserido['numProcesso'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         # Status
         if (str(df['statusProcessual'])):
@@ -82,7 +88,20 @@ class Abertura (object):
         else:
             naoInserido['statusProcessual'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
+
+        # OBJETO DA AÇÃO
+        if (str(df['objAcao'])):
+            try:
+                element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcObjetoAcao"]', 1, 'show')
+                select = self.integra.selenium.select(element)
+                select.select_by_visible_text(str(df['objAcao']))
+            except:
+                naoInserido['objAcao'] = str(df['objAcao'])
+        else:
+            naoInserido['objAcao'] = ''
+
+        sleep(0.3)
 
         ###################################### 2ª COLUNA DA PÁGINA ######################################
         # Pasta
@@ -94,7 +113,7 @@ class Abertura (object):
         else:
             naoInserido['pasta'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         # Local trâmite - Campo 1
         if (df['localTr'] != ''):
@@ -107,14 +126,14 @@ class Abertura (object):
         else:
             naoInserido['localTr'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         # Local trâmite - Campo 2
         if (str(df['localTramite']) != ""):
             localTramite = str(df['localTramite'])
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcLocalTramite"]', 1, 'show')
-                sleep(3.5)
+                sleep(0.3)
                 select = self.integra.selenium.select(element)
 
                 try:
@@ -132,13 +151,13 @@ class Abertura (object):
                                 elemCadastro = self.integra.waitInstance(self.integra.driver, "//*[@id='slcLocalTramite']/option[2]", 1, 'click') # CADASTRAR NOVO ITEM
                                 elemCadastro.click()
                                 self.integra.driver.execute_script("document.getElementById('txtLocalTramite').value='{}' ".format(str(localTramite)))
-                sleep(3.5)
+                sleep(0.3)
             except:
                 naoInserido['localTramite'] = localTramite
         else:
             naoInserido['localTramite'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         # #PARA ATUALIZAR OS DADOS
         # logAtualizaPromad = os.getcwd() + "\\logs\\_Locais.txt"
@@ -156,7 +175,7 @@ class Abertura (object):
             comarcaSelecionada = True
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
-                sleep(3.5)
+                sleep(0.3)
                 select = self.integra.selenium.select(element)
 
                 try:
@@ -169,24 +188,26 @@ class Abertura (object):
                             select.select_by_visible_text(comarca.lower())
                         except:
                             select.select_by_visible_text(comarca.lower().capitalize())   #usado sem Tratamento para cair except externo
-                sleep(3.5)
+                sleep(0.3)
             except:
                 comarcaSelecionada = False
         else:
             naoInserido['comarca'] = ''
 
+        sleep(0.3)
+
         # Nova Comarca somente se existir uma no registro e não foi possível fazer a seleção no combo
         if (comarcaExiste == True and comarcaSelecionada == False):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="slcComarca"]', 1, 'show')
-                sleep(3.5)
+                sleep(0.3)
                 select = self.integra.selenium.select(element)
                 select.select_by_visible_text("--Cadastrar Novo Item--")
-                sleep(3.5)
+                sleep(0.3)
 
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtComarca"]', 1, 'show')
                 element.send_keys(str(df['comarca']))
-                sleep(3.5)
+                sleep(0.3)
             except:
                 naoInserido['comarca'] = str(df['comarca'])
 
@@ -199,6 +220,8 @@ class Abertura (object):
             #     basic_functions.createLog(logAtualizaPromad, texto, tipo="a", onlyText=True)
 
         # UF
+        sleep(0.3)
+
         if (str(df['uf'])):
             try:
                 element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtUf"]', 1, 'show')
@@ -209,16 +232,36 @@ class Abertura (object):
         else:
             naoInserido['uf'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
-        try:
-            element = self.integra.waitInstance(self.integra.driver, 'slcLocalizador', 1, 'show', 'id')
-            select = self.integra.selenium.select(element)
-            select.select_by_visible_text(str(df['localizador']))
-        except:
-            naoInserido['localizador'] = str(df['localizador'])
+        # FASE
+        if (str(df['fase'])):
+            try:
+                element = self.integra.waitInstance(self.integra.driver, 'slcFase', 1, 'show', 'id')
+                select = self.integra.selenium.select(element)
+                select.select_by_visible_text(str(df['fase']))
+            except:
+                naoInserido['fase'] = str(df['fase'])
+        else:
+            naoInserido['fase'] = ''
+
+        sleep(0.3)
+
+        # LOCALIZADOR
+        if (str(df['localizador'])):
+            try:
+                element = self.integra.waitInstance(self.integra.driver, 'slcLocalizador', 1, 'show', 'id')
+                select = self.integra.selenium.select(element)
+                select.select_by_visible_text(str(df['localizador']))
+            except:
+                naoInserido['localizador'] = str(df['localizador'])
+        else:
+            naoInserido['localizador'] = ''
+
+        sleep(0.3)
 
         # RESPONSÁVEL
+        complemento = ""
         if (df['responsavel']):   #condição para evitar percorrer a lista se for ""
             try:
                 self.integra.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
@@ -234,17 +277,26 @@ class Abertura (object):
                 y = 1
                 totalResp = len(df['responsavel'])
                 countResp = 0
+                respSelecionados = []
                 for item in listInputs:  #itera inputs recuperados, checa e clica
                     if (item.text in df['responsavel']):
                         xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
                         element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                         element.click()
-                        sleep(3.5)
+                        respSelecionados.append(item.text)
+                        sleep(0.3)
                         countResp = countResp + 1
                         if (countResp == totalResp):
                             break
                     y = y + 1
 
+                sleep(0.3)
+                complemento = 'REG {}: RESPONSÁVEIS SELECIONADOS PARA A PASTA: '.format(registro)
+                for respSel in respSelecionados:
+                    complemento = '{}: "{}" | '.format(complemento, respSel)
+                complemento = '{}\n'.format(complemento) #salto de linha
+
+                sleep(0.3)
                 comboResponsavel.click() # clica para fechar as opções do combo
                 self.integra.driver.execute_script("$('#slcResponsavel').css('display', 'none');") #torna elemento invisível novamente
             except:
@@ -252,7 +304,7 @@ class Abertura (object):
         else:
             naoInserido['responsavel'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         # Data da Contratação
         if (str(df['dataContratacao'])):
@@ -263,7 +315,18 @@ class Abertura (object):
         else:
             naoInserido['dataContratacao'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
+
+        # Data da distribuição
+        if (str(df['dataDistrib'])):
+            try:
+                self.integra.driver.execute_script("document.getElementById('txtDataDistribuicao').value='{}' ".format(str(df['dataDistrib'])))
+            except:
+                naoInserido['dataDistrib'] = str(df['dataDistrib'])
+        else:
+            naoInserido['dataDistrib'] = ''
+
+        sleep(0.3)
 
         # Valor da Causa
         if (str(df['vCausa'])):
@@ -274,7 +337,7 @@ class Abertura (object):
         else:
             naoInserido['vCausa'] = ''
 
-        sleep(3.5)
+        sleep(0.3)
 
         #Obtém o ID do PROMAD da nova pasta a ser aberta
         try:
@@ -286,83 +349,87 @@ class Abertura (object):
 
         print("REG {}: NOVA PASTA ABERTA: {}".format(registro, idNovaPasta))
 
+        sleep(1.5)
         # Abre a aba Parte Adversa
-        try:
-            element = self.integra.waitInstance(self.integra.driver, "//*[@id='div_menu17']", 1, 'show')
-            element.click()
-            sleep(3.5)
-
+        if (str(df['adversa'])):
             try:
-                element = self.integra.driver.find_element_by_id('div_txtComarca').is_displayed()
-                self.integra.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
-                naoInserido['comarcaNova'] = str(df['comarcaNova'])
-
-                # TENTANDO NOVAMENTE ABRIR PARTE ADVERSA
                 element = self.integra.waitInstance(self.integra.driver, "//*[@id='div_menu17']", 1, 'show')
                 element.click()
-                sleep(3.5)
-            except:
-                print('erro ao redirecionar para a parte adversa')
-                pass
+                sleep(1.5)
 
-            sleep(3.5)
-            self.integra.checkPopUps()
+                try:
+                    element = self.integra.driver.find_element_by_id('div_txtComarca').is_displayed()
+                    self.integra.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+                    naoInserido['comarcaNova'] = str(df['comarcaNova'])
 
-            complemento = ""
-            # Parte Adversa
-            if (str(df['adversa'])):
+                    # TENTANDO NOVAMENTE ABRIR PARTE ADVERSA
+                    element = self.integra.waitInstance(self.integra.driver, "//*[@id='div_menu17']", 1, 'show')
+                    element.click()
+                    sleep(1.5)
+                except:
+                    pass
+
+                sleep(1.5)
+                self.integra.checkPopUps()
+
+                # Preenchendo Parte Adversa
                 try:
                     element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtNome"]', 1, 'show')
                     element.send_keys(str(df['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(registro, str(df['adversa'])))
-                    complemento = "REG {}: PARTE ADVERSA: {}".format(registro, str(df['adversa']))
+                    complemento = "{}REG {}: PARTE ADVERSA: {}".format(complemento, registro, str(df['adversa']))
                 except:
                     naoInserido['adversa'] = str(df['adversa'])
-            else:
+            except:
                 naoInserido['adversa'] = ''
+        else:
+            naoInserido['adversa'] = ''
 
-            sleep(3.5)
+        sleep(0.3)
 
-            # Botão salvar
-            element = self.integra.waitInstance(self.integra.driver, '//*[@id="btnSalvar"]', 1, 'show')
+        if (naoInserido):
+                complemento = '{}\nREG {}: NÃO FORAM INSERIDOS: '.format(complemento, registro)
+                for k, v in naoInserido.items():
+                    complemento = '{} {}: "{}" | '.format(complemento, k, v)
+
+        try: # Botão salvar
+            sleep(1.2)
+            element = self.integra.waitInstance(self.integra.driver, '//*[@id="btnSalvar"]', 1, 'click')
             element.click()
+            sleep(1.2)
 
+            # if (str(df['adversa'])):
             try:  #popup Ok em que a parte Adversa já possui outros processos.
-                sleep(3.5)
                 element = self.integra.driver.find_element_by_id("popup_ok")
                 self.integra.driver.execute_script("arguments[0].click();", element)
                 complemento = "{} -> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA!\n".format(complemento)
-                sleep(3.5)
+                sleep(1.2)
             except:
-                complemento = "{}\n".format(complemento)
-                print(complemento)
-
-            if (naoInserido):
-                complemento = '{}REG {}: NÃO FORAM INSERIDOS: '.format(complemento, registro)
-                for k, v in naoInserido.items():
-                    complemento = '{} {}: "{}" | '.format(complemento, k, v)
+                pass
 
             hoje = "%s" % (strftime("%d-%m-%Y"))
             hora = strftime("%H:%M:%S")
             horaStr = hora.replace(':', '-')
 
-            message = "REG {}: {}__{}".format(registro, hoje, horaStr)  #Insere a primeira linha do registro no log
+            # message = "REG {}: {}__{}".format(registro, hoje, horaStr)  #Insere a primeira linha do registro no log
             message = "{}\nREG {}: A PASTA '{}' FOI CRIADA!\nREG {}: ID PROMAD: '{}'.\n{}".format(message, registro, str(df['pasta']), registro, idNovaPasta, complemento)
+            print('FINALIZADO O REGISTRO - HORA: {}'.format(horaStr))
+            sleep(1.2)
         except:
             message = "NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(df['pasta']))
-
-        sleep(3.5)
         return message
 
     def criarAgendamentos(self, dataAudiencia, dataAberturaPasta, horaAudienciaFormatada, sigla, responsavel, pasta, registro, dataCiencia, agendFotocopia, message):
         # try:
+        sleep(4)
+        # horaAudienciaFormatada = '{0:%H:%M}'.format(horaAudienciaFormatada)
         refazAgendamento = 0
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(registro))
         while (True):
             try:
                 element = self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')  #checa se redirecionamento ocorreu
                 self.integra.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
-                sleep(3.5)
+                sleep(1.5)
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
                 elementComboDestinatario = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                 if (elementComboDestinatario == False):
@@ -372,29 +439,32 @@ class Abertura (object):
                 print("erro de redirecionamento")
         self.integra.checkPopUps()
 
-        if (sigla =='BRA'):
-            respCiencia = 'cbradesco'
-        elif (sigla == 'BV'):
-            respCiencia = 'CBV'
-
         agendNaoAbertos = []
-
-        qtdAgendamentos = 3
-        if (dataAudiencia != ""):
+        if (dataAudiencia):
             agendNaoAbertos.append("Audiência")
-
         agendNaoAbertos.append("Ciencia de novo processo")
-        agendNaoAbertos.append("Anexar")
 
-        if (agendFotocopia == "1"):
-            qtdAgendamentos = 4
-            agendNaoAbertos.append("Fotocópia")
+        if (sigla == 'OI'):
+            respCiencia = 'COI'
+            qtdAgendamentos = 2
+            responsavel.remove('apoioOi')
+        else:
+            agendNaoAbertos.append("Anexar")
+            qtdAgendamentos = 3
+            if (agendFotocopia == "1"):
+                qtdAgendamentos = 4
+                agendNaoAbertos.append("Fotocópia")
+            if (sigla =='BRA'):
+                respCiencia = 'cbradesco'
+            elif (sigla == 'BV'):
+                respCiencia = 'CBV'
 
         message = "{}\nREG {}: Agendamentos Criados: ".format(message, registro)
 
         complementoAgendamento = ""
         for x in range(qtdAgendamentos):
             while (True):
+                sleep(1.5)
                 tipoAgendamento = ""
                 agendamento = ""
 
@@ -402,6 +472,7 @@ class Abertura (object):
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
                 elementComboDestinatario = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
                 elementComboDestinatario.click()
+                sleep(1.5)
 
                 try:
                     if (x == 0):   #tipo audiencia
@@ -428,12 +499,12 @@ class Abertura (object):
                                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                     element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                                     element.click()
-                                    sleep(3.5)
+                                    sleep(1.5)
                                     countResp = countResp + 1
                                     if (countResp == (totalResp + 1)):
                                         break
                                 y = y + 1
-                            sleep(3.5)
+                            sleep(1.5)
                         else:
                             messageFinal = "REG {}: Audiência NÃO está marcada!".format(registro)
                             complementoAgendamento = " A audiência não foi marcada."
@@ -459,7 +530,7 @@ class Abertura (object):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                                 element.click()
-                                sleep(3.5)
+                                sleep(1.5)
                                 break
                             y = y + 1
                 except:
@@ -483,7 +554,7 @@ class Abertura (object):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                                 element.click()
-                                sleep(3.5)
+                                sleep(1.5)
                                 countResp = countResp + 1
                                 if (countResp == totalResp):
                                     break
@@ -511,7 +582,7 @@ class Abertura (object):
                                     element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                                     element.click()
                                     found = found + 1
-                                    sleep(3.5)
+                                    sleep(1.5)
                                 if (found >= 2):
                                     break
                                 y = y + 1
@@ -521,15 +592,15 @@ class Abertura (object):
                     print("erro X=3")
 
                 try:
-                    sleep(3.5)
+                    sleep(1.5)
                     elementComboDestinatario.click() #destinatário
-                    sleep(3.5)
+                    sleep(1.5)
 
                     # combo TIPO - ABRIR
                     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
                     element.click()
-                    sleep(3.5)
+                    sleep(1.5)
 
                     # # TIPO DE AGENDAMENTO  -  recupera lista de TIPOS cadastrados no PROMAD
                     xTiposAgendamentos = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li'
@@ -541,19 +612,19 @@ class Abertura (object):
                             xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
                             element = self.integra.waitInstance(self.integra.driver, xPathItem, 1, 'click')
                             element.click()
-                            sleep(3.5)
+                            sleep(1.5)
                             break
                         y = y + 1
 
                     # CAMPO QUANDO
-                    sleep(3.5)
+                    sleep(1.5)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                     element.clear()
-                    sleep(3.5)
+                    sleep(1.5)
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                     element.send_keys(appointmentDate)
-                    sleep(3.5)
+                    sleep(1.5)
 
                     try: #se o calendário estiver aberto, será fechado
                         self.integra.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');") #torna elemento invisível novamente
@@ -564,49 +635,49 @@ class Abertura (object):
                     if (dataAudiencia != ""):
                         if (x == 0):
                             # com HORA
-                            sleep(3.5)
+                            sleep(1.5)
                             xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
                             element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
-                            sleep(3.5)
+                            sleep(1.5)
                             element.click()
 
-                            sleep(3.5)
+                            sleep(1.5)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
                             element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'click')
                             element.clear()
 
-                            sleep(3.5)
+                            sleep(1.5)
                             xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
                             element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                             element.send_keys(horaAudienciaFormatada)
 
-                            sleep(3.5)
+                            sleep(1.5)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
                             element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                             element.clear()
 
-                            sleep(3.5)
+                            sleep(1.5)
                             xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
                             element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
 
-                            sleep(3.5)
+                            sleep(3)
                             element.send_keys(horaAudienciaFormatada)
                     else:
                         pass
 
                     # campo agendamento
-                    sleep(3.5)
+                    sleep(1.5)
                     xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                     element.clear()
                     element.send_keys(agendamento)
 
                     # campo resumo
-                    sleep(3.5)
+                    sleep(1.5)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                     element.clear()
-                    sleep(3.5)
+                    sleep(1.5)
                     xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
                     element = self.integra.waitInstance(self.integra.driver, xPathElement, 1, 'show')
                     element.send_keys(agendamento[:30])
@@ -614,13 +685,14 @@ class Abertura (object):
                     print("erro de preenchimento nos campos")
 
                 try:
+                    sleep(1.5)
                     element = self.integra.waitInstance(self.integra.driver, '//*[@id="btnAgendarSalvar"]', 1, 'click')
                     element.click()
-                    sleep(3.5)
                 except:
                     print("erro ao clicar no SALVAR!!!!")
                     pass
 
+                sleep(1.5)
                 try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
                     element = self.integra.waitInstance(self.integra.driver, 'idCampoValidateAgendar', 1, 'show', 'id')
                     if (element.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
@@ -631,10 +703,10 @@ class Abertura (object):
                         if (element == False):
                             print("erro: Elemento da página não foi encontrado!")
                         self.integra.checkPopUps()
-                        sleep(3.5)
-                        refazAgendamento = refazAgendamento + 1
-                        if (refazAgendamento <= 3): # limita a 3 tentativas para o agendamento
-                            continue #volta ao While TRUE e recomeça os preenchimentos
+                        sleep(1.5)
+                        if (refazAgendamento < 1): # limita a 5 tentativas para o agendamento
+                            refazAgendamento = refazAgendamento + 1
+                            break #continue      #volta ao While TRUE e recomeça os preenchimentos
                         else:
                             refazAgendamento = 0
                             break
@@ -643,18 +715,18 @@ class Abertura (object):
                     pass
 
                 try: #Clicar no PopUp - Deseja salvar
-                    sleep(3.5)
+                    sleep(1.5)
                     element = self.integra.waitInstance(self.integra.driver, '//*[@id="popup_ok"]', 1, 'click')
                     element.click()
                     message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
                     print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
-                    sleep(3.5)
+                    sleep(1.5)
                 except:
                     print("erro POPUP SALVAR")
                     pass
 
                 try: #remove agendamentos já executados
-                    agendNaoAbertremove(tipoAgendamento)
+                    agendNaoAbertos.remove(tipoAgendamento)
                 except:
                     print('erro AgendNaoAbertos: {}'.format(tipoAgendamento))
                 break #sai do While TRUE
@@ -676,11 +748,11 @@ class Abertura (object):
                 listaAgendamentos = self.integra.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
                 agendItem = listaAgendamentos[-1].find_element_by_tag_name('a')
                 agendItem.click()
-                sleep(3.5)
+                sleep(0.3)
                 for _x in range(2):
                     botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
                     botaoPopup.click()
-                    sleep(3.5)
+                    sleep(0.3)
             except:
                 break
         print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
@@ -705,48 +777,33 @@ class Abertura (object):
             urlPage = self.integra.driver.current_url
 
             while (item <= count):
-                df = {}
-
+                df = {} # criar alguns testes de valores
                 df['pasta']            = dfExcel[item, 0]
                 df['adversa']          = dfExcel[item, 1].strip()
                 dataContratacao        = dfExcel[item, 2]
                 try:
-                    dataContratacao        = str(dataContratacao.strftime("%d/%m/%Y"))
+                    if (dataContratacao):
+                        dataContratacao = str(dataContratacao.strftime("%d/%m/%Y"))
+                        df['dataContratacao']  = dataContratacao
+                    else:
+                        df['dataContratacao']  = ''
                 except:
-                    pass
-                df['dataContratacao']  = dataContratacao
-                numProcesso = dfExcel[item, 4]
+                    df['dataContratacao']  = ''
 
-                try:
-                    numProcesso = numProcesso.replace('.', '')
-                    numProcesso = numProcesso.replace('-', '')
-                except:
-                    pass
-
-                num = len(numProcesso)
-
-                if (num > 20):   #se maior que 20, obter até o caracter n.º 20
-                    numProcesso = numProcesso[:20]
-                elif (num < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
-                    qtdZero = 20 - len(numProcesso)
-                    for _x in range(qtdZero):
-                        numProcesso = "0{}".format(numProcesso)
-
-                numProcesso = '{}-{}.{}.{}.{}.{}'.format(numProcesso[:7], numProcesso[7:9], numProcesso[9:13], numProcesso[13:14], numProcesso[14:16], numProcesso[16:20])
-                if (numProcesso == '-....'):
-                    numProcesso = ''
-                df['numProcesso']  = numProcesso
-                df['cnj']          = numProcesso
+                df['numProcesso']  = basic_functions.ajustarNumProcessoCNJ(dfExcel[item, 3])
+                df['cnj']          = basic_functions.ajustarNumProcessoCNJ(dfExcel[item, 4])
                 df['gpProcesso']   = dfExcel[item, 5].strip()
-                df['localTr']      = dfExcel[item, 6]
+                df['localTr']      = "{} ª-º".format(dfExcel[item, 6])
                 df['localTramite'] = dfExcel[item, 7].strip()
                 df['comarca']      = dfExcel[item, 8].strip()
                 df['uf']           = dfExcel[item, 9].strip()
                 try:
-                    valorCausa     = format_string("%1.2f", dfExcel[item, 10].strip() , 0)
-                    df['vCausa']   = valorCausa.replace('.',',')
+                    valorCausa     = dfExcel[item, 10]
+                    valorCausa     = ('%1.2f' % (valorCausa))
+                    valorCausa     = valorCausa.replace('.',',').strip()
+                    df['vCausa']   = valorCausa
                 except:
-                    df['vCausa'] = "0"
+                    df['vCausa'] = ""
 
                 df['statusProcessual'] = dfExcel[item, 11]
 
@@ -762,27 +819,61 @@ class Abertura (object):
                 df['responsavel']  = responsavel
                 df['sigla']        = dfExcel[item, 15].strip()
 
+                dataAudiencia        = dfExcel[item, 16]
                 try:
-                    df['dataAudiencia'] = dfExcel[item, 16]
+                    if (dataAudiencia):
+                        dataAudiencia  = str(dataAudiencia.strftime("%d/%m/%Y"))
+                        df['dataAudiencia']  = dataAudiencia
+                    else:
+                        df['dataAudiencia'] =''
                 except:
-                    df['dataAudiencia'] = ""
+                    df['dataAudiencia'] =''
 
+                # try:
+                #     df['dataAudiencia'] = dfExcel[item, 16]
+                # except:
+                #     df['dataAudiencia'] = ""
+
+                horaAudiencia = dfExcel[item, 17]
                 try:
-                    if (dfExcel[item, 17]):
-                        df['horaAudiencia'] = dfExcel[item, 17]
-                        horaAudiencia = df['horaAudiencia']
+                    if (horaAudiencia):
+                        df['horaAudiencia'] = '{0:%H:%M}'.format(horaAudiencia)
+                        # df['horaAudiencia'] = "{}:{}".format(horaAudiencia.hour, horaAudiencia.minute)
                     else:
                         df['horaAudiencia'] = "00:00"
-                        horaAudiencia = df['horaAudiencia']
                 except:
                     df['horaAudiencia'] = "00:00"
-                    horaAudiencia = df['horaAudiencia']
 
-                df['dataCiencia'] = dfExcel[item, 18]
+                # df['dataCiencia'] = dfExcel[item, 18]
+
+                dataCiencia = dfExcel[item, 18]
+                try:
+                    if (dataCiencia):
+                        dataCiencia = str(dataCiencia.strftime("%d/%m/%Y"))
+                        df['dataCiencia']  = dataCiencia
+                    else:
+                        df['dataCiencia'] =''
+                except:
+                    df['dataCiencia'] =''
+
                 df['agendFotocopia'] = dfExcel[item, 19]
                 df['localizador'] = dfExcel[item, 20]
 
-                sleep(3.5)
+                df['objAcao'] = dfExcel[item, 21]
+
+                dataDistrib      = dfExcel[item, 22]
+                try:
+                    if(dataDistrib):
+                        dataDistrib  = str(dataDistrib.strftime("%d/%m/%Y"))
+                        df['dataDistrib'] = dataDistrib
+                    else:
+                        df['dataDistrib'] = ''
+                except:
+                    df['dataDistrib'] = ""
+
+                df['fase'] = dfExcel[item, 23]
+
+                sleep(0.3)
 
                 try:
                     isTest = basic_functions.checkIfTest()
@@ -797,23 +888,25 @@ class Abertura (object):
                 if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
                     try:
                         self.integra.driver.get(urlPage)
-                        sleep(3.5)
+                        sleep(0.3)
                         message = self.incluirProcesso(df, item)
-                        basic_functions.createLog(self.logFile, "\nREG {}: =================================================================\n".format(item))
+                        pulaLinha = '' if (item == 1) else '\n'
+                        basic_functions.createLog(self.logFile, "{}REG {}: =================================================================\n".format(pulaLinha, item))
                         basic_functions.createLog(self.logFile, "{}".format(message.upper()))
                         message = ""
                     except:
                         print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
                         return False
 
-                    try: #checa se redirecionamento ocorreu
-                        self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')
-                    except:
-                        print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
-                        return False
+                    # try: #checa se redirecionamento ocorreu
+                    #     self.integra.waitInstance(self.integra.driver, "//*[@id='slcGrupo']", 1, 'show')
+                    # except:
+                    #     print('Erro ao incluir a pasta: {}!'.format(df['pasta']))
+                    #     return False
 
                     if (df['responsavel']):
-                        self.criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], horaAudiencia, df['sigla'], df['responsavel'], df['pasta'], item, df['dataCiencia'], df['agendFotocopia'], message)
+                        sleep(1.5)
+                        self.criarAgendamentos(df['dataAudiencia'], df['dataContratacao'], df['horaAudiencia'], df['sigla'], df['responsavel'], df['pasta'], item, df['dataCiencia'], df['agendFotocopia'], message)
                         if (isTest):
                             self.removeAgendamentos()
                     else:
@@ -894,20 +987,16 @@ class Abertura (object):
                 driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
                 self.integra.driver.quit()
                 remove("{}\\{}".format(path, infoLog))
-                # break
 
         if (abreNovaPasta):
             if (file[0] != ""):
-                #APAGA O ARQUIVO .TXT
-                remove("{}\\{}".format(path, infoLog))
-                fileExecuted = pathExecutados + "\\{}.{}".format(arquivoAbrirPasta, extensao)
-
-                #se o arquivo existir na pasta arquivos_executados -excluirá este e depois moverá o novo
-                if (pathFolder.isfile(fileExecuted)):
-                    remove(fileExecuted)
-
                 if (not(basic_functions.checkIfTest())):
-                    move("{}\\{}.{}".format(path, arquivoAbrirPasta, extensao), pathExecutados) #após executar um arquivo, o mesmo é movido para a pasta 'arquivos_executados'
+                    #se existir arquivo com mesmo nome na pasta arquivos_executados - será excluído
+                    fileExecuted = pathExecutados + "\\{}.{}".format(arquivoAbrirPasta, extensao)
+                    if (pathFolder.isfile(fileExecuted)):
+                        remove(fileExecuted)
+                    move("{}\\{}.{}".format(path, arquivoAbrirPasta, extensao), pathExecutados) #move para a pasta 'arquivos_executados'
+                    remove("{}\\{}".format(path, infoLog))  #APAGA O ARQUIVO .TXT
         else:
             driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
             try:
