@@ -67,3 +67,21 @@ def checkPID(pidNumber):
     if pid_exists(pidNumber):
         print ("pid {} existe".format(pidNumber))
         return True
+
+def ajustarNumProcessoCNJ(numProcessCNJ):
+    try:
+        numProcessCNJ = numProcessCNJ.replace('.', '')
+        numProcessCNJ = numProcessCNJ.replace('-', '')
+    except:
+        pass
+    num = len(numProcessCNJ)
+    if (num > 20):   #se maior que 20, obter até o caracter n.º 20
+        numProcessCNJ = numProcessCNJ[:20]
+    elif (num < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
+        qtdZero = 20 - len(numProcessCNJ)
+        for _x in range(qtdZero):
+            numProcessCNJ = "0{}".format(numProcessCNJ)
+    numProcessCNJ = '{}-{}.{}.{}.{}.{}'.format(numProcessCNJ[:7], numProcessCNJ[7:9], numProcessCNJ[9:13], numProcessCNJ[13:14], numProcessCNJ[14:16], numProcessCNJ[16:20])
+    if (numProcessCNJ == '-....'):
+        numProcessCNJ = ''
+    return numProcessCNJ
