@@ -29,13 +29,13 @@
             if (objNovo[i]['cnj'])
                 {document.getElementById('cnj').value = objNovo[i]['cnj'];}
             if (objNovo[i]['gpProcesso'])
-                {document.getElementById('grupoprocesso').value = objNovo[i]['gpProcesso'];}
+                {document.getElementById('gpProcesso').value = objNovo[i]['gpProcesso'];}
             if (objNovo[i]['statusProcessual'])
                 {document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];}
             if (objNovo[i]['vcausa'])
                 {document.getElementById('vcausa').value = objNovo[i]['vcausa'];}
-            if (objNovo[i]['numvara'])
-                {document.getElementById('numvara').value = objNovo[i]['numvara'];}
+            if (objNovo[i]['localTr'])
+                {document.getElementById('localTr').value = objNovo[i]['localTr'];}
             if (objNovo[i]['tramite'])
                 {document.getElementById('tramite').value = objNovo[i]['tramite'];}
             if (objNovo[i]['comarca'])
@@ -43,7 +43,7 @@
             if (objNovo[i]['uf'])
                 {document.getElementById('uf').value = objNovo[i]['uf'];}
             if (objNovo[i]['razaoSocial'])
-                {document.getElementById('cliente').value = objNovo[i]['razaoSocial'];}
+                {document.getElementById('razaoSocial').value = objNovo[i]['razaoSocial'];}
             if (objNovo[i]['localizador'])
                 {document.getElementById('localizador').value = objNovo[i]['localizador'];}
             if (objNovo[i]['responsavel']){
@@ -87,7 +87,24 @@
                 }
             };
             preencherRegistros();
-        }
+        };
+
+        function alteraValor(elemento){
+            if (objNovo[i][elemento.id] || elemento.id == 'responsavel1' || elemento.id == 'responsavel2' || elemento.id == 'responsavel3') {
+                if (objNovo[i][elemento.id.slice(1, -2)]) { //responsáveis
+                    objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)];
+                    console.log('NOVO', objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)]);
+                }else{
+                    objNovo[i][elemento.id] = elemento.value;
+                    console.log('NOVO', objNovo[i][elemento.id]);
+                }
+
+            } else {
+                objNovo[i][elemento.id] = elemento.value;
+                console.log('valor criado ', elemento.value);
+            };
+            // console.log(objNovo[i]);
+        };
     </script>
 {% endblock%}
 
@@ -134,27 +151,9 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-2">
-                        <label for="grupoprocesso">GRUPO DE PROCESSO</label>
-                        <select name="grupoprocesso" id="grupoprocesso" class="form-control">
-                            <option value="">SELECIONE</option>
-                            {% for gpProcess in gruposprocessos %}
-                                <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="statusProcessual">STATUS</label>
-                        <select name="statusProcessual" id="statusProcessual" class="form-control">
-                            <option value="">SELECIONE</option>
-                            {% for state in status %}
-                                <option value="{{state.strip()}}">{{state.strip()}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
                     <div class="col-md-4">
-                        <label for="cliente">CLIENTE</label>
-                        <select name="cliente" id="cliente" class="form-control">
+                        <label for="razaoSocial">CLIENTE</label>
+                        <select name="razaoSocial" id="razaoSocial" class="form-control campo" onchange="alteraValor(this);">
                             <option value="-1">SELECIONE</option>
                             {% for cliente in clientes %}
                                 <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
@@ -165,40 +164,29 @@
                         <div class="row">
                             <div class="col-md-10">
                                 <label for="comarca">COMARCA</label>
-                                <input name="comarca" id="comarca" type="text" class="form-control">
+                                <input name="comarca" id="comarca" type="text" class="form-control campo" onchange="alteraValor(this);">
                             </div>
                             <div class="col-md-2">
                                 <label for="uf">UF</label>
-                                <input name="uf" id="uf" type="text" class="form-control">
+                                <input name="uf" id="uf" type="text" class="form-control campo" onchange="alteraValor(this);">
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-4">
-                        <label for="responsavel1">RESPONSÁVEL</label>
-                        <select name="responsavel1" id="responsavel1" class="form-control">
+                    <div class="col-md-2">
+                        <label for="gpProcesso">GRUPO DE PROCESSO</label>
+                        <select name="gpProcesso" id="gpProcesso" class="form-control campo" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
-                            {% for responsavel1 in resp1 %}
-                                <option value="{{responsavel1.strip()}}">{{responsavel1.strip()}}</option>
+                            {% for gpProcess in gruposprocessos %}
+                                <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label for="responsavel2">RESPONSÁVEL</label>
-                        <select name="responsavel2" id="responsavel2" class="form-control">
+                    <div class="col-md-2">
+                        <label for="statusProcessual">STATUS</label>
+                        <select name="statusProcessual" id="statusProcessual" class="form-control campo" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
-                            {% for responsavel2 in resp2 %}
-                                <option value="{{responsavel2.strip()}}">{{responsavel2.strip()}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="responsavel3">RESPONSÁVEL</label>
-                        <select name="responsavel3" id="responsavel3" class="form-control">
-                            <option value="">SELECIONE</option>
-                            {% for responsavel3 in resp3 %}
-                                <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
+                            {% for state in status %}
+                                <option value="{{state.strip()}}">{{state.strip()}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -206,7 +194,7 @@
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="localizador">LOCALIZADOR</label>
-                        <select name="localizador" id="localizador" class="form-control">
+                        <select name="localizador" id="localizador" class="form-control campo" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for localizador in localizadores %}
                                 <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
@@ -214,8 +202,8 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="numvara">N.º VARA</label>
-                        <select name="numvara" id="numvara" class="form-control">
+                        <label for="localTr">N.º VARA</label>
+                        <select name="localTr" id="localTr" class="form-control campo" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for vara in varas %}
                                 <option value="{{vara}}">{{vara}}</option>
@@ -224,7 +212,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="tramite">LOCAL DE TRÂMITE</label>
-                        <select name="tramite" id="tramite" class="form-control">
+                        <select name="tramite" id="tramite" class="form-control campo" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for localtramite in locaistramites %}
                                 <option value="{{localtramite}}">{{localtramite}}</option>
@@ -233,29 +221,59 @@
                     </div>
                     <div class="col-md-2">
                         <label for="vcausa">VALOR DA CAUSA</label>
-                        <input name="vcausa" id="vcausa" type="text" class="form-control">
+                        <input name="vcausa" id="vcausa" type="text" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-2">
                         <label for="dataAudiencia">DATA DA AUDIENCIA</label>
-                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control">
+                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-2">
-                        <label for="horaaudiencia">HORA DA AUDIENCIA</label>
-                        <input name="horaaudiencia" id="horaaudiencia" type="time" class="form-control">
+                        <label for="horaAudiencia">HORA DA AUDIENCIA</label>
+                        <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-2">
                         <label for="dataCiencia">DATA DA CIÊNCIA</label>
-                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control">
+                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-1">
                         <label for="anexar">ANEXAR</label>
-                        <input name="anexar" id="anexar" type="checkbox" class="form-control" checked>
+                        <input name="anexar" id="anexar" type="checkbox" class="form-control campo" checked>
                     </div>
                     <div class="col-md-1">
                         <label for="fotocopia">FOTOCÓPIA</label>
-                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control">
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="responsavel1">RESPONSÁVEL</label>
+                        <select name="responsavel1" id="responsavel1" class="form-control campo" onchange="alteraValor(this);">
+                            <option value="">SELECIONE</option>
+                            {% for responsavel1 in resp1 %}
+                                <option value="{{responsavel1.strip()}}">{{responsavel1.strip()}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="responsavel2">RESPONSÁVEL</label>
+                        <select name="responsavel2" id="responsavel2" class="form-control campo" onchange="alteraValor(this);">
+                            <option value="">SELECIONE</option>
+                            {% for responsavel2 in resp2 %}
+                                <option value="{{responsavel2.strip()}}">{{responsavel2.strip()}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="responsavel3">RESPONSÁVEL</label>
+                        <select name="responsavel3" id="responsavel3" class="form-control campo" onchange="alteraValor(this);">
+                            <option value="">SELECIONE</option>
+                            {% for responsavel3 in resp3 %}
+                                <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </form>
