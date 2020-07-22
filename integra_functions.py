@@ -27,18 +27,18 @@ class IntegraFunctions(object):
 
     def acessaMenuPesquisa(self):
         #menu CLIENTES
-        sleep(1.5)
+        sleep(3)
         try:
-            element = self.waitingElement('//*[@id="header"]/ul/li[1]')
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]', 'click', form='xpath')
             element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
             return False
 
         #submenu PESQUISAR CLIENTE
-        sleep(1.5)
+        sleep(3)
         try:
-            element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p')
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 'click', form='xpath')
             element.click()
         except:
             print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
@@ -46,9 +46,10 @@ class IntegraFunctions(object):
         return True
 
     def pesquisarCliente(self, search, tipoPesquisa):
+        sleep(4)
         menuPesquisa = self.acessaMenuPesquisa()
         if (menuPesquisa):
-            sleep(1.5)
+            sleep(2)
             self.checkPopUps()
             xPathOption = ''
 
@@ -65,15 +66,15 @@ class IntegraFunctions(object):
 
             element = self.waitingElement('{}'.format(xPathOption))
             element.click()
-            sleep(1.5)
+            sleep(2)
 
             # valor do parâmetro
             self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
-            sleep(1.5)
-            print("pesquisar pasta {}".format(search))
+            sleep(2)
+            print("pesquisando pasta {}".format(search))
             #botão pesquisar
             self.driver.find_element_by_id("btnPesquisar").click()
-            sleep(1.5)
+            sleep(4)
 
             try:
                 #Checa se não existe registros para essa pasta
