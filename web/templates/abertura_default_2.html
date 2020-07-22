@@ -90,20 +90,44 @@
         };
 
         function alteraValor(elemento){
-            if (objNovo[i][elemento.id] || elemento.id == 'responsavel1' || elemento.id == 'responsavel2' || elemento.id == 'responsavel3') {
-                if (objNovo[i][elemento.id.slice(1, -2)]) { //responsáveis
-                    objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)];
-                    console.log('NOVO', objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)]);
-                }else{
-                    objNovo[i][elemento.id] = elemento.value;
-                    console.log('NOVO', objNovo[i][elemento.id]);
-                }
+            var checkResp = Boolean
+            if (typeof (objNovo[i][elemento.id]) === 'undefined')
+                validElement = false;
+            else
+                validElement = true;
+                if (elemento.id == 'responsavel1' || elemento.id == 'responsavel2' || elemento.id == 'responsavel3') {
+                    if (elemento.value !== null && typeof elemento.value !== 'undefined') {
+                        checkResp = true;
+                    }
+                    else {
+                        checkResp = false;
+                        delete objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)-1];
+                    }
+                } else
+                    checkResp = false;
 
-            } else {
-                objNovo[i][elemento.id] = elemento.value;
-                console.log('valor criado ', elemento.value);
+            console.log(elemento.id, typeof (objNovo[i][elemento.id]), validElement );
+
+            if (validElement) {
+                if (objNovo[i][elemento.id.slice(1, -2)] && checkResp) { //responsáveis
+                    objNovo[i][elemento.id.slice(1, -2)][elemento.id.slice(-1)];
+                }else{
+                    if (elemento.id == 'vcausa'){
+                        elemento.value = parseFloat(elemento.value).toFixed(2);
+                        objNovo[i][elemento.id] = elemento.value.trim();
+                    }
+                    objNovo[i][elemento.id] = elemento.value.trim();
+                }
+            }
+            else {
+                if (elemento.id == 'vcausa'){
+                    elemento.value = parseFloat(elemento.value).toFixed(2);
+                    objNovo[i][elemento.id] = elemento.value.trim();
+                } else {
+                    objNovo[i][elemento.id] = elemento.value.trim();
+                }
             };
-            // console.log(objNovo[i]);
+            console.log(objNovo[i]);
         };
     </script>
 {% endblock%}
@@ -221,7 +245,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="vcausa">VALOR DA CAUSA</label>
-                        <input name="vcausa" id="vcausa" type="text" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="vcausa" id="vcausa" type="number" placeholder="0.00" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                 </div>
                 <div class="row mb-2">
