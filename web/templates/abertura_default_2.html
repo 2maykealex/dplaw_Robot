@@ -115,6 +115,18 @@
                     } else {
                         delete objNovo[i][elemento.id];
                     }
+                } else if (elemento.id == 'anexar'){
+                    if (elemento.checked){
+                        objNovo[i][elemento.id] = true;
+                    } else {
+                        delete objNovo[i][elemento.id];
+                    }
+                } else if (elemento.id == 'fotocopia'){
+                    if (elemento.checked){
+                        objNovo[i][elemento.id] = true;
+                    } else {
+                        delete objNovo[i][elemento.id];
+                    }
                 } else {
                     if (elemento.value != ''){
                         objNovo[i][elemento.id] = elemento.value.trim();
@@ -123,17 +135,6 @@
                         delete objNovo[i][elemento.id];
                     }
                 }
-            };
-
-
-            if (validElement) {
-                if (objNovo[i][elemento.id.slice(0, -1)] && checkResp) { //responsáveis
-
-                }else{
-
-                }
-            } else {
-
             };
             console.log(objNovo[i]);
         };
@@ -169,15 +170,15 @@
                         <label for="pasta">PASTA</label>
                         <input name="pasta" id="pasta" type="text" class="form-control" disabled>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label for="adversa">NOME</label>
                         <input name="adversa" id="adversa" type="text" class="form-control" disabled>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label for="numProcesso">N.º PROCESSO</label>
                         <input name="numProcesso" id="numProcesso" type="text" class="form-control" disabled>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label for="cnj">N.º CNJ</label>
                         <input name="cnj" id="cnj" type="text" class="form-control" disabled>
                     </div>
@@ -185,7 +186,7 @@
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="razaoSocial">CLIENTE</label>
-                        <select name="razaoSocial" id="razaoSocial" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="razaoSocial" id="razaoSocial" class="form-control campo" onchange="alteraValor(this);" disabled>
                             <option value="-1">SELECIONE</option>
                             {% for cliente in clientes %}
                                 <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
@@ -194,13 +195,13 @@
                     </div>
                     <div class="col-md-4">
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-9">
                                 <label for="comarca">COMARCA</label>
-                                <input name="comarca" id="comarca" type="text" class="form-control campo" onchange="alteraValor(this);">
+                                <input name="comarca" id="comarca" type="text" class="form-control campo" onchange="alteraValor(this);" disabled>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <label for="uf">UF</label>
-                                <input name="uf" id="uf" type="text" class="form-control campo" onchange="alteraValor(this);">
+                                <input name="uf" id="uf" type="text" class="form-control campo" onchange="alteraValor(this);" disabled>
                             </div>
                         </div>
                     </div>
@@ -257,29 +258,6 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-2">
-                        <label for="dataAudiencia">DATA DA AUDIENCIA</label>
-                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="horaAudiencia">HORA DA AUDIENCIA</label>
-                        <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control campo" onchange="alteraValor(this);">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="dataCiencia">DATA DA CIÊNCIA</label>
-                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
-                    </div>
-                    <div class="col-md-1">
-                        <label for="anexar">ANEXAR</label>
-                        <input name="anexar" id="anexar" type="checkbox" class="form-control campo" checked>
-                    </div>
-                    <div class="col-md-1">
-                        <label for="fotocopia">FOTOCÓPIA</label>
-                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
-                    </div>
-                </div>
-
-                <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="responsavel1">RESPONSÁVEL</label>
                         <select name="responsavel1" id="responsavel1" class="form-control campo" onchange="alteraValor(this);">
@@ -306,6 +284,28 @@
                                 <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2">
+                        <label for="dataAudiencia">DATA DA AUDIENCIA</label>
+                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="horaAudiencia">HORA DA AUDIENCIA</label>
+                        <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control campo" onchange="alteraValor(this);">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dataCiencia">DATA DA CIÊNCIA</label>
+                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="anexar">ANEXAR</label>
+                        <input name="anexar" id="anexar" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="fotocopia">FOTOCÓPIA</label>
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
                     </div>
                 </div>
             </form>
