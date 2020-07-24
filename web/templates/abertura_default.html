@@ -82,16 +82,33 @@
                 if (checkElementValue('dataciencia') == true){
                     obj[i]['dataCiencia'] = document.getElementById('dataciencia').value.trim();
                 };
-            }
+                if (checkElementValue('anexar') == true){
+                    if (document.getElementById('anexar').checked){
+                        obj[i]['anexar'] = true;}
+                    else{
+                        if (obj[i]['anexar']){
+                            delete obj[i]['anexar'];
+                        }
+                    }
+                };
+                if (checkElementValue('fotocopia') == true){
+                    if (document.getElementById('fotocopia').checked){
+                        obj[i]['fotocopia'] = true;}
+                    else{
+                        if (obj[i]['fotocopia']){
+                            delete obj[i]['fotocopia'];
+                        };
+                    };
+                };
+            };
             objNovo = obj;
-            console.log(objNovo);
             enviarDados();
         };
 
         function enviarDados(){
             objNovo = JSON.stringify(objNovo);
             document.getElementById('txtAbertura').innerHTML = objNovo;
-            console.log(document.getElementById('txtAbertura').innerHTML);
+            // console.log(document.getElementById('txtAbertura').innerHTML);
         };
     </script>
 {% endblock%}
@@ -185,19 +202,31 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-4  mb-3">
                         <label for="dataciencia">DATA DE CIÊNCIA</label>
                         <input id="dataciencia" name="dataciencia" type="date" class="form-control">
                     </div>
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-1">
+                        <label for="anexar">ANEXAR</label>
+                        <input name="anexar" id="anexar" type="checkbox" class="form-control campo">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="fotocopia">FOTOCÓPIA</label>
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control campo">
+                    </div>
+                    <div class="col-md-4  ml-3 mb-3">
                         <form action="{{request.url_rule.rule}}/part2" method="post" onclick="definirPadrao()">
                             <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
                             <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;">ENVIAR</button>
                             <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
                         </form>
                     </div>
+                    <button type="button" onclick="definirPadrao()"></button>
                 </div>
+
+
                 <!-- <div class="col-md-4  mb-3">
                     <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" ">Definir padrões</button>
                 </div>
