@@ -21,48 +21,84 @@
         function preencherRegistros(){
             document.getElementById('regnum').value = i + 1;
             if (objNovo[i]['pasta']){
-                document.getElementById('pasta').value = objNovo[i]['pasta'];}
+                document.getElementById('pasta').value = objNovo[i]['pasta'];
+            }
             if (objNovo[i]['adversa']){
-                document.getElementById('adversa').value = objNovo[i]['adversa'];}
-            if (objNovo[i]['numProcesso'])
-                {document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];}
-            if (objNovo[i]['cnj'])
-                {document.getElementById('cnj').value = objNovo[i]['cnj'];}
-            if (objNovo[i]['gpProcesso'])
-                {document.getElementById('gpProcesso').value = objNovo[i]['gpProcesso'];}
-            if (objNovo[i]['statusProcessual'])
-                {document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];}
-            if (objNovo[i]['vcausa'])
-                {document.getElementById('vcausa').value = objNovo[i]['vcausa'];}
-            if (objNovo[i]['localTr'])
-                {document.getElementById('localTr').value = objNovo[i]['localTr'];}
-            if (objNovo[i]['tramite'])
-                {document.getElementById('tramite').value = objNovo[i]['tramite'];}
-            if (objNovo[i]['comarca'])
-                {document.getElementById('comarca').value = objNovo[i]['comarca'];}
-            if (objNovo[i]['uf'])
-                {document.getElementById('uf').value = objNovo[i]['uf'];}
-            if (objNovo[i]['razaoSocial'])
-                {document.getElementById('razaoSocial').value = objNovo[i]['razaoSocial'];}
-            if (objNovo[i]['localizador'])
-                {document.getElementById('localizador').value = objNovo[i]['localizador'];}
+                document.getElementById('adversa').value = objNovo[i]['adversa'];
+            }
+            if (objNovo[i]['numProcesso']){
+                document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];
+            }
+            if (objNovo[i]['cnj']){
+                document.getElementById('cnj').value = objNovo[i]['cnj'];
+            }
+            if (objNovo[i]['gpProcesso']){
+                document.getElementById('gpProcesso').value = objNovo[i]['gpProcesso'];
+            }
+            if (objNovo[i]['statusProcessual']){
+                document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];
+            }
+            if (objNovo[i]['vcausa']){
+                document.getElementById('vcausa').value = objNovo[i]['vcausa'];
+            } else {
+                document.getElementById('vcausa').value = "";
+            }
+            if (objNovo[i]['localTr']){
+                document.getElementById('localTr').value = objNovo[i]['localTr'];
+            } else {
+                document.getElementById('localTr').value = '';
+            }
+            if (objNovo[i]['tramite']){
+                document.getElementById('tramite').value = objNovo[i]['tramite'];
+            } else {
+                document.getElementById('tramite').value = "";
+            }
+            if (objNovo[i]['comarca']){
+                document.getElementById('comarca').value = objNovo[i]['comarca'];
+            }
+            if (objNovo[i]['uf']){
+                document.getElementById('uf').value = objNovo[i]['uf'];
+            }
+            if (objNovo[i]['razaoSocial']){
+                document.getElementById('razaoSocial').value = objNovo[i]['razaoSocial'];
+            }
+            if (objNovo[i]['localizador']){
+                document.getElementById('localizador').value = objNovo[i]['localizador'];
+            }
             if (objNovo[i]['responsavel']){
                 var respId = '';
                 var respArr = objNovo[i]['responsavel'];
                 for (var j = 0; j < respArr.length; j++){
-                    respId = 'responsavel'+(j+1)
+                    respId = 'responsavel'+(j+1);
                     document.getElementById(respId).value = respArr[j];
-                }}
-
+                }
+            }
             if (objNovo[i]['dataAudiencia']){
                 var data = objNovo[i]['dataAudiencia'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
                 document.getElementById('dataAudiencia').value = data;
-            }else{
+            } else{
                 document.getElementById('dataAudiencia').value = '';
             }
-
-            if (objNovo[i]['dataCiencia'])
-                {document.getElementById('dataCiencia').value = objNovo[i]['dataCiencia'];}
+            if (objNovo[i]['horaAudiencia']){
+                document.getElementById('horaAudiencia').value = objNovo[i]['horaAudiencia'];
+            } else{
+                document.getElementById('horaAudiencia').value = '';
+            }
+            if (objNovo[i]['dataCiencia']){
+                document.getElementById('dataCiencia').value = objNovo[i]['dataCiencia'];
+            } else {
+                document.getElementById('dataCiencia').value = '';
+            }
+            if (objNovo[i]['anexar']){
+                document.getElementById('anexar').checked = true;
+            } else {
+                document.getElementById('anexar').checked = false;
+            }
+            if (objNovo[i]['fotocopia']){
+                document.getElementById('fotocopia').checked = true;
+            } else {
+                document.getElementById('fotocopia').checked = false;
+            }
         }
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
@@ -185,7 +221,7 @@
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="razaoSocial">CLIENTE</label>
-                        <select name="razaoSocial" id="razaoSocial" class="form-control campo" onchange="alteraValor(this);" disabled>
+                        <select name="razaoSocial" id="razaoSocial" class="form-control" onchange="alteraValor(this);" disabled>
                             <option value="-1">SELECIONE</option>
                             {% for cliente in clientes %}
                                 <option value="{{cliente.split(';')[0]}}">{{cliente.split(';')[0]}}</option>
@@ -196,17 +232,17 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <label for="comarca">COMARCA</label>
-                                <input name="comarca" id="comarca" type="text" class="form-control campo" onchange="alteraValor(this);" disabled>
+                                <input name="comarca" id="comarca" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                             </div>
                             <div class="col-md-3">
                                 <label for="uf">UF</label>
-                                <input name="uf" id="uf" type="text" class="form-control campo" onchange="alteraValor(this);" disabled>
+                                <input name="uf" id="uf" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <label for="gpProcesso">GRUPO DE PROCESSO</label>
-                        <select name="gpProcesso" id="gpProcesso" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="gpProcesso" id="gpProcesso" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for gpProcess in gruposprocessos %}
                                 <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
@@ -215,7 +251,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="statusProcessual">STATUS</label>
-                        <select name="statusProcessual" id="statusProcessual" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="statusProcessual" id="statusProcessual" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for state in status %}
                                 <option value="{{state.strip()}}">{{state.strip()}}</option>
@@ -226,7 +262,7 @@
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="localizador">LOCALIZADOR</label>
-                        <select name="localizador" id="localizador" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="localizador" id="localizador" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for localizador in localizadores %}
                                 <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
@@ -234,32 +270,32 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="localTr">N.º VARA</label>
-                        <select name="localTr" id="localTr" class="form-control campo" onchange="alteraValor(this);">
+                        <label for="localTr">VARA</label>
+                        <select name="localTr" id="localTr" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for vara in varas %}
-                                <option value="{{vara}}">{{vara}}</option>
+                                <option value="{{vara.strip()}}">{{vara.strip()}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="tramite">LOCAL DE TRÂMITE</label>
-                        <select name="tramite" id="tramite" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="tramite" id="tramite" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for localtramite in locaistramites %}
-                                <option value="{{localtramite}}">{{localtramite}}</option>
+                                <option value="{{localtramite.strip()}}">{{localtramite.strip()}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label for="vcausa">VALOR DA CAUSA</label>
-                        <input name="vcausa" id="vcausa" type="number" placeholder="0.00" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="vcausa" id="vcausa" type="number" placeholder="0.00" class="form-control" onchange="alteraValor(this);">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <label for="responsavel1">RESPONSÁVEL</label>
-                        <select name="responsavel1" id="responsavel1" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="responsavel1" id="responsavel1" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for responsavel1 in resp1 %}
                                 <option value="{{responsavel1.strip()}}">{{responsavel1.strip()}}</option>
@@ -268,7 +304,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="responsavel2">RESPONSÁVEL</label>
-                        <select name="responsavel2" id="responsavel2" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="responsavel2" id="responsavel2" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for responsavel2 in resp2 %}
                                 <option value="{{responsavel2.strip()}}">{{responsavel2.strip()}}</option>
@@ -277,7 +313,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="responsavel3">RESPONSÁVEL</label>
-                        <select name="responsavel3" id="responsavel3" class="form-control campo" onchange="alteraValor(this);">
+                        <select name="responsavel3" id="responsavel3" class="form-control" onchange="alteraValor(this);">
                             <option value="">SELECIONE</option>
                             {% for responsavel3 in resp3 %}
                                 <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
@@ -288,23 +324,23 @@
                 <div class="row mb-2">
                     <div class="col-md-2">
                         <label for="dataAudiencia">DATA DA AUDIENCIA</label>
-                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-2">
                         <label for="horaAudiencia">HORA DA AUDIENCIA</label>
-                        <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-2">
                         <label for="dataCiencia">DATA DA CIÊNCIA</label>
-                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="dataCiencia" id="dataCiencia" type="date" class="form-control" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-1">
                         <label for="anexar">ANEXAR</label>
-                        <input name="anexar" id="anexar" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="anexar" id="anexar" type="checkbox" class="form-control" onchange="alteraValor(this);">
                     </div>
                     <div class="col-md-1">
                         <label for="fotocopia">FOTOCÓPIA</label>
-                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                        <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control" onchange="alteraValor(this);">
                     </div>
                 </div>
             </form>
