@@ -377,7 +377,7 @@ class Abertura (object):
                     element = self.integra.waitInstance(self.integra.driver, '//*[@id="txtNome"]', 1, 'show')
                     element.send_keys(str(df['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(registro, str(df['adversa'])))
-                    complemento = "{}REG {}: PARTE ADVERSA: {}".format(complemento, registro, str(df['adversa']))
+                    complementoAdversa = "\nREG {}: PARTE ADVERSA: {}".format(registro, str(df['adversa']))
                 except:
                     naoInserido['adversa'] = str(df['adversa'])
             except:
@@ -402,7 +402,7 @@ class Abertura (object):
             try:  #popup Ok em que a parte Adversa já possui outros processos.
                 element = self.integra.driver.find_element_by_id("popup_ok")
                 self.integra.driver.execute_script("arguments[0].click();", element)
-                complemento = "{} -> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA!\n".format(complemento)
+                complementoAdversa = "{} -> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA!\n".format(complementoAdversa)
                 sleep(1.2)
             except:
                 pass
@@ -411,7 +411,9 @@ class Abertura (object):
             hora = strftime("%H:%M:%S")
             horaStr = hora.replace(':', '-')
 
-            # message = "REG {}: {}__{}".format(registro, hoje, horaStr)  #Insere a primeira linha do registro no log
+            if (complementoAdversa):
+                complemento = "{}\n{}".format(complementoAdversa, complemento)
+
             message = "{}\nREG {}: A PASTA '{}' FOI CRIADA!\nREG {}: ID PROMAD: '{}'.\n{}".format(message, registro, str(df['pasta']), registro, idNovaPasta, complemento)
             print('FINALIZADO O REGISTRO - HORA: {}'.format(horaStr))
             sleep(1.2)
@@ -775,13 +777,14 @@ class Abertura (object):
 
             elemPesquisado.click()
             urlPage = self.integra.driver.current_url
+            isTest = basic_functions.checkIfTest()
 
             while (item <= count):
                 df = {} # criar alguns testes de valores
                 df['pasta']            = dfExcel[item, 0]
                 df['adversa']          = dfExcel[item, 1].strip()
-                dataContratacao        = dfExcel[item, 2]
                 try:
+                    dataContratacao        = dfExcel[item, 2]
                     if (dataContratacao):
                         dataContratacao = str(dataContratacao.strftime("%d/%m/%Y"))
                         df['dataContratacao']  = dataContratacao
@@ -793,13 +796,17 @@ class Abertura (object):
                 df['numProcesso']  = basic_functions.ajustarNumProcessoCNJ(dfExcel[item, 3])
                 df['cnj']          = basic_functions.ajustarNumProcessoCNJ(dfExcel[item, 4])
                 df['gpProcesso']   = dfExcel[item, 5].strip()
-                df['localTr']      = "{} ª-º".format(dfExcel[item, 6])
+                localTr = dfExcel[item, 6]
+                df['localTr']      = "{} ª-º".format(localTr)
                 df['localTramite'] = dfExcel[item, 7].strip()
                 df['comarca']      = dfExcel[item, 8].strip()
                 df['uf']           = dfExcel[item, 9].strip()
                 try:
                     valorCausa     = dfExcel[item, 10]
-                    valorCausa     = ('%1.2f' % (valorCausa))
+                    try:
+                        valorCausa     = ('%1.2f' % (valorCausa))
+                    except:
+                        pass
                     valorCausa     = valorCausa.replace('.',',').strip()
                     df['vCausa']   = valorCausa
                 except:
@@ -807,7 +814,7 @@ class Abertura (object):
 
                 df['statusProcessual'] = dfExcel[item, 11]
 
-                if (basic_functions.checkIfTest):  #se for teste
+                if (isTest):  #se for teste
                     df['razaoSocial']  = "Cliente teste"
                     df['gpCliente']    = "Grupo Teste"
                 else:
@@ -815,12 +822,11 @@ class Abertura (object):
                     df['gpCliente']    = dfExcel[item, 13]
 
                 responsavel = dfExcel[item, 14].split(';')
-
                 df['responsavel']  = responsavel
                 df['sigla']        = dfExcel[item, 15].strip()
 
-                dataAudiencia        = dfExcel[item, 16]
                 try:
+                    dataAudiencia        = dfExcel[item, 16]
                     if (dataAudiencia):
                         dataAudiencia  = str(dataAudiencia.strftime("%d/%m/%Y"))
                         df['dataAudiencia']  = dataAudiencia
@@ -834,8 +840,8 @@ class Abertura (object):
                 # except:
                 #     df['dataAudiencia'] = ""
 
-                horaAudiencia = dfExcel[item, 17]
                 try:
+                    horaAudiencia = dfExcel[item, 17]
                     if (horaAudiencia):
                         df['horaAudiencia'] = '{0:%H:%M}'.format(horaAudiencia)
                         # df['horaAudiencia'] = "{}:{}".format(horaAudiencia.hour, horaAudiencia.minute)
@@ -844,10 +850,8 @@ class Abertura (object):
                 except:
                     df['horaAudiencia'] = "00:00"
 
-                # df['dataCiencia'] = dfExcel[item, 18]
-
-                dataCiencia = dfExcel[item, 18]
                 try:
+                    dataCiencia = dfExcel[item, 18]
                     if (dataCiencia):
                         dataCiencia = str(dataCiencia.strftime("%d/%m/%Y"))
                         df['dataCiencia']  = dataCiencia
@@ -856,13 +860,23 @@ class Abertura (object):
                 except:
                     df['dataCiencia'] =''
 
-                df['agendFotocopia'] = dfExcel[item, 19]
-                df['localizador'] = dfExcel[item, 20]
-
-                df['objAcao'] = dfExcel[item, 21]
-
-                dataDistrib      = dfExcel[item, 22]
                 try:
+                    df['agendFotocopia'] = dfExcel[item, 19]
+                except:
+                    df['agendFotocopia'] = ''
+
+                try:
+                    df['localizador'] = dfExcel[item, 20]
+                except:
+                    df['localizador'] = ''
+
+                try:
+                    df['objAcao'] = dfExcel[item, 21]
+                except:
+                    df['objAcao'] = ''
+
+                try:
+                    dataDistrib      = dfExcel[item, 22]
                     if(dataDistrib):
                         dataDistrib  = str(dataDistrib.strftime("%d/%m/%Y"))
                         df['dataDistrib'] = dataDistrib
@@ -871,13 +885,16 @@ class Abertura (object):
                 except:
                     df['dataDistrib'] = ""
 
-                df['fase'] = dfExcel[item, 23]
+                try:
+                    df['fase'] = dfExcel[item, 23]
+                except:
+                    df['fase'] = ''
 
                 sleep(0.3)
 
                 try:
                     isTest = basic_functions.checkIfTest()
-                    if (isTest):
+                    if (not(isTest)): #se não é teste
                         searchFolder = False
                     else:
                         searchFolder, _element = self.integra.pesquisarCliente(df['pasta'], 'pasta')
