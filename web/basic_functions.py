@@ -30,12 +30,13 @@ def abreArquivo(arquivo, extensao, path=""):
     return dfExcel
 
 def checkEndFile(log):
-    arquivo =  open(log, 'r')
-    message = arquivo.readlines()
-    arquivo.close()
-
-    lastLine = message[len(message)-1]
-    # count = len(open(log).readlines()) + 1
+    try:
+        arquivo =  open(log, 'r')
+        message = arquivo.readlines()
+        arquivo.close()
+        lastLine = message[len(message)-1]
+    except:
+        lastLine = 1
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
