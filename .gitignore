@@ -33,3 +33,4 @@ files/fechamento/pIDs/*
 
 bash.exe.stackdump
 *.ignorar
+*.csv
