@@ -1,9 +1,8 @@
-from os import path as osPath
-from os import getcwd as osGetCWD
-from os import mkdir as osMKdir
+from os import path
+from os import getcwd
+from os import mkdir
 from psutil import pid_exists
 from pyexcel import get_sheet
-import pyexcel as pe
 
 def checkLogin():
     checarTeste = checkIfTest()
@@ -17,9 +16,9 @@ def checkLogin():
     return login, password
 
 def checkIfTest():
-    pathRootScript = osPath.abspath(osPath.dirname(__file__))
+    pathRootScript = path.abspath(path.dirname(__file__))
     pathFileTeste = pathRootScript + "\\teste.txt"
-    if (osPath.isfile(pathFileTeste)):
+    if (path.isfile(pathFileTeste)):
         return True
     else:
         return False
@@ -40,7 +39,7 @@ def checkEndFile(log):
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
-    if (osPath.isfile(logFile)): #se o log não existir, cria-se
+    if (path.isfile(logFile)): #se o log não existir, cria-se
         arquivo =  open(logFile, 'a')
     else:
         arquivo = open(logFile, tipo)
@@ -51,14 +50,18 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
         print(writeLog)
     arquivo.close()
 
+def createFolder(folder):
+    if (not(path.exists(folder))):
+        mkdir(folder)
+
 def createPID(pidName, pidNumber):
-    logsPath = "{}\\pIDs".format(osGetCWD())
+    logsPath = "{}\\pIDs".format(getcwd())
     logFile = logsPath +"\\{}__{}.pid".format(pidName, pidNumber)
 
-    if (osPath.exists(logsPath) == False):
-        osMKdir(logsPath)   # Se o diretório pIDs não existir, será criado
+    if (path.exists(logsPath) == False):
+        mkdir(logsPath)   # Se o diretório pIDs não existir, será criado
 
-    if (not(osPath.isfile(logFile))): #se o log não existir, cria-se
+    if (not(path.isfile(logFile))): #se o log não existir, cria-se
         arquivo =  open(logFile, 'w')
         arquivo.close()
         return True
