@@ -34,9 +34,9 @@ def checkEndFile(log):
         arquivo =  open(log, 'r')
         message = arquivo.readlines()
         arquivo.close()
-        lastLine = message[len(message)-1]
+        lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
     except:
-        lastLine = 1
+        lastLine = 0
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
