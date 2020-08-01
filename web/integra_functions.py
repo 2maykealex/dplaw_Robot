@@ -4,19 +4,13 @@ from datetime import timedelta
 from time import strftime
 from time import sleep
 import basic_functions
-
-# from datetime import date
-# from datetime import datetime
-# from datetime import timedelta
-# from time import strftime
-# from time import sleep
 from os import mkdir
 from os import remove
 from os import path as pathFolder
 from os import getcwd as osGetCWD
 from os import getpid
-
 from pprint import pprint
+
 class IntegraFunctions(object):
 
     def __init__(self):
@@ -188,8 +182,9 @@ class IntegraFunctions(object):
 
     def controle(self, registros):
         robo = None
-        abreWebDriver = None
+        # _abreWebDriver = None
         driverIniciado = False
+        self.isTest = basic_functions.checkIfTest()
 
         hoje = "%s" % (strftime("%Y-%m-%d"))
         hoje = hoje.replace('-', '_')
@@ -200,74 +195,92 @@ class IntegraFunctions(object):
         self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
         self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}_{}__{}__{}'.format(registros['tipo'], registros['sigla'], hoje, hora))
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+        reg = basic_functions.checkEndFile(self.logFileCSV)
 
-        login, password = basic_functions.checkLogin()
-        print("\n-----------------------------------------")
-        print("Login utilizado: {}".format(login))
-        print("-----------------------------------------\n")
-        print("\nINICIANDO WebDriver")
-        abreWebDriver = self.acessToIntegra(login, password)
+        if (reg != 'FIM' and reg != -1):
+            login, password = basic_functions.checkLogin()
+            print("\n-----------------------------------------")
+            print("Login utilizado: {}".format(login))
+            print("-----------------------------------------\n")
+            print("\nINICIANDO WebDriver")
+            _abreWebDriver = self.acessToIntegra(login, password)
+            driverIniciado == True
 
-        if (registros['tipo'] == 'abertura'):
-            print(registros['tipo'])
-            robo = self.abrePasta(registros)
-        # elif (registros['tipo'] == 'volumetria'):
-        #     robo = self.Volumetria(registros)
-        # elif (registros['tipo'] == 'contrato'):
-        #     robo = self.Contrato(registros)
-        # elif (registros['tipo'] == 'atualizacao'):
-        #     robo = self.Atualizacao(registros)
+            if (registros['tipo'] == 'abertura'):
+                robo = self.abrePasta(registros, reg)
+            # elif (registros['tipo'] == 'volumetria'):
+            #     robo = self.Volumetria(registros)
+            # elif (registros['tipo'] == 'contrato'):
+            #     robo = self.Contrato(registros)
+            # elif (registros['tipo'] == 'atualizacao'):
+            #     robo = self.Atualizacao(registros)
 
-    def abrePasta(self, registros):
-        count =  len(registros) -1
-        isTest = basic_functions.checkIfTest()
+            if (robo):
+                basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
+                if (driverIniciado == True):
+                    driverIniciado = False
+                    self.logoutIntegra()
+            else:
+                driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
+                self.driver.quit()
+        else:
+            print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
 
-        try:
-            searchClient, elemPesquisado = self.pesquisarCliente('Cliente teste', 'cliente')
-        except:
+    def abrePasta(self, registros, reg):
+        if (reg <= (len(registros) - 2)):
+            try:
+                searchClient, elemPesquisado = self.pesquisarCliente('Cliente teste', 'cliente')
+            except:
+                return False
+            if (searchClient):
+                elemPesquisado.click()
+                sleep(.5)
+                urlPage = self.driver.current_url
+                while reg < (len(registros) - 2): # 2 itens são padrão do objeto (não itens para o looping)
+                    registro = registros['{}'.format(reg)]
+                    print('=========================================================')
+                    print('REG {}: INICIANDO'.format(str(reg+1)))
+                    registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
+                    registro['txtNroCnj']      = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
+                    try:
+                        print('REG {}: REALIZANDO PESQUISA'.format(str(reg+1)))
+                        if (not(self.isTest)): #se não é teste
+                            searchFolder = False
+                        else:
+                            searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                    except:
+                        print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1)))
+                        return False
+
+                    if (reg == 0): # CABEÇALHO DO LOG
+                        cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                        basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+
+                    if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
+                        try:
+                            sleep(0.5)
+                            print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1)))
+                            self.driver.get(urlPage)
+                            sleep(0.5)
+                            message = self.incluirProcesso(registro, reg) # k=item
+                        except:
+                            print('REG {}: ERRO AO INCLUIR A PASTA: {}'.format(str(reg+1), registro['txtPasta']))
+                            #TODO ver log para esse erro
+                    else:
+                        message = "REG {};;A PASTA {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'])
+                        print(message)
+
+                    basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
+                    reg = reg + 1
+                print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
+                return True
+            else:
+                return False
+        else:
+            print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.') # CASO JÁ TENHA PASSADO O TOTAL DE REGISTROS E NÃO TER FINALIZADO O ARQUIVO
             return False
 
-        if (searchClient):
-            elemPesquisado.click()
-            sleep(.5)
-            urlPage = self.driver.current_url
-            for k, registro in registros.items():
-                if (k in ['tipo', 'sigla']):
-                    continue
-                print('REG {}: INICIANDO'.format(str(int(k)+1)))
-                registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
-                registro['txtNroCnj']      = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
-                try:
-                    print('REG {}: REALIZANDO PESQUISA'.format(str(int(k)+1)))
-                    if (not(isTest)): #se não é teste
-                        searchFolder = False
-                    else:
-                        searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
-                except:
-                    print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA -'.format(str(int(k)+1)))
-                    return False
-
-                if (int(k)== 0): # CABEÇALHO DO LOG
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
-                    basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog))
-
-                if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
-                    try:
-                        sleep(0.5)
-                        print('REG {}: REDIRECIONANDO À PG DO CLIENTE -'.format(str(int(k)+1)))
-                        self.driver.get(urlPage)
-                        sleep(0.5)
-                        message = self.incluirProcesso(registro, int(k)+1) # k=item
-
-                    except:
-                        print('REG {}: ERRO AO INCLUIR A PASTA: {}'.format(str(int(k)+1), registro['txtPasta']))
-                        #TODO ver log para esse erro
-                else:
-                    message = "REG {}; A PASTA {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(int(k)+1, registro['txtPasta'])
-
-                basic_functions.createLog(self.logFileCSV, "{}\n".format(message))
-
-    def incluirProcesso(self, registro, item):
+    def incluirProcesso(self, registro, reg):
 
         def selecionaResponsaveis():
             self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
@@ -343,7 +356,7 @@ class IntegraFunctions(object):
 
         self.checkPopUps()
         sleep(1.5)
-        print('REG {}: INICIANDO INCLUSAO DE PASTA'.format(item))
+        print('REG {}: INICIANDO INCLUSAO DE PASTA'.format(reg+1))
         element = self.waitInstance(self.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
         element.click()
         naoInserido = {}
@@ -352,11 +365,11 @@ class IntegraFunctions(object):
         hoje = hoje.replace('-', '/')
         hora = strftime("%H:%M:%S")
         message = ''
-        message = "REG {};{} às {};".format(item, hoje, hora)  #Insere a primeira linha do item no log
+        message = "REG {};{} às {};".format(reg+1, hoje, hora)  #Insere a primeira linha do item no log
 
-        print('REG {}: INICIANDO LOOPING'.format(item))
+        print('REG {}: INICIANDO LOOPING'.format(reg+1))
         for k, v in registro.items():
-            print ('REG {}: {} - {}'.format(item, k, v))
+            print ('REG {}: {} - {}'.format(reg+1, k, v))
             try:
                 if (k == 'slcResponsavel'):
                     selecionaResponsaveis()
@@ -374,14 +387,14 @@ class IntegraFunctions(object):
                     sleep(.8)
             except:
                 naoInserido[k] = str(v)
-        print('REG {}: FINALIZADO O LOOPING'.format(item))
+        print('REG {}: FINALIZADO O LOOPING'.format(reg+1))
         segredoJusticaAndamentos()
         idNovaPasta = recuperaIdIntegra()
 
         try:
             complementoAdversa = ""
             if (registro['adversa']):
-                print('REG {}: EXISTE PARTE ADVERSA'.format(item))
+                print('REG {}: EXISTE PARTE ADVERSA'.format(reg+1))
                 while True:
                     try:
                         element = self.waitingElement("//*[@id='div_menu17']", 'click', form='xpath')
@@ -404,14 +417,14 @@ class IntegraFunctions(object):
                 try:
                     element = self.waitingElement('//*[@id="txtNome"]', 'click', form='xpath')
                     element.send_keys(str(registro['adversa']))
-                    print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(item, str(registro['adversa'])))
+                    print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, str(registro['adversa'])))
                     complementoAdversa = "{}".format(str(registro['adversa']))
                 except:
                     naoInserido['adversa'] = str(registro['adversa'])
             else:
                 naoInserido['adversa'] = ''
         except:
-            print('REG {}: NÃO EXISTE PARTE ADVERSA'.format(item))
+            print('REG {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1))
             pass
 
         sleep(0.8)
@@ -424,19 +437,19 @@ class IntegraFunctions(object):
                 print(complementoNaoInseridos)
 
         try: # Botão salvar
-            print('REG {}: ANTES DE SALVAR'.format(item))
+            print('REG {}: ANTES DE SALVAR'.format(reg+1))
             element = self.waitingElement('//*[@id="btnSalvar"]', 'click', form='xpath')
             element.click()
-            print('REG {}: SALVANDO'.format(item))
+            print('REG {}: SALVANDO'.format(reg+1))
             sleep(1.1)
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
                 element = self.driver.find_element_by_id("popup_ok")
                 self.driver.execute_script("arguments[0].click();", element)
                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(item))
+                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1))
             except:
-                print('REG {}: ADVERSA NÃO TEM PROCESSOS'.format(item))
+                print('REG {}: ADVERSA NÃO TEM PROCESSOS'.format(reg+1))
                 pass
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
 
@@ -450,19 +463,12 @@ class IntegraFunctions(object):
                 message = "{}{};".format(message, complementoAdversa)
                 message = "{}{};".format(message, complementoNaoInseridos)
 
-                print('REG {}: FINALIZADO às: {}'.format(item, horaStr))
+                print('REG {}: FINALIZADO às: {}'.format(reg+1, horaStr))
             except:
                 pass
         except:
             message = "{}; NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(message, str(registro['txtPasta']))
         return message
-
-
-
-
-
-
-
 
 
 
