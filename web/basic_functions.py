@@ -34,7 +34,13 @@ def checkEndFile(log):
         arquivo =  open(log, 'r')
         message = arquivo.readlines()
         arquivo.close()
-        lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
+        try:
+            lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
+        except:
+            if (message[len(message)-1][:3] == 'FIM'):
+                lastLine = 'FIM'
+            else:
+                lastLine = -1
     except:
         lastLine = 0
     return (lastLine)
