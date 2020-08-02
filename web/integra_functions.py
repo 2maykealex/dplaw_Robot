@@ -658,7 +658,21 @@ class IntegraFunctions(object):
 
         print('FINALIZOU TODOS OS AGENDAMENTOS')
 
-
+    def removeAgendamentos(self): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
+        xInputs = '//*[@id="divAgendaListar"]/div/table/tbody/tr'
+        while True:
+            try:
+                listaAgendamentos = self.integra.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+                agendItem = listaAgendamentos[-1].find_element_by_tag_name('a')
+                agendItem.click()
+                sleep(0.3)
+                for _x in range(2):
+                    botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
+                    botaoPopup.click()
+                    sleep(0.3)
+            except:
+                break
+        print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
 
 
 
