@@ -22,7 +22,7 @@ class IntegraFunctions(object):
         try:
             self.driver = self.selenium.iniciaWebdriver()
             self.driver.maximize_window()
-            self.driver.get('https://adv.br/login-asp')
+            self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
             sleep(1.5)
@@ -56,7 +56,7 @@ class IntegraFunctions(object):
     def pesquisarCliente(self, search, tipoPesquisa):
         sleep(4)
         try:
-            self.driver.get('https://adv.br/integra4/modulo/21/default.asp')
+            self.driver.get('https://integra.adv.br/integra4/modulo/21/default.asp')
             abriuPesquisa = True
         except:
             abriuPesquisa = self.acessaMenuPesquisa()
@@ -280,6 +280,8 @@ class IntegraFunctions(object):
 
                         if (registro['slcResponsavel'] and message):
                             self.criaAgendammentos(registros['{}'.format(reg)], reg)
+                            if (self.isTest):
+                                self.removeAgendamentos()
                         else:
                             message = "{};;NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message) #TODO - ver quantos ; serão necessários
                     else:
