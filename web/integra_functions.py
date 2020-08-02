@@ -22,7 +22,7 @@ class IntegraFunctions(object):
         try:
             self.driver = self.selenium.iniciaWebdriver()
             self.driver.maximize_window()
-            self.driver.get('https://integra.adv.br/login-integra.asp')
+            self.driver.get('https://adv.br/login-asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
             sleep(1.5)
@@ -56,7 +56,7 @@ class IntegraFunctions(object):
     def pesquisarCliente(self, search, tipoPesquisa):
         sleep(4)
         try:
-            self.driver.get('https://integra.adv.br/integra4/modulo/21/default.asp')
+            self.driver.get('https://adv.br/integra4/modulo/21/default.asp')
             abriuPesquisa = True
         except:
             abriuPesquisa = self.acessaMenuPesquisa()
@@ -607,7 +607,58 @@ class IntegraFunctions(object):
             element = self.waitingElement(xPathElement, 'show')
             element.send_keys(textoAgendamento[:30])
 
-            print('FINALIZOU AGENDAMENTOS')
+            # BOTÃO SALVAR
+            try:
+                sleep(.5)
+                botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
+                botaoSalvar.click()
+            except:
+                print("ERRO AO CLICAR NO BOTÃO SALVAR!!!!")
+                pass
+
+            sleep(.5)
+            try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
+                element = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
+                if (element.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
+                    element = self.waitingElement("//*[@id='slcGrupo']", 'show')  #checa se redirecionamento ocorreu
+                    self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
+                    xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
+                    element = self.waitingElement(xPathElement, 'show')
+                    if (element == False):
+                        print("erro: Elemento da página não foi encontrado!")
+                    self.checkPopUps()
+                    sleep(.5)
+                    if (refazAgendamento < 1): # limita a 5 tentativas para o agendamento
+                        refazAgendamento = refazAgendamento + 1
+                        break #continue      #volta ao While TRUE e recomeça os preenchimentos
+                    else:
+                        refazAgendamento = 0
+                        break
+            except:
+                print("erro INFORMAÇÕES NO INPUT")
+                pass
+
+            try: #Clicar no PopUp - Deseja salvar
+                sleep(.5)
+                element = self.waitingElement('//*[@id="popup_ok"]', 'click')
+                element.click()
+                message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
+                print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
+                sleep(.5)
+            except:
+                print("erro POPUP SALVAR")
+                pass
+
+            try: #remove agendamentos já executados
+                agendNaoAbertos.remove(tipoAgendamento)
+            except:
+                print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
+            break #sai do While TRUE
+
+
+        print('FINALIZOU TODOS OS AGENDAMENTOS')
+
+
 
 
 
