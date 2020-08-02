@@ -237,17 +237,19 @@ class IntegraFunctions(object):
                 sleep(.5)
                 urlPage = self.driver.current_url
                 while reg < (len(registros) - 2): # 2 itens são padrão do objeto (não itens para o looping)
-                    registro = registros['{}'.format(reg)]
+                    registro = registros['{}'.format(reg)].copy()
+                    del registro['agendamentos']
+                    message = ''
                     print('=========================================================')
                     print('REG {}: INICIANDO'.format(str(reg+1)))
                     registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
                     registro['txtNroCnj']      = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
                     try:
                         print('REG {}: REALIZANDO PESQUISA'.format(str(reg+1)))
-                        if (not(self.isTest)): #se não é teste
-                            searchFolder = False
-                        else:
-                            searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                        # if (not(self.isTest)): #se não é teste
+                        searchFolder = False
+                        # else:
+                        #     searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
                     except:
                         print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1)))
                         return False
@@ -256,7 +258,7 @@ class IntegraFunctions(object):
                         cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
                         basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-                    if (not(searchFolder)):   # se não foi encontrado no sistema, será inserido
+                    if (not(searchFolder)):   # A PASTA NÃO EXISTE NO SISTEMA, SERÁ CRIADA!
                         try:
                             sleep(0.5)
                             print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1)))
@@ -265,14 +267,20 @@ class IntegraFunctions(object):
                             message = self.incluirProcesso(registro, reg) # k=item
                         except:
                             print('REG {}: ERRO AO INCLUIR A PASTA: {}'.format(str(reg+1), registro['txtPasta']))
-                            #TODO ver log para esse erro
+                            #TODO ver log para esse erro  - ver comportamento nessa situação  - CONTABILIZAR TENTATIVAS Q OCORREU
+                            return False
+
+                        if (registro['slcResponsavel'] and message):
+                            self.criaAgendammentos(registros['{}'.format(reg)], reg)
+                        else:
+                            message = "{};;NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message) #TODO - ver quantos ; serão necessários
                     else:
                         message = "REG {};;A PASTA {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'])
                         print(message)
 
                     basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
                     reg = reg + 1
-                print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
+                print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
                 return True
             else:
                 return False
@@ -470,8 +478,82 @@ class IntegraFunctions(object):
             message = "{}; NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(message, str(registro['txtPasta']))
         return message
 
+    def criaAgendammentos(self, registro, reg):
+        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
+        self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
+        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
+        elementComboDestinatario = self.waitingElement(xPathElement, 'show', form='xpath')
+        self.checkPopUps()
 
+        agendNaoAbertos = list(registro['agendamentos'].keys())
+        agendamentos    = registro['agendamentos'].copy()
 
+        if ('HoraAudiencia' in agendNaoAbertos):
+            agendNaoAbertos.remove('HoraAudiencia')
+            del agendamentos['HoraAudiencia']
+
+        responsaveisAudiencia = ['GST']
+        responsaveisAnexar    = ['ESTAGBRA']
+        responsaveisFotocopia = ['GST','operacoes']
+        # responsaveisCiencia = ['COI', 'cbradesco', 'CBV', ]
+
+        #recupera listas
+        listDestinatarios     = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li') #recupera os inputs abaixo dessa tag
+        # listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
+
+        for tipoAgendamento, agendamento in agendamentos.items():
+            responsaveis = []
+            textoAgendamento = ''
+            print(tipoAgendamento,' - ', agendamento)
+            elementComboDestinatario.click()
+
+            #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
+            if tipoAgendamento == 'Audiência':
+                responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
+                if (registro['agendamentos']['HoraAudiencia']):
+                    textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
+                else:
+                    textoAgendamento = "{} - Audiência designada para dia {}".format(registro['sigla'], registro['agendamentos']['Audiência'])
+            elif tipoAgendamento == 'Ciencia de novo processo':
+                agendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
+            elif tipoAgendamento == 'Anexar':
+                responsaveis = registro['slcResponsavel'] + responsaveisAnexar
+                agendamento = "ANEXAR"
+            elif tipoAgendamento == 'Fotocópia':
+                responsaveis = registro['slcResponsavel'] + responsaveisFotocopia
+                agendamento = "Fotocópia integral"
+
+            totalResp = len(responsaveis)
+            countResp = 0
+            y = 1
+            for item in listDestinatarios:  #itera inputs recuperados, checa e clica
+                if (item.text in responsaveis ):
+                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
+                    element = self.waitingElement(xPathItem, 'click', form='xpath')
+                    element.click()
+                    sleep(1.5)
+                    countResp = countResp + 1
+                    if (countResp == (totalResp + 1)):
+                        break
+                y = y + 1
+            elementComboDestinatario.click()
+
+            # combo TIPO - ABRIR
+            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
+            comboTipoAgendamento = self.waitingElement(xPathElement, 'click', form='xpath')
+            comboTipoAgendamento.click()
+            sleep(1.5)
+
+            listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
+            y = 1
+            for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
+                if (item.text == tipoAgendamento):
+                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
+                    element = self.waitingElement(xPathItem, 'click', form='xpath')
+                    element.click()
+                    sleep(1.5)
+                    break
+                y = y + 1
 
 
 
