@@ -25,7 +25,7 @@ class IntegraFunctions(object):
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
             self.driver.execute_script("document.getElementById('login_senha').value='{}'".format(password))
-            sleep(1.5)
+            sleep(0.5)
             self.driver.find_element_by_tag_name('button').click()
             sleep(1.5)
             self.checkPopUps()
@@ -489,8 +489,6 @@ class IntegraFunctions(object):
     def criaAgendammentos(self, registro, reg):
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
-        xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-        elementComboDestinatario = self.waitingElement(xPathElement, 'show')
         self.checkPopUps()
 
         agendNaoAbertos = list(registro['agendamentos'].keys())
@@ -505,14 +503,20 @@ class IntegraFunctions(object):
         responsaveisFotocopia = ['GST','operacoes']
         # responsaveisCiencia = ['COI', 'cbradesco', 'CBV', ]
 
+        message = ''
+
         #recupera listas
-        listDestinatarios     = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li') #recupera os inputs abaixo dessa tag
+
         # listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
+
+        xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
 
         for tipoAgendamento, agendamento in agendamentos.items():
             responsaveis = []
             textoAgendamento = ''
             print(tipoAgendamento,' - ', agendamento)
+
+            elementComboDestinatario = self.waitingElement(xPathComboDestinatario, 'show')
             elementComboDestinatario.click()
 
             #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
@@ -536,12 +540,13 @@ class IntegraFunctions(object):
             totalResp = len(responsaveis)
             countResp = 0
             y = 1
+            listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
             for item in listDestinatarios:  #itera inputs recuperados, checa e clica
                 if (item.text in responsaveis ):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                     element = self.waitingElement(xPathItem, 'click')
                     element.click()
-                    sleep(1.5)
+                    sleep(0.5)
                     countResp = countResp + 1
                     if (countResp == (totalResp + 1)):
                         break
@@ -552,7 +557,7 @@ class IntegraFunctions(object):
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
             comboTipoAgendamento = self.waitingElement(xPathElement, 'click')
             comboTipoAgendamento.click()
-            sleep(1.5)
+            sleep(0.5)
 
             listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
             y = 1
@@ -561,7 +566,7 @@ class IntegraFunctions(object):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
                     element = self.waitingElement(xPathItem, 'click')
                     element.click()
-                    sleep(1.5)
+                    sleep(0.5)
                     break
                 y = y + 1
 
@@ -577,37 +582,34 @@ class IntegraFunctions(object):
             if (tipoAgendamento == 'Audiência' and registro['agendamentos']['HoraAudiencia']):
                 sleep(.5)
                 xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
-                element = self.waitingElement(xPathElement, 'click')
-                element.click() # MARCA - COM HORA
+                checkComHora = self.waitingElement(xPathElement, 'click')
+                checkComHora.click()
 
                 sleep(.5)
                 xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                element = self.waitingElement(xPathElement, 'click')
-                element.clear()
-                element.send_keys(registro['agendamentos']['HoraAudiencia'])
+                horaInicial = self.waitingElement(xPathElement, 'click')
+                horaInicial.clear()
+                horaInicial.send_keys(registro['agendamentos']['HoraAudiencia'])
 
                 sleep(.5)
                 xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                element = self.waitingElement(xPathElement, 'show')
-                element.clear()
-                element.send_keys(registro['agendamentos']['HoraAudiencia'])
+                horaFinal = self.waitingElement(xPathElement, 'show')
+                horaFinal.clear()
+                horaFinal.send_keys(registro['agendamentos']['HoraAudiencia'])
 
             # campo textoAgendamento
             sleep(.5)
             xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
-            element = self.waitingElement(xPathElement, 'show')
-            element.clear()
-            element.send_keys(textoAgendamento)
+            campoAgendamento = self.waitingElement(xPathElement, 'show')
+            campoAgendamento.clear()
+            campoAgendamento.send_keys(textoAgendamento)
 
             # campo resumo
             sleep(.5)
             xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-            element = self.waitingElement(xPathElement, 'show')
-            element.clear()
-            sleep(.5)
-            xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-            element = self.waitingElement(xPathElement, 'show')
-            element.send_keys(textoAgendamento[:30])
+            campoResumo = self.waitingElement(xPathElement, 'show')
+            campoResumo.clear()
+            campoResumo.send_keys(textoAgendamento[:30])
 
             # BOTÃO SALVAR
             try:
@@ -620,8 +622,8 @@ class IntegraFunctions(object):
 
             sleep(.5)
             try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
-                element = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
-                if (element.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
+                validacaoCampos = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
+                if (validacaoCampos.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
                     element = self.waitingElement("//*[@id='slcGrupo']", 'show')  #checa se redirecionamento ocorreu
                     self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
                     xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
@@ -642,8 +644,8 @@ class IntegraFunctions(object):
 
             try: #Clicar no PopUp - Deseja salvar
                 sleep(.5)
-                element = self.waitingElement('//*[@id="popup_ok"]', 'click')
-                element.click()
+                botaoPopUp = self.waitingElement('//*[@id="popup_ok"]', 'click')
+                botaoPopUp.click()
                 message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
                 print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
                 sleep(.5)
@@ -655,7 +657,6 @@ class IntegraFunctions(object):
                 agendNaoAbertos.remove(tipoAgendamento)
             except:
                 print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
-            break #sai do While TRUE
 
 
         print('FINALIZOU TODOS OS AGENDAMENTOS')
@@ -669,10 +670,11 @@ class IntegraFunctions(object):
                 agendItem.click()
                 sleep(0.3)
                 for _x in range(2):
-                    botaoPopup = self.integra.waitInstance(self.integra.driver, 'popup_ok', 2, 'click', 'id')
+                    botaoPopup = self.waitingElement('popup_ok', 'click', 'id')
                     botaoPopup.click()
                     sleep(0.3)
             except:
+                print('ERRO AO REMOVER AGENDAMENTO')
                 break
         print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
 
