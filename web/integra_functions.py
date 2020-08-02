@@ -37,7 +37,7 @@ class IntegraFunctions(object):
         #menu CLIENTES
         sleep(3)
         try:
-            element = self.waitingElement('//*[@id="header"]/ul/li[1]', 'click', form='xpath')
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]', 'click')
             element.click()
         except:
             print("ERRO AO CLICAR NO MENU CLIENTES")
@@ -46,7 +46,7 @@ class IntegraFunctions(object):
         #submenu PESQUISAR CLIENTE
         sleep(3)
         try:
-            element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 'click', form='xpath')
+            element = self.waitingElement('//*[@id="header"]/ul/li[1]/ul/lii[1]/p', 'click')
             element.click()
         except:
             print("ERRO AO CLICAR NO SUBMENU PESQUISAR CLIENTES")
@@ -242,8 +242,16 @@ class IntegraFunctions(object):
                     message = ''
                     print('=========================================================')
                     print('REG {}: INICIANDO'.format(str(reg+1)))
-                    registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
-                    registro['txtNroCnj']      = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
+
+                    try:
+                        registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
+                    except:
+                        pass
+                    try:
+                        registro['txtNroCnj'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
+                    except:
+                        pass
+
                     try:
                         print('REG {}: REALIZANDO PESQUISA'.format(str(reg+1)))
                         # if (not(self.isTest)): #se não é teste
@@ -292,7 +300,7 @@ class IntegraFunctions(object):
 
         def selecionaResponsaveis():
             self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-            comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click', form='xpath')
+            comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
             comboResponsavel.click()  # clica e abre as opções
             sleep(.8)
             #recupera lista de RESPONSÁVEIS do PROMAD
@@ -307,7 +315,7 @@ class IntegraFunctions(object):
                 if (item.text in registro[k]):
                     try:
                         xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        element = self.waitingElement(xPathItem, 'click', form='xpath')
+                        element = self.waitingElement(xPathItem, 'click')
                         element.click()
                         respSelecionados.append(item.text)
                     except:
@@ -321,18 +329,16 @@ class IntegraFunctions(object):
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
         def segredoJusticaAndamentos():
-            #Numero do CNJ
-            if (registro['txtNroCnj']):      #VERIFICAR DEPOIS, DE INSERIR OS IDs NO OBJETO (REGISTROS)
-                try:
+            try:
+                if (registro['txtNroCnj']):   #TODO VERIFICAR SE DÁ PARA INSERIR OS IDs NO OBJETO (REGISTROS)
                     # Segredo de Justiça  #por padrão, será marcado não
                     element = self.driver.find_element_by_id("segredoJusticaN")
                     self.driver.execute_script("arguments[0].click();", element)
-
                     sleep(0.3)
                     element = self.driver.find_element_by_id("capturarAndamentosS")
                     self.driver.execute_script("arguments[0].click();", element)
-                except:
-                    naoInserido['segredoCaptura'] = 'segredo-andamentos'
+            except:
+                naoInserido['segredoCaptura'] = 'Segredo de Justiça e Andamentos'
 
         def recuperaIdIntegra():
             #Obtém o ID do PROMAD da nova pasta a ser aberta
@@ -340,7 +346,7 @@ class IntegraFunctions(object):
                 element = self.waitingElement("idDoProcesso", 'show', 'class')
                 idNovaPasta = element.get_attribute("innerHTML")
                 idNovaPasta = idNovaPasta[14:].strip()
-                print("REG {}: NOVA PASTA ABERTA: {}".format(item, idNovaPasta))
+                print("REG {}: NOVA PASTA ABERTA: {}".format(reg, idNovaPasta))
                 return idNovaPasta
             except:
                 naoInserido['idDoProcessoINTEGRA'] = 'Não recuperado'
@@ -381,7 +387,7 @@ class IntegraFunctions(object):
             try:
                 if (k == 'slcResponsavel'):
                     selecionaResponsaveis()
-                elif (k != 'razaoSocial' and k != 'adversa'):
+                elif (k != 'razaoSocial' and k != 'adversa' and k != 'sigla'):
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'input'):
                         element.clear()
@@ -405,7 +411,7 @@ class IntegraFunctions(object):
                 print('REG {}: EXISTE PARTE ADVERSA'.format(reg+1))
                 while True:
                     try:
-                        element = self.waitingElement("//*[@id='div_menu17']", 'click', form='xpath')
+                        element = self.waitingElement("//*[@id='div_menu17']", 'click')
                         element.click()
                         sleep(.8)
                         try:
@@ -423,7 +429,7 @@ class IntegraFunctions(object):
 
                 # Preenchendo Parte Adversa
                 try:
-                    element = self.waitingElement('//*[@id="txtNome"]', 'click', form='xpath')
+                    element = self.waitingElement('//*[@id="txtNome"]', 'click')
                     element.send_keys(str(registro['adversa']))
                     print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, str(registro['adversa'])))
                     complementoAdversa = "{}".format(str(registro['adversa']))
@@ -446,7 +452,7 @@ class IntegraFunctions(object):
 
         try: # Botão salvar
             print('REG {}: ANTES DE SALVAR'.format(reg+1))
-            element = self.waitingElement('//*[@id="btnSalvar"]', 'click', form='xpath')
+            element = self.waitingElement('//*[@id="btnSalvar"]', 'click')
             element.click()
             print('REG {}: SALVANDO'.format(reg+1))
             sleep(1.1)
@@ -482,7 +488,7 @@ class IntegraFunctions(object):
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-        elementComboDestinatario = self.waitingElement(xPathElement, 'show', form='xpath')
+        elementComboDestinatario = self.waitingElement(xPathElement, 'show')
         self.checkPopUps()
 
         agendNaoAbertos = list(registro['agendamentos'].keys())
@@ -509,19 +515,21 @@ class IntegraFunctions(object):
 
             #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
             if tipoAgendamento == 'Audiência':
+                dataAgendamento = registro['agendamentos']['Audiência']
                 responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
                 if (registro['agendamentos']['HoraAudiencia']):
                     textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
                 else:
                     textoAgendamento = "{} - Audiência designada para dia {}".format(registro['sigla'], registro['agendamentos']['Audiência'])
             elif tipoAgendamento == 'Ciencia de novo processo':
-                agendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
+                dataAgendamento = registro['agendamentos']['Ciencia de novo processo']
+                textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
             elif tipoAgendamento == 'Anexar':
                 responsaveis = registro['slcResponsavel'] + responsaveisAnexar
-                agendamento = "ANEXAR"
+                textoAgendamento = "ANEXAR"
             elif tipoAgendamento == 'Fotocópia':
                 responsaveis = registro['slcResponsavel'] + responsaveisFotocopia
-                agendamento = "Fotocópia integral"
+                textoAgendamento = "Fotocópia integral"
 
             totalResp = len(responsaveis)
             countResp = 0
@@ -529,7 +537,7 @@ class IntegraFunctions(object):
             for item in listDestinatarios:  #itera inputs recuperados, checa e clica
                 if (item.text in responsaveis ):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                    element = self.waitingElement(xPathItem, 'click', form='xpath')
+                    element = self.waitingElement(xPathItem, 'click')
                     element.click()
                     sleep(1.5)
                     countResp = countResp + 1
@@ -540,7 +548,7 @@ class IntegraFunctions(object):
 
             # combo TIPO - ABRIR
             xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
-            comboTipoAgendamento = self.waitingElement(xPathElement, 'click', form='xpath')
+            comboTipoAgendamento = self.waitingElement(xPathElement, 'click')
             comboTipoAgendamento.click()
             sleep(1.5)
 
@@ -549,14 +557,57 @@ class IntegraFunctions(object):
             for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
                 if (item.text == tipoAgendamento):
                     xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
-                    element = self.waitingElement(xPathItem, 'click', form='xpath')
+                    element = self.waitingElement(xPathItem, 'click')
                     element.click()
                     sleep(1.5)
                     break
                 y = y + 1
 
+            # CAMPO QUANDO
+            sleep(.5)
+            xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
+            element = self.waitingElement(xPathElement, 'show')
+            element.clear()
+            element.send_keys(dataAgendamento)
+            sleep(.5)
 
+            # COM HORA
+            if (tipoAgendamento == 'Audiência' and registro['agendamentos']['HoraAudiencia']):
+                sleep(.5)
+                xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
+                element = self.waitingElement(xPathElement, 'click')
+                element.click() # MARCA - COM HORA
 
+                sleep(.5)
+                xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
+                element = self.waitingElement(xPathElement, 'click')
+                element.clear()
+                element.send_keys(registro['agendamentos']['HoraAudiencia'])
+
+                sleep(.5)
+                xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
+                element = self.waitingElement(xPathElement, 'show')
+                element.clear()
+                element.send_keys(registro['agendamentos']['HoraAudiencia'])
+
+            # campo textoAgendamento
+            sleep(.5)
+            xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
+            element = self.waitingElement(xPathElement, 'show')
+            element.clear()
+            element.send_keys(textoAgendamento)
+
+            # campo resumo
+            sleep(.5)
+            xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
+            element = self.waitingElement(xPathElement, 'show')
+            element.clear()
+            sleep(.5)
+            xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
+            element = self.waitingElement(xPathElement, 'show')
+            element.send_keys(textoAgendamento[:30])
+
+            print('FINALIZOU AGENDAMENTOS')
 
 
 
