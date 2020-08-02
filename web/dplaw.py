@@ -81,15 +81,10 @@ def abertura_executa():
     data = data['txtAbertura']
     data = json.loads(data)
 
-
     data['tipo'] = 'abertura'
     # print(data)
     integra = IntegraFunctions()
     integra.controle(data)
-
-
-
-
 
     return render_template('atualizacao.html')
 
