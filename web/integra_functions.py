@@ -182,7 +182,6 @@ class IntegraFunctions(object):
 
     def controle(self, registros):
         robo = None
-        # _abreWebDriver = None
         driverIniciado = False
         self.isTest = basic_functions.checkIfTest()
 
@@ -254,10 +253,10 @@ class IntegraFunctions(object):
 
                     try:
                         print('REG {}: REALIZANDO PESQUISA'.format(str(reg+1)))
-                        # if (not(self.isTest)): #se não é teste
-                        searchFolder = False
-                        # else:
-                        #     searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                        if (self.isTest):
+                            searchFolder = False
+                        else:
+                            searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
                     except:
                         print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1)))
                         return False
@@ -266,7 +265,7 @@ class IntegraFunctions(object):
                         cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
                         basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-                    if (not(searchFolder)):   # A PASTA NÃO EXISTE NO SISTEMA, SERÁ CRIADA!
+                    if (not(searchFolder)):   # A PASTA NÃO EXISTE NO SISTEMA, SERÁ CRIADA!  true - existe pasta
                         try:
                             sleep(0.5)
                             print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1)))
@@ -279,7 +278,7 @@ class IntegraFunctions(object):
                             return False
 
                         if (registro['slcResponsavel'] and message):
-                            self.criaAgendammentos(registros['{}'.format(reg)], reg)
+                            messageAgendamentos = self.criaAgendammentos(registros['{}'.format(reg)], reg)
                             if (self.isTest):
                                 self.removeAgendamentos()
                         else:
@@ -287,7 +286,7 @@ class IntegraFunctions(object):
                     else:
                         message = "REG {};;A PASTA {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'])
                         print(message)
-
+                    if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
                     basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
                     reg = reg + 1
                 print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
@@ -348,7 +347,7 @@ class IntegraFunctions(object):
                 element = self.waitingElement("idDoProcesso", 'show', 'class')
                 idNovaPasta = element.get_attribute("innerHTML")
                 idNovaPasta = idNovaPasta[14:].strip()
-                print("REG {}: NOVA PASTA ABERTA: {}".format(reg, idNovaPasta))
+                print("REG {}: NOVA PASTA ABERTA: {}".format(reg+1, idNovaPasta))
                 return idNovaPasta
             except:
                 naoInserido['idDoProcessoINTEGRA'] = 'Não recuperado'
@@ -447,7 +446,7 @@ class IntegraFunctions(object):
 
         complementoNaoInseridos =''
         if (naoInserido):
-            complementoNaoInseridos = 'NÃO FORAM INSERIDOS OS ITENS: '
+            complementoNaoInseridos = ''
             for k1, v1 in naoInserido.items():
                 complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
                 print(complementoNaoInseridos)
@@ -457,10 +456,10 @@ class IntegraFunctions(object):
             element = self.waitingElement('//*[@id="btnSalvar"]', 'click')
             element.click()
             print('REG {}: SALVANDO'.format(reg+1))
-            sleep(1.1)
+            sleep(1.5)
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
-                element = self.driver.find_element_by_id("popup_ok")
+                element = self.waitingElement("popup_ok", 'click', 'id')
                 self.driver.execute_script("arguments[0].click();", element)
                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
                 print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1))
@@ -487,10 +486,8 @@ class IntegraFunctions(object):
         return message
 
     def criaAgendammentos(self, registro, reg):
-        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
+        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg+1))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
-        self.checkPopUps()
-
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
 
@@ -501,181 +498,237 @@ class IntegraFunctions(object):
         responsaveisAudiencia = ['GST']
         responsaveisAnexar    = ['ESTAGBRA']
         responsaveisFotocopia = ['GST','operacoes']
-        # responsaveisCiencia = ['COI', 'cbradesco', 'CBV', ]
+        responsaveisCiencia   = ['cbradesco']
 
         message = ''
-
-        #recupera listas
-
-        # listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
-
-        xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
+        messageFinal = ''
+        messageNaoAbertos = ''
+        refazAgendamento = 1
 
         for tipoAgendamento, agendamento in agendamentos.items():
-            responsaveis = []
-            textoAgendamento = ''
-            print(tipoAgendamento,' - ', agendamento)
-
-            elementComboDestinatario = self.waitingElement(xPathComboDestinatario, 'show')
-            elementComboDestinatario.click()
-
-            #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
-            if tipoAgendamento == 'Audiência':
-                dataAgendamento = registro['agendamentos']['Audiência']
-                responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
-                if (registro['agendamentos']['HoraAudiencia']):
-                    textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
-                else:
-                    textoAgendamento = "{} - Audiência designada para dia {}".format(registro['sigla'], registro['agendamentos']['Audiência'])
-            elif tipoAgendamento == 'Ciencia de novo processo':
-                dataAgendamento = registro['agendamentos']['Ciencia de novo processo']
-                textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
-            elif tipoAgendamento == 'Anexar':
-                responsaveis = registro['slcResponsavel'] + responsaveisAnexar
-                textoAgendamento = "ANEXAR"
-            elif tipoAgendamento == 'Fotocópia':
-                responsaveis = registro['slcResponsavel'] + responsaveisFotocopia
-                textoAgendamento = "Fotocópia integral"
-
-            totalResp = len(responsaveis)
-            countResp = 0
-            y = 1
-            listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
-            for item in listDestinatarios:  #itera inputs recuperados, checa e clica
-                if (item.text in responsaveis ):
-                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
-                    element = self.waitingElement(xPathItem, 'click')
-                    element.click()
-                    sleep(0.5)
-                    countResp = countResp + 1
-                    if (countResp == (totalResp + 1)):
-                        break
-                y = y + 1
-            elementComboDestinatario.click()
-
-            # combo TIPO - ABRIR
-            xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
-            comboTipoAgendamento = self.waitingElement(xPathElement, 'click')
-            comboTipoAgendamento.click()
-            sleep(0.5)
-
-            listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
-            y = 1
-            for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
-                if (item.text == tipoAgendamento):
-                    xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
-                    element = self.waitingElement(xPathItem, 'click')
-                    element.click()
-                    sleep(0.5)
+            while True:
+                self.checkPopUps()
+                responsaveis = []
+                textoAgendamento = ''
+                print('REG {}: INICIANDO O AGENDAMENTO {}:{}'.format(reg+1, tipoAgendamento, agendamento))
+                sleep(1)
+                try:
+                    xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
+                    elementComboDestinatario = self.waitingElement(xPathComboDestinatario, 'click')
+                    elementComboDestinatario.click()
+                except:
+                    print('ERRO NO COMBO DESTINATÁRIO - INICIANDO NOVAMENTE')
                     break
-                y = y + 1
 
-            # CAMPO QUANDO
-            sleep(.5)
-            xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
-            element = self.waitingElement(xPathElement, 'show')
-            element.clear()
-            element.send_keys(dataAgendamento)
-            sleep(.5)
+                #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
+                if tipoAgendamento == 'Audiência':
+                    dataAgendamento = registro['agendamentos']['Audiência']
+                    responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
+                    if (registro['agendamentos']['HoraAudiencia']):
+                        textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
+                    else:
+                        textoAgendamento = "{} - Audiência designada para dia {}".format(registro['sigla'], registro['agendamentos']['Audiência'])
+                    messageFinal = "{}".format(textoAgendamento.split('-')[1].strip().upper())
 
-            # COM HORA
-            if (tipoAgendamento == 'Audiência' and registro['agendamentos']['HoraAudiencia']):
+                elif tipoAgendamento == 'Ciencia de novo processo':
+                    responsaveis = registro['slcResponsavel'] + responsaveisCiencia
+                    dataAgendamento = registro['agendamentos']['Ciencia de novo processo']
+                    textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
+
+                elif tipoAgendamento == 'Anexar':
+                    responsaveis = registro['slcResponsavel'] + responsaveisAnexar
+                    textoAgendamento = "ANEXAR"
+
+                elif tipoAgendamento == 'Fotocópia':
+                    responsaveis = registro['slcResponsavel'] + responsaveisFotocopia
+                    textoAgendamento = "Fotocópia integral"
+
+                totalResp = len(responsaveis)
+                countResp = 0
+                y = 1
+                print('REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(reg+1))
+                listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
+                while True:
+                    try:
+                        for item in listDestinatarios:  #itera inputs recuperados, checa e clica
+                            if (item.text in responsaveis ):
+                                xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
+                                element = self.waitingElement(xPathItem, 'click')
+                                element.click()
+                                sleep(0.5)
+                                countResp = countResp + 1
+                                if (countResp == (totalResp + 1)):
+                                    break
+                            y = y + 1
+                        break
+                    except:
+                        print('ERRO AO CARREGAR OU SELECIONAR DESTINATÁRIOS')
+                        continue
+                elementComboDestinatario.click()
+                sleep(1)
+
+                # combo TIPO - ABRIR
+                xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
+                comboTipoAgendamento = self.waitingElement(xPathElement, 'click')
+                comboTipoAgendamento.click()
+                sleep(0.5)
+
+                print('REG {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(reg+1))
+                listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
+                y = 1
+                while True:
+                    try:
+                        for item in listTiposAgendamentos:  #itera inputs recuperados, checa e clica
+                            if (item.text == tipoAgendamento):
+                                xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
+                                element = self.waitingElement(xPathItem, 'click')
+                                element.click()
+                                sleep(0.5)
+                                break
+                            y = y + 1
+                        break
+                    except:
+                        print('ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS')
+                        continue
+
+                # CAMPO QUANDO
+                print('REG {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg+1))
+                sleep(1)
+                xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
+                element = self.waitingElement(xPathElement, 'show')
+                element.clear()
+                element.send_keys(dataAgendamento)
                 sleep(.5)
-                xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
-                checkComHora = self.waitingElement(xPathElement, 'click')
-                checkComHora.click()
+
+                try: #se o calendário estiver aberto, será fechado
+                    self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
+                except:
+                    print("ERRO CALENDÁRIO")
+                sleep(1)
+
+                # COM HORA
+                if (tipoAgendamento == 'Audiência' and registro['agendamentos']['HoraAudiencia']):
+                    print('REG {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg+1))
+                    sleep(.5)
+                    xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
+                    checkComHora = self.waitingElement(xPathElement, 'click')
+                    checkComHora.click()
+
+                    sleep(.5)
+                    xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
+                    horaInicial = self.waitingElement(xPathElement, 'click')
+                    horaInicial.clear()
+                    horaInicial.send_keys(registro['agendamentos']['HoraAudiencia'])
+
+                    sleep(.5)
+                    xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
+                    horaFinal = self.waitingElement(xPathElement, 'show')
+                    horaFinal.clear()
+                    horaFinal.send_keys(registro['agendamentos']['HoraAudiencia'])
+
+                # campo textoAgendamento
+                sleep(.5)
+                print('REG {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(reg+1))
+                xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
+                campoAgendamento = self.waitingElement(xPathElement, 'show')
+                campoAgendamento.clear()
+                campoAgendamento.send_keys(textoAgendamento)
+
+                # campo resumo
+                sleep(.5)
+                print('REG {}: PREENCHENDO O RESUMO DO AGENDAMENTO'.format(reg+1))
+                xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
+                campoResumo = self.waitingElement(xPathElement, 'show')
+                campoResumo.clear()
+                campoResumo.send_keys(textoAgendamento[:30])
+
+                # BOTÃO SALVAR
+                try:
+                    sleep(.5)
+                    print('REG {}: SALVANDO'.format(reg+1))
+                    botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
+                    botaoSalvar.click()
+                except:
+                    print("ERRO AO CLICAR NO BOTÃO SALVAR!!!!")
+                    pass
 
                 sleep(.5)
-                xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                horaInicial = self.waitingElement(xPathElement, 'click')
-                horaInicial.clear()
-                horaInicial.send_keys(registro['agendamentos']['HoraAudiencia'])
-
-                sleep(.5)
-                xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                horaFinal = self.waitingElement(xPathElement, 'show')
-                horaFinal.clear()
-                horaFinal.send_keys(registro['agendamentos']['HoraAudiencia'])
-
-            # campo textoAgendamento
-            sleep(.5)
-            xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
-            campoAgendamento = self.waitingElement(xPathElement, 'show')
-            campoAgendamento.clear()
-            campoAgendamento.send_keys(textoAgendamento)
-
-            # campo resumo
-            sleep(.5)
-            xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-            campoResumo = self.waitingElement(xPathElement, 'show')
-            campoResumo.clear()
-            campoResumo.send_keys(textoAgendamento[:30])
-
-            # BOTÃO SALVAR
-            try:
-                sleep(.5)
-                botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
-                botaoSalvar.click()
-            except:
-                print("ERRO AO CLICAR NO BOTÃO SALVAR!!!!")
-                pass
-
-            sleep(.5)
-            try: # CHECA SE FALTOU INFORMAÇÕES NO INPUT
+                # CHECA SE FALTOU INFORMAÇÕES NO INPUT
                 validacaoCampos = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
                 if (validacaoCampos.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
-                    element = self.waitingElement("//*[@id='slcGrupo']", 'show')  #checa se redirecionamento ocorreu
-                    self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
-                    xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
-                    element = self.waitingElement(xPathElement, 'show')
-                    if (element == False):
-                        print("erro: Elemento da página não foi encontrado!")
-                    self.checkPopUps()
+                    print('REG {}: OS CAMPOS NÃO FORAM PREENCHIDOS CORRETAMENTE'.format(reg+1))
                     sleep(.5)
-                    if (refazAgendamento < 1): # limita a 5 tentativas para o agendamento
+                    self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #ATUALIZA A PÁGINA
+                    print('TENTATIVA Nº {} DE 3'.format(refazAgendamento))
+                    if (refazAgendamento <= 1): # 3 tentativas para o agendamento
                         refazAgendamento = refazAgendamento + 1
-                        break #continue      #volta ao While TRUE e recomeça os preenchimentos
+                        continue      #volta ao While TRUE e recomeça os preenchimentos
                     else:
                         refazAgendamento = 0
+                        print("NÃO FOI POSSÍVEL REALIZAR O AGENDAMENTO DE {}!".format(tipoAgendamento))
                         break
-            except:
-                print("erro INFORMAÇÕES NO INPUT")
-                pass
 
-            try: #Clicar no PopUp - Deseja salvar
-                sleep(.5)
-                botaoPopUp = self.waitingElement('//*[@id="popup_ok"]', 'click')
-                botaoPopUp.click()
-                message = "{} |{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
-                print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(registro, tipoAgendamento))
-                sleep(.5)
-            except:
-                print("erro POPUP SALVAR")
-                pass
+                try: #Clicar no PopUp - Deseja salvar
+                    sleep(.5)
+                    botaoPopUp = self.waitingElement('//*[@id="popup_ok"]', 'click')
+                    botaoPopUp.click()
+                    message = "{}|{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
+                    print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(reg+1, tipoAgendamento))
+                    sleep(.5)
+                except:
+                    print("erro POPUP SALVAR")
+                    pass
 
-            try: #remove agendamentos já executados
-                agendNaoAbertos.remove(tipoAgendamento)
-            except:
-                print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
+                try: #remove agendamentos já executados
+                    print('REG {}: REMOVENDO O AGENDAMENTO EXECUTADO'.format(reg+1))
+                    agendNaoAbertos.remove(tipoAgendamento)
+                except:
+                    print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
+                break # SE CHEGAR AQUI SEM ERRO - SAI DO LOOPING
 
+        # APÓS O LOOPING
+        if (agendNaoAbertos):
+            for x in agendNaoAbertos:
+                messageNaoAbertos = "{}|{}".format(messageNaoAbertos, x)
 
+        if (messageFinal):
+            print('REG {}: INSERINDO A MENSAGEM FINAL'.format(reg+1))
+            message = "{};{}".format(message, messageFinal)
+
+        if (messageNaoAbertos):
+            print('REG {}: INSERINDO OS AGENDAMENTOS NÃO ABERTOS'.format(reg+1))
+            message = "{};{}".format(message, messageNaoAbertos)
         print('FINALIZOU TODOS OS AGENDAMENTOS')
+
+        return message
 
     def removeAgendamentos(self): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
         xInputs = '//*[@id="divAgendaListar"]/div/table/tbody/tr'
+        tentativa = 1
         while True:
             try:
-                listaAgendamentos = self.integra.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
-                agendItem = listaAgendamentos[-1].find_element_by_tag_name('a')
-                agendItem.click()
-                sleep(0.3)
-                for _x in range(2):
-                    botaoPopup = self.waitingElement('popup_ok', 'click', 'id')
-                    botaoPopup.click()
-                    sleep(0.3)
+                sleep(2)
+                listaAgendamentos = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+                if (len(listaAgendamentos)>0):
+                    agendItem = listaAgendamentos[-1].find_element_by_tag_name('a')
+                    agendItem.click()
+                    sleep(0.5)
+                else:
+                    break
             except:
-                print('ERRO AO REMOVER AGENDAMENTO')
-                break
+                if (tentativa == 4):
+                    print('ERRO AO REMOVER AGENDAMENTO')
+                    break
+                print('TENTATIVA {} DE REMOVER AGENDAMENTO'.format(tentativa))
+                tentativa = tentativa + 1
+                continue
+
+            for _x in range(2):
+                botaoPopup = self.waitingElement('popup_ok', 'click', 'id')
+                botaoPopup.click()
+                sleep(0.5)
+            if (tentativa > 1): tentativa = 1
+
         print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
 
 
