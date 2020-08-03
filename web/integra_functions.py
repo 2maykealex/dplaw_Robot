@@ -240,7 +240,7 @@ class IntegraFunctions(object):
                     del registro['agendamentos']
                     message = ''
                     print('=========================================================')
-                    print('REG {}: INICIANDO'.format(str(reg+1)))
+                    print('REG {} - PASTA {}: INICIANDO'.format(str(reg+1), registro['txtPasta']))
 
                     try:
                         registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
@@ -252,13 +252,13 @@ class IntegraFunctions(object):
                         pass
 
                     try:
-                        print('REG {}: REALIZANDO PESQUISA'.format(str(reg+1)))
+                        print('REG {} - PASTA {}: REALIZANDO PESQUISA'.format(str(reg+1), registro['txtPasta']))
                         if (self.isTest):
                             searchFolder = False
                         else:
                             searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
                     except:
-                        print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1)))
+                        print('REG {} - PASTA {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1), registro['txtPasta']))
                         return False
 
                     if (reg == 0): # CABEÇALHO DO LOG
@@ -268,12 +268,12 @@ class IntegraFunctions(object):
                     if (not(searchFolder)):   # A PASTA NÃO EXISTE NO SISTEMA, SERÁ CRIADA!  true - existe pasta
                         try:
                             sleep(0.5)
-                            print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1)))
+                            print('REG {} - PASTA {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1), registro['txtPasta']))
                             self.driver.get(urlPage)
                             sleep(0.5)
                             message = self.incluirProcesso(registro, reg) # k=item
                         except:
-                            print('REG {}: ERRO AO INCLUIR A PASTA: {}'.format(str(reg+1), registro['txtPasta']))
+                            print('REG {} - PASTA {}: ERRO AO INCLUIR A PASTA'.format(str(reg+1), registro['txtPasta']))
                             #TODO ver log para esse erro  - ver comportamento nessa situação  - CONTABILIZAR TENTATIVAS Q OCORREU
                             return False
 
@@ -347,7 +347,7 @@ class IntegraFunctions(object):
                 element = self.waitingElement("idDoProcesso", 'show', 'class')
                 idNovaPasta = element.get_attribute("innerHTML")
                 idNovaPasta = idNovaPasta[14:].strip()
-                print("REG {}: NOVA PASTA ABERTA: {}".format(reg+1, idNovaPasta))
+                print("REG {} - PASTA {}: NOVA PASTA ABERTA: {}".format(reg+1, registro['txtPasta'], idNovaPasta))
                 return idNovaPasta
             except:
                 naoInserido['idDoProcessoINTEGRA'] = 'Não recuperado'
@@ -371,7 +371,7 @@ class IntegraFunctions(object):
 
         self.checkPopUps()
         sleep(1.5)
-        print('REG {}: INICIANDO INCLUSAO DE PASTA'.format(reg+1))
+        print('REG {} - PASTA {}: INICIANDO INCLUSAO DE PASTA'.format(reg+1, registro['txtPasta']))
         element = self.waitInstance(self.driver, '//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 1, 'show')
         element.click()
         naoInserido = {}
@@ -382,7 +382,7 @@ class IntegraFunctions(object):
         message = ''
         message = "REG {};{} às {};".format(reg+1, hoje, hora)  #Insere a primeira linha do item no log
 
-        print('REG {}: INICIANDO LOOPING'.format(reg+1))
+        print('REG {} - PASTA {}: INICIANDO LOOPING'.format(reg+1, registro['txtPasta']))
         for k, v in registro.items():
             print ('REG {}: {} - {}'.format(reg+1, k, v))
             try:
@@ -402,14 +402,14 @@ class IntegraFunctions(object):
                     sleep(.8)
             except:
                 naoInserido[k] = str(v)
-        print('REG {}: FINALIZADO O LOOPING'.format(reg+1))
+        print('REG {} - PASTA {}: FINALIZADO O LOOPING'.format(reg+1, registro['txtPasta']))
         segredoJusticaAndamentos()
         idNovaPasta = recuperaIdIntegra()
 
         try:
             complementoAdversa = ""
             if (registro['adversa']):
-                print('REG {}: EXISTE PARTE ADVERSA'.format(reg+1))
+                print('REG {} - PASTA {}: EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
                 while True:
                     try:
                         element = self.waitingElement("//*[@id='div_menu17']", 'click')
@@ -432,14 +432,14 @@ class IntegraFunctions(object):
                 try:
                     element = self.waitingElement('//*[@id="txtNome"]', 'click')
                     element.send_keys(str(registro['adversa']))
-                    print("REG {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, str(registro['adversa'])))
+                    print("REG {} - PASTA {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, registro['txtPasta'], str(registro['adversa'])))
                     complementoAdversa = "{}".format(str(registro['adversa']))
                 except:
                     naoInserido['adversa'] = str(registro['adversa'])
             else:
                 naoInserido['adversa'] = ''
         except:
-            print('REG {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1))
+            print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
             pass
 
         sleep(0.8)
@@ -452,19 +452,19 @@ class IntegraFunctions(object):
                 print(complementoNaoInseridos)
 
         try: # Botão salvar
-            print('REG {}: ANTES DE SALVAR'.format(reg+1))
+            print('REG {} - PASTA {}: ANTES DE SALVAR'.format(reg+1, registro['txtPasta']))
             element = self.waitingElement('//*[@id="btnSalvar"]', 'click')
             element.click()
-            print('REG {}: SALVANDO'.format(reg+1))
+            print('REG {} - PASTA {}: SALVANDO'.format(reg+1, registro['txtPasta']))
             sleep(1.5)
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
                 element = self.waitingElement("popup_ok", 'click', 'id')
                 self.driver.execute_script("arguments[0].click();", element)
                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1))
+                print('REG {} - PASTA {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1, registro['txtPasta']))
             except:
-                print('REG {}: ADVERSA NÃO TEM PROCESSOS'.format(reg+1))
+                print('REG {} - PASTA {}: ADVERSA NÃO TEM PROCESSOS'.format(reg+1, registro['txtPasta']))
                 pass
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
 
@@ -478,7 +478,7 @@ class IntegraFunctions(object):
                 message = "{}{};".format(message, complementoAdversa)
                 message = "{}{};".format(message, complementoNaoInseridos)
 
-                print('REG {}: FINALIZADO às: {}'.format(reg+1, horaStr))
+                print('REG {} - PASTA {}: FINALIZADO às: {}'.format(reg+1, str(registro['txtPasta']), horaStr))
             except:
                 pass
         except:
@@ -486,7 +486,7 @@ class IntegraFunctions(object):
         return message
 
     def criaAgendammentos(self, registro, reg):
-        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg+1))
+        print("REG {} - PASTA {}: INICIANDO OS AGENDAMENTOS:".format(reg+1, registro['txtPasta']))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
@@ -510,7 +510,7 @@ class IntegraFunctions(object):
                 self.checkPopUps()
                 responsaveis = []
                 textoAgendamento = ''
-                print('REG {}: INICIANDO O AGENDAMENTO {}:{}'.format(reg+1, tipoAgendamento, agendamento))
+                print('REG {} - PASTA {}: INICIANDO O AGENDAMENTO {}:{}'.format(reg+1, registro['txtPasta'], tipoAgendamento, agendamento))
                 sleep(1)
                 try:
                     xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
@@ -546,7 +546,7 @@ class IntegraFunctions(object):
                 totalResp = len(responsaveis)
                 countResp = 0
                 y = 1
-                print('REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(reg+1))
+                print('REG {} - PASTA {}: SELECIONANDO OS RESPONSÁVEIS'.format(reg+1, registro['txtPasta']))
                 listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
                 while True:
                     try:
@@ -573,7 +573,7 @@ class IntegraFunctions(object):
                 comboTipoAgendamento.click()
                 sleep(0.5)
 
-                print('REG {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(reg+1))
+                print('REG {} - PASTA {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(reg+1, registro['txtPasta']))
                 listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
                 y = 1
                 while True:
@@ -592,7 +592,7 @@ class IntegraFunctions(object):
                         continue
 
                 # CAMPO QUANDO
-                print('REG {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg+1))
+                print('REG {} - PASTA {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
                 sleep(1)
                 xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
                 element = self.waitingElement(xPathElement, 'show')
@@ -608,7 +608,7 @@ class IntegraFunctions(object):
 
                 # COM HORA
                 if (tipoAgendamento == 'Audiência' and registro['agendamentos']['HoraAudiencia']):
-                    print('REG {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg+1))
+                    print('REG {} - PASTA {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg+1, registro['txtPasta']))
                     sleep(.5)
                     xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
                     checkComHora = self.waitingElement(xPathElement, 'click')
@@ -628,7 +628,7 @@ class IntegraFunctions(object):
 
                 # campo textoAgendamento
                 sleep(.5)
-                print('REG {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(reg+1))
+                print('REG {} - PASTA {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
                 xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
                 campoAgendamento = self.waitingElement(xPathElement, 'show')
                 campoAgendamento.clear()
@@ -636,7 +636,7 @@ class IntegraFunctions(object):
 
                 # campo resumo
                 sleep(.5)
-                print('REG {}: PREENCHENDO O RESUMO DO AGENDAMENTO'.format(reg+1))
+                print('REG {} - PASTA {}: PREENCHENDO O RESUMO DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
                 xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
                 campoResumo = self.waitingElement(xPathElement, 'show')
                 campoResumo.clear()
@@ -645,7 +645,7 @@ class IntegraFunctions(object):
                 # BOTÃO SALVAR
                 try:
                     sleep(.5)
-                    print('REG {}: SALVANDO'.format(reg+1))
+                    print('REG {} - PASTA {}: SALVANDO'.format(reg+1, registro['txtPasta']))
                     botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
                     botaoSalvar.click()
                 except:
@@ -656,7 +656,7 @@ class IntegraFunctions(object):
                 # CHECA SE FALTOU INFORMAÇÕES NO INPUT
                 validacaoCampos = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
                 if (validacaoCampos.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
-                    print('REG {}: OS CAMPOS NÃO FORAM PREENCHIDOS CORRETAMENTE'.format(reg+1))
+                    print('REG {} - PASTA {}: OS CAMPOS NÃO FORAM PREENCHIDOS CORRETAMENTE'.format(reg+1, registro['txtPasta']))
                     sleep(.5)
                     self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #ATUALIZA A PÁGINA
                     print('TENTATIVA Nº {} DE 3'.format(refazAgendamento))
@@ -673,14 +673,14 @@ class IntegraFunctions(object):
                     botaoPopUp = self.waitingElement('//*[@id="popup_ok"]', 'click')
                     botaoPopUp.click()
                     message = "{}|{}".format(message, tipoAgendamento) # add à message o tipo de agendamento REALIZADO.
-                    print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(reg+1, tipoAgendamento))
+                    print ("REG {} - PASTA {}: CRIADO O AGENDAMENTO: |{}".format(reg+1, registro['txtPasta'], tipoAgendamento))
                     sleep(.5)
                 except:
                     print("erro POPUP SALVAR")
                     pass
 
                 try: #remove agendamentos já executados
-                    print('REG {}: REMOVENDO O AGENDAMENTO EXECUTADO'.format(reg+1))
+                    print('REG {} - PASTA {}: REMOVENDO O AGENDAMENTO EXECUTADO'.format(reg+1, registro['txtPasta']))
                     agendNaoAbertos.remove(tipoAgendamento)
                 except:
                     print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
@@ -692,11 +692,11 @@ class IntegraFunctions(object):
                 messageNaoAbertos = "{}|{}".format(messageNaoAbertos, x)
 
         if (messageFinal):
-            print('REG {}: INSERINDO A MENSAGEM FINAL'.format(reg+1))
+            print('REG {} - PASTA {}: INSERINDO A MENSAGEM FINAL'.format(reg+1, registro['txtPasta']))
             message = "{};{}".format(message, messageFinal)
 
         if (messageNaoAbertos):
-            print('REG {}: INSERINDO OS AGENDAMENTOS NÃO ABERTOS'.format(reg+1))
+            print('REG {} - PASTA {}: INSERINDO OS AGENDAMENTOS NÃO ABERTOS'.format(reg+1, registro['txtPasta']))
             message = "{};{}".format(message, messageNaoAbertos)
         print('FINALIZOU TODOS OS AGENDAMENTOS')
 
