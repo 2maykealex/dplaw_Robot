@@ -192,7 +192,7 @@ class IntegraFunctions(object):
 
         # CRIANDO ARQUIVO DE LOG .CSV
         self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
-        self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}_{}__{}__{}'.format(registros['tipo'], registros['sigla'], hoje, hora))
+        self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}__{}__{}'.format(registros['tipo'], hoje, hora))
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
         reg = basic_functions.checkEndFile(self.logFileCSV)
 
@@ -383,12 +383,16 @@ class IntegraFunctions(object):
         message = "REG {};{} às {};".format(reg+1, hoje, hora)  #Insere a primeira linha do item no log
 
         print('REG {} - PASTA {}: INICIANDO LOOPING'.format(reg+1, registro['txtPasta']))
+        itensExcluidosLoop = ['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos']
         for k, v in registro.items():
             print ('REG {}: {} - {}'.format(reg+1, k, v))
             try:
+                if (k in itensExcluidosLoop):
+                    continue
+
                 if (k == 'slcResponsavel'):
                     selecionaResponsaveis()
-                elif (k != 'razaoSocial' and k != 'adversa' and k != 'sigla'):
+                else:
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'input'):
                         element.clear()
@@ -408,7 +412,8 @@ class IntegraFunctions(object):
 
         try:
             complementoAdversa = ""
-            if (registro['adversa']):
+            #TODO FUNÇÃO PARA PARTE ADVERSA
+            if (registro['parteAdversa']):
                 print('REG {} - PASTA {}: EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
                 while True:
                     try:
@@ -431,11 +436,11 @@ class IntegraFunctions(object):
                 # Preenchendo Parte Adversa
                 try:
                     element = self.waitingElement('//*[@id="txtNome"]', 'click')
-                    element.send_keys(str(registro['adversa']))
-                    print("REG {} - PASTA {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, registro['txtPasta'], str(registro['adversa'])))
-                    complementoAdversa = "{}".format(str(registro['adversa']))
+                    element.send_keys(str(registro['parteAdversa']['txtNome']))
+                    print("REG {} - PASTA {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, registro['txtPasta'], str(registro['parteAdversa']['txtNome'])))
+                    complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
                 except:
-                    naoInserido['adversa'] = str(registro['adversa'])
+                    naoInserido['adversa'] = str(registro['parteAdversa']['txtNome'])
             else:
                 naoInserido['adversa'] = ''
         except:
@@ -574,7 +579,7 @@ class IntegraFunctions(object):
                 sleep(0.5)
 
                 print('REG {} - PASTA {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(reg+1, registro['txtPasta']))
-                listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag #TODO - VERIFICAR PRA COLOCAR ANTES DO LOOPING (NÃO ESTAVA RECUPERANDO)
+                listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
                 y = 1
                 while True:
                     try:
