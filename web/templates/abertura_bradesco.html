@@ -28,6 +28,7 @@
         function converter(){
             var lines = $('textarea').val().split('\n');
             var ObjectList = {};
+            ObjectList['tipo'] = 'abertura';
             for (var i = 0; i < lines.length; i++){
                 if (lines[i]){
                     ObjectList[i] = (criaObjeto(lines[i]));
@@ -48,11 +49,9 @@
             var adversa = String;
             var isNumber = String;
             var dataHoje = new Date();
-            var dataHoje = ("0" + dataHoje.getDate()).substr(-2) + "/"
-                + ("0" + (dataHoje.getMonth() + 1)).substr(-2) + "/" + dataHoje.getFullYear();
 
             //IMPORTADOS DO E-MAIL
-            objLine['pasta'] = linha.split('/')[0].split('      ')[0];
+            objLine['txtPasta'] = linha.split('/')[0].split('      ')[0];
             adversa  = linha.split('/')[0].split('      ')[1];
             isNumber = parseInt(adversa.slice(-2, -1));
 
@@ -60,20 +59,20 @@
                 adversa = adversa.split(isNumber)[0].trim();
             };
 
-            checkAudiencia =  Number.isInteger(parseInt(linha.slice(-2)));
-            objLine['adversa']         = adversa;
-            objLine['dataContratacao'] = dataHoje;
-            objLine['numProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
-            objLine['cnj']             = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            checkTemAudiencia =  Number.isInteger(parseInt(linha.slice(-2)));
+            objLine['txtDataContratacao'] = dataHoje.toLocaleDateString();
+            objLine['txtNroProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            objLine['txtNroCnj']          = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            objLine['parteAdversa'] = {'txtNome': adversa};
 
-            if (checkAudiencia){
-                objLine['comarca']         = linha.split('/')[3].trim();
-                objLine['uf']              = linha.split('/')[4].split(' ')[0];
-                objLine['dataAudiencia']   = linha.slice(-10);
+            if (checkTemAudiencia){
+                objLine['slcComarca'] = linha.split('/')[3].trim();
+                objLine['txtUf']      = linha.split('/')[4].split(' ')[0];
+                objLine['agendamentos'] = {'Audiência':linha.slice(-10)}; //NO BRADESCO NÃO VEM A HORA
             }
             else{
-                objLine['comarca']         = linha.split('/').slice(-2)[0].trim();
-                objLine['uf']              = linha.split('/').slice(-1)[0].trim();
+                objLine['slcComarca'] = linha.split('/').slice(-2)[0].trim();
+                objLine['txtUf']      = linha.split('/').slice(-1)[0].trim();
             };
             return (objLine);
         };

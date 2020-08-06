@@ -20,50 +20,50 @@
 
         function preencherRegistros(){
             document.getElementById('regnum').value = i + 1;
-            if (objNovo[i]['pasta']){
-                document.getElementById('pasta').value = objNovo[i]['pasta'];
+            if (objNovo[i]['txtPasta']){
+                document.getElementById('txtPasta').value = objNovo[i]['txtPasta'];
             }
             if (objNovo[i]['adversa']){
                 document.getElementById('adversa').value = objNovo[i]['adversa'];
             }
-            if (objNovo[i]['numProcesso']){
-                document.getElementById('numProcesso').value = objNovo[i]['numProcesso'];
+            if (objNovo[i]['txtNroProcesso']){
+                document.getElementById('txtNroProcesso').value = objNovo[i]['txtNroProcesso'];
             }
-            if (objNovo[i]['cnj']){
-                document.getElementById('cnj').value = objNovo[i]['cnj'];
+            if (objNovo[i]['txtNroCnj']){
+                document.getElementById('txtNroCnj').value = objNovo[i]['txtNroCnj'];
             }
-            if (objNovo[i]['gpProcesso']){
-                document.getElementById('gpProcesso').value = objNovo[i]['gpProcesso'];
+            if (objNovo[i]['slcGrupo']){
+                document.getElementById('slcGrupo').value = objNovo[i]['slcGrupo'];
             }
-            if (objNovo[i]['statusProcessual']){
-                document.getElementById('statusProcessual').value = objNovo[i]['statusProcessual'];
+            if (objNovo[i]['slcStatusProcessual']){
+                document.getElementById('slcStatusProcessual').value = objNovo[i]['slcStatusProcessual'];
             }
-            if (objNovo[i]['vcausa']){
-                document.getElementById('vcausa').value = objNovo[i]['vcausa'];
+            if (objNovo[i]['txtValorCausa']){
+                document.getElementById('txtValorCausa').value = objNovo[i]['txtValorCausa'];
             } else {
-                document.getElementById('vcausa').value = "";
+                document.getElementById('txtValorCausa').value = "";
             }
-            if (objNovo[i]['localTr']){
-                document.getElementById('localTr').value = objNovo[i]['localTr'];
+            if (objNovo[i]['slcNumeroVara']){ //localTr
+                document.getElementById('slcNumeroVara').value = objNovo[i]['slcNumeroVara'];
             } else {
-                document.getElementById('localTr').value = '';
+                document.getElementById('slcNumeroVara').value = '';
             }
             if (objNovo[i]['tramite']){
                 document.getElementById('tramite').value = objNovo[i]['tramite'];
             } else {
                 document.getElementById('tramite').value = "";
             }
-            if (objNovo[i]['comarca']){
-                document.getElementById('comarca').value = objNovo[i]['comarca'];
+            if (objNovo[i]['slcComarca']){
+                document.getElementById('slcComarca').value = objNovo[i]['slcComarca'];
             }
-            if (objNovo[i]['uf']){
-                document.getElementById('uf').value = objNovo[i]['uf'];
+            if (objNovo[i]['txtUf']){
+                document.getElementById('txtUf').value = objNovo[i]['txtUf'];
             }
             if (objNovo[i]['razaoSocial']){
                 document.getElementById('razaoSocial').value = objNovo[i]['razaoSocial'];
             }
-            if (objNovo[i]['localizador']){
-                document.getElementById('localizador').value = objNovo[i]['localizador'];
+            if (objNovo[i]['slcLocalizador']){
+                document.getElementById('slcLocalizador').value = objNovo[i]['slcLocalizador'];
             }
             if (objNovo[i]['responsavel']){
                 var respId = '';
@@ -73,31 +73,31 @@
                     document.getElementById(respId).value = respArr[j];
                 }
             }
-            if (objNovo[i]['dataAudiencia']){
-                var data = objNovo[i]['dataAudiencia'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
-                document.getElementById('dataAudiencia').value = data;
+            if (objNovo[i]['agendamentos']['Audiência']){
+                var data = objNovo[i]['agendamentos']['Audiência'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
+                document.getElementById('Audiência').value = data;
             } else{
-                document.getElementById('dataAudiencia').value = '';
+                document.getElementById('Audiência').value = '';
             }
-            if (objNovo[i]['horaAudiencia']){
-                document.getElementById('horaAudiencia').value = objNovo[i]['horaAudiencia'];
+            if (objNovo[i]['agendamentos']['HoraAudiencia']){
+                document.getElementById('HoraAudiencia').value = objNovo[i]['agendamentos']['HoraAudiencia'];
             } else{
-                document.getElementById('horaAudiencia').value = '';
+                document.getElementById('HoraAudiencia').value = '';
             }
-            if (objNovo[i]['dataCiencia']){
-                document.getElementById('dataCiencia').value = objNovo[i]['dataCiencia'];
+            if (objNovo[i]['agendamentos']['dataCiencia']){
+                document.getElementById('dataCiencia').value = objNovo[i]['agendamentos']['dataCiencia'];
             } else {
                 document.getElementById('dataCiencia').value = '';
             }
-            if (objNovo[i]['anexar']){
-                document.getElementById('anexar').checked = true;
+            if (objNovo[i]['agendamentos']['Anexar']){
+                document.getElementById('Anexar').checked = true;
             } else {
-                document.getElementById('anexar').checked = false;
+                document.getElementById('Anexar').checked = false;
             }
-            if (objNovo[i]['fotocopia']){
-                document.getElementById('fotocopia').checked = true;
+            if (objNovo[i]['agendamentos']['Fotocópia']){
+                document.getElementById('Fotocópia').checked = true;
             } else {
-                document.getElementById('fotocopia').checked = false;
+                document.getElementById('Fotocópia').checked = false;
             }
         }
 
@@ -128,7 +128,7 @@
         function alteraValor(elemento){
             var checkResp = Boolean
             if (typeof (elemento) === 'undefined'){
-                if (elemento.id == 'vcausa'){
+                if (elemento.id == 'txtValorCausa'){
                     elemento.value = parseFloat(elemento.value).toFixed(2);
                     objNovo[i][elemento.id] = elemento.value.trim();
                 } else {
@@ -144,20 +144,20 @@
                         checkResp = false;
                         objNovo[i][elemento.id.slice(0, -1)][elemento.id.slice(-1)-1] = '';// limpa
                     }
-                } else if (elemento.id == 'vcausa'){
+                } else if (elemento.id == 'txtValorCausa'){
                     if (elemento.value != ''){
                         elemento.value = parseFloat(elemento.value).toFixed(2);
                         objNovo[i][elemento.id] = elemento.value.trim();
                     } else {
                         delete objNovo[i][elemento.id];
                     }
-                } else if (elemento.id == 'anexar'){
+                } else if (elemento.id == 'Anexar'){
                     if (elemento.checked){
                         objNovo[i][elemento.id] = true;
                     } else {
                         delete objNovo[i][elemento.id];
                     }
-                } else if (elemento.id == 'fotocopia'){
+                } else if (elemento.id == 'Fotocópia'){
                     if (elemento.checked){
                         objNovo[i][elemento.id] = true;
                     } else {
@@ -177,8 +177,6 @@
         function enviarDados(){
             objNovo = JSON.stringify(objNovo);
             document.getElementById('txtAbertura').innerHTML = objNovo;
-            console.log(document.getElementById('txtAbertura').innerHTML);
-            alert('enviado');
         };
 
     </script>
@@ -190,6 +188,7 @@
 </div>
 
 <div class="content ml-5 mr-5 mt-5" id='corpo'>
+    <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
     {% if (data) %}
         <div id="preencher">
             <div class="row">
@@ -202,7 +201,7 @@
                 <div class="col-md-4  mb-3">
                     <form action="{{url_for('abertura_executa')}}" method="post" >
                         <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
-                        <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10"></textarea>
+                        <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" ></textarea>
                     </form>
                 </div>
             </div>
@@ -212,20 +211,20 @@
                     <input name="regnum" id="regnum" type="text" class="form-control" style="font-weight: bold; text-align: right; font-size: 16px;" disabled>
                 </div>
                 <div class="col-md-2">
-                    <label for="pasta">PASTA</label>
-                    <input name="pasta" id="pasta" type="text" class="form-control" disabled>
+                    <label for="txtPasta">PASTA</label>
+                    <input name="txtPasta" id="txtPasta" type="text" class="form-control" disabled>
                 </div>
                 <div class="col-md-3">
                     <label for="adversa">NOME</label>
                     <input name="adversa" id="adversa" type="text" class="form-control" disabled>
                 </div>
                 <div class="col-md-3">
-                    <label for="numProcesso">N.º PROCESSO</label>
-                    <input name="numProcesso" id="numProcesso" type="text" class="form-control" disabled>
+                    <label for="txtNroProcesso">N.º PROCESSO</label>
+                    <input name="txtNroProcesso" id="txtNroProcesso" type="text" class="form-control" disabled>
                 </div>
                 <div class="col-md-3">
-                    <label for="cnj">N.º CNJ</label>
-                    <input name="cnj" id="cnj" type="text" class="form-control" disabled>
+                    <label for="txtNroCnj">N.º CNJ</label>
+                    <input name="txtNroCnj" id="txtNroCnj" type="text" class="form-control" disabled>
                 </div>
             </div>
             <div class="row mb-2">
@@ -241,18 +240,18 @@
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-9">
-                            <label for="comarca">COMARCA</label>
-                            <input name="comarca" id="comarca" type="text" class="form-control" onchange="alteraValor(this);" disabled>
+                            <label for="slcComarca">slcComarca</label>
+                            <input name="slcComarca" id="slcComarca" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                         </div>
                         <div class="col-md-3">
-                            <label for="uf">UF</label>
-                            <input name="uf" id="uf" type="text" class="form-control" onchange="alteraValor(this);" disabled>
+                            <label for="txtUf">txtUf</label>
+                            <input name="txtUf" id="txtUf" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <label for="gpProcesso">GRUPO DE PROCESSO</label>
-                    <select name="gpProcesso" id="gpProcesso" class="form-control" onchange="alteraValor(this);">
+                    <label for="slcGrupo">GRUPO DE PROCESSO</label>
+                    <select name="slcGrupo" id="slcGrupo" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for gpProcess in gruposprocessos %}
                             <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
@@ -260,8 +259,8 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="statusProcessual">STATUS</label>
-                    <select name="statusProcessual" id="statusProcessual" class="form-control" onchange="alteraValor(this);">
+                    <label for="slcStatusProcessual">STATUS</label>
+                    <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for state in status %}
                             <option value="{{state.strip()}}">{{state.strip()}}</option>
@@ -271,17 +270,17 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-4">
-                    <label for="localizador">LOCALIZADOR</label>
-                    <select name="localizador" id="localizador" class="form-control" onchange="alteraValor(this);">
+                    <label for="slcLocalizador">slcLocalizador</label>
+                    <select name="slcLocalizador" id="slcLocalizador" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
-                        {% for localizador in localizadores %}
-                            <option value="{{localizador.strip()}}">{{localizador.strip()}}</option>
+                        {% for slcLocalizador in localizadores %}
+                            <option value="{{slcLocalizador.strip()}}">{{slcLocalizador.strip()}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="localTr">VARA</label>
-                    <select name="localTr" id="localTr" class="form-control" onchange="alteraValor(this);">
+                    <label for="slcNumeroVara">VARA</label>
+                    <select name="slcNumeroVara" id="slcNumeroVara" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for vara in varas %}
                             <option value="{{vara.strip()}}">{{vara.strip()}}</option>
@@ -298,8 +297,8 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="vcausa">VALOR DA CAUSA</label>
-                    <input name="vcausa" id="vcausa" type="number" placeholder="0.00" class="form-control" onchange="alteraValor(this);">
+                    <label for="txtValorCausa">VALOR DA CAUSA</label>
+                    <input name="txtValorCausa" id="txtValorCausa" type="number" placeholder="0.00" class="form-control" onchange="alteraValor(this);">
                 </div>
             </div>
             <div class="row mb-2">
@@ -333,24 +332,24 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-2">
-                    <label for="dataAudiencia">DATA DA AUDIENCIA</label>
-                    <input name="dataAudiencia" id="dataAudiencia" type="date" class="form-control" onchange="alteraValor(this);">
+                    <label for="Audiência">DATA DA AUDIENCIA</label>
+                    <input name="Audiência" id="Audiência" type="date" class="form-control" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-2">
-                    <label for="horaAudiencia">HORA DA AUDIENCIA</label>
-                    <input name="horaAudiencia" id="horaAudiencia" type="time" class="form-control" onchange="alteraValor(this);">
+                    <label for="HoraAudiencia">HORA DA AUDIENCIA</label>
+                    <input name="HoraAudiencia" id="HoraAudiencia" type="time" class="form-control" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-2">
                     <label for="dataCiencia">DATA DA CIÊNCIA</label>
                     <input name="dataCiencia" id="dataCiencia" type="date" class="form-control" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-1">
-                    <label for="anexar">ANEXAR</label>
-                    <input name="anexar" id="anexar" type="checkbox" class="form-control" onchange="alteraValor(this);">
+                    <label for="Anexar">Anexar</label>
+                    <input name="Anexar" id="Anexar" type="checkbox" class="form-control" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-1">
-                    <label for="fotocopia">FOTOCÓPIA</label>
-                    <input name="fotocopia" id="fotocopia" type="checkbox" class="form-control" onchange="alteraValor(this);">
+                    <label for="Fotocópia">FOTOCÓPIA</label>
+                    <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control" onchange="alteraValor(this);">
                 </div>
             </div>
         </div>
