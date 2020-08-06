@@ -654,14 +654,6 @@ class IntegraFunctions(object):
                 campoAgendamento.clear()
                 campoAgendamento.send_keys(textoAgendamento)
 
-                # campo resumo
-                sleep(1)
-                print('REG {} - PASTA {}: PREENCHENDO O RESUMO DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
-                xPathElement = '//*[@id="txtTituloAgendaProcesso1"]'
-                campoResumo = self.waitingElement(xPathElement, 'show')
-                campoResumo.clear()
-                campoResumo.send_keys(textoAgendamento[:30])
-
                 # BOTÃO SALVAR
                 try:
                     sleep(1)
