@@ -238,6 +238,7 @@ class IntegraFunctions(object):
                 elemPesquisado.click()
                 sleep(.5)
                 urlPage = self.driver.current_url
+                tentativa = 1
                 while reg < (len(registros) - 2): # 2 itens são padrão do objeto (não itens para o looping)
                     registro = registros['{}'.format(reg)].copy()
                     del registro['agendamentos']
@@ -276,9 +277,12 @@ class IntegraFunctions(object):
                             sleep(0.5)
                             message = self.incluirProcesso(registro, reg) # k=item
                         except:
-                            print('REG {} - PASTA {}: ERRO AO INCLUIR A PASTA'.format(str(reg+1), registro['txtPasta']))
-                            #TODO ver log para esse erro  - ver comportamento nessa situação  - CONTABILIZAR TENTATIVAS Q OCORREU
-                            return False
+                            print('REG {} - TENTATIVA {} - PASTA {}: ERRO AO INCLUIR A PASTA'.format(str(reg+1), tentativa, registro['txtPasta']))
+                            if (tentativa > 5):
+                                message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(str(reg+1), tentativa, str(registro['txtPasta']))
+                                reg = reg + 1
+                            tentativa = tentativa + 1
+                            continue
 
                         if (registro['slcResponsavel'] and message):
                             messageAgendamentos = self.criaAgendammentos(registros['{}'.format(reg)], reg)
