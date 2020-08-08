@@ -376,6 +376,12 @@ class IntegraFunctions(object):
                         elemCadastro.send_keys(str(texto).title())
             sleep(0.3)
 
+        def _getURLpasta():
+            link = self.driver.current_url
+            linkbase = link.split('?')[0]
+            codigos  = "{}&{}".format(link.split('&')[1], link.split('&')[2].replace('&paginaAnterior=',''))
+            idNovaPasta = '=HIPERLINK("{}?{}")'.format(linkbase, codigos, idNovaPasta)
+
         self.checkPopUps()
         sleep(1.5)
         print('REG {} - PASTA {}: INICIANDO INCLUSAO DE PASTA'.format(reg+1, registro['txtPasta']))
