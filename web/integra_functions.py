@@ -423,42 +423,24 @@ class IntegraFunctions(object):
         segredoJusticaAndamentos()
         idNovaPasta = recuperaIdIntegra()
 
-        try:
-            complementoAdversa = ""
-            #TODO FUNÇÃO PARA PARTE ADVERSA
-            if (registro['parteAdversa']):
-                print('REG {} - PASTA {}: EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
-                while True:
-                    try:
-                        element = self.waitingElement("//*[@id='div_menu17']", 'click')
-                        element.click()
-                        sleep(.8)
-                        try:
-                            element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
-                            self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
-                            naoInserido['comarcaNova'] = str(registro['comarcaNova'])
-                            sleep(.8)
-                            continue
-                        except:
-                            break
-                    except:
-                        pass
-
-                self.checkPopUps()
-
-                # Preenchendo Parte Adversa
+        while True: # ABRE A PARTE ADVERSA
+            try:
+                element = self.waitingElement("//*[@id='div_menu17']", 'click')
+                element.click()
+                sleep(.8)
                 try:
-                    element = self.waitingElement('//*[@id="txtNome"]', 'click')
-                    element.send_keys(str(registro['parteAdversa']['txtNome']))
-                    print("REG {} - PASTA {}: REGISTRADO A PARTE ADVERSA: {}".format(reg+1, registro['txtPasta'], str(registro['parteAdversa']['txtNome'])))
-                    complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
+                    element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
+                    self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+                    naoInserido['comarcaNova'] = str(registro['comarcaNova'])
+                    sleep(.8)
+                    continue
                 except:
-                    naoInserido['adversa'] = str(registro['parteAdversa']['txtNome'])
-            else:
-                naoInserido['adversa'] = ''
-        except:
-            print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
-            pass
+                    break
+            except:
+                pass
+        self.checkPopUps()
+
+        complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
 
         sleep(0.8)
 
@@ -502,6 +484,41 @@ class IntegraFunctions(object):
         except:
             message = "{}; NÃO FOI POSSÍVEL ABRIR A PASTA {}".format(message, str(registro['txtPasta']))
         return message
+
+    def inserirParteAdversa(self, registro, reg, naoInserido):
+        try:
+            complementoAdversa = ""
+            if (registro['parteAdversa']):
+                print('REG {}: PASTA {}: PREENCHENDO PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
+
+                # Preenchendo Parte Adversa
+                for k, v in registro['parteAdversa'].items():
+                    print ('REG {}: {} - {}'.format(reg+1, k, v))
+                    try:
+                        element = self.waitingElement(k, 'click', form='id')
+                        if (element.tag_name == 'input'):
+                            element.clear()
+                            element.send_keys(str(v))
+                        elif (element.tag_name == 'select'):
+                            try:
+                                select = self.selenium.select(element)
+                                select.select_by_visible_text(str(v))
+                            except:
+                                # checkValueInCombo(str(v), k)
+                                print('ERRO')
+                        sleep(.8)
+                    except:
+                        naoInserido[k] = str(v)
+
+                complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
+            else:
+                naoInserido['adversa'] = ''
+
+            return (complementoAdversa, naoInserido)
+        except:
+            print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
+            pass
+
 
     def criaAgendammentos(self, registro, reg):
         print("REG {} - PASTA {}: INICIANDO OS AGENDAMENTOS:".format(reg+1, registro['txtPasta']))
