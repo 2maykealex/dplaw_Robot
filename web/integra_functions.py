@@ -184,7 +184,6 @@ class IntegraFunctions(object):
 
     def controle(self, registros):
         robo = None
-        driverIniciado = False
         self.isTest = basic_functions.checkIfTest()
 
         hoje = "%s" % (strftime("%Y-%m-%d"))
@@ -196,36 +195,36 @@ class IntegraFunctions(object):
         self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
         self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}__{}__{}'.format(registros['tipo'], hoje, hora))
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
-        reg = basic_functions.checkEndFile(self.logFileCSV)
 
-        if (reg != 'FIM' and reg != -1):
-            login, password = basic_functions.checkLogin()
-            print("\n-----------------------------------------")
-            print("Login utilizado: {}".format(login))
-            print("-----------------------------------------\n")
-            print("\nINICIANDO WebDriver")
-            _abreWebDriver = self.acessToIntegra(login, password)
-            driverIniciado == True
+        while True:
+            reg = basic_functions.checkEndFile(self.logFileCSV)
 
-            if (registros['tipo'] == 'abertura'):
-                robo = self.abrePasta(registros, reg)
-            # elif (registros['tipo'] == 'volumetria'):
-            #     robo = self.Volumetria(registros)
-            # elif (registros['tipo'] == 'contrato'):
-            #     robo = self.Contrato(registros)
-            # elif (registros['tipo'] == 'atualizacao'):
-            #     robo = self.Atualizacao(registros)
+            if (reg != 'FIM' and reg != -1):
+                login, password = basic_functions.checkLogin()
+                print("\n-----------------------------------------")
+                print("Login utilizado: {}".format(login))
+                print("-----------------------------------------\n")
+                print("\nINICIANDO WebDriver")
+                _abreWebDriver = self.acessToIntegra(login, password)
 
-            if (robo):
-                basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
-                if (driverIniciado == True):
-                    driverIniciado = False
+                if (registros['tipo'] == 'abertura'):
+                    robo = self.abrePasta(registros, reg)
+                # elif (registros['tipo'] == 'volumetria'):
+                #     robo = self.Volumetria(registros)
+                # elif (registros['tipo'] == 'contrato'):
+                #     robo = self.Contrato(registros)
+                # elif (registros['tipo'] == 'atualizacao'):
+                #     robo = self.Atualizacao(registros)
+                print('ROBO = {}'.format(robo))
+                if (robo):
+                    basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
                     self.logoutIntegra()
+                    break
+                else:
+                    self.driver.quit()
             else:
-                driverIniciado = False   #se houve erro ao abrir pasta - força o fechamento do Webdriver
-                self.driver.quit()
-        else:
-            print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
+                print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
+                break
 
     def abrePasta(self, registros, reg):
         if (reg <= (len(registros) - 2)):
