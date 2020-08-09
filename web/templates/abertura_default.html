@@ -54,6 +54,24 @@
                 if (checkElementValue('sigla') == true){
                     obj[i]['sigla']       = document.getElementById('sigla').value.trim();
                 };
+                if (checkElementValue('slcAreaAtuacao') == true){
+                    obj[i]['slcAreaAtuacao'] = document.getElementById('slcAreaAtuacao').value.trim();
+                };
+                if (checkElementValue('slcObjetoAcao') == true){
+                    obj[i]['slcObjetoAcao'] = document.getElementById('slcObjetoAcao').value.trim();
+                };
+                if (checkElementValue('slcAssunto') == true){
+                    obj[i]['slcAssunto'] = document.getElementById('slcAssunto').value.trim();
+                };
+                if (checkElementValue('slcDetalhes') == true){
+                    obj[i]['slcDetalhes'] = document.getElementById('slcDetalhes').value.trim();
+                };
+                if (checkElementValue('slcFase') == true){
+                    obj[i]['slcFase'] = document.getElementById('slcFase').value.trim();
+                };
+                if (checkElementValue('txtObservacao') == true){
+                    obj[i]['txtObservacao'] = document.getElementById('txtObservacao').value.trim();
+                };
                 if (checkElementValue('slcStatusProcessual') == true){
                     obj[i]['slcStatusProcessual'] = document.getElementById('slcStatusProcessual').value.trim();
                 };
@@ -63,7 +81,6 @@
                 if (checkElementValue('slcLocalizador') == true){
                     obj[i]['slcLocalizador'] = document.getElementById('slcLocalizador').value.trim();
                 };
-
                 var responsavel = [];
                 if (checkElementValue('resp1') == true){
                     responsavel.push(document.getElementById('resp1').value.trim());
@@ -123,7 +140,7 @@
                     <div class="col-md-8 mb-3">
                         <label for="razaoSocial">CLIENTE</label>
                         <select name="razaoSocial" id="razaoSocial" class="form-control" onclick="atualizaGrupoSigla(this)">
-                            <option value="-1">SELECIONE O CLIENTE</option>
+                            <option value="-1">SELECIONE</option>
                             {% for cliente in clientes %}
                                 <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}">{{cliente.split(';')[0]}}</option>
                             {% endfor %}
@@ -143,57 +160,111 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-3 mb-3">
                         <label for="slcStatusProcessual">STATUS DO PROCESSO</label>
                         <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control">
-                            <option value="">SELECIONE O STATUS DO PROCESSO</option>
+                            <option value="">SELECIONE</option>
                             {% for statusproc in status %}
                                 <option value="{{statusproc}}">{{statusproc}}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-3 mb-3">
                         <label for="slcGrupo">GRUPO DO PROCESSO</label>
                         <select name="slcGrupo" id="slcGrupo" class="form-control">
-                            <option value="">SELECIONE O GRUPO DO PROCESSO</option>
+                            <option value="">SELECIONE</option>
                             {% for slcGrupo in gruposprocessos %}
                                 <option value="{{slcGrupo}}">{{slcGrupo}}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-3 mb-3">
                         <label for="slcLocalizador">LOCALIZADOR</label>
                         <select name="slcLocalizador" id="slcLocalizador" class="form-control">
-                            <option value="">SELECIONE O LOCALIZADOR</option>
+                            <option value="">SELECIONE</option>
                             {% for localizador in localizadores %}
                                 <option value="{{localizador}}">{{localizador}}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcFase">FASE</label>
+                        <select name="slcFase" id="slcFase" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for fase in fases %}
+                                <option value="{{fase}}">{{fase}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-3 mb-3">
+                        <label for="slcAreaAtuacao">ÁREA DE ATUAÇÃO</label>
+                        <select name="slcAreaAtuacao" id="slcAreaAtuacao" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for areaAtuacao in areasAtuacao %}
+                                <option value="{{areaAtuacao}}">{{areaAtuacao}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcObjetoAcao">OBJETO DA AÇÃO</label>
+                        <select name="slcObjetoAcao" id="slcObjetoAcao" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for objetoAcao in objetosAcao %}
+                                <option value="{{objetoAcao}}">{{objetoAcao}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcAssunto">ASSUNTO</label>
+                        <select name="slcAssunto" id="slcAssunto" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for assunto in assuntos %}
+                                <option value="{{assunto}}">{{assunto}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcDetalhes">DETALHES</label>
+                        <select name="slcDetalhes" id="slcDetalhes" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for detalhe in detalhes %}
+                                <option value="{{detalhe}}">{{detalhe}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="txtObservacao">OBSERVAÇÕES</label>
+                        <input type="text" name="txtObservacao" id="txtObservacao" class="form-control" maxlength="1000">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
                         <label for="resp1">RESPONSÁVEL</label>
                         <select name="resp1" id="resp1" class="form-control">
-                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            <option value="">SELECIONE</option>
                             {% for responsavel in resp1 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="resp2">RESPONSÁVEL</label>
                         <select name="resp2" id="resp2" class="form-control">
-                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            <option value="">SELECIONE</option>
                             {% for responsavel in resp2 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="resp3">RESPONSÁVEL</label>
                         <select name="resp3" id="resp3" class="form-control">
-                            <option value="">SELECIONE O RESPONSÁVEL</option>
+                            <option value="">SELECIONE</option>
                             {% for responsavel in resp3 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
                             {% endfor %}
@@ -202,7 +273,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4  mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="dataciencia">DATA DE CIÊNCIA</label>
                         <input id="dataciencia" name="dataciencia" type="date" class="form-control" required>
                     </div>
