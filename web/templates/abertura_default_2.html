@@ -84,8 +84,8 @@
             } else{
                 document.getElementById('HoraAudiencia').value = '';
             }
-            if (objNovo[i]['agendamentos']['dataCiencia']){
-                document.getElementById('dataCiencia').value = objNovo[i]['agendamentos']['dataCiencia'];
+            if (objNovo[i]['agendamentos']['Ciencia de novo processo']){
+                document.getElementById('dataCiencia').value = objNovo[i]['agendamentos']['Ciencia de novo processo'];
             } else {
                 document.getElementById('dataCiencia').value = '';
             }
@@ -99,7 +99,7 @@
             } else {
                 document.getElementById('Fotocópia').checked = false;
             }
-        }
+        };
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
             qtdRegistros = Object.keys(objNovo).length;
@@ -200,7 +200,7 @@
                 <div class="col-md-4  mb-3">
                     <form action="{{url_for('abertura_executa')}}" method="post" >
                         <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
-                        <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" ></textarea>
+                        <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
                     </form>
                 </div>
             </div>
