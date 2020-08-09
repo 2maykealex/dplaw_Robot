@@ -47,7 +47,11 @@
         };
 
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
-            for (var i = 0; i < (Object.keys(obj).length) -1; i++){
+            delete obj.clientePadrao;
+            delete obj.grupoPadrao;
+            delete obj.siglaPadrao;
+
+            for (var i = 0; i < (Object.keys(obj).length) -1; i++){ // -4 -> só listar os que tem ID
                 if (checkElementValue('razaoSocial') == true){
                     obj[i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
                 };
@@ -155,11 +159,19 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <label for="sigla">SIGLA</label>
-                                <input name="sigla" id="sigla" type="text" value="" class="form-control" disabled>
+                                <input name="sigla" id="sigla" type="text"
+                                    value= "{% if (data['siglaPadrao']) %}
+                                                {{data['siglaPadrao']}}
+                                            {% endif %}"
+                                    class="form-control" disabled>
                             </div>
                             <div class="col-md-7">
                                 <label for="grupocli">GRUPO</label>
-                                <input name="grupocli" id="grupocli" type="text" value="" class="form-control" disabled>
+                                <input name="grupocli" id="grupocli" type="text"
+                                    value= "{% if (data['grupoPadrao']) %}
+                                                {{data['grupoPadrao']}}
+                                            {% endif %}"
+                                    class="form-control" disabled>
                             </div>
                         </div>
                     </div>
