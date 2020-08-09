@@ -43,11 +43,21 @@ def abertura_default():
     status = open(status, 'r')
     varas = dados+'\\'+'varas.txt'
     varas = open(varas, 'r')
+    assuntos = dados+'\\'+'assuntos.txt'
+    assuntos = open(assuntos, 'r', encoding='utf-8')
+    detalhes = dados+'\\'+'detalhes.txt'
+    detalhes = open(detalhes, 'r', encoding='utf-8')
+    areasAtuacao = dados+'\\'+'areasAtuacao.txt'
+    areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
+    fases = dados+'\\'+'fases.txt'
+    fases = open(fases, 'r', encoding='utf-8')
+    objetosAcao = dados+'\\'+'objetosAcao.txt'
+    objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
-    return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites)
+    return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
 @app.route("/abertura/bradesco/default/part2", methods=['POST'])
 def abertura_default2():
@@ -69,11 +79,21 @@ def abertura_default2():
     status = open(status, 'r')
     varas = dados+'\\'+'varas.txt'
     varas = open(varas, 'r')
+    assuntos = dados+'\\'+'assuntos.txt'
+    assuntos = open(assuntos, 'r', encoding='utf-8')
+    detalhes = dados+'\\'+'detalhes.txt'
+    detalhes = open(detalhes, 'r', encoding='utf-8')
+    areasAtuacao = dados+'\\'+'areasAtuacao.txt'
+    areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
+    fases = dados+'\\'+'fases.txt'
+    fases = open(fases, 'r', encoding='utf-8')
+    objetosAcao = dados+'\\'+'objetosAcao.txt'
+    objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
-    return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites)
+    return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
 @app.route("/abertura/executa", methods=['POST'])
 def abertura_executa():
@@ -81,8 +101,7 @@ def abertura_executa():
     data = data['txtAbertura']
     data = json.loads(data)
 
-    data['tipo'] = 'abertura'
-    # print(data)
+    pprint(data)
     integra = IntegraFunctions()
     integra.controle(data)
 
