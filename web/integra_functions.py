@@ -519,7 +519,6 @@ class IntegraFunctions(object):
             print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
             pass
 
-
     def criaAgendammentos(self, registro, reg):
         print("REG {} - PASTA {}: INICIANDO OS AGENDAMENTOS:".format(reg+1, registro['txtPasta']))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
