@@ -423,33 +423,25 @@ class IntegraFunctions(object):
         segredoJusticaAndamentos()
         idNovaPasta = recuperaIdIntegra()
 
-        while True: # ABRE A PARTE ADVERSA
-            try:
-                element = self.waitingElement("//*[@id='div_menu17']", 'click')
-                element.click()
-                sleep(.8)
+        if (registro['parteAdversa']):
+            while True: # ABRE A PARTE ADVERSA
                 try:
-                    element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
-                    self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
-                    naoInserido['comarcaNova'] = str(registro['comarcaNova'])
+                    element = self.waitingElement("//*[@id='div_menu17']", 'click')
+                    element.click()
                     sleep(.8)
-                    continue
+                    try:
+                        element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
+                        self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+                        naoInserido['comarcaNova'] = str(registro['comarcaNova'])
+                        sleep(.8)
+                        continue
+                    except:
+                        break
                 except:
-                    break
-            except:
-                pass
-        self.checkPopUps()
-
-        complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
-
+                    pass
+            self.checkPopUps()
+            complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
         sleep(0.8)
-
-        complementoNaoInseridos =''
-        if (naoInserido):
-            complementoNaoInseridos = ''
-            for k1, v1 in naoInserido.items():
-                complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
-                print(complementoNaoInseridos)
 
         try: # Botão salvar
             print('REG {} - PASTA {}: ANTES DE SALVAR'.format(reg+1, registro['txtPasta']))
@@ -469,6 +461,13 @@ class IntegraFunctions(object):
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
 
             try:
+                complementoNaoInseridos =''
+                if (naoInserido):
+                    complementoNaoInseridos = ''
+                    for k1, v1 in naoInserido.items():
+                        complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
+                        print(complementoNaoInseridos)
+
                 hoje = "%s" % (strftime("%d-%m-%Y"))
                 hora = strftime("%H:%M:%S")
                 horaStr = hora.replace(':', '-')
