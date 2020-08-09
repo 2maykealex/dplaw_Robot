@@ -142,7 +142,12 @@
                         <select name="razaoSocial" id="razaoSocial" class="form-control" onclick="atualizaGrupoSigla(this)">
                             <option value="-1">SELECIONE</option>
                             {% for cliente in clientes %}
-                                <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}">{{cliente.split(';')[0]}}</option>
+                                <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}"
+                                    {% if (data['clientePadrao'] == cliente.split(';')[0]) %}
+                                        selected
+                                    {% endif %}
+                                    >{{cliente.split(';')[0]}}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>

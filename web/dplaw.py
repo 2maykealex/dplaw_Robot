@@ -54,9 +54,14 @@ def abertura_default():
     objetosAcao = dados+'\\'+'objetosAcao.txt'
     objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
-    data = request.form.to_dict()
-    data = data['txtAbertura']
+    requested = request.form.to_dict()
+    data = requested['txtAbertura']
     data = json.loads(data)
+    try:
+        data['clientePadrao'] = requested['clientePadrao']
+    except:
+        print('NÃO TEM CLIENTE PADRÃO!')
+
     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
 @app.route("/abertura/bradesco/default/part2", methods=['POST'])
