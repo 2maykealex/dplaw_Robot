@@ -6,7 +6,82 @@
 {% block scripts %}
 
     <script>
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
+        };
 
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            ObjectList['tipo'] = 'abertura';
+            ultimoRegistro = 0;
+            for (var i = 0; i < lines.length; i++){
+                if (lines[i]){
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        console.log('REGISTRO REPETIDO: ', lines[i].split(';')[0]);
+                    else {
+                        ObjectList[i] = (criaObjeto(lines[i]));
+                        ultimoRegistro = ObjectList[i]['txtPasta'];
+                    }
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            ObjectList = JSON.stringify(ObjectList);
+            return (ObjectList)
+        };
+
+        function enviarDados(){
+            ObjectList = converter();
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('txtAbertura').innerHTML = ObjectList;
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            var adversa = String;
+            var isNumber = String;
+            var dataHoje = new Date();
+
+            // objLine['txtPasta'] = linha.split(';')[0]
+            // console.log(objLine['txtPasta']);
+            // adversa  = linha.split('/')[0].split('      ')[1];
+            // isNumber = parseInt(adversa.slice(-2, -1));
+
+            // if (isNumber){
+            //     adversa = adversa.split(isNumber)[0].trim();
+            // };
+
+            // checkTemAudiencia =  Number.isInteger(parseInt(linha.slice(-2)));
+            // objLine['txtDataContratacao'] = dataHoje.toLocaleDateString();
+            // objLine['txtNroProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            // objLine['txtNroCnj']          = linha.split('/')[2].split('      ')[1].split('    ')[0];
+            // objLine['parteAdversa'] = {'txtNome': adversa};
+
+            // if (checkTemAudiencia){
+            //     objLine['slcComarca'] = linha.split('/')[3].trim();
+            //     objLine['txtUf']      = linha.split('/')[4].split(' ')[0];
+            //     objLine['agendamentos'] = {'Audiência':linha.slice(-10)}; //NO BRADESCO NÃO VEM A HORA
+            // }
+            // else{
+            //     objLine['slcComarca'] = linha.split('/').slice(-2)[0].trim();
+            //     objLine['txtUf']      = linha.split('/').slice(-1)[0].trim();
+            // };
+            return (objLine);
+        };
     </script>
 
 {% endblock%}
@@ -19,17 +94,18 @@
     <form action="{{request.url_rule.rule}}/default" method="post">
         <div class="row">
             <div class="col-md-10 form-group">
-                <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!" hidden></textarea>
+                <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!"></textarea>
                 <textarea class="mt-5 ml-5 form-control" name="clientePadrao" id="clientePadrao" hidden>CLIENTE TESTE</textarea>
                 <textarea class="mt-5 ml-5 form-control" name="grupoPadrao" id="grupoPadrao" hidden>GRUPO TESTE</textarea>
                 <textarea class="mt-5 ml-5 form-control" name="siglaPadrao" id="siglaPadrao" hidden>TESTE</textarea>
-
-                <input type="file" name="arquivo" id="arquivo" class="form-control">
             </div>
             <div class="col-md-2 form-group">
+                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
                 <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
             </div>
         </div>
     </form>
     <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+
 {% endblock %}
