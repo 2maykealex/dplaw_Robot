@@ -160,17 +160,13 @@
                             <div class="col-md-5">
                                 <label for="sigla">SIGLA</label>
                                 <input name="sigla" id="sigla" type="text"
-                                    value= "{% if (data['siglaPadrao']) %}
-                                                {{data['siglaPadrao']}}
-                                            {% endif %}"
+                                    value= "{% if (data['siglaPadrao']) %}{{data['siglaPadrao'].strip()}}{% endif %}"
                                     class="form-control" disabled>
                             </div>
                             <div class="col-md-7">
                                 <label for="grupocli">GRUPO</label>
                                 <input name="grupocli" id="grupocli" type="text"
-                                    value= "{% if (data['grupoPadrao']) %}
-                                                {{data['grupoPadrao']}}
-                                            {% endif %}"
+                                    value= "{% if (data['grupoPadrao']) %}{{data['grupoPadrao'].strip()}}{% endif %}"
                                     class="form-control" disabled>
                             </div>
                         </div>
@@ -311,6 +307,7 @@
                     </div>
                 </div>
             </div>
+            <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">ENVIAR</button>
         {% endif %}
     </div>
 {% endblock %}
