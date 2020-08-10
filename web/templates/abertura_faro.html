@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+    <script>
+
+    </script>
+
+{% endblock%}
+
+{% block content %}
+    <div class="content text-center">
+        <h3>FARO</h3>
+    </div>
+
+    <form action="{{request.url_rule.rule}}/default" method="post">
+        <div class="row">
+            <div class="col-md-10 form-group">
+                <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!" hidden></textarea>
+                <textarea class="mt-5 ml-5 form-control" name="clientePadrao" id="clientePadrao" hidden>CLIENTE TESTE</textarea>
+                <textarea class="mt-5 ml-5 form-control" name="grupoPadrao" id="grupoPadrao" hidden>GRUPO TESTE</textarea>
+                <textarea class="mt-5 ml-5 form-control" name="siglaPadrao" id="siglaPadrao" hidden>TESTE</textarea>
+
+                <input type="file" name="arquivo" id="arquivo" class="form-control">
+            </div>
+            <div class="col-md-2 form-group">
+                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+            </div>
+        </div>
+    </form>
+    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+{% endblock %}
