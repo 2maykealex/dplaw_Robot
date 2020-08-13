@@ -47,11 +47,18 @@
         };
 
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
-            delete obj.clientePadrao;
-            delete obj.grupoPadrao;
-            delete obj.siglaPadrao;
+            try {
+                console.log((Object.keys(obj).length -1))
+                // delete obj.clientePadrao;
+                delete obj.grupoPadrao;
+                delete obj.siglaPadrao;
+            } catch {}
 
-            for (var i = 0; i < (Object.keys(obj).length) -1; i++){ // -4 -> só listar os que tem ID
+            var dataCiencia1 = new Date(document.getElementById('dataciencia').value.trim());
+            countCiencia = 0;
+            console.log((Object.keys(obj).length))
+            console.log(obj);
+            for (var i = 0; i < (Object.keys(obj).length-3); i++){ // -4 -> só listar os que tem ID
                 if (checkElementValue('razaoSocial') == true){
                     obj[i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
                 };
@@ -72,6 +79,9 @@
                 };
                 if (checkElementValue('slcFase') == true){
                     obj[i]['slcFase'] = document.getElementById('slcFase').value.trim();
+                };
+                if (checkElementValue('txtPedido') == true){
+                    obj[i]['txtPedido'] = document.getElementById('txtPedido').value.trim();
                 };
                 if (checkElementValue('txtObservacao') == true){
                     obj[i]['txtObservacao'] = document.getElementById('txtObservacao').value.trim();
@@ -100,11 +110,17 @@
                 };
 
                 var agendamentos = {};
-                if (checkElementValue('dataciencia') == true)
-                    var dataCiencia = new Date(document.getElementById('dataciencia').value.trim());
-                    var dataCiencia = ("0" + dataCiencia.getDate()).substr(-2) + "/"
-                                    + ("0" + (dataCiencia.getMonth() + 1)).substr(-2) + "/" + dataCiencia.getFullYear();
+                if (checkElementValue('dataciencia') == true){
+                    if (countCiencia > 99){
+                        countCiencia = 0;
+                        dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
+                    };
+                    var dataCiencia = ("0" + dataCiencia1.getDate()).substr(-2) + "/"
+                                    + ("0" + (dataCiencia1.getMonth() + 1)).substr(-2) + "/" + dataCiencia1.getFullYear();
                     agendamentos['Ciencia de novo processo'] = dataCiencia;
+                    countCiencia++;
+                };
+
                 if (checkElementValue('Anexar') == true){
                     if (document.getElementById('Anexar').checked)
                         agendamentos['Anexar'] = true;
@@ -248,11 +264,20 @@
                         </select>
                     </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="txtPedido">PEDIDO</label>
+                        <input type="text" name="txtPedido" id="txtPedido" class="form-control" maxlength="1000"
+                            value= "{% if (data['txtPedido']) %}{{data['txtPedido'].strip()}}{% endif %}"
+                        >
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="txtObservacao">OBSERVAÇÕES</label>
-                        <input type="text" name="txtObservacao" id="txtObservacao" class="form-control" maxlength="1000">
+                        <input type="text" name="txtObservacao" id="txtObservacao" class="form-control" maxlength="1000"
+                            value= "{% if (data['txtObservacao']) %}{{data['txtObservacao'].strip()}}{% endif %}"
+                        >
                     </div>
                 </div>
                 <div class="row">
