@@ -193,6 +193,7 @@ class IntegraFunctions(object):
 
         # CRIANDO ARQUIVO DE LOG .CSV
         self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
+        # self.logFileCSV = "{}\\_log_abertura__2020_08_11__15_17_18.csv".format(self.logBase) # teste -> usa o nome do arquivo
         self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}__{}__{}'.format(registros['tipo'], hoje, hora))
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
@@ -256,10 +257,10 @@ class IntegraFunctions(object):
 
                     try:
                         print('REG {} - PASTA {}: REALIZANDO PESQUISA'.format(str(reg+1), registro['txtPasta']))
-                        # if (self.isTest):
-                        searchFolder = False
-                        # else:
-                        # searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                        if (self.isTest):
+                            searchFolder = False
+                        else:
+                            searchFolder, _element = self.pesquisarCliente(registro['txtPasta'], 'pasta')
                     except:
                         print('REG {} - PASTA {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1), registro['txtPasta']))
                         return False
@@ -274,6 +275,7 @@ class IntegraFunctions(object):
                             print('REG {} - PASTA {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg+1), registro['txtPasta']))
                             self.driver.get(urlPage)
                             sleep(0.5)
+                            #TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA
                             message = self.incluirProcesso(registro, reg) # k=item
                         except:
                             print('REG {} - TENTATIVA {} - PASTA {}: ERRO AO INCLUIR A PASTA'.format(str(reg+1), tentativa, registro['txtPasta']))
@@ -420,7 +422,9 @@ class IntegraFunctions(object):
             except:
                 naoInserido[k] = str(v)
         print('REG {} - PASTA {}: FINALIZADO O LOOPING'.format(reg+1, registro['txtPasta']))
+
         segredoJusticaAndamentos()
+
         idNovaPasta = recuperaIdIntegra()
 
         if (registro['parteAdversa']):
@@ -445,13 +449,13 @@ class IntegraFunctions(object):
 
         try: # Botão salvar
             print('REG {} - PASTA {}: ANTES DE SALVAR'.format(reg+1, registro['txtPasta']))
-            element = self.waitingElement('//*[@id="btnSalvar"]', 'click')
+            element = self.driver.find_element_by_id("btnSalvar")
             element.click()
             print('REG {} - PASTA {}: SALVANDO'.format(reg+1, registro['txtPasta']))
             sleep(1.5)
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
-                element = self.waitingElement("popup_ok", 'click', 'id')
+                element = self.driver.find_element_by_id("btnSalvar")
                 self.driver.execute_script("arguments[0].click();", element)
                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
                 print('REG {} - PASTA {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1, registro['txtPasta']))
@@ -519,6 +523,7 @@ class IntegraFunctions(object):
             pass
 
     def criaAgendammentos(self, registro, reg):
+        #TODO OS ITENS QUE NÃO FOREM CRIADOS OS SEUS AGENDAMENTOS: SALVA E OUTRO ARQUIVO PARA REFAZÊ-LOS
         print("REG {} - PASTA {}: INICIANDO OS AGENDAMENTOS:".format(reg+1, registro['txtPasta']))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
@@ -541,7 +546,7 @@ class IntegraFunctions(object):
         for tipoAgendamento, agendamento in agendamentos.items():
             while True:
                 self.checkPopUps()
-                formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
+                _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
                 print('ABRIU FORMULÁRIO DE AGENDAMENTOS')
 
                 responsaveis = []
