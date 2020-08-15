@@ -192,7 +192,7 @@ class IntegraFunctions(object):
         hora = hora.replace(':', '_')
 
         # CRIANDO ARQUIVO DE LOG .CSV
-        self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
+        self.logBase = '{}\\logs\\{}\\{}'.format(pathFolder.dirname(__file__), registros['tipo'], registros['siglaPadrao'])
         # self.logFileCSV = "{}\\_log_abertura__2020_08_11__15_17_18.csv".format(self.logBase) # teste -> usa o nome do arquivo
         self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}__{}__{}'.format(registros['tipo'], hoje, hora))
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
@@ -228,24 +228,28 @@ class IntegraFunctions(object):
                 break
 
     def abrePasta(self, registros, reg):
-        if (reg <= (len(registros) - 2)):
-            try:
-                searchClient, elemPesquisado = self.pesquisarCliente('Cliente teste', 'cliente')
-                print('saiu')
-            except:
-                return False
-            if (searchClient):
-                elemPesquisado.click()
-                sleep(.5)
-                urlPage = self.driver.current_url
-                tentativa = 1
-                while reg < (len(registros) - 2): # 2 itens são padrão do objeto (não itens para o looping)
-                    registro = registros['{}'.format(reg)].copy()
-                    del registro['agendamentos']
+        if (reg < (len(registros['registros']))):
+            registros = registros['registros']
+            ultimoCliente = ''
+            #todo   IDEIA -> Alterar o objeto criado para receber numeração de registro a partir do 1 (não do zero)  --  reg == int(k)
+            for _k, registro in registros.items():
+                # reg = int(k)+1
+                if (not(ultimoCliente) or (registro['razaoSocial'] != ultimoCliente)): # só irá pesquisar no primeiro registro ou se RazaoSocial != ultimoCliente
+                    try:
+                        clienteLocalizado, clientePesquisado = self.pesquisarCliente('Cliente teste', 'cliente')
+                        ultimoCliente = clientePesquisado.text.strip()
+                        clientePesquisado.click()
+                        sleep(1)
+                        urlPage = self.driver.current_url
+                    except:
+                        return False #todo   ADD BREAK E REGISTRAR QUE NÃO FOI ENCONTRADO O CLIENTE - A PASTA X NÃO FOI SALVA e PULA PARA O PRÓXIMO REG
+
+                if (clienteLocalizado):
+                    tentativa = 1
                     message = ''
+
                     print('=========================================================')
                     print('REG {} - PASTA {}: INICIANDO'.format(str(reg+1), registro['txtPasta']))
-
                     try:
                         registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
                     except:
@@ -296,12 +300,10 @@ class IntegraFunctions(object):
                     else:
                         message = "REG {};;A PASTA {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'])
                         print(message)
-                    basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
-                    reg = reg + 1
-                print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
-                return True
-            else:
-                return False
+                basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
+                reg = reg + 1
+            print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
+            return True
         else:
             print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.') # CASO JÁ TENHA PASSADO O TOTAL DE REGISTROS E NÃO TER FINALIZADO O ARQUIVO
             return False
@@ -339,20 +341,17 @@ class IntegraFunctions(object):
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
         def segredoJusticaAndamentos():
-            try:
-                if (registro['txtNroCnj']):
-                    # Segredo de Justiça  #por padrão, será marcado não
-                    element = self.driver.find_element_by_id("segredoJusticaN")
-                    self.driver.execute_script("arguments[0].click();", element)
-                    sleep(0.3)
-                    element = self.driver.find_element_by_id("capturarAndamentosS")
-                    self.driver.execute_script("arguments[0].click();", element)
+            try:   # Segredo de Justiça  #por padrão, será marcado não
+                element = self.driver.find_element_by_id("segredoJusticaN")
+                self.driver.execute_script("arguments[0].click();", element)
+                sleep(0.3)
+                element = self.driver.find_element_by_id("capturarAndamentosS")
+                self.driver.execute_script("arguments[0].click();", element)
             except:
                 naoInserido['segredoCaptura'] = 'Segredo de Justiça e Andamentos'
 
         def recuperaIdIntegra():
-            #Obtém o ID do PROMAD da nova pasta a ser aberta
-            try:
+            try:   #Obtém o ID do PROMAD da nova pasta a ser aberta
                 element = self.waitingElement("idDoProcesso", 'show', 'class')
                 idNovaPasta = element.get_attribute("innerHTML")
                 idNovaPasta = idNovaPasta[14:].strip()
@@ -412,6 +411,8 @@ class IntegraFunctions(object):
                     if (element.tag_name == 'input'):
                         element.clear()
                         element.send_keys(str(v))
+                        if (k == 'txtNroCnj'):
+                            segredoJusticaAndamentos()
                     elif (element.tag_name == 'select'):
                         try:
                             select = self.selenium.select(element)
@@ -421,19 +422,16 @@ class IntegraFunctions(object):
                     sleep(.8)
             except:
                 naoInserido[k] = str(v)
-        print('REG {} - PASTA {}: FINALIZADO O LOOPING'.format(reg+1, registro['txtPasta']))
-
-        segredoJusticaAndamentos()
 
         idNovaPasta = recuperaIdIntegra()
 
-        if (registro['parteAdversa']):
+        if ("parteAdversa" in registro):
             while True: # ABRE A PARTE ADVERSA
                 try:
                     element = self.waitingElement("//*[@id='div_menu17']", 'click')
                     element.click()
                     sleep(.8)
-                    try:
+                    try: #checa se há mensagens que bloqueiam o salvamento #todo ver para demais elementos que não forem localizados
                         element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
                         self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
                         naoInserido['comarcaNova'] = str(registro['comarcaNova'])
@@ -445,6 +443,9 @@ class IntegraFunctions(object):
                     pass
             self.checkPopUps()
             complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
+        else:
+            complementoAdversa = ""
+        print('REG {} - PASTA {}: FINALIZADO O LOOPING'.format(reg+1, registro['txtPasta']))
         sleep(0.8)
 
         try: # Botão salvar
@@ -452,10 +453,10 @@ class IntegraFunctions(object):
             element = self.driver.find_element_by_id("btnSalvar")
             element.click()
             print('REG {} - PASTA {}: SALVANDO'.format(reg+1, registro['txtPasta']))
-            sleep(1.5)
+            sleep(2)
 
             try:  #popup Ok em que a parte Adversa já possui outros processos.
-                element = self.driver.find_element_by_id("btnSalvar")
+                element = self.driver.find_element_by_id("popup_ok")
                 self.driver.execute_script("arguments[0].click();", element)
                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
                 print('REG {} - PASTA {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg+1, registro['txtPasta']))
@@ -470,7 +471,6 @@ class IntegraFunctions(object):
                     complementoNaoInseridos = ''
                     for k1, v1 in naoInserido.items():
                         complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
-                        print(complementoNaoInseridos)
 
                 hoje = "%s" % (strftime("%d-%m-%Y"))
                 hora = strftime("%H:%M:%S")
@@ -489,38 +489,39 @@ class IntegraFunctions(object):
         return message
 
     def inserirParteAdversa(self, registro, reg, naoInserido):
-        try:
-            complementoAdversa = ""
-            if (registro['parteAdversa']):
-                print('REG {}: PASTA {}: PREENCHENDO PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
+        complementoAdversa = ""
+        # if (registro['parteAdversa']):
 
-                # Preenchendo Parte Adversa
-                for k, v in registro['parteAdversa'].items():
-                    print ('REG {}: {} - {}'.format(reg+1, k, v))
+        # Preenchendo Parte Adversa
+        for k, v in registro['parteAdversa'].items():
+            print ('REG {}: {} - {}'.format(reg+1, k, v))
+            try:
+                element = self.waitingElement(k, 'click', form='id')
+                if (element.tag_name == 'input'):
+                    element.clear()
+                    element.send_keys(str(v))
+                    print('REG {}: PASTA {}: PREENCHENDO {} O VALOR: {}'.format(reg+1, registro['txtPasta'], k, v))
+
+                elif (element.tag_name == 'select'):
                     try:
-                        element = self.waitingElement(k, 'click', form='id')
-                        if (element.tag_name == 'input'):
-                            element.clear()
-                            element.send_keys(str(v))
-                        elif (element.tag_name == 'select'):
-                            try:
-                                select = self.selenium.select(element)
-                                select.select_by_visible_text(str(v))
-                            except:
-                                # checkValueInCombo(str(v), k)
-                                print('ERRO')
-                        sleep(.8)
+                        select = self.selenium.select(element)
+                        select.select_by_visible_text(str(v))
                     except:
-                        naoInserido[k] = str(v)
+                        # checkValueInCombo(str(v), k)
+                        pass
+                sleep(.8)
+            except:
+                print('REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(reg+1, k, v))
+                naoInserido[k] = str(v)
 
-                complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
-            else:
-                naoInserido['adversa'] = ''
+        complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
+        # else:
+        #     naoInserido['adversa'] = ''
 
-            return (complementoAdversa, naoInserido)
-        except:
-            print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
-            pass
+        return (complementoAdversa, naoInserido)
+        # except:
+        #     print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
+        #     pass
 
     def criaAgendammentos(self, registro, reg):
         #TODO OS ITENS QUE NÃO FOREM CRIADOS OS SEUS AGENDAMENTOS: SALVA E OUTRO ARQUIVO PARA REFAZÊ-LOS
