@@ -254,14 +254,12 @@ class IntegraFunctions(object):
 
                     print('=========================================================')
                     print('REG {} - PASTA {}: INICIANDO'.format(str(reg+1), registro['txtPasta']))
-                    try:
+
+                    if ('txtNroProcesso' in registro):
                         registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
-                    except:
-                        pass
-                    try:
+
+                    if ('txtNroCnj' in registro):
                         registro['txtNroCnj'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
-                    except:
-                        pass
 
                     try:
                         print('REG {} - PASTA {}: REALIZANDO PESQUISA'.format(str(reg+1), registro['txtPasta']))
@@ -289,7 +287,7 @@ class IntegraFunctions(object):
                             tentativa = tentativa + 1
                             continue
 
-                        if (registro['slcResponsavel'] and message):
+                        if (('slcResponsavel' in registro) and message):
                             messageAgendamentos = self.criaAgendammentos(registros['{}'.format(reg)], reg)
                             if (self.isTest):
                                 self.removeAgendamentos()
@@ -361,6 +359,7 @@ class IntegraFunctions(object):
                 naoInserido['idDoProcessoINTEGRA'] = 'Não recuperado'
 
         def checkValueInCombo(texto, element):
+            #TODO TRANSFORMAR EM FUNÇÃO GLOBAL
             try:
                 select.select_by_visible_text(texto.title())
             except:
@@ -382,6 +381,7 @@ class IntegraFunctions(object):
             linkbase = link.split('?')[0]
             codigos  = "{}&{}".format(link.split('&')[1], link.split('&')[2].replace('&paginaAnterior=',''))
             idNovaPasta = '=HIPERLINK("{}?{}")'.format(linkbase, codigos, idNovaPasta)
+            #todo CHECAR IDNOVAPASTA
 
         self.checkPopUps()
         sleep(1.5)
@@ -490,9 +490,6 @@ class IntegraFunctions(object):
 
     def inserirParteAdversa(self, registro, reg, naoInserido):
         complementoAdversa = ""
-        # if (registro['parteAdversa']):
-
-        # Preenchendo Parte Adversa
         for k, v in registro['parteAdversa'].items():
             print ('REG {}: {} - {}'.format(reg+1, k, v))
             try:
@@ -513,15 +510,8 @@ class IntegraFunctions(object):
             except:
                 print('REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(reg+1, k, v))
                 naoInserido[k] = str(v)
-
         complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
-        # else:
-        #     naoInserido['adversa'] = ''
-
         return (complementoAdversa, naoInserido)
-        # except:
-        #     print('REG {} - PASTA {}: NÃO EXISTE PARTE ADVERSA'.format(reg+1, registro['txtPasta']))
-        #     pass
 
     def criaAgendammentos(self, registro, reg):
         #TODO OS ITENS QUE NÃO FOREM CRIADOS OS SEUS AGENDAMENTOS: SALVA E OUTRO ARQUIVO PARA REFAZÊ-LOS
