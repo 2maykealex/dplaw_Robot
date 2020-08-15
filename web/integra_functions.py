@@ -637,45 +637,46 @@ class IntegraFunctions(object):
                         print('ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS')
                         continue
 
-                # CAMPO QUANDO
-                print('REG {} - PASTA {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
-                sleep(1)
-                xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
-                element = self.waitingElement(xPathElement, 'show')
-                element.clear()
-                sleep(1)
-                element.send_keys(dataAgendamento)
-
-                try: #se o calendário estiver aberto, será fechado
+                # CAMPO QUANDO  - SÓ SE A DATA FOR MAIOR QUE HOJE - se menor ou igual: mantém a data do sistema
+                if (datetime.strptime(dataAgendamento, '%d/%m/%Y') > datetime.now()):
                     sleep(1)
-                    self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
-                except:
-                    print("ERRO CALENDÁRIO")
-
-                # COM HORA
-                try:
+                    xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
+                    element = self.waitingElement(xPathElement, 'show')
+                    element.clear()
                     sleep(1)
-                    if (tipoAgendamento == 'Audiência'):
-                        print('REG {} - PASTA {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg+1, registro['txtPasta']))
-                        sleep(1)
-                        xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
-                        checkComHora = self.waitingElement(xPathElement, 'click')
-                        checkComHora.click()
+                    element.send_keys(dataAgendamento)
+                    print('REG {} - PASTA {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
 
+                    try: #se o calendário estiver aberto, será fechado
                         sleep(1)
-                        xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
-                        horaInicial = self.waitingElement(xPathElement, 'click')
-                        horaInicial.clear()
-                        horaInicial.send_keys(HoraAudiencia)
+                        self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
+                    except:
+                        print("ERRO CALENDÁRIO")
 
+                    # COM HORA
+                    try:
                         sleep(1)
-                        xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
-                        horaFinal = self.waitingElement(xPathElement, 'show')
-                        horaFinal.clear()
-                        horaFinal.send_keys(HoraAudiencia)
-                except:
-                    print('A audiência não tem HORARIO definidoS')
-                    pass
+                        if (tipoAgendamento == 'Audiência'):
+                            print('REG {} - PASTA {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg+1, registro['txtPasta']))
+                            sleep(1)
+                            xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
+                            checkComHora = self.waitingElement(xPathElement, 'click')
+                            checkComHora.click()
+
+                            sleep(1)
+                            xPathElement = '//*[@id="txtHoraInicialAgendaProcesso1"]'
+                            horaInicial = self.waitingElement(xPathElement, 'click')
+                            horaInicial.clear()
+                            horaInicial.send_keys(HoraAudiencia)
+
+                            sleep(1)
+                            xPathElement = '//*[@id="txtHoraFinalAgendaProcesso1"]'
+                            horaFinal = self.waitingElement(xPathElement, 'show')
+                            horaFinal.clear()
+                            horaFinal.send_keys(HoraAudiencia)
+                    except:
+                        print('A audiência não tem HORARIO definido')
+                        pass
                 # campo textoAgendamento
                 sleep(1)
                 print('REG {} - PASTA {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(reg+1, registro['txtPasta']))
