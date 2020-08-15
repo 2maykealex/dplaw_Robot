@@ -247,7 +247,6 @@ class IntegraFunctions(object):
                     except:
                         clienteLocalizado = False
                         message = "REG {}; NÃO FOI LOCALIZADO NO INTEGRA O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg+1), registro['razaoSocial'], str(registro['txtPasta']))
-                        #todo   ADD BREAK E REGISTRAR QUE NÃO FOI ENCONTRADO O CLIENTE - A PASTA X NÃO FOI SALVA e PULA PARA O PRÓXIMO REG
 
                 if (clienteLocalizado):
                     tentativa = 1
