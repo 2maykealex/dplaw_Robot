@@ -17,6 +17,8 @@
             let today = new Date().toISOString().slice(0, 10)
             document.getElementById('dataciencia').value = today;
             obj = {{ data|tojson }}; // verificar se ao invés de adicionar em cada objeto, fosse criado outro só com os padrões
+            console.log(obj);
+            console.log((Object.keys(obj['registros']).length))
         };
 
         function mostrar(element){
@@ -47,53 +49,45 @@
         };
 
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
-            try {
-                console.log((Object.keys(obj).length -1))
-                // delete obj.clientePadrao;
-                delete obj.grupoPadrao;
-                delete obj.siglaPadrao;
-            } catch {}
-
-            var dataCiencia1 = new Date(document.getElementById('dataciencia').value.trim());
+            var dataCiencia1 = document.getElementById('dataciencia').value;
             countCiencia = 0;
-            console.log((Object.keys(obj).length))
             console.log(obj);
-            for (var i = 0; i < (Object.keys(obj).length-3); i++){ // -4 -> só listar os que tem ID
+            for (var i = 0; i < (Object.keys(obj['registros']).length); i++){
                 if (checkElementValue('razaoSocial') == true){
-                    obj[i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
+                    obj['registros'][i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
                 };
                 if (checkElementValue('sigla') == true){
-                    obj[i]['sigla']       = document.getElementById('sigla').value.trim();
+                    obj['registros'][i]['sigla']       = document.getElementById('sigla').value.trim();
                 };
                 if (checkElementValue('slcAreaAtuacao') == true){
-                    obj[i]['slcAreaAtuacao'] = document.getElementById('slcAreaAtuacao').value.trim();
+                    obj['registros'][i]['slcAreaAtuacao'] = document.getElementById('slcAreaAtuacao').value.trim();
                 };
                 if (checkElementValue('slcObjetoAcao') == true){
-                    obj[i]['slcObjetoAcao'] = document.getElementById('slcObjetoAcao').value.trim();
+                    obj['registros'][i]['slcObjetoAcao'] = document.getElementById('slcObjetoAcao').value.trim();
                 };
                 if (checkElementValue('slcAssunto') == true){
-                    obj[i]['slcAssunto'] = document.getElementById('slcAssunto').value.trim();
+                    obj['registros'][i]['slcAssunto'] = document.getElementById('slcAssunto').value.trim();
                 };
                 if (checkElementValue('slcDetalhes') == true){
-                    obj[i]['slcDetalhes'] = document.getElementById('slcDetalhes').value.trim();
+                    obj['registros'][i]['slcDetalhes'] = document.getElementById('slcDetalhes').value.trim();
                 };
                 if (checkElementValue('slcFase') == true){
-                    obj[i]['slcFase'] = document.getElementById('slcFase').value.trim();
+                    obj['registros'][i]['slcFase'] = document.getElementById('slcFase').value.trim();
                 };
                 if (checkElementValue('txtPedido') == true){
-                    obj[i]['txtPedido'] = document.getElementById('txtPedido').value.trim();
+                    obj['registros'][i]['txtPedido'] = document.getElementById('txtPedido').value.trim();
                 };
                 if (checkElementValue('txtObservacao') == true){
-                    obj[i]['txtObservacao'] = document.getElementById('txtObservacao').value.trim();
+                    obj['registros'][i]['txtObservacao'] = document.getElementById('txtObservacao').value.trim();
                 };
                 if (checkElementValue('slcStatusProcessual') == true){
-                    obj[i]['slcStatusProcessual'] = document.getElementById('slcStatusProcessual').value.trim();
+                    obj['registros'][i]['slcStatusProcessual'] = document.getElementById('slcStatusProcessual').value.trim();
                 };
                 if (checkElementValue('slcGrupo') == true){
-                    obj[i]['slcGrupo']  = document.getElementById('slcGrupo').value.trim();
+                    obj['registros'][i]['slcGrupo']  = document.getElementById('slcGrupo').value.trim();
                 };
                 if (checkElementValue('slcLocalizador') == true){
-                    obj[i]['slcLocalizador'] = document.getElementById('slcLocalizador').value.trim();
+                    obj['registros'][i]['slcLocalizador'] = document.getElementById('slcLocalizador').value.trim();
                 };
                 var responsavel = [];
                 if (checkElementValue('resp1') == true){
@@ -106,7 +100,7 @@
                     responsavel.push(document.getElementById('resp3').value.trim());
                 };
                 if (responsavel.length > 0){
-                    obj[i]['slcResponsavel'] = responsavel;
+                    obj['registros'][i]['slcResponsavel'] = responsavel;
                 };
 
                 var agendamentos = {};
@@ -115,9 +109,9 @@
                         countCiencia = 0;
                         dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
                     };
-                    var dataCiencia = ("0" + dataCiencia1.getDate()).substr(-2) + "/"
-                                    + ("0" + (dataCiencia1.getMonth() + 1)).substr(-2) + "/" + dataCiencia1.getFullYear();
-                    agendamentos['Ciencia de novo processo'] = dataCiencia;
+                    dataConvertida = dataCiencia1.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    agendamentos['Ciencia de novo processo'] = dataConvertida;
                     countCiencia++;
                 };
 
@@ -131,9 +125,9 @@
                 };
                 if (Object.keys(agendamentos).length > 0 && agendamentos){
                     try {
-                        Object.assign(obj[i]['agendamentos'], agendamentos);
+                        Object.assign(obj['registros'][i]['agendamentos'], agendamentos);
                     } catch{
-                        obj[i]['agendamentos'] = agendamentos
+                        obj['registros'][i]['agendamentos'] = agendamentos
                     }
                 };
             };

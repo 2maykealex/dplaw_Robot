@@ -15,86 +15,87 @@
         var first = true;
         window.onload = function() {
             objNovo = {{ data|tojson }};
+            console.log(objNovo);
             mudaRegistro(2);
         };
 
         function preencherRegistros(){
             document.getElementById('regnum').value = i + 1;
-            if (objNovo[i]['txtPasta']){
-                document.getElementById('txtPasta').value = objNovo[i]['txtPasta'];
+            if (objNovo['registros'][i]['txtPasta']){
+                document.getElementById('txtPasta').value = objNovo['registros'][i]['txtPasta'];
             }
-            if (objNovo[i]['adversa']){
-                document.getElementById('adversa').value = objNovo[i]['adversa'];
+            if (objNovo['registros'][i]['adversa']){
+                document.getElementById('adversa').value = objNovo['registros'][i]['adversa'];
             }
-            if (objNovo[i]['txtNroProcesso']){
-                document.getElementById('txtNroProcesso').value = objNovo[i]['txtNroProcesso'];
+            if (objNovo['registros'][i]['txtNroProcesso']){
+                document.getElementById('txtNroProcesso').value = objNovo['registros'][i]['txtNroProcesso'];
             }
-            if (objNovo[i]['txtNroCnj']){
-                document.getElementById('txtNroCnj').value = objNovo[i]['txtNroCnj'];
+            if (objNovo['registros'][i]['txtNroCnj']){
+                document.getElementById('txtNroCnj').value = objNovo['registros'][i]['txtNroCnj'];
             }
-            if (objNovo[i]['slcGrupo']){
-                document.getElementById('slcGrupo').value = objNovo[i]['slcGrupo'];
+            if (objNovo['registros'][i]['slcGrupo']){
+                document.getElementById('slcGrupo').value = objNovo['registros'][i]['slcGrupo'];
             }
-            if (objNovo[i]['slcStatusProcessual']){
-                document.getElementById('slcStatusProcessual').value = objNovo[i]['slcStatusProcessual'];
+            if (objNovo['registros'][i]['slcStatusProcessual']){
+                document.getElementById('slcStatusProcessual').value = objNovo['registros'][i]['slcStatusProcessual'];
             }
-            if (objNovo[i]['txtValorCausa']){
-                document.getElementById('txtValorCausa').value = objNovo[i]['txtValorCausa'];
+            if (objNovo['registros'][i]['txtValorCausa']){
+                document.getElementById('txtValorCausa').value = objNovo['registros'][i]['txtValorCausa'];
             } else {
                 document.getElementById('txtValorCausa').value = "";
             }
-            if (objNovo[i]['slcNumeroVara']){ //localTr
-                document.getElementById('slcNumeroVara').value = objNovo[i]['slcNumeroVara'];
+            if (objNovo['registros'][i]['slcNumeroVara']){ //localTr
+                document.getElementById('slcNumeroVara').value = objNovo['registros'][i]['slcNumeroVara'];
             } else {
                 document.getElementById('slcNumeroVara').value = '';
             }
-            if (objNovo[i]['tramite']){
-                document.getElementById('tramite').value = objNovo[i]['tramite'];
+            if (objNovo['registros'][i]['tramite']){
+                document.getElementById('tramite').value = objNovo['registros'][i]['tramite'];
             } else {
                 document.getElementById('tramite').value = "";
             }
-            if (objNovo[i]['slcComarca']){
-                document.getElementById('slcComarca').value = objNovo[i]['slcComarca'];
+            if (objNovo['registros'][i]['slcComarca']){
+                document.getElementById('slcComarca').value = objNovo['registros'][i]['slcComarca'];
             }
-            if (objNovo[i]['txtUf']){
-                document.getElementById('txtUf').value = objNovo[i]['txtUf'];
+            if (objNovo['registros'][i]['txtUf']){
+                document.getElementById('txtUf').value = objNovo['registros'][i]['txtUf'];
             }
-            if (objNovo[i]['razaoSocial']){
-                document.getElementById('razaoSocial').value = objNovo[i]['razaoSocial'];
+            if (objNovo['registros'][i]['razaoSocial']){
+                document.getElementById('razaoSocial').value = objNovo['registros'][i]['razaoSocial'];
             }
-            if (objNovo[i]['slcLocalizador']){
-                document.getElementById('slcLocalizador').value = objNovo[i]['slcLocalizador'];
+            if (objNovo['registros'][i]['slcLocalizador']){
+                document.getElementById('slcLocalizador').value = objNovo['registros'][i]['slcLocalizador'];
             }
-            if (objNovo[i]['responsavel']){
+            if (objNovo['registros'][i]['responsavel']){
                 var respId = '';
-                var respArr = objNovo[i]['responsavel'];
+                var respArr = objNovo['registros'][i]['responsavel'];
                 for (var j = 0; j < respArr.length; j++){
                     respId = 'responsavel'+(j+1);
                     document.getElementById(respId).value = respArr[j];
                 }
             }
-            if (objNovo[i]['agendamentos']['Audiência']){
-                var data = objNovo[i]['agendamentos']['Audiência'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
+            if (objNovo['registros'][i]['agendamentos']['Audiência']){
+                var data = objNovo['registros'][i]['agendamentos']['Audiência'].replace('/', '-').replace('/', '-').split('-').reverse().join('-');
                 document.getElementById('Audiência').value = data;
             } else{
                 document.getElementById('Audiência').value = '';
             }
-            if (objNovo[i]['agendamentos']['HoraAudiencia']){
-                document.getElementById('HoraAudiencia').value = objNovo[i]['agendamentos']['HoraAudiencia'];
+            if (objNovo['registros'][i]['agendamentos']['HoraAudiencia']){
+                document.getElementById('HoraAudiencia').value = objNovo['registros'][i]['agendamentos']['HoraAudiencia'];
             } else{
                 document.getElementById('HoraAudiencia').value = '';
             }
-            if (objNovo[i]['agendamentos']['Ciencia de novo processo']){
-                document.getElementById('dataCiencia').value = objNovo[i]['agendamentos']['Ciencia de novo processo'];
+            if (objNovo['registros'][i]['agendamentos']['Ciencia de novo processo']){
+                document.getElementById('dataCiencia').value = objNovo['registros'][i]['agendamentos']['Ciencia de novo processo'];
             } else {
                 document.getElementById('dataCiencia').value = '';
             }
-            if (objNovo[i]['agendamentos']['Anexar']){
+            if (objNovo['registros'][i]['agendamentos']['Anexar']){
                 document.getElementById('Anexar').checked = true;
             } else {
                 document.getElementById('Anexar').checked = false;
             }
-            if (objNovo[i]['agendamentos']['Fotocópia']){
+            if (objNovo['registros'][i]['agendamentos']['Fotocópia']){
                 document.getElementById('Fotocópia').checked = true;
             } else {
                 document.getElementById('Fotocópia').checked = false;
@@ -102,7 +103,7 @@
         };
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
-            qtdRegistros = Object.keys(objNovo).length;
+            qtdRegistros = Object.keys(objNovo['registros']).length;
             if (tipo == 1){ //fazer um ternário
                 if (first == true) {
                     first = false;
@@ -127,54 +128,56 @@
 
         function alteraValor(elemento){
             var checkResp = Boolean
+            console.log(typeof(elemento))
             if (typeof (elemento) === 'undefined'){
                 if (elemento.id == 'txtValorCausa'){
                     elemento.value = parseFloat(elemento.value).toFixed(2);
-                    objNovo[i][elemento.id] = elemento.value.trim();
+                    objNovo['registros'][i][elemento.id] = elemento.value.trim();
                 } else {
-                    objNovo[i][elemento.id] = elemento.value.trim();
+                    objNovo['registros'][i][elemento.id] = elemento.value.trim();
                 }
             } else {
                 validElement = true;
                 if (elemento.id == 'responsavel1' || elemento.id == 'responsavel2' || elemento.id == 'responsavel3') {
                     if (elemento.value != '') {
                         checkResp = true;
-                        objNovo[i][elemento.id.slice(0, -1)][elemento.id.slice(-1)-1] = elemento.value.trim();
+                        objNovo['registros'][i][elemento.id.slice(0, -1)][elemento.id.slice(-1)-1] = elemento.value.trim();
                     } else {
                         checkResp = false;
-                        objNovo[i][elemento.id.slice(0, -1)][elemento.id.slice(-1)-1] = '';// limpa
+                        objNovo['registros'][i][elemento.id.slice(0, -1)][elemento.id.slice(-1)-1] = '';// limpa
                     }
                 } else if (elemento.id == 'txtValorCausa'){
                     if (elemento.value != ''){
                         elemento.value = parseFloat(elemento.value).toFixed(2);
-                        objNovo[i][elemento.id] = elemento.value.trim();
+                        objNovo['registros'][i][elemento.id] = elemento.value.trim();
                     } else {
-                        delete objNovo[i][elemento.id];
+                        delete objNovo['registros'][i][elemento.id];
                     }
                 } else if (elemento.id == 'Anexar'){
                     if (elemento.checked){
-                        objNovo[i][elemento.id] = true;
+                        objNovo['registros'][i][elemento.id] = true;
                     } else {
-                        delete objNovo[i][elemento.id];
+                        delete objNovo['registros'][i][elemento.id];
                     }
                 } else if (elemento.id == 'Fotocópia'){
                     if (elemento.checked){
-                        objNovo[i][elemento.id] = true;
+                        objNovo['registros'][i][elemento.id] = true;
                     } else {
-                        delete objNovo[i][elemento.id];
+                        delete objNovo['registros'][i][elemento.id];
                     }
                 } else {
                     if (elemento.value != ''){
-                        objNovo[i][elemento.id] = elemento.value.trim();
+                        objNovo['registros'][i][elemento.id] = elemento.value.trim();
                     } else {
                         checkResp = false;
-                        delete objNovo[i][elemento.id];
+                        delete objNovo['registros'][i][elemento.id];
                     }
                 }
             };
         };
 
         function enviarDados(){
+            console.log(objNovo);
             objNovo = JSON.stringify(objNovo);
             document.getElementById('txtAbertura').innerHTML = objNovo;
         };
@@ -188,6 +191,7 @@
 </div>
 
 <div class="content ml-5 mr-5 mt-5" id='corpo'>
+    <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
     {% if (data) %}
         <div id="preencher">
             <div class="row">
