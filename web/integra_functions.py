@@ -233,16 +233,21 @@ class IntegraFunctions(object):
             ultimoCliente = ''
             #todo   IDEIA -> Alterar o objeto criado para receber numeração de registro a partir do 1 (não do zero)  --  reg == int(k)
             for _k, registro in registros.items():
-                # reg = int(k)+1
+                if (reg == 0): # CABEÇALHO DO LOG
+                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                    basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+
                 if (not(ultimoCliente) or (registro['razaoSocial'] != ultimoCliente)): # só irá pesquisar no primeiro registro ou se RazaoSocial != ultimoCliente
                     try:
-                        clienteLocalizado, clientePesquisado = self.pesquisarCliente('Cliente teste', 'cliente')
+                        clienteLocalizado, clientePesquisado = self.pesquisarCliente(registro['razaoSocial'], 'cliente')
                         ultimoCliente = clientePesquisado.text.strip()
                         clientePesquisado.click()
                         sleep(1)
                         urlPage = self.driver.current_url
                     except:
-                        return False #todo   ADD BREAK E REGISTRAR QUE NÃO FOI ENCONTRADO O CLIENTE - A PASTA X NÃO FOI SALVA e PULA PARA O PRÓXIMO REG
+                        clienteLocalizado = False
+                        message = "REG {}; NÃO FOI LOCALIZADO NO INTEGRA O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg+1), registro['razaoSocial'], str(registro['txtPasta']))
+                        #todo   ADD BREAK E REGISTRAR QUE NÃO FOI ENCONTRADO O CLIENTE - A PASTA X NÃO FOI SALVA e PULA PARA O PRÓXIMO REG
 
                 if (clienteLocalizado):
                     tentativa = 1
@@ -268,10 +273,6 @@ class IntegraFunctions(object):
                     except:
                         print('REG {} - PASTA {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1), registro['txtPasta']))
                         return False
-
-                    if (reg == 0): # CABEÇALHO DO LOG
-                        cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
-                        basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
                     if (not(searchFolder)):   # A PASTA NÃO EXISTE NO SISTEMA, SERÁ CRIADA!  (true - já existe processo/pasta no sistema)
                         try:
