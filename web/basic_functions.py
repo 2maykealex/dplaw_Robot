@@ -23,11 +23,20 @@ def checkIfTest():
     else:
         return False
 
-def abreArquivo(arquivo, extensao, path=""):
-    fileName = "{}\\{}.{}".format(path, arquivo, extensao)
-    # fileName = (arquivo + '.' + extensao)
-    dfExcel = get_sheet(file_name=fileName)
-    return dfExcel
+# def abreArquivo(arquivo, extensao, path=""):
+#     fileName = "{}\\{}.{}".format(path, arquivo, extensao)
+#     # fileName = (arquivo + '.' + extensao)
+#     dfExcel = get_sheet(file_name=fileName)
+#     return dfExcel
+
+def abreArquivo(fileName):
+    try:
+        arquivo =  open(fileName, 'r')
+        message = arquivo.readlines()
+        arquivo.close()
+        return message[-1]
+    except:
+        pass
 
 def checkEndFile(log):
     try:
@@ -58,6 +67,7 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
     arquivo.close()
 
 def createFolder(folder):
+    print(folder)
     if (not(path.exists(folder))):
         mkdir(folder)
 
