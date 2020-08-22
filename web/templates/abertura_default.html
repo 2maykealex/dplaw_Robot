@@ -277,7 +277,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="resp1">RESPONSÁVEL</label>
-                        <select name="resp1" id="resp1" class="form-control">
+                        <select name="resp1" id="resp1" class="form-control" required>
                             <option value="">SELECIONE</option>
                             {% for responsavel in resp1 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
@@ -286,7 +286,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="resp2">RESPONSÁVEL</label>
-                        <select name="resp2" id="resp2" class="form-control">
+                        <select name="resp2" id="resp2" class="form-control" required>
                             <option value="">SELECIONE</option>
                             {% for responsavel in resp2 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
@@ -295,7 +295,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="resp3">RESPONSÁVEL</label>
-                        <select name="resp3" id="resp3" class="form-control">
+                        <select name="resp3" id="resp3" class="form-control" required>
                             <option value="">SELECIONE</option>
                             {% for responsavel in resp3 %}
                                 <option value="{{responsavel}}">{{responsavel}}</option>
