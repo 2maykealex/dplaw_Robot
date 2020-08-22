@@ -10,6 +10,7 @@ from os import path as pathFolder
 from os import getcwd as osGetCWD
 from os import getpid
 from pprint import pprint
+import json
 
 class IntegraFunctions(object):
 
@@ -182,9 +183,11 @@ class IntegraFunctions(object):
                 #     print('teste  - não encontrado ainda!!!!')
                 pass
 
-    def controle(self, registros):
+    def controle(self, file):
         robo = None
         self.isTest = basic_functions.checkIfTest()
+        registros = basic_functions.abreArquivo(file)
+        registros = json.loads(registros)
 
         hoje = "%s" % (strftime("%Y-%m-%d"))
         hoje = hoje.replace('-', '_')
@@ -225,7 +228,9 @@ class IntegraFunctions(object):
                     self.driver.quit()
             else:
                 print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO.')
+                #TODO MOVER ARQUIVO QUE ESTÁ EM EXECUÇÃO PARA ARQUIVOS EXECUTADOS
                 break
+        return robo
 
     def abrePasta(self, registros, reg):
         if (reg < (len(registros['registros']))):
@@ -287,12 +292,13 @@ class IntegraFunctions(object):
                             tentativa = tentativa + 1
                             continue
 
+                        messageAgendamentos = ''
                         if (('slcResponsavel' in registro) and message):
                             messageAgendamentos = self.criaAgendammentos(registros['{}'.format(reg)], reg)
                             if (self.isTest):
                                 self.removeAgendamentos()
                         else:
-                            message = "{};;NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
+                            message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
 
                         if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
                     else:
@@ -441,7 +447,7 @@ class IntegraFunctions(object):
                         break
                 except:
                     pass
-            self.checkPopUps()
+            self.checkPopUps() #TODO ajustar naoInserido1
             complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
         else:
             complementoAdversa = ""
