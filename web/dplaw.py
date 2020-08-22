@@ -2,7 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, json
 from pprint import pprint
 from os import getcwd
 from os import path
+from time import strftime
 from integra_functions import IntegraFunctions
+from basic_functions import createLog
+from basic_functions import createFolder
+import pyexcel as pe
 # from basic_functions import abreArquivo
 
 app = Flask(__name__)
@@ -23,6 +27,11 @@ def abertura():
 def abertura_bradesco():
     return render_template('abertura_bradesco.html')
 
+@app.route("/abertura/faro")
+def abertura_faro():
+    return render_template('abertura_faro.html')
+
+@app.route("/abertura/faro/default", methods=['POST'])
 @app.route("/abertura/bradesco/default", methods=['POST'])
 def abertura_default():
     dados = path.dirname(getcwd())+'\\dados'
@@ -60,10 +69,11 @@ def abertura_default():
     try:
         data['clientePadrao'] = requested['clientePadrao']
     except:
-        print('NÃO TEM CLIENTE PADRÃO!')
+        pass
 
     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
+@app.route("/abertura/faro/default/part2", methods=['POST'])
 @app.route("/abertura/bradesco/default/part2", methods=['POST'])
 def abertura_default2():
     dados = path.dirname(getcwd())+'\\dados'
@@ -106,11 +116,21 @@ def abertura_executa():
     data = data['txtAbertura']
     data = json.loads(data)
 
-    pprint(data)
-    integra = IntegraFunctions()
-    integra.controle(data)
+    # CRIANDO ARQUIVO DE LOG .CSV
+    hoje = "%s" % (strftime("%Y-%m-%d"))
+    hoje = hoje.replace('-', '_')
+    hora = strftime("%H:%M:%S")
+    hora = hora.replace(':', '_')
+    pathPasta   = '{}\\arquivos_a_executar'.format(path.dirname(__file__))
+    createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+    pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
+    createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    return render_template('atualizacao.html')
+    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    with open(criaArquivo, 'w', encoding='utf-8') as outfile:
+        json.dump(data, outfile, ensure_ascii=True)
+
+    return render_template('abertura_monitoramento.html')
 
 # @app.route("/abertura/monitoramento", methods='POST')
 # def abertura_monitoramento():
