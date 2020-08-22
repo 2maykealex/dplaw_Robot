@@ -21,7 +21,6 @@
                     textAreaPaste.innerHTML = text
                 })
                 .catch(err => {
-                    console.log('Something went wrong', err);
                 });
         };
 
@@ -29,11 +28,30 @@
             var lines = $('textarea').val().split('\n');
             var ObjectList = {};
             ObjectList['tipo'] = 'abertura';
-            for (var i = 0; i < lines.length; i++){
+            ObjectList['clientePadrao'] = document.getElementById('clientePadrao').value.trim();
+            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
+            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
+            ultimoRegistro = 0;
+            registroAtual = 0;
+            registros = {};
+            for (var i = 0; i <= lines.length; i++){
                 if (lines[i]){
-                    ObjectList[i] = (criaObjeto(lines[i]));
-                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        {} //pass
+                    else {
+                        recebeRegistroObj = (criaObjeto(lines[i]));
+                        registros[registroAtual] = recebeRegistroObj;
+                        ultimoRegistro = registros[registroAtual]['txtPasta'];
+
+                        //Definindo padrões através dos Registros
+                        if (!ObjectList['txtPedido'])
+                            if (recebeRegistroObj['txtPedido'])
+                                ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
+                        registroAtual++;
+                    }
+
             }
+            ObjectList['registros'] = registros;
             ObjectList = JSON.stringify(ObjectList);
             return (ObjectList)
         };
@@ -81,18 +99,27 @@
 {% endblock%}
 
 {% block content %}
-    <div class="content text-center">
-        <h3>BRADESCO</h3>
-    </div>
-
     <form action="{{request.url_rule.rule}}/default" method="post">
-        <div class="row">
+        <div class="row ml-3 md-3">
             <div class="col-md-10 form-group">
-                <textarea class="mt-5 ml-5" name="txtAbertura" id="txtAbertura" cols="150" rows="15" placeholder="Cole aqui!"></textarea>
-                <textarea class="mt-5 ml-5 form-control" name="clientePadrao" id="clientePadrao" hidden>CLIENTE TESTE</textarea>
-                <textarea class="mt-5 ml-5 form-control" name="grupoPadrao" id="grupoPadrao" hidden>GRUPO TESTE</textarea>
-                <textarea class="mt-5 ml-5 form-control" name="siglaPadrao" id="siglaPadrao" hidden>TESTE</textarea>
-                <!-- <textarea class="mt-5 ml-5 form-control" name="clientePadrao" id="clientePadrao" >BANCO BRADESCO S.A.</textarea> -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="ml-2" for="clientePadrao">Cliente</label>
+                        <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="grupoPadrao">Grupo</label>
+                        <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="siglaPadrao">Sigla</label>
+                        <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class=" ml-3  form-control content text-center" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <textarea class="mt-4 ml-4 form-control" name="txtAbertura" id="txtAbertura" cols="150" rows="12" placeholder="Cole aqui!"></textarea>
+                </div>
+
             </div>
             <div class="col-md-2 form-group">
                 <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
@@ -101,5 +128,6 @@
             </div>
         </div>
     </form>
+    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
 
 {% endblock %}
