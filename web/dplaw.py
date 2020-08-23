@@ -31,6 +31,16 @@ def abertura_bradesco():
 def abertura_faro():
     return render_template('abertura_faro.html')
 
+@app.route("/abertura/bv")
+def abertura_bv():
+    return render_template('abertura_bv.html')
+
+@app.route("/abertura/oi")
+def abertura_oi():
+    return render_template('abertura_oi.html')
+
+@app.route("/abertura/oi/default", methods=['POST'])
+@app.route("/abertura/bv/default", methods=['POST'])
 @app.route("/abertura/faro/default", methods=['POST'])
 @app.route("/abertura/bradesco/default", methods=['POST'])
 def abertura_default():
@@ -73,6 +83,8 @@ def abertura_default():
 
     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
+@app.route("/abertura/oi/default/part2", methods=['POST'])
+@app.route("/abertura/bv/default/part2", methods=['POST'])
 @app.route("/abertura/faro/default/part2", methods=['POST'])
 @app.route("/abertura/bradesco/default/part2", methods=['POST'])
 def abertura_default2():
