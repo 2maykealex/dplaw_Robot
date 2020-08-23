@@ -39,17 +39,15 @@ def acessaIntegra(file, pathFile, folderName):
         if (integra):
             executedPath = "{}\\arquivos_executados\\{}".format(path.dirname(__file__), folderName)
             executedFile = "{}\\{}".format(executedPath, pathFile.split('\\')[-1])
-            #todo renomear se existir arquivo para OLD
-            count = 1
 
-            if (path.isfile(executedFile)):
-                rename(executedFile, '{}.old'.format(executedFile))  # Antigo / Novo
+            if (path.isfile(executedFile)):#todo Testar
+                rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
             move("{}".format(pathFile), executedPath) #move o arquivo para a pasta 'arquivos_executados'
-            # remove("{}\\{}".format(path, infoLog))  #APAGA O ARQUIVO .TXT
-            executingFiles.remove(file)
-    except:
+    except Exception as err:
+        print('\nHouve um erro: {}\n'.format(err))
         pass
+    executingFiles.remove(file) # COM ERRO OU SEM ERRO, REMOVE DA EXECUÇÃO
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
 
@@ -114,8 +112,8 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
             #     executeRobot = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args=("5", file, localFile))
 
         try:
-            executeRobot.start()
             print('\n', executeRobot.name,'\n')
+            executeRobot.start()
         except Exception as err:
             print('\n ERRO EM {}'.format(executeRobot.name))
             pass
