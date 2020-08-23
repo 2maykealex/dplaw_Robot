@@ -49,6 +49,7 @@
                                 ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
                         registroAtual++;
                     }
+                }
 
             }
             ObjectList['registros'] = registros;
@@ -96,7 +97,7 @@
         };
     </script>
 
-{% endblock%}
+{% endblock %}
 
 {% block content %}
     <form action="{{request.url_rule.rule}}/default" method="post">
@@ -122,12 +123,12 @@
 
             </div>
             <div class="col-md-2 form-group">
-                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
+                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste()">COLAR</button>
                 <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
                 <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
             </div>
         </div>
     </form>
-    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+    <!-- <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button> -->
 
 {% endblock %}
