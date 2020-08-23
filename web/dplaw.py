@@ -152,13 +152,17 @@ def abertura_executa():
 def atualizacao():
     return render_template('atualizacao.html')
 
-@app.route("/contrato")
-def contrato():
+@app.route("/atualizacao/contrato")
+def atualizacao_contrato():
     return render_template('contrato.html')
 
-@app.route("/volumetria")
-def volumetria():
+@app.route("/atualizacao/volumetria")
+def atualizacao_volumetria():
     return render_template('volumetria.html')
+
+@app.route("/atualizacao/geral")
+def atualizacao_geral():
+    return render_template('geral.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
