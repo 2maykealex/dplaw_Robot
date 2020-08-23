@@ -405,11 +405,11 @@ class IntegraFunctions(object):
         print('REG {} - PASTA {}: INICIANDO LOOPING'.format(reg+1, registro['txtPasta']))
         itensExcluidosLoop = ['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos']
         for k, v in registro.items():
-            print ('REG {}: {} - {}'.format(reg+1, k, v))
             try:
                 if (k in itensExcluidosLoop):
                     continue
 
+                print ('REG {}: {} - {}'.format(reg+1, k, v))
                 if (k == 'slcResponsavel'):
                     selecionaResponsaveis()
                 else:
@@ -771,5 +771,5 @@ class IntegraFunctions(object):
 
         print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
 
-
+#TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
 
