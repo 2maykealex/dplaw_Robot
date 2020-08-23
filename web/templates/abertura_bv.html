@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+    <script>
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
+        };
+
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            ObjectList['tipo'] = 'abertura';
+            ObjectList['clientePadrao'] = document.getElementById('clientePadrao').value.trim();
+            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
+            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
+            ultimoRegistro = 0;
+            registroAtual = 0;
+            registros = {};
+            console.log(lines.length);
+            for (var i = 0; i <= lines.length; i++){
+                console.log(i);
+                if (lines[i]){
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        {} //pass
+                    else {
+                        recebeRegistroObj = (criaObjeto(lines[i]));
+                        registros[registroAtual] = recebeRegistroObj;
+                        ultimoRegistro = registros[registroAtual]['txtPasta'];
+
+                        //Definindo padrões através dos Registros
+                        if (!ObjectList['txtPedido'])
+                            if (recebeRegistroObj['txtPedido'])
+                                ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
+                        registroAtual++;
+                    }
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            ObjectList['registros'] = registros;
+            console.log(ObjectList);
+            ObjectList = JSON.stringify(ObjectList);
+            return (ObjectList)
+        };
+
+        function enviarDados(){
+            ObjectList = converter();
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('txtAbertura').innerHTML = ObjectList;
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            var adversa = String;
+            var isNumber = String;
+            var dataHoje = new Date();
+
+            objLine['txtPasta'] = linha.split(';')[0]
+            parteAdversa = {};
+            try {
+                parteAdversa['txtNome']         = String(linha.split(';')[1]);
+            } catch {}
+            try {
+                parteAdversa['txtCPF']         = String(linha.split(';')[2]);
+            } catch {}
+            try {
+                parteAdversa['txtTelContato']  = String(linha.split(';')[3]);
+            } catch {}
+            try {
+                parteAdversa['txtEmail1']      = String(linha.split(';')[4]);
+            } catch {}
+            try {
+                parteAdversa['txtEndereco']    = String(linha.split(';')[5]);
+            } catch {}
+            try {
+                parteAdversa['txtProfissao']   = String(linha.split(';')[6]);
+            } catch {}
+            try {
+                objLine['parteAdversa'] = parteAdversa;
+            } catch {}
+
+            objLine['txtDataContratacao'] = "07/08/2020";
+            objLine['txtPedido'] = String(linha.split(';')[7]);
+            objLine['slcComarca']   = 'Porto Velho';
+            objLine['txtUf']        = 'RO';
+
+            return (objLine);
+        };
+    </script>
+
+{% endblock%}
+
+{% block content %}
+    <form action="{{request.url_rule.rule}}/default" method="post">
+        <div class="row ml-3 md-3">
+            <div class="col-md-10 form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="ml-2" for="clientePadrao">Cliente</label>
+                        <input type="text" name="clientePadrao" id="clientePadrao" value="Banco Votorantim S.A" class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="grupoPadrao">Grupo</label>
+                        <input type="text" name="grupoPadrao" id="grupoPadrao" value="BANCO VOTORANTIM" class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="siglaPadrao">Sigla</label>
+                        <input type="text" name="siglaPadrao" id="siglaPadrao" value="BV" class=" ml-3  form-control content text-center" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <textarea class="mt-4 ml-4 form-control" name="txtAbertura" id="txtAbertura" cols="150" rows="12" placeholder="Cole aqui!"></textarea>
+                </div>
+
+            </div>
+            <div class="col-md-2 form-group">
+                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
+                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
+            </div>
+        </div>
+    </form>
+    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+
+{% endblock %}
