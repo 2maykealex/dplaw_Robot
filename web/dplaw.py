@@ -123,7 +123,8 @@ def abertura_default2():
     return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
 @app.route("/abertura/executa", methods=['POST'])
-def abertura_executa():
+@app.route("/atualizacao/executa", methods=['POST'])
+def executa():
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
