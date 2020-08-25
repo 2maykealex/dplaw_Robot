@@ -29,15 +29,13 @@
             var lines = $('textarea').val().split('\n');
             var ObjectList = {};
             ObjectList['tipo'] = 'abertura';
-            ObjectList['clientePadrao'] = document.getElementById('clientePadrao').value.trim();
+            ObjectList['clientePadrao'] = String(document.getElementById('clientePadrao').value.trim()).toUpperCase();
             ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
             ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
             ultimoRegistro = 0;
             registroAtual = 0;
             registros = {};
-            console.log(lines.length);
             for (var i = 0; i <= lines.length; i++){
-                console.log(i);
                 if (lines[i]){
                     if (ultimoRegistro == (lines[i].split(';')[0]))
                         {} //pass
@@ -71,35 +69,55 @@
             var adversa = String;
             var isNumber = String;
             var dataHoje = new Date();
+            parteAdversa     = {};
+            dadosAgendamento = {};
 
-            objLine['txtPasta'] = linha.split(';')[0]
-            parteAdversa = {};
+            objLine['txtPasta'] = linha.split(';')[0]; //Cód. Causa
             try {
-                parteAdversa['txtNome']         = String(linha.split(';')[1]);
+                if (linha.split(';')[1])
+                    parteAdversa['txtNome'] = String(linha.split(';')[1]); //Partes - CON
             } catch {}
             try {
-                parteAdversa['txtCPF']         = String(linha.split(';')[2]);
+                if (Object.keys(parteAdversa).length > 0)
+                    objLine['parteAdversa'] = parteAdversa;
             } catch {}
             try {
-                parteAdversa['txtTelContato']  = String(linha.split(';')[3]);
+                objLine['txtNroProcesso'] = linha.split(';')[2]; //Nº Processo
             } catch {}
             try {
-                parteAdversa['txtEmail1']      = String(linha.split(';')[4]);
+                objLine['txtNroCnj'] = linha.split(';')[2]; //Nº Processo
             } catch {}
             try {
-                parteAdversa['txtEndereco']    = String(linha.split(';')[5]);
+                objLine['slcNumeroVara'] = linha.split(';')[3].split('ª')[0] + ' ª-º'; //Numeral da Vara
             } catch {}
             try {
-                parteAdversa['txtProfissao']   = String(linha.split(';')[6]);
+                localTramite = linha.split(';')[4].trim(); //denominação
+                try {
+                    localTramite = localTramite.split('D')[0].trim();
+                } catch {}
+                objLine['slcLocalTramite'] = localTramite;
             } catch {}
             try {
-                objLine['parteAdversa'] = parteAdversa;
+                objLine['slcComarca'] = linha.split(';')[5].trim(); //Municipio
             } catch {}
-
-            objLine['txtDataContratacao'] = "07/08/2020";
-            objLine['txtPedido'] = String(linha.split(';')[7]);
-            objLine['slcComarca']   = 'Porto Velho';
-            objLine['txtUf']        = 'RO';
+            try {
+                objLine['txtUf'] = linha.split(';')[6]; //UF
+            } catch {}
+            try {
+                if (linha.split(';')[7])
+                    dadosAgendamento['Audiência'] = linha.split(';')[7]; //Audiência
+            } catch {}
+            try {
+                if (linha.split(';')[8])
+                    dadosAgendamento['HoraAudiencia'] = linha.split(';')[8]; //Hora
+            } catch {}
+            try {
+                if (Object.keys(dadosAgendamento).length > 0)
+                    objLine['agendamentos'] = dadosAgendamento;
+            } catch {}
+            try {
+                objLine['txtValorCausa'] = linha.split(';')[9].replace('.',''); //Valor Pleito
+            } catch {}
 
             return (objLine);
         };
@@ -114,7 +132,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label class="ml-2" for="clientePadrao">Cliente</label>
-                        <input type="text" name="clientePadrao" id="clientePadrao" value="Banco Votorantim S.A" class=" ml-2  form-control content text-center" disabled>
+                        <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO VOTORANTIM S.A" class=" ml-2  form-control content text-center" disabled>
                     </div>
                     <div class="col-md-4">
                         <label class="ml-2" for="grupoPadrao">Grupo</label>
