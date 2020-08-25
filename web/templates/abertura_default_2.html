@@ -49,10 +49,10 @@
             } else {
                 document.getElementById('slcNumeroVara').value = '';
             }
-            if (objNovo['registros'][i]['tramite']){
-                document.getElementById('tramite').value = objNovo['registros'][i]['tramite'];
+            if (objNovo['registros'][i]['slcLocalTramite']){
+                document.getElementById('slcLocalTramite').value = objNovo['registros'][i]['slcLocalTramite'];
             } else {
-                document.getElementById('tramite').value = "";
+                document.getElementById('slcLocalTramite').value = "";
             }
             if (objNovo['registros'][i]['slcComarca']){
                 document.getElementById('slcComarca').value = objNovo['registros'][i]['slcComarca'];
@@ -202,7 +202,7 @@
                     <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(2);">Próximo Registro >>></button>
                 </div>
                 <div class="col-md-4  mb-3">
-                    <form action="{{url_for('abertura_executa')}}" method="post" >
+                    <form action="{{url_for('executa')}}" method="post" >
                         <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
                         <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
                     </form>
@@ -291,8 +291,8 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="tramite">LOCAL DE TRÂMITE</label>
-                    <select name="tramite" id="tramite" class="form-control" onchange="alteraValor(this);">
+                    <label for="slcLocalTramite">LOCAL DE TRÂMITE</label>
+                    <select name="slcLocalTramite" id="slcLocalTramite" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for localtramite in locaistramites %}
                             <option value="{{localtramite.strip()}}">{{localtramite.strip()}}</option>
