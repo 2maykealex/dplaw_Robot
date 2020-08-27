@@ -189,15 +189,10 @@ class IntegraFunctions(object):
         registros = basic_functions.abreArquivo(file)
         registros = json.loads(registros)
 
-        hoje = "%s" % (strftime("%Y-%m-%d"))
-        hoje = hoje.replace('-', '_')
-        hora = strftime("%H:%M:%S")
-        hora = hora.replace(':', '_')
-
         # CRIANDO ARQUIVO DE LOG .CSV
+        fileName = file.split('\\')[-1].split('.txt')[0]
         self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
-        # self.logFileCSV = "{}\\_log_abertura__2020_08_11__15_17_18.csv".format(self.logBase) # teste -> usa o nome do arquivo
-        self.logFileCSV = "{}\\_log_{}.csv".format(self.logBase, '{}__{}__{}'.format(registros['tipo'], hoje, hora))
+        self.logFileCSV = "{}\\{}.csv".format(self.logBase, fileName)
         basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
         while True:
