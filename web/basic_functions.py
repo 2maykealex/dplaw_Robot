@@ -1,6 +1,7 @@
 from os import path
 from os import getcwd
 from os import mkdir
+from time import strftime
 from psutil import pid_exists
 from pyexcel import get_sheet
 
@@ -105,3 +106,10 @@ def ajustarNumProcessoCNJ(numProcessCNJ):
     if (numProcessCNJ == '-....'):
         numProcessCNJ = ''
     return numProcessCNJ
+
+def getTodayTime():
+    hoje = "%s" % (strftime("%Y-%m-%d"))
+    hoje = hoje.replace('-', '_')
+    hora = strftime("%H:%M:%S")
+    hora = hora.replace(':', '_')
+    return (hoje, hora)
