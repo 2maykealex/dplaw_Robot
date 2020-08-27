@@ -143,11 +143,11 @@ def executa():
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
-    return render_template('abertura_monitoramento.html')
+    return render_template('monitoramento.html')#TODO ENVIAR PARA ROTA!
 
-# @app.route("/abertura/monitoramento", methods='POST')
-# def abertura_monitoramento():
-#     return render_template('atualizacao.html')
+@app.route("/monitoramento")
+def monitoramento():
+    return render_template('monitoramento.html')
 
 @app.route("/atualizacao")
 def atualizacao():
