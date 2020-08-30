@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, json
+from collections import OrderedDict
 from pprint import pprint
 from os import getcwd
 from os import path
@@ -128,6 +129,14 @@ def executa():
     data = request.form.to_dict()
     data = data['txtAbertura']
     data = json.loads(data)
+
+    #reordenando os registros
+    newRegistros= {}
+    for k, v in data['registros'].items():
+        newRegistros[int(k)] = v
+
+    del data['registros']
+    data['registros'] = newRegistros
 
     # CRIANDO ARQUIVO DE LOG .CSV
     hoje = "%s" % (strftime("%Y-%m-%d"))
