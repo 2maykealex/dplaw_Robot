@@ -43,16 +43,20 @@ def checkEndFile(log):
     try:
         arquivo =  open(log, 'r')
         message = arquivo.readlines()
+        countLines = len(message)
         arquivo.close()
-        try:
-            lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
-        except:
-            if (message[len(message)-1][:3] == 'FIM'):
-                lastLine = 'FIM'
-            else:
-                lastLine = -1
+
+        if countLines > 1:
+            try:
+                lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
+            except:
+                if (message[len(message)-1][:3] == 'FIM'):
+                    lastLine = 'FIM'
+        else:
+            lastLine = 0
     except:
-        lastLine = 0
+        lastLine = -1
+
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
