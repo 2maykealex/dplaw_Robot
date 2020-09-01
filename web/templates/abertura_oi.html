@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+    <script>
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
+        };
+
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            ObjectList['tipo'] = 'abertura';
+            ObjectList['clientePadrao'] = String(document.getElementById('clientePadrao').value.trim()).toUpperCase();
+            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();
+            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();
+            ultimoRegistro = 0;
+            registroAtual = 0;
+            registros = {};
+            for (var i = 0; i <= lines.length; i++){
+                if (lines[i]){
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        {} //pass
+                    else {
+                        recebeRegistroObj = (criaObjeto(lines[i]));
+                        registros[registroAtual] = recebeRegistroObj;
+                        ultimoRegistro = registros[registroAtual]['txtPasta'];
+
+                        //Definindo padrões através dos Registros
+                        if (!ObjectList['txtPedido'])
+                            if (recebeRegistroObj['txtPedido'])
+                                ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
+                        registroAtual++;
+                    }
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            ObjectList['registros'] = registros;
+            console.log(ObjectList);
+            ObjectList = JSON.stringify(ObjectList);
+            return (ObjectList)
+        };
+
+        function enviarDados(){
+            ObjectList = converter();
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('txtAbertura').innerHTML = ObjectList;
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            var adversa = String;
+            var isNumber = String;
+            var dataHoje = new Date();
+            parteAdversa     = {};
+            dadosAgendamento = {};
+
+            try {
+                objLine['razaoSocial'] = String(document.getElementById('clientePadrao').value.trim()).toUpperCase();; //Pasta
+            } catch {}
+            try {
+                objLine['sigla'] = document.getElementById('siglaPadrao').value.trim(); //sigla
+            } catch {}
+            try {
+                objLine['slcGrupo'] = document.getElementById('grupoPadrao').value.trim(); //Grupo
+            } catch {}
+
+            try {
+                objLine['txtPasta'] = linha.split(';')[0]; //Pasta
+            } catch {}
+            try {
+                if (linha.split(';')[1])
+                    parteAdversa['txtNome'] = String(linha.split(';')[1]); //Partes - CON
+            } catch {}
+            try {
+                if (Object.keys(parteAdversa).length > 0)
+                    objLine['parteAdversa'] = parteAdversa;
+            } catch {}
+            try {
+                objLine['txtDataContratacao'] = String(linha.split(';')[2]); //Data Contratação
+            } catch {}
+            try {
+                objLine['txtNroProcesso'] = linha.split(';')[3]; //Nº Processo
+            } catch {}
+            try {
+                objLine['txtNroCnj'] = linha.split(';')[4]; //Nº Processo
+            } catch {}
+            try {
+                objLine['slcGrupo'] = linha.split(';')[5]; //Grupo
+            } catch {}
+            try {
+                objLine['slcNumeroVara'] = linha.split(';')[6] + ' ª-º'; //Vara
+            } catch {}
+            try {
+                objLine['slcLocalTramite'] = linha.split(';')[7].trim(); //denominação
+            } catch {}
+            try {
+                objLine['slcComarca'] = linha.split(';')[8].trim(); //Municipio
+            } catch {}
+            try {
+                objLine['txtUf'] = linha.split(';')[9].trim(); //UF
+            } catch {}
+            try {
+                objLine['txtValorCausa'] = linha.split(';')[10].replace('.',''); //Valor Pleito
+            } catch {}
+            // try {
+            //     if (linha.split(';')[7])
+            //         dadosAgendamento['Audiência'] = linha.split(';')[7]; //Audiência
+            // } catch {}
+            // try {
+            //     if (linha.split(';')[8])
+            //         dadosAgendamento['HoraAudiencia'] = linha.split(';')[8]; //Hora
+            // } catch {}
+            // try {
+            //     if (Object.keys(dadosAgendamento).length > 0)
+            //         objLine['agendamentos'] = dadosAgendamento;
+            // } catch {}
+
+
+            return (objLine);
+        };
+    </script>
+
+{% endblock%}
+
+{% block content %}
+    <form action="{{request.url_rule.rule}}/default" method="post">
+        <div class="row ml-3 md-3">
+            <div class="col-md-10 form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="ml-2" for="clientePadrao">Cliente</label>
+                        <input type="text" name="clientePadrao" id="clientePadrao" value="Oi S.A" class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="grupoPadrao">Grupo</label>
+                        <input type="text" name="grupoPadrao" id="grupoPadrao" value="OI TELECOMUNICAÇÕES" class=" ml-2  form-control content text-center" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="ml-2" for="siglaPadrao">Sigla</label>
+                        <input type="text" name="siglaPadrao" id="siglaPadrao" value="OI" class=" ml-3  form-control content text-center" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <textarea class="mt-4 ml-4 form-control" name="txtAbertura" id="txtAbertura" cols="150" rows="12" placeholder="Cole aqui!"></textarea>
+                </div>
+
+            </div>
+            <div class="col-md-2 form-group">
+                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
+                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
+            </div>
+        </div>
+    </form>
+    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
+
+{% endblock %}
