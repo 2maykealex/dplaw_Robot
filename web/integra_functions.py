@@ -63,7 +63,7 @@ class IntegraFunctions(object):
             abriuPesquisa = self.acessaMenuPesquisa()
 
         if (abriuPesquisa):
-            sleep(1)
+            sleep(2)
             self.checkPopUps()
             xPathOption = ''
 
@@ -80,7 +80,7 @@ class IntegraFunctions(object):
 
             selecionaOpcao = self.waitingElement('{}'.format(xPathOption))
             selecionaOpcao.click()
-            sleep(1)
+            sleep(2)
 
             # valor do parâmetro
             textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
@@ -88,7 +88,7 @@ class IntegraFunctions(object):
             # self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
 
             print("pesquisando pasta {}".format(search))
-            sleep(1)
+            sleep(2)
             #botão pesquisar
             botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
             botaoPesquisar.click()
@@ -183,26 +183,12 @@ class IntegraFunctions(object):
                 #     print('teste  - não encontrado ainda!!!!')
                 pass
 
-    def controle(self, file):
+    def controle(self, registros, reg, logFileCSV):
         robo = None
+        self.logFileCSV = logFileCSV
         self.isTest = basic_functions.checkIfTest()
-        registros = basic_functions.abreArquivo(file)
-        registros = json.loads(registros)
-
-        # CRIANDO ARQUIVO DE LOG .CSV
-        fileName = file.split('\\')[-1].split('.txt')[0]
-        self.logBase = '{}\\logs\\{}'.format(pathFolder.dirname(__file__), registros['tipo'])
-        self.logFileCSV = "{}\\{}.csv".format(self.logBase, fileName)
-        basic_functions.createFolder(self.logBase) # CRIA DIRETÓRIO SE NÃO EXISTIR.
-
         while True:
-            reg = basic_functions.checkEndFile(self.logFileCSV)
-
             if (reg != 'FIM' and reg != -1 and (reg < (len(registros['registros'])))):
-                if (reg == 0): # CABEÇALHO DO LOG
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
-                    basic_functions.createLog(self.logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
-
                 login, password = basic_functions.checkLogin()
                 print("\n-----------------------------------------")
                 print("Login utilizado: {}".format(login))
@@ -348,10 +334,10 @@ class IntegraFunctions(object):
         def recuperaIdIntegra():
             numIdPromad = ''
             try:
-                numIdPromad = self.driver.find_element_by_id("idDoProcesso")
+                numIdPromad = self.driver.find_element_by_class_name("idDoProcesso")
             except:
                 try:
-                    numIdPromad = self.driver.find_element_by_id("idDoCliente")
+                    numIdPromad = self.driver.find_element_by_class_name("idDoCliente")
                 except:
                     if (tipo == 'abertura'):
                         naoInserido['idDoProcessoINTEGRA'] = 'Não recuperado'
@@ -360,7 +346,7 @@ class IntegraFunctions(object):
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
                 numIdPromad = numIdPromad[14:].strip()
-                print("REG {} - PASTA {}: NOVA PASTA ABERTA: {}".format(reg+1, registro['txtPasta'], numIdPromad))
+                print("REG {} - PASTA {}: ID PROMAD: {}".format(reg+1, registro['txtPasta'], numIdPromad))
                 return numIdPromad
             else:
                 return numIdPromad

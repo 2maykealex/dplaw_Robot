@@ -14,8 +14,12 @@ from datetime import datetime
 from threading import Thread
 from basic_functions import checkPID
 from basic_functions import createFolder
+from basic_functions import createLog
 from basic_functions import checkIfTest
+from basic_functions import abreArquivo
+from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
+import json
 # from abertura import Abertura
 # from volumetria import Volumetria
 # from contrato import Contrato
@@ -31,11 +35,11 @@ from integra_functions import IntegraFunctions
 #         del executingFiles[file]
 #         print('===O ARQUIVO {} FOI REMOVIDO DA LISTA==='.format(arquivo))
 
-def acessaIntegra(file, pathFile, folderName):
+def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
     # current_thread().name
     try:
         integra = IntegraFunctions()
-        integra = integra.controle(pathFile)
+        integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
             executedPath = "{}\\arquivos_executados\\{}".format(path.dirname(__file__), folderName)
@@ -72,8 +76,25 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
             folderName = folderName[-1]
             pathFile = "{}\\{}".format(localFile, file)
 
+            registros = abreArquivo(pathFile)
+            registros = json.loads(registros)
+
+            # CRIANDO ARQUIVO DE LOG .CSV
+            logFileName = file.split('\\')[-1].split('.txt')[0]
+            logPath     = '{}\\logs\\{}'.format(path.dirname(__file__), registros['tipo'])
+            logFileCSV = "{}\\{}.csv".format(logPath, logFileName)
+            createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+
+            if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
+                open(logFileCSV, 'a')
+                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+
+            # else:
+            reg = checkEndFile(logFileCSV)
+
             executingFiles.append(file)
-            executeRobot = (Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (file, pathFile, folderName)))
+            executeRobot = (Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
 
 
 
