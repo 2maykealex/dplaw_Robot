@@ -133,7 +133,7 @@ def executa():
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
-        newRegistros[int(k)] = v
+        newRegistros[int(k)+1] = v
 
     del data['registros']
     data['registros'] = newRegistros
