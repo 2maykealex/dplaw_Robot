@@ -42,9 +42,7 @@
             ultimoRegistro = 0;
             registroAtual = 0;
             registros = {};
-            console.log(lines.length);
             for (var i = 0; i <= lines.length; i++){
-                console.log(i);
                 if (lines[i]){
                     if (ultimoRegistro == (lines[i].split(';')[0]))
                         {} //pass
@@ -70,7 +68,6 @@
 
         function criaObjeto(linha){
             var objLine = {};
-            console.log(linha.split(';')[7]);
             objLine['txtPasta']       = linha.split(';')[7];
             objLine['txtCampoLivre3'] = document.getElementById('txtCampoLivre3').value.trim();
             return (objLine);
@@ -80,10 +77,6 @@
 {% endblock%}
 
 {% block content %}
-    <!-- <div class="content text-center">
-        <h3>FARO</h3>
-    </div> -->
-
     <form action="{{url_for('executa')}}" method="post">
         <div class="row ml-3 md-3">
             <div class="col-md-10 form-group">
