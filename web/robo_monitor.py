@@ -87,7 +87,10 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
 
             if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
                 open(logFileCSV, 'a')
-                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                if (registros['tipo'] == 'abertura'):
+                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                elif (registros['tipo'] == 'atualizacao'):
+                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;CAMPOS ATUALIZADOS; ERRO: NÃO ATUALIZADOS'
                 createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
             # else:
