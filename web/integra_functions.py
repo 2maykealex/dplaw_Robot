@@ -214,6 +214,7 @@ class IntegraFunctions(object):
         #todo   IDEIA -> Alterar o objeto criado para receber numeração de registro a partir do 1 (não do zero)  --  reg == int(k)
         clienteLocalizado = True
         for _k, registro in registros['registros'].items():
+            print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format(len(registros['registros']) -int(_k), len(registros['registros'])))
             if ('abertura' in registros['tipo']):
                 ultimoCliente = ''
                 if (not(ultimoCliente) or (registro['razaoSocial'] != ultimoCliente)):
@@ -243,7 +244,15 @@ class IntegraFunctions(object):
                         searchFolder = False
                     else:
                         #TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA
-                        searchFolder, elementoPesquisado = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                        try:
+                            countChar = len(str(registro['txtPasta']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.pesquisarCliente(registro['txtPasta'], 'processo')
+                            else:
+                                searchFolder, elementoPesquisado = self.pesquisarCliente(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
+                        # searchFolder, elementoPesquisado = self.pesquisarCliente(registro['txtPasta'], 'pasta')
                 except:
                     print('REG {} - PASTA {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg+1), registro['txtPasta']))
                     return False
@@ -345,7 +354,7 @@ class IntegraFunctions(object):
 
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
-                numIdPromad = numIdPromad[14:].strip()
+                numIdPromad = numIdPromad.split(' ')[-1].strip()
                 print("REG {} - PASTA {}: ID PROMAD: {}".format(reg+1, registro['txtPasta'], numIdPromad))
                 return numIdPromad
             else:
@@ -380,6 +389,7 @@ class IntegraFunctions(object):
         sleep(2)
         print('REG {} - PASTA {}: INICIANDO INCLUSAO DE PASTA'.format(reg+1, registro['txtPasta']))
         naoInserido = {}
+        camposInseridos = '|'
 
         hoje = "%s" % (strftime("%d-%m-%Y"))
         hoje = hoje.replace('-', '/')
@@ -412,6 +422,7 @@ class IntegraFunctions(object):
                         except:
                             checkValueInCombo(str(v), k)
                     sleep(.8)
+                camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
             except:
                 naoInserido[k] = str(v)
 
@@ -473,9 +484,12 @@ class IntegraFunctions(object):
                 hora = strftime("%H:%M:%S")
                 horaStr = hora.replace(':', '-')
 
-                message = "{}{};".format(message, registro['txtPasta'])
+                message = "{}{};".format(message, "'{}".format(registro['txtPasta']))
                 message = "{}{};".format(message, idNovaPasta)
-                message = "{}{};".format(message, complementoAdversa)
+                if (tipo == 'abertura'):
+                    message = "{}{};".format(message, complementoAdversa)
+                elif (tipo == 'atualizacao'):
+                    message = "{}{};".format(message, camposInseridos)
                 message = "{}{};".format(message, complementoNaoInseridos)
 
                 print('REG {} - PASTA {}: FINALIZADO às: {}'.format(reg+1, str(registro['txtPasta']), horaStr))
@@ -786,4 +800,7 @@ class IntegraFunctions(object):
 
 
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
+
+#TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
+#TODO ADD NO LOG AGENDAMENTOS CRIADOS: AS DATAS DOS AGENDAMENTOS
 
