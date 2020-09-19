@@ -213,6 +213,7 @@ class IntegraFunctions(object):
     def abrePasta(self, registros, reg):
         #todo   IDEIA -> Alterar o objeto criado para receber numeração de registro a partir do 1 (não do zero)  --  reg == int(k)
         clienteLocalizado = True
+        #todo PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
         for _k, registro in registros['registros'].items():
             print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format(len(registros['registros']) -int(_k), len(registros['registros'])))
             if ('abertura' in registros['tipo']):
