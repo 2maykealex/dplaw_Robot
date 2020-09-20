@@ -15,10 +15,9 @@
         var first = true;
         window.onload = function() {
             let today = new Date().toISOString().slice(0, 10)
-            document.getElementById('dataciencia').value = today;
             obj = {{ data|tojson }}; // verificar se ao invés de adicionar em cada objeto, fosse criado outro só com os padrões
             console.log(obj);
-            console.log((Object.keys(obj['registros']).length))
+            document.getElementById('dataciencia').value = today;
         };
 
         function mostrar(element){
@@ -51,8 +50,7 @@
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
             var dataCiencia1 = document.getElementById('dataciencia').value;
             countCiencia = 0;
-            console.log(obj);
-            for (var i = 0; i < (Object.keys(obj['registros']).length); i++){
+            for (var i = 1; i <= (Object.keys(obj['registros']).length); i++){
                 if (checkElementValue('razaoSocial') == true){
                     obj['registros'][i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
                 };
@@ -318,7 +316,7 @@
                         <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo">
                     </div>
                     <div class="col-md-4  ml-3 mb-3">
-                        <form action="{{request.url_rule.rule}}/part2" method="post" onsubmit="definirPadrao()">
+                        <form action="{{url_for('abertura_default2')}}" method="post" onsubmit="definirPadrao()">
                             <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
                             <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;">ENVIAR</button>
                             <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>

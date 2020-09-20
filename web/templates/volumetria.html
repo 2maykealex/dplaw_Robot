@@ -8,7 +8,7 @@
     <script>
         window.onload = function() {
             let today = new Date().toISOString().slice(0, 7).replace('-','.')
-            document.getElementById('txtCampoLivre3').value = "Volumetria " + today;
+            // document.getElementById('txtCampoLivre3').value = "Volumetria " + today;
         };
 
         function limparTextArea() {
@@ -72,44 +72,57 @@
             objLine['txtCampoLivre3'] = document.getElementById('txtCampoLivre3').value.trim();
             return (objLine);
         };
+
+        // $(function() {
+        //     $('form').submit(function() {
+        //         console.log('Input 1: '+$('input[name="input1"]').val() + ' Input 2: '+ $('input[name="input2"]').val()); // etc.
+        //     });
+        // });
+
     </script>
 
 {% endblock%}
 
 {% block content %}
-    <form action="{{url_for('executa')}}" method="post">
+    <form action="{{url_for('getFile')}}" method="post" enctype="multipart/form-data">
         <div class="row ml-3 md-3">
-            <div class="col-md-10 form-group">
+            <div class="col-md-12 form-group">
                 <div class="row">
                     <div class="col-md-3">
                         <label class="ml-2" for="clientePadrao">Cliente</label>
-                        <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class=" ml-2  form-control content text-center" disabled>
+                        <input type="text" class="form-control" value="BANCO BRADESCO S.A." disabled>
+                        <input type="hidden" name="clientePadrao" value="BANCO BRADESCO S.A." class="form-control">
+
+                        <!-- <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class=" ml-2  form-control content text-center" disabled> -->
                     </div>
                     <div class="col-md-3">
                         <label class="ml-2" for="grupoPadrao">Grupo</label>
-                        <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class=" ml-2  form-control content text-center" disabled>
+                        <input type="text" value="Grupo Bradesco" class=" ml-2  form-control content text-center" disabled>
+                        <input type="hidden" name="grupoPadrao" value="Grupo Bradesco">
                     </div>
                     <div class="col-md-3">
                         <label class="ml-2" for="siglaPadrao">Sigla</label>
-                        <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class=" ml-3  form-control content text-center" disabled>
+                        <input type="text" value="BRA" class=" ml-3  form-control content text-center" disabled>
+                        <input type="hidden" name="siglaPadrao" value="BRA">
                     </div>
                     <div class="col-md-3">
                         <label class="ml-2" for="txtCampoLivre3"><strong>CampoLivre 3</strong>texto:</label>
-                        <input type="text" name="txtCampoLivre3" id="txtCampoLivre3" value="Volumetria 2020.06" class=" ml-2  form-control content text-center">
+                        <input type="text" value="Volumetria 2020.06" class=" ml-2  form-control content text-center">
+                        <input type="hidden" name="txtCampoLivre4" id="txtCampoLivre4" value="Contrato PA 2020.06" class=" ml-2  form-control content text-center">
                     </div>
+                    <input type="hidden" name="tipo" value="abertura">
+                    <input type="hidden" name="funcao" value="bv">
                 </div>
-                <div class="row">
-                    <textarea class="mt-4 ml-4 form-control" name="txtAbertura" id="txtAbertura" cols="150" rows="12" placeholder="Cole aqui!"></textarea>
-                </div>
-
             </div>
-            <div class="col-md-2 form-group">
-                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste();">COLAR</button>
-                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
-                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
+            <div class="row">
+                <div class="col-md-12 mt-5 ml-4">
+                    <input type="file" name="arquivo" id="arquivo" class="form-control">
+                </div>
+                <div class="col-md-12 mt-1 ml-4">
+                    <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend">ENVIAR</button>
+                </div>
             </div>
         </div>
     </form>
-    <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
 
 {% endblock %}

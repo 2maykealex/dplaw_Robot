@@ -5,130 +5,39 @@
 
 {% block scripts %}
 
-    <script>
-        function limparTextArea() {
-            document.getElementById('txtAbertura').innerHTML = '';
-            document.getElementById('btnPaste').disabled = false;
-        };
-
-        function paste() {
-            var textAreaPaste = document.querySelector("#txtAbertura");
-            textAreaPaste.focus();
-
-            navigator.clipboard.readText()
-                .then(text => {
-                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
-                    textAreaPaste.innerHTML = text
-                })
-                .catch(err => {
-                });
-        };
-
-        function converter(){
-            var lines = $('textarea').val().split('\n');
-            var ObjectList = {};
-            ObjectList['tipo'] = 'abertura';
-            ObjectList['clientePadrao'] = document.getElementById('clientePadrao').value.trim();
-            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
-            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
-            ultimoRegistro = 0;
-            registroAtual = 0;
-            registros = {};
-            for (var i = 0; i <= lines.length; i++){
-                if (lines[i]){
-                    if (ultimoRegistro == (lines[i].split(';')[0]))
-                        {} //pass
-                    else {
-                        recebeRegistroObj = (criaObjeto(lines[i]));
-                        registros[registroAtual] = recebeRegistroObj;
-                        ultimoRegistro = registros[registroAtual]['txtPasta'];
-
-                        //Definindo padrões através dos Registros
-                        if (!ObjectList['txtPedido'])
-                            if (recebeRegistroObj['txtPedido'])
-                                ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
-                        registroAtual++;
-                    }
-                }
-
-            }
-            ObjectList['registros'] = registros;
-            ObjectList = JSON.stringify(ObjectList);
-            return (ObjectList)
-        };
-
-        function enviarDados(){
-            ObjectList = converter();
-            document.getElementById('txtAbertura').innerHTML = '';
-            document.getElementById('txtAbertura').innerHTML = ObjectList;
-        };
-
-        function criaObjeto(linha){
-            var objLine = {};
-            var adversa = String;
-            var isNumber = String;
-            var dataHoje = new Date();
-
-            //IMPORTADOS DO E-MAIL
-            objLine['txtPasta'] = linha.split('/')[0].split('      ')[0];
-            adversa  = linha.split('/')[0].split('      ')[1];
-            isNumber = parseInt(adversa.slice(-2, -1));
-
-            if (isNumber){
-                adversa = adversa.split(isNumber)[0].trim();
-            };
-
-            checkTemAudiencia =  Number.isInteger(parseInt(linha.slice(-2)));
-            objLine['txtDataContratacao'] = dataHoje.toLocaleDateString();
-            objLine['txtNroProcesso']     = linha.split('/')[2].split('      ')[1].split('    ')[0];
-            objLine['txtNroCnj']          = linha.split('/')[2].split('      ')[1].split('    ')[0];
-            objLine['parteAdversa'] = {'txtNome': adversa};
-
-            if (checkTemAudiencia){
-                objLine['slcComarca'] = linha.split('/')[3].trim();
-                objLine['txtUf']      = linha.split('/')[4].split(' ')[0];
-                objLine['agendamentos'] = {'Audiência':linha.slice(-10)}; //NO BRADESCO NÃO VEM A HORA
-            }
-            else{
-                objLine['slcComarca'] = linha.split('/').slice(-2)[0].trim();
-                objLine['txtUf']      = linha.split('/').slice(-1)[0].trim();
-            };
-            return (objLine);
-        };
-    </script>
-
 {% endblock %}
 
 {% block content %}
-    <form action="{{request.url_rule.rule}}/default" method="post">
-        <div class="row ml-3 md-3">
-            <div class="col-md-10 form-group">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="ml-2" for="clientePadrao">Cliente</label>
-                        <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class=" ml-2  form-control content text-center" disabled>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="ml-2" for="grupoPadrao">Grupo</label>
-                        <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class=" ml-2  form-control content text-center" disabled>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="ml-2" for="siglaPadrao">Sigla</label>
-                        <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class=" ml-3  form-control content text-center" disabled>
-                    </div>
-                </div>
-                <div class="row">
-                    <textarea class="mt-4 ml-4 form-control" name="txtAbertura" id="txtAbertura" cols="150" rows="12" placeholder="Cole aqui!"></textarea>
-                </div>
+    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="abertura">
+        <input type="hidden" name="funcao" value="bradesco_arquivo">
+        <input type="hidden" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A.">
+        <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco">
+        <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="BRA">
 
+        <div class="row  ml-1 md-1">
+            <div class="col-md-4">
+                <label class="" for="clientePadrao">Cliente</label>
+                <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
             </div>
-            <div class="col-md-2 form-group">
-                <button type="button" class="btn btn-primary mt-5 btn-block" id="btnPaste" onclick="paste()">COLAR</button>
-                <button type="submit" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button>
-                <button type="button" class="btn btn-warning mt-2 btn-block" id="btnClear" onclick="limparTextArea()">LIMPAR TEXTO</button>
+            <div class="col-md-4">
+                <label class="" for="grupoPadrao">Grupo</label>
+                <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class="   form-control content text-center" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="siglaPadrao">Sigla</label>
+                <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class="   form-control content text-center" disabled>
+            </div>
+        </div>
+
+        <h1 class="mt-3 ml-3 text-center">ENVIE O ARQUIVO:</h1>
+        <div class="row ml-1">
+            <div class="col-md-6 mt-3">
+                <input type="file" name="arquivo" id="arquivo" class="form-control">
+            </div>
+            <div class="col-md-6 mt-2">
+                <button type="submit" class="btn btn-success mt-2 btn-block form-control" id="btnSend">ENVIAR</button>
             </div>
         </div>
     </form>
-    <!-- <button type="button" class="btn btn-success mt-2 btn-block" id="btnSend"  onclick="enviarDados()">ENVIAR</button> -->
-
 {% endblock %}

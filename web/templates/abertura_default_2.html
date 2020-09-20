@@ -11,21 +11,20 @@
 {% block scripts %}
     <script>
         var objNovo = {};
-        var i = 0;
+        var i = 1;
         var first = true;
         window.onload = function() {
             objNovo = {{ data|tojson }};
-            console.log(objNovo);
             mudaRegistro(2);
         };
 
         function preencherRegistros(){
-            document.getElementById('regnum').value = i + 1;
+            document.getElementById('regnum').value = i;
             if (objNovo['registros'][i]['txtPasta']){
                 document.getElementById('txtPasta').value = objNovo['registros'][i]['txtPasta'];
             }
-            if (objNovo['registros'][i]['adversa']){
-                document.getElementById('adversa').value = objNovo['registros'][i]['adversa'];
+            if (objNovo['registros'][i]['parteAdversa']['txtNome']){
+                document.getElementById('adversa').value = objNovo['registros'][i]['parteAdversa']['txtNome'];
             }
             if (objNovo['registros'][i]['txtNroProcesso']){
                 document.getElementById('txtNroProcesso').value = objNovo['registros'][i]['txtNroProcesso'];
@@ -86,7 +85,10 @@
                 document.getElementById('HoraAudiencia').value = '';
             }
             if (objNovo['registros'][i]['agendamentos']['Ciencia de novo processo']){
-                document.getElementById('dataCiencia').value = objNovo['registros'][i]['agendamentos']['Ciencia de novo processo'];
+                newDate = objNovo['registros'][i]['agendamentos']['Ciencia de novo processo']
+                newDate = newDate.split("/")
+                newDate = newDate[2] + '-' + newDate[1] + '-' + newDate[0];
+                document.getElementById('dataCiencia').value = newDate
             } else {
                 document.getElementById('dataCiencia').value = '';
             }
@@ -104,22 +106,23 @@
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
             qtdRegistros = Object.keys(objNovo['registros']).length;
-            if (tipo == 1){ //fazer um ternário
+            if (tipo == 1){ //anterior
                 if (first == true) {
                     first = false;
                 }else {
                     i--;
-                    if (i < 0){
-                        i = qtdRegistros-1;
+                    if (i < 1){
+                        i = qtdRegistros;
                     };
                 }
             }else { //próximo registros
                 if (first == true) {
                     first = false;
                 }else{
-                    i++;
                     if (i == qtdRegistros){
-                        i = 0;
+                        i = 1;
+                    }else{
+                        i++;
                     };
                 }
             };
@@ -128,7 +131,6 @@
 
         function alteraValor(elemento){
             var checkResp = Boolean
-            console.log(typeof(elemento))
             if (typeof (elemento) === 'undefined'){
                 if (elemento.id == 'txtValorCausa'){
                     elemento.value = parseFloat(elemento.value).toFixed(2);
@@ -177,7 +179,6 @@
         };
 
         function enviarDados(){
-            console.log(objNovo);
             objNovo = JSON.stringify(objNovo);
             document.getElementById('txtAbertura').innerHTML = objNovo;
         };
@@ -187,11 +188,11 @@
 
 {% block content %}
 <div class="content text-center">
-    <h3>INCREMENTAR REGISTROS</h3>
+    <h3>ALTERAR OS REGISTROS INDIVIDUALMENTE</h3>
 </div>
 
 <div class="content ml-5 mr-5 mt-5" id='corpo'>
-    <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
+    <!-- <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button> -->
     {% if (data) %}
         <div id="preencher">
             <div class="row">
@@ -243,11 +244,11 @@
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-9">
-                            <label for="slcComarca">slcComarca</label>
+                            <label for="slcComarca">COMARCA</label>
                             <input name="slcComarca" id="slcComarca" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                         </div>
                         <div class="col-md-3">
-                            <label for="txtUf">txtUf</label>
+                            <label for="txtUf">RO</label>
                             <input name="txtUf" id="txtUf" type="text" class="form-control" onchange="alteraValor(this);" disabled>
                         </div>
                     </div>
@@ -273,7 +274,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-4">
-                    <label for="slcLocalizador">slcLocalizador</label>
+                    <label for="slcLocalizador">LOCALIZADOR</label>
                     <select name="slcLocalizador" id="slcLocalizador" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for slcLocalizador in localizadores %}
@@ -282,7 +283,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="slcNumeroVara">VARA</label>
+                    <label for="slcNumeroVara">N.º VARA</label>
                     <select name="slcNumeroVara" id="slcNumeroVara" class="form-control" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for vara in varas %}
