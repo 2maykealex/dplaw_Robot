@@ -114,7 +114,7 @@ def defining():
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
             rota = 'abertura_default'
             if base['funcao'] == 'bradesco_arquivo':
-                try: #arquibo enviado pelo BRADESCO
+                try: #arquivo enviado pelo BRADESCO
                     localidade = registro[4]
                     itemDict['txtPasta'] = registro[0]
                     if (registro[1] != ''):
@@ -123,14 +123,15 @@ def defining():
                     itemDict['dataAbertura']   = registro[2]
                     itemDict['txtNroProcesso'] = registro[3]
                     itemDict['txtNroCnj']      = registro[3]
-                    itemDict['slcNumeroVara']  = registro[4].split('/')[0]
-                    itemDict['slcComarca']     = registro[4].split('/')[1].strip()
-                    itemDict['txtUf']          = registro[4].split('/')[-1]
+                    itemDict['slcNumeroVara']  = localidade[4].split('/')[0]
+                    itemDict['slcComarca']     = localidade[4].split('/')[1].strip()
+                    itemDict['txtUf']          = localidade[4].split('/')[-1]
 
                     if (type(registro[5]) == type(str()) and registro[5] != ''):
                         agendamentos['Audiência'] = registro[5]
                         itemDict['agendamentos']  = agendamentos
-                except: #arquibo gerado do texto enviado pelo BRADESCO
+                except: #arquivo gerado do TEXTO enviado pelo BRADESCO
+                    print('TEXTO enviado pelo BRADESCO')
                     itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                     if (registro[0][1] != ''):
                         parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -153,7 +154,8 @@ def defining():
                             agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
                     except:
                         pass
-                    itemDict['agendamentos']  = agendamentos
+                    if (len(agendamentos)>0):
+                        itemDict['agendamentos']  = agendamentos
 
             elif base['funcao'] == 'bv':
                 itemDict['txtPasta']    = registro[0]
