@@ -65,7 +65,7 @@ def defining():
     #separando base e padrões
     for k, item in data.items():
         if k in ['clientePadrao', 'grupoPadrao', 'siglaPadrao', 'tipo', 'funcao']:
-            base[k] = item
+            base[k] = item.strip()
         else:
             itensPadroes[k] = item
     registros.update(base)
@@ -114,7 +114,7 @@ def defining():
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
             rota = 'abertura_default'
             if base['funcao'] == 'bradesco_arquivo':
-                try: #arquivo enviado pelo BRADESCO
+                try: #ARQUIVO enviado pelo BRADESCO
                     localidade = registro[4]
                     itemDict['txtPasta'] = registro[0]
                     if (registro[1] != ''):
@@ -123,9 +123,9 @@ def defining():
                     itemDict['dataAbertura']   = registro[2]
                     itemDict['txtNroProcesso'] = registro[3]
                     itemDict['txtNroCnj']      = registro[3]
-                    itemDict['slcNumeroVara']  = localidade[4].split('/')[0]
-                    itemDict['slcComarca']     = localidade[4].split('/')[1].strip()
-                    itemDict['txtUf']          = localidade[4].split('/')[-1]
+                    itemDict['slcNumeroVara']  = localidade.split('/')[0]  #registro[4]
+                    itemDict['slcComarca']     = localidade.split('/')[1].strip()
+                    itemDict['txtUf']          = localidade.split('/')[-1]
 
                     if (type(registro[5]) == type(str()) and registro[5] != ''):
                         agendamentos['Audiência'] = registro[5]
