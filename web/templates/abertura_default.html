@@ -103,10 +103,10 @@
 
                 var agendamentos = {};
                 if (checkElementValue('dataciencia') == true){
-                    if (countCiencia > 99){
-                        countCiencia = 0;
-                        dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
-                    };
+                    // if (countCiencia > 99){
+                    //     countCiencia = 0;
+                    //     dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
+                    // };
                     dataConvertida = dataCiencia1.split('-');
                     dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
                     agendamentos['Ciencia de novo processo'] = dataConvertida;
