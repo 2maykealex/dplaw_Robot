@@ -15,21 +15,21 @@
     <div class="row  ml-1 md-1">
         <div class="col-md-4">
             <label class="" for="clientePadrao">Cliente</label>
-            <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
+            <input type="text" name="clientePadrao" id="clientePadrao" value="OI S.A" class="   form-control content text-center" disabled>
         </div>
         <div class="col-md-4">
             <label class="" for="grupoPadrao">Grupo</label>
-            <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class="   form-control content text-center" disabled>
+            <input type="text" name="grupoPadrao" id="grupoPadrao" value="OI TELECOMUNICAÇÕES" class="   form-control content text-center" disabled>
         </div>
         <div class="col-md-4">
             <label class="" for="siglaPadrao">Sigla</label>
-            <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class="   form-control content text-center" disabled>
+            <input type="text" name="siglaPadrao" id="siglaPadrao" value="OI" class="   form-control content text-center" disabled>
         </div>
     </div>
     <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="tipo" value="abertura">
         <input type="hidden" name="funcao" value="oi">
-        <input type="hidden" name="clientePadrao" id="clientePadrao" value="Oi S.A">
+        <input type="hidden" name="clientePadrao" id="clientePadrao" value="OI S.A">
         <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="OI TELECOMUNICAÇÕES">
         <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="OI">
 
