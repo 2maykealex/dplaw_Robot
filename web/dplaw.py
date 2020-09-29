@@ -81,7 +81,7 @@ def defining():
             if base['funcao'] == 'volumetria':
                 itemDict = {'txtPasta':registro[7]}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta':registro[1]}
+                itemDict = {'txtPasta':registro[7]}
 
         elif (base['tipo'] == 'abertura'):
             dados = path.dirname(getcwd())+'\\dados'
@@ -233,17 +233,11 @@ def defining():
         recNum = recNum + 1
 
     registros['registros'] = regs
-    pprint(registros)
-
-    # return redirect(url_for(rota, data=registros))
-    # return redirect(url_for(rota, data=registros), code=307)
-    # return 'teste'
-
     if (base['tipo'] == 'abertura'):
-        # print('indo para abertura_default.html')
         return render_template('abertura_default.html', data=registros, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
-    # elif (base['tipo'] == 'atualizacao'):
-    #     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
+    elif (base['tipo'] == 'atualizacao'):
+        gera_arquivo_atualizacao(registros)
+        return redirect(url_for('monitoramento'))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
 @app.route("/abertura/bv/default/part2", methods=['POST'])
@@ -287,10 +281,14 @@ def abertura_default2():
 @app.route("/abertura/executa", methods=['POST', 'GET'])
 @app.route("/atualizacao/executa", methods=['POST', 'GET'])
 def executa():
-    data = request.data
-    data = request.form.to_dict()
-    data = data['txtAbertura']
-    data = json.loads(data)
+    if (data == 0):
+        data = request.data
+        data = request.form.to_dict()
+        try:
+            data = data['txtAbertura']
+        except:
+            pass
+        data = json.loads(data)
     pprint(data)
 
     #reordenando os registros
@@ -316,6 +314,32 @@ def executa():
         json.dump(data, outfile, ensure_ascii=True)
 
     return render_template('monitoramento.html')#TODO ENVIAR PARA ROTA!
+
+def gera_arquivo_atualizacao(data):
+    pprint(data)
+
+    #reordenando os registros
+    newRegistros= {}
+    for k, v in data['registros'].items():
+        newRegistros[int(k)+1] = v
+
+    del data['registros']
+    data['registros'] = newRegistros
+
+    print('NOVA DATA', data)
+    # CRIANDO ARQUIVO DE LOG .CSV
+    hoje = "%s" % (strftime("%Y-%m-%d"))
+    hoje = hoje.replace('-', '_')
+    hora = strftime("%H:%M:%S")
+    hora = hora.replace(':', '_')
+    pathPasta   = '{}\\arquivos_a_executar'.format(path.dirname(__file__))
+    createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+    pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
+    createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+
+    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    with open(criaArquivo, 'w', encoding='utf-8') as outfile:
+        json.dump(data, outfile, ensure_ascii=True)
 
 @app.route("/monitoramento")
 def monitoramento():
