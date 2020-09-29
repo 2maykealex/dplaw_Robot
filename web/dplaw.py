@@ -237,6 +237,7 @@ def defining():
         return render_template('abertura_default.html', data=registros, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros)
+        pprint(registros)
         return redirect(url_for('monitoramento'))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
@@ -316,8 +317,6 @@ def executa():
     return render_template('monitoramento.html')#TODO ENVIAR PARA ROTA!
 
 def gera_arquivo_atualizacao(data):
-    pprint(data)
-
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
@@ -326,7 +325,6 @@ def gera_arquivo_atualizacao(data):
     del data['registros']
     data['registros'] = newRegistros
 
-    print('NOVA DATA', data)
     # CRIANDO ARQUIVO DE LOG .CSV
     hoje = "%s" % (strftime("%Y-%m-%d"))
     hoje = hoje.replace('-', '_')
