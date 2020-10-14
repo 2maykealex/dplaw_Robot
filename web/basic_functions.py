@@ -53,7 +53,7 @@ def checkEndFile(log):
                 if (message[len(message)-1][:3] == 'FIM'):
                     lastLine = 'FIM'
         else:
-            lastLine = 0
+            lastLine = 1
     except:
         lastLine = -1
 
