@@ -20,10 +20,6 @@ from basic_functions import abreArquivo
 from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
 import json
-# from abertura import Abertura
-# from volumetria import Volumetria
-# from contrato import Contrato
-# from atualizacao import Atualizacao
 
 # def checkIFexecuting():
 #     deletingFiles = []
@@ -88,14 +84,13 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
             if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
                 open(logFileCSV, 'a')
                 if (registros['tipo'] == 'abertura'):
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
+                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
                 elif (registros['tipo'] == 'atualizacao'):
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA;ID PROMAD;CAMPOS ATUALIZADOS; ERRO: NÃO ATUALIZADOS'
+                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ERRO: NÃO ATUALIZADOS'
                 createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
             # else:
             reg = checkEndFile(logFileCSV)
-
             executingFiles.append(file)
             executeRobot = (Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
 
