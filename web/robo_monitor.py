@@ -1,17 +1,13 @@
 # coding=utf-8
 from os import path
-from os import getcwd as osGetCWD
-from os import mkdir as osMKdir
 from os import walk
 from os import rename
-from os import remove
 from shutil import move
 from time import strftime
-from time import sleep
-from glob import glob
 from datetime import date
 from datetime import datetime
 from threading import Thread
+from threading import enumerate
 from basic_functions import checkPID
 from basic_functions import createFolder
 from basic_functions import createLog
@@ -21,6 +17,7 @@ from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
 import json
 
+#TODO checkIFexecuting
 # def checkIFexecuting():
 #     deletingFiles = []
 #     for arquivo, logFile in executingFiles.items():
@@ -55,7 +52,7 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
 
 #============================ ROBO PRINCIPAL====================================================
 executePath = "{}\\arquivos_a_executar".format(path.dirname(__file__))
-# executeRobot = []
+executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
@@ -83,35 +80,21 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
 
             if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
                 open(logFileCSV, 'a')
+                cabeçalhoLog = ''
                 if (registros['tipo'] == 'abertura'):
                     cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
                 elif (registros['tipo'] == 'atualizacao'):
                     cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ERRO: NÃO ATUALIZADOS'
                 createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-            # else:
             reg = checkEndFile(logFileCSV)
             executingFiles.append(file)
-            executeRobot = (Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
+            executeRobot.append(Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
 
-
-
-            # executeRobot = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra(file,pathFile, folderName))
-
-
-        # for executa in executeRobot:
-            print(executeRobot.name,'\n')
+        for executa in executeRobot:
+            print('\n', executa.name,'\n')
             try:
-                executeRobot.start()
+                executa.start() # ABRIRÁ TODOS OS ARQUIVOS SIMULTÂNEAMENTE
             except Exception as err:
                 print(err)
-                print('\n ERRO EM {}'.format(executeRobot.name))
-
-
-
-        # try:
-        #     print('\n', executeRobot.name,'\n')
-        #     executeRobot.start()
-        # except Exception as err:
-        #     print('\n ERRO EM {}'.format(executeRobot.name))
-        #     pass
+                print('\n ERRO EM {}'.format(executa.name))
