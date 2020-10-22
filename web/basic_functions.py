@@ -48,7 +48,7 @@ def checkEndFile(log):
 
         if countLines > 1:
             try:
-                lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', ''))
+                lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', '')) + 1
             except:
                 if (message[len(message)-1][:3] == 'FIM'):
                     lastLine = 'FIM'
@@ -99,11 +99,11 @@ def ajustarNumProcessoCNJ(numProcessCNJ):
         numProcessCNJ = numProcessCNJ.replace('-', '')
     except:
         pass
-    num = len(numProcessCNJ)
-    if (num > 20):   #se maior que 20, obter até o caracter n.º 20
+    numTamanho = len(numProcessCNJ)
+    if (numTamanho > 20):   #se maior que 20, obter até o caracter n.º 20
         numProcessCNJ = numProcessCNJ[:20]
-    elif (num < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
-        qtdZero = 20 - len(numProcessCNJ)
+    elif (numTamanho < 20): # se menor que 20, incrementar ZEROS no início até que complete 20 caracteres
+        qtdZero = 20 - numTamanho
         for _x in range(qtdZero):
             numProcessCNJ = "0{}".format(numProcessCNJ)
     numProcessCNJ = '{}-{}.{}.{}.{}.{}'.format(numProcessCNJ[:7], numProcessCNJ[7:9], numProcessCNJ[9:13], numProcessCNJ[13:14], numProcessCNJ[14:16], numProcessCNJ[16:20])
