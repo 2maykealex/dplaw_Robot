@@ -35,3 +35,4 @@ bash.exe.stackdump
 *.ignorar
 *.csv
 web/teste.py
+arquivos_ignorados/*
