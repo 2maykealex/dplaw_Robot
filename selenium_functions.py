@@ -65,11 +65,11 @@ class SeleniumFunctions(object):
         if (sistemaOperacional == 'Windows'):
             # acessando diretório do webdriver do chrome no WINDOWS
             dirpath = osPath.dirname(osPath.realpath(__file__))
-            chromepath = dirpath + '/chromedriver.exe'
+            chromepath = dirpath + '/arquivos_necessarios/chromedriver.exe'
         elif (sistemaOperacional == 'Linux'):
             # acessando diretório do webdriver do chrome no LINUX
             dirpath = '/usr/bin'
-            chromepath = dirpath + '/chromedriver'
+            chromepath = dirpath + '/arquivos_necessarios/chromedriver'
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
