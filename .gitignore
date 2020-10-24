@@ -36,3 +36,4 @@ bash.exe.stackdump
 *.csv
 web/teste.py
 arquivos_ignorados/*
+.gitattributes
