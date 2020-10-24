@@ -7,8 +7,9 @@ from basic_functions import createFolder
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, json
 
-UPLOAD_FOLDER = 'E:\\DESENVOLVIMENTO\\PYTHON\\dplaw_Robot\\web\\arquivos_importados'
+UPLOAD_FOLDER = path.abspath(getcwd()) + '\\arquivos_importados'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+DADOS = path.abspath(getcwd()) +'\\arquivos_necessarios'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -43,6 +44,7 @@ def abertura_oi():
 
 @app.route("/defining", methods=['POST'])
 def defining():
+    print(path.abspath(getcwd()))
     data = request.form.to_dict()
     file = request.files['arquivo']
     filename = secure_filename(file.filename)
@@ -76,33 +78,33 @@ def defining():
                 itemDict = {'txtPasta':registro[7]}
 
         elif (base['tipo'] == 'abertura'):
-            dados = path.dirname(getcwd())+'\\dados'
+            dados = path.abspath(getcwd()) +'\\arquivos_necessarios'
             #importando dados base
-            clientes = dados+'\\'+'clientes.txt'
+            clientes = DADOS +'\\'+'clientes.txt'
             clientes = open(clientes, 'r')
-            gruposprocessos = dados+'\\'+'gruposprocessos.txt'
+            gruposprocessos = DADOS +'\\'+'gruposprocessos.txt'
             gruposprocessos = open(gruposprocessos, 'r')
-            locaistramites = dados+'\\'+'locaistramites.txt'
+            locaistramites = DADOS +'\\'+'locaistramites.txt'
             locaistramites = open(locaistramites, 'r')
-            localizadores = dados+'\\'+'localizadores.txt'
+            localizadores = DADOS +'\\'+'localizadores.txt'
             localizadores = open(localizadores, 'r')
-            responsaveis = dados+'\\'+'responsaveis.txt'
+            responsaveis = DADOS +'\\'+'responsaveis.txt'
             resp1 = open(responsaveis, 'r')
             resp2 = open(responsaveis, 'r')
             resp3 = open(responsaveis, 'r')
-            status = dados+'\\'+'status.txt'
+            status = DADOS +'\\'+'status.txt'
             status = open(status, 'r')
-            varas = dados+'\\'+'varas.txt'
+            varas = DADOS +'\\'+'varas.txt'
             varas = open(varas, 'r')
-            assuntos = dados+'\\'+'assuntos.txt'
+            assuntos = DADOS +'\\'+'assuntos.txt'
             assuntos = open(assuntos, 'r', encoding='utf-8')
-            detalhes = dados+'\\'+'detalhes.txt'
+            detalhes = DADOS +'\\'+'detalhes.txt'
             detalhes = open(detalhes, 'r', encoding='utf-8')
-            areasAtuacao = dados+'\\'+'areasAtuacao.txt'
+            areasAtuacao = DADOS +'\\'+'areasAtuacao.txt'
             areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
-            fases = dados+'\\'+'fases.txt'
+            fases = DADOS +'\\'+'fases.txt'
             fases = open(fases, 'r', encoding='utf-8')
-            objetosAcao = dados+'\\'+'objetosAcao.txt'
+            objetosAcao = DADOS +'\\'+'objetosAcao.txt'
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
             if base['funcao'] == 'bradesco_arquivo':
@@ -272,33 +274,32 @@ def defining():
 @app.route("/abertura/faro/default/part2", methods=['POST'])
 @app.route("/abertura/bradesco/default/part2", methods=['POST'])
 def abertura_default2():
-    dados = path.dirname(getcwd())+'\\dados'
     #importando dados base
-    clientes = dados+'\\'+'clientes.txt'
+    clientes = DADOS +'\\'+'clientes.txt'
     clientes = open(clientes, 'r')
-    gruposprocessos = dados+'\\'+'gruposprocessos.txt'
+    gruposprocessos = DADOS +'\\'+'gruposprocessos.txt'
     gruposprocessos = open(gruposprocessos, 'r')
-    locaistramites = dados+'\\'+'locaistramites.txt'
+    locaistramites = DADOS +'\\'+'locaistramites.txt'
     locaistramites = open(locaistramites, 'r')
-    localizadores = dados+'\\'+'localizadores.txt'
+    localizadores = DADOS +'\\'+'localizadores.txt'
     localizadores = open(localizadores, 'r')
-    responsaveis = dados+'\\'+'responsaveis.txt'
+    responsaveis = DADOS +'\\'+'responsaveis.txt'
     resp1 = open(responsaveis, 'r')
     resp2 = open(responsaveis, 'r')
     resp3 = open(responsaveis, 'r')
-    status = dados+'\\'+'status.txt'
+    status = DADOS +'\\'+'status.txt'
     status = open(status, 'r')
-    varas = dados+'\\'+'varas.txt'
+    varas = DADOS +'\\'+'varas.txt'
     varas = open(varas, 'r')
-    assuntos = dados+'\\'+'assuntos.txt'
+    assuntos = DADOS +'\\'+'assuntos.txt'
     assuntos = open(assuntos, 'r', encoding='utf-8')
-    detalhes = dados+'\\'+'detalhes.txt'
+    detalhes = DADOS +'\\'+'detalhes.txt'
     detalhes = open(detalhes, 'r', encoding='utf-8')
-    areasAtuacao = dados+'\\'+'areasAtuacao.txt'
+    areasAtuacao = DADOS +'\\'+'areasAtuacao.txt'
     areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
-    fases = dados+'\\'+'fases.txt'
+    fases = DADOS +'\\'+'fases.txt'
     fases = open(fases, 'r', encoding='utf-8')
-    objetosAcao = dados+'\\'+'objetosAcao.txt'
+    objetosAcao = DADOS +'\\'+'objetosAcao.txt'
     objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
     data = request.form.to_dict()
@@ -454,31 +455,31 @@ if __name__ == "__main__":
 # def abertura_default():
 #     dados = path.dirname(getcwd())+'\\dados'
 #     #importando dados base
-#     clientes = dados+'\\'+'clientes.txt'
+#     clientes = DADOS +'\\'+'clientes.txt'
 #     clientes = open(clientes, 'r')
-#     gruposprocessos = dados+'\\'+'gruposprocessos.txt'
+#     gruposprocessos = DADOS +'\\'+'gruposprocessos.txt'
 #     gruposprocessos = open(gruposprocessos, 'r')
-#     locaistramites = dados+'\\'+'locaistramites.txt'
+#     locaistramites = DADOS +'\\'+'locaistramites.txt'
 #     locaistramites = open(locaistramites, 'r')
-#     localizadores = dados+'\\'+'localizadores.txt'
+#     localizadores = DADOS +'\\'+'localizadores.txt'
 #     localizadores = open(localizadores, 'r')
-#     responsaveis = dados+'\\'+'responsaveis.txt'
+#     responsaveis = DADOS +'\\'+'responsaveis.txt'
 #     resp1 = open(responsaveis, 'r')
 #     resp2 = open(responsaveis, 'r')
 #     resp3 = open(responsaveis, 'r')
-#     status = dados+'\\'+'status.txt'
+#     status = DADOS +'\\'+'status.txt'
 #     status = open(status, 'r')
-#     varas = dados+'\\'+'varas.txt'
+#     varas = DADOS +'\\'+'varas.txt'
 #     varas = open(varas, 'r')
-#     assuntos = dados+'\\'+'assuntos.txt'
+#     assuntos = DADOS +'\\'+'assuntos.txt'
 #     assuntos = open(assuntos, 'r', encoding='utf-8')
-#     detalhes = dados+'\\'+'detalhes.txt'
+#     detalhes = DADOS +'\\'+'detalhes.txt'
 #     detalhes = open(detalhes, 'r', encoding='utf-8')
-#     areasAtuacao = dados+'\\'+'areasAtuacao.txt'
+#     areasAtuacao = DADOS +'\\'+'areasAtuacao.txt'
 #     areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
-#     fases = dados+'\\'+'fases.txt'
+#     fases = DADOS +'\\'+'fases.txt'
 #     fases = open(fases, 'r', encoding='utf-8')
-#     objetosAcao = dados+'\\'+'objetosAcao.txt'
+#     objetosAcao = DADOS +'\\'+'objetosAcao.txt'
 #     objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
 #     requested = request.data
