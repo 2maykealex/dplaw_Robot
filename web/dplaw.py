@@ -1,16 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, json
-from collections import OrderedDict
 from pprint import pprint
-from os import getcwd
 from os import path
-from time import strftime
-from integra_functions import IntegraFunctions
-from basic_functions import createLog
-from basic_functions import createFolder
-import pyexcel as pe
-from werkzeug.utils import secure_filename
 import pandas as pd
-from itertools import chain
+from os import getcwd
+from time import strftime
+from basic_functions import createFolder
+from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, json
 
 UPLOAD_FOLDER = 'E:\\DESENVOLVIMENTO\\PYTHON\\dplaw_Robot\\web\\arquivos_importados'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -49,15 +44,12 @@ def abertura_oi():
 @app.route("/defining", methods=['POST'])
 def defining():
     data = request.form.to_dict()
-
-    # if (len(request.files) > 0):
     file = request.files['arquivo']
     filename = secure_filename(file.filename)
     newPathFile = path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(newPathFile)
-    df = pd.read_excel(newPathFile)
 
-    # url = request.referrer
+    df = pd.read_excel(newPathFile)
     itensPadroes = {}
     registros    = {}
     base         = {}
@@ -68,8 +60,8 @@ def defining():
             base[k] = item.strip()
         else:
             itensPadroes[k] = item
-    registros.update(base)
 
+    registros.update(base)
     recNum = 1
     regs={}
     for registro in df.values:
@@ -114,13 +106,14 @@ def defining():
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
             rota = 'abertura_default'
             if base['funcao'] == 'bradesco_arquivo':
-                try: #ARQUIVO enviado pelo BRADESCO
+                try:
+                    #ARQUIVO enviado pelo BRADESCO
                     localidade = registro[4]
                     itemDict['txtPasta'] = registro[0]
                     if (registro[1] != ''):
                         parteAdversa['txtNome']  = registro[1]
                         itemDict['parteAdversa'] = parteAdversa
-                    itemDict['dataAbertura']   = registro[2]
+                    itemDict['txtDataContratacao'] = registro[2]
                     itemDict['txtNroProcesso'] = registro[3]
                     itemDict['txtNroCnj']      = registro[3]
                     itemDict['slcNumeroVara']  = localidade.split('/')[0]  #registro[4]
@@ -130,14 +123,15 @@ def defining():
                     if (type(registro[5]) == type(str()) and registro[5] != ''):
                         agendamentos['Audiência'] = registro[5]
                         itemDict['agendamentos']  = agendamentos
-                except: #arquivo gerado do TEXTO enviado pelo BRADESCO
+                except:
+                    #arquivo gerado do TEXTO enviado pelo BRADESCO
                     print('TEXTO enviado pelo BRADESCO')
                     itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                     if (registro[0][1] != ''):
                         parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
                         itemDict['parteAdversa'] = parteAdversa
 
-                    itemDict['dataAbertura']   = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
+                    itemDict['txtDataContratacao']   = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
                     itemDict['txtNroProcesso'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
                     itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
                     try:
@@ -181,7 +175,40 @@ def defining():
                 itemDict['txtUf']       = registro[6]
                 itemDict['txtUf']       = registro[6]
 
-            elif base['funcao'] == 'faro':
+            elif base['funcao'] == 'faro_judicial':
+                itemDict['txtNroProcesso']    = registro[0]
+                itemDict['txtNroCnj']    = registro[0]
+
+                #ADVERSA
+                if (registro[1] != ''):
+                    parteAdversa['txtNome']  = registro[1].strip()
+                if (registro[2] != ''):
+                    parteAdversa['txtCPF']  = registro[2]
+
+                if (len(parteAdversa) > 0):
+                    itemDict['parteAdversa'] = parteAdversa
+
+                if (registro[3] != ''):
+                    itemDict['txtValorCausa'] = registro[3]
+
+                try:
+                    if (registro[4] != ''):
+                        dataCorrigida ='{}'.format(registro[4]).split(' ')[0].split('-')
+                        dataCorrigida = '{}/{}/{}'.format(dataCorrigida[2], dataCorrigida[1], dataCorrigida[0])
+                        itemDict['txtDataDistribuicao']  = dataCorrigida
+                except:
+                    pass
+
+                if (type(registro[5]) == type(str())):
+                    itemDict['txtObservacao'] = registro[5]
+
+                #padrões pre definidos
+                itemDict['slcComarca'] = 'Porto Velho'
+                itemDict['txtUf'] = 'RO'
+                itemDict['txtDataDistribuicao']  = '13/10/2020'
+                itemDict['txtDataContratacao']   = '13/10/2020'
+
+            elif base['funcao'] == 'faro_alunos':
                 itemDict['txtPasta']    = registro[1]
 
                 #ADVERSA
@@ -205,17 +232,20 @@ def defining():
 
             elif base['funcao'] == 'oi':
                 itemDict['txtPasta']  = registro[0]
-                itemDict['txtNroCnj'] = registro[1]
-                itemDict['txtNroProcesso'] = registro[2]
-                itemDict['slcStatusProcessual']  = registro[3]
+                itemDict['txtNroCnj'] = str(registro[1])
+                itemDict['txtNroProcesso'] = str(registro[2])
+                itemDict['slcStatusProcessual']  = str(registro[3])
                 itemDict['slcObjetoAcao']        = registro[4]
                 itemDict['slcComarca']           = registro[5].strip()
                 itemDict['txtUf']                = registro[6]
                 itemDict['slcNumeroVara']        = "{} ª-º".format(registro[7])
                 itemDict['slcLocalTramite']      = registro[8].split(' DE ')[0]
-                itemDict['txtDataDistribuicao']  = registro[9]
-                itemDict['txtDataContratacao']   = registro[10]
-                itemDict['txtValorCausa']        = registro[11]
+                if (type(registro[9]) == type(str() and registro[9] != '')):
+                    itemDict['txtDataDistribuicao']  = str(registro[9])
+                if (type(registro[10]) == type(str() and registro[10] != '')):
+                    itemDict['txtDataContratacao']   = str(registro[10])
+                if (type(registro[11]) == type(str() and registro[11] != '')):
+                    itemDict['txtValorCausa']        = registro[11]
                 if (type(registro[12]) == type(str() and registro[12] != '')):
                     parteAdversa['txtNome']      = registro[12]
                     itemDict['parteAdversa']     = parteAdversa
@@ -233,11 +263,11 @@ def defining():
         recNum = recNum + 1
 
     registros['registros'] = regs
+    # pprint(registros)
     if (base['tipo'] == 'abertura'):
         return render_template('abertura_default.html', data=registros, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros)
-        pprint(registros)
         return redirect(url_for('monitoramento'))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
@@ -282,20 +312,18 @@ def abertura_default2():
 @app.route("/abertura/executa", methods=['POST', 'GET'])
 @app.route("/atualizacao/executa", methods=['POST', 'GET'])
 def executa():
-    if (data == 0):
-        data = request.data
-        data = request.form.to_dict()
-        try:
-            data = data['txtAbertura']
-        except:
-            pass
-        data = json.loads(data)
-    pprint(data)
+    data = request.data
+    data = request.form.to_dict()
+    try:
+        data = data['txtAbertura']
+    except:
+        pass
+    data = json.loads(data)
 
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
-        newRegistros[int(k)+1] = v
+        newRegistros[int(k)] = v   #TODO CHECK INCREMENTO
 
     del data['registros']
     data['registros'] = newRegistros
@@ -342,6 +370,62 @@ def gera_arquivo_atualizacao(data):
 @app.route("/monitoramento")
 def monitoramento():
     return render_template('monitoramento.html')
+
+# @app.route("/monitoramento/<log>", methods=['POST'])
+# def monitoramento(log):
+#     return render_template('log.html')
+
+@app.route("/getLog/<filePath>", methods=['POST'])
+def getLog(filePath):
+    from os import walk
+    files = {}
+    logsPath = '{}\\logs'.format(path.dirname(__file__))
+    # for folder, _subdirs, filesFolder in walk(logsPath):
+    #     for name in filesFolder:
+    #         tipo = folder.split('\\')[-1]
+    arquivo =  open('{}'.format(filePath), 'r')
+    message = arquivo.readlines()
+    files = {
+                name: {'tipo': tipo,
+                        'path': folder,
+                        'log' : message,
+                }
+            }
+    return files
+# @app.route("/getLog", methods=['POST'])
+# def getLog():
+#     from os import walk
+#     files = {}
+#     logsPath = '{}\\logs'.format(path.dirname(__file__))
+#     for folder, _subdirs, filesFolder in walk(logsPath):
+#         for name in filesFolder:
+#             tipo = folder.split('\\')[-1]
+#             arquivo =  open('{}\\{}'.format(folder, name), 'r')
+#             message = arquivo.readlines()
+#             files = {
+#                         name: {'tipo': tipo,
+#                                 'path': folder,
+#                                 'log' : message,
+#                         }
+#                     }
+#     return files
+
+@app.route("/listLogs", methods=['POST'])
+def listLogs():
+    from os import walk
+    files = {}
+    item = 1
+    logsPath = '{}\\logs'.format(path.dirname(__file__))
+    for folder, _subdirs, filesFolder in walk(logsPath):
+        for name in filesFolder:
+            tipo = folder.split('\\')[-1]
+            files = {
+                        item: {'ARQUIVO':name,
+                               'TIPO': tipo,
+                               'PATH': folder,
+                        }
+                    }
+    return files
 
 @app.route("/atualizacao")
 def atualizacao():
