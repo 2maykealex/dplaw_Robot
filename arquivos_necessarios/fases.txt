@@ -1,0 +1,52 @@
+Administrativa
+Agravo de Instrumento
+Arquivado
+Arquivado definitivamente
+ARQUIVADOS PROVISORIAMENTE
+Arquivo
+Baixa Definitiva
+COBRANÇA - EM ANDAMENTO
+Cobrança Extrajudicial
+COBRANÇA - FINALIZADA
+Concluso
+Conclusos ao Relator
+Conclusos para Decisão
+Conclusos para Despacho
+Conclusos para sentença
+Conhecimento
+Cumprimento de acordo
+Cumprimento de Sentença
+Decisão de Segundo Grau
+Decisória - 1º Grau
+DISTRIBUIR
+Embargos à execução
+ENCERRADO
+Encerrado - Acordo
+Encerrado - Êxito
+Encerrado - Pagamento
+Encerramento
+Encerramento - Desistência
+Execução definitiva
+Executória
+Impugnação a notificação
+Inicial
+Instrutória
+Interlocutória
+Interposto Recurso Especial
+Interposto Recurso Extraordinário
+Liquidação de Sentença
+Migração
+Parcelado
+Postulatória
+Recursal
+Recursal - 2º Grau
+Recursal - STJ
+Remetidos os Autos ao Tribunal de Justiça
+Remetidos os Autos para a Segunda Instância
+REMETIDOS TRF S BAIXA
+Sentença Prolatada
+Suspenso
+Trânsito - Agravo de Petição
+Trânsito - Embargos à Execução
+Trânsito - Encerramento da execução
+Trânsito - Liquidação da sentença

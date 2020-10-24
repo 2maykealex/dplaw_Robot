@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% set title = "VOLUMETRIA" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+    <script>
+        window.onload = function() {
+            let today = new Date().toISOString().slice(0, 7).replace('-','.')
+            // document.getElementById('txtCampoLivre3').value = "Volumetria " + today;
+        };
+
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
+        };
+
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            var volumetria = '';
+
+            ObjectList['tipo'] = 'atualizacao';
+            ObjectList['clientePadrao'] = document.getElementById('clientePadrao').value.trim();
+            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
+            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
+            ultimoRegistro = 0;
+            registroAtual = 0;
+            registros = {};
+            for (var i = 0; i <= lines.length; i++){
+                if (lines[i]){
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        {} //pass
+                    else {
+                        recebeRegistroObj = (criaObjeto(lines[i]));
+                        registros[registroAtual] = recebeRegistroObj;
+                        ultimoRegistro = registros[registroAtual]['txtCampoLivre3'];
+                        registroAtual++;
+                    }
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            ObjectList['registros'] = registros;
+            console.log(ObjectList);
+            ObjectList = JSON.stringify(ObjectList);
+            return (ObjectList)
+        };
+
+        function enviarDados(){
+            ObjectList = converter();
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('txtAbertura').innerHTML = ObjectList;
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            objLine['txtPasta']       = linha.split(';')[7];
+            objLine['txtCampoLivre3'] = document.getElementById('txtCampoLivre3').value.trim();
+            return (objLine);
+        };
+
+        // $(function() {
+        //     $('form').submit(function() {
+        //         console.log('Input 1: '+$('input[name="input1"]').val() + ' Input 2: '+ $('input[name="input2"]').val()); // etc.
+        //     });
+        // });
+
+    </script>
+
+{% endblock%}
+
+{% block content %}
+    <div class="row  ml-1 md-1">
+        <div class="col-md-4">
+            <label class="" for="clientePadrao">Cliente</label>
+            <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
+        </div>
+        <div class="col-md-4">
+            <label class="" for="grupoPadrao">Grupo</label>
+            <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class="   form-control content text-center" disabled>
+        </div>
+        <div class="col-md-4">
+            <label class="" for="siglaPadrao">Sigla</label>
+            <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class="   form-control content text-center" disabled>
+        </div>
+    </div>
+
+    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="atualizacao">
+        <input type="hidden" name="funcao" value="volumetria">
+        <input type="hidden" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A.">
+        <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco">
+        <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="BRA">
+
+        <h1 class="mt-3 ml-3 text-center">ENVIE O ARQUIVO:</h1>
+        <div class="row ml-1">
+            <div class="col-md-6 mt-3">
+                <input type="file" name="arquivo" id="arquivo" class="form-control">
+            </div>
+            <div class="col-md-6 mt-2">
+                <button type="submit" class="btn btn-success mt-2 btn-block form-control" id="btnSend">ENVIAR</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

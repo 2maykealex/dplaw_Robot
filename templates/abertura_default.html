@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block styles %}
+    <style>
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var objNovo = {};
+        var i = 0;
+        var first = true;
+        window.onload = function() {
+            let today = new Date().toISOString().slice(0, 10)
+            obj = {{ data|tojson }}; // verificar se ao invés de adicionar em cada objeto, fosse criado outro só com os padrões
+            console.log(obj);
+            document.getElementById('dataciencia').value = today;
+        };
+
+        function mostrar(element){
+            element.style.display = "block";
+        };
+
+        function ocultar(element){
+            element.style.display = "none";
+        };
+
+        function atualizaGrupoSigla(element){
+            if (element.value != '-1'){
+                valor = element.value.split('*');
+                document.getElementById('sigla').value    = valor[1];
+                document.getElementById('grupocli').value = valor[2];
+            }else{
+                document.getElementById('sigla').value    = '';
+                document.getElementById('grupocli').value = '';
+            };
+        };
+
+        function checkElementValue(element){ //checa se existe valor no elemento
+            if (document.getElementById(element).value == '-1' || document.getElementById(element).value == ''){
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
+            var dataCiencia1 = document.getElementById('dataciencia').value;
+            countCiencia = 0;
+            for (var i = 1; i <= (Object.keys(obj['registros']).length); i++){
+                if (checkElementValue('razaoSocial') == true){
+                    obj['registros'][i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
+                };
+                if (checkElementValue('sigla') == true){
+                    obj['registros'][i]['sigla']       = document.getElementById('sigla').value.trim();
+                };
+                if (checkElementValue('slcAreaAtuacao') == true){
+                    obj['registros'][i]['slcAreaAtuacao'] = document.getElementById('slcAreaAtuacao').value.trim();
+                };
+                if (checkElementValue('slcObjetoAcao') == true){
+                    obj['registros'][i]['slcObjetoAcao'] = document.getElementById('slcObjetoAcao').value.trim();
+                };
+                if (checkElementValue('slcAssunto') == true){
+                    obj['registros'][i]['slcAssunto'] = document.getElementById('slcAssunto').value.trim();
+                };
+                if (checkElementValue('slcDetalhes') == true){
+                    obj['registros'][i]['slcDetalhes'] = document.getElementById('slcDetalhes').value.trim();
+                };
+                if (checkElementValue('slcFase') == true){
+                    obj['registros'][i]['slcFase'] = document.getElementById('slcFase').value.trim();
+                };
+                if (checkElementValue('txtPedido') == true){
+                    obj['registros'][i]['txtPedido'] = document.getElementById('txtPedido').value.trim();
+                };
+                if (checkElementValue('txtObservacao') == true){
+                    obj['registros'][i]['txtObservacao'] = document.getElementById('txtObservacao').value.trim();
+                };
+                if (checkElementValue('slcStatusProcessual') == true){
+                    obj['registros'][i]['slcStatusProcessual'] = document.getElementById('slcStatusProcessual').value.trim();
+                };
+                if (checkElementValue('slcGrupo') == true){
+                    obj['registros'][i]['slcGrupo']  = document.getElementById('slcGrupo').value.trim();
+                };
+                if (checkElementValue('slcLocalizador') == true){
+                    obj['registros'][i]['slcLocalizador'] = document.getElementById('slcLocalizador').value.trim();
+                };
+                var responsavel = [];
+                if (checkElementValue('resp1') == true){
+                    responsavel.push(document.getElementById('resp1').value.trim());
+                };
+                if (checkElementValue('resp2') == true){
+                    responsavel.push(document.getElementById('resp2').value.trim());
+                };
+                if (checkElementValue('resp3') == true){
+                    responsavel.push(document.getElementById('resp3').value.trim());
+                };
+                if (responsavel.length > 0){
+                    obj['registros'][i]['slcResponsavel'] = responsavel;
+                };
+
+                var agendamentos = {};
+                if (checkElementValue('dataciencia') == true){
+                    // if (countCiencia > 99){
+                    //     countCiencia = 0;
+                    //     dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
+                    // };
+                    dataConvertida = dataCiencia1.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    agendamentos['Ciencia de novo processo'] = dataConvertida;
+                    countCiencia++;
+                };
+
+                if (checkElementValue('Anexar') == true){
+                    if (document.getElementById('Anexar').checked)
+                        agendamentos['Anexar'] = true;
+                };
+                if (checkElementValue('Fotocópia') == true){
+                    if (document.getElementById('Fotocópia').checked)
+                        agendamentos['Fotocópia'] = true;
+                };
+                if (Object.keys(agendamentos).length > 0 && agendamentos){
+                    try {
+                        Object.assign(obj['registros'][i]['agendamentos'], agendamentos);
+                    } catch{
+                        obj['registros'][i]['agendamentos'] = agendamentos
+                    }
+                };
+            };
+            objNovo = obj;
+            enviarDados();
+        };
+
+        function enviarDados(){
+            objNovo = JSON.stringify(objNovo);
+            document.getElementById('txtAbertura').innerHTML = objNovo;
+        };
+    </script>
+{% endblock%}
+
+{% block content %}
+    <div class="content text-center">
+        <h3>DEFININDO PADRÕES</h3>
+    </div>
+
+    <div class="content ml-5 mr-5 mt-5" id='corpo'>
+        {% if (data) %}
+            <div id="padroes" class="form-group">
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label for="razaoSocial">CLIENTE</label>
+                        <select name="razaoSocial" id="razaoSocial" class="form-control" onclick="atualizaGrupoSigla(this)">
+                            <option value="-1">SELECIONE</option>
+                            {% for cliente in clientes %}
+                                <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}"
+                                    {% if (data['clientePadrao'] == cliente.split(';')[0]) %}
+                                        selected
+                                    {% endif %}
+                                    >{{cliente.split(';')[0]}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label for="sigla">SIGLA</label>
+                                <input name="sigla" id="sigla" type="text"
+                                    value= "{% if (data['siglaPadrao']) %}{{data['siglaPadrao'].strip()}}{% endif %}"
+                                    class="form-control" disabled>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="grupocli">GRUPO</label>
+                                <input name="grupocli" id="grupocli" type="text"
+                                    value= "{% if (data['grupoPadrao']) %}{{data['grupoPadrao'].strip()}}{% endif %}"
+                                    class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="slcStatusProcessual">STATUS DO PROCESSO</label>
+                        <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for statusproc in status %}
+                                <option value="{{statusproc}}">{{statusproc}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcGrupo">GRUPO DO PROCESSO</label>
+                        <select name="slcGrupo" id="slcGrupo" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for slcGrupo in gruposprocessos %}
+                                <option value="{{slcGrupo}}">{{slcGrupo}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcLocalizador">LOCALIZADOR</label>
+                        <select name="slcLocalizador" id="slcLocalizador" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for localizador in localizadores %}
+                                <option value="{{localizador}}">{{localizador}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcFase">FASE</label>
+                        <select name="slcFase" id="slcFase" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for fase in fases %}
+                                <option value="{{fase}}">{{fase}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="slcAreaAtuacao">ÁREA DE ATUAÇÃO</label>
+                        <select name="slcAreaAtuacao" id="slcAreaAtuacao" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for areaAtuacao in areasAtuacao %}
+                                <option value="{{areaAtuacao}}">{{areaAtuacao}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcObjetoAcao">OBJETO DA AÇÃO</label>
+                        <select name="slcObjetoAcao" id="slcObjetoAcao" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for objetoAcao in objetosAcao %}
+                                <option value="{{objetoAcao}}">{{objetoAcao}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcAssunto">ASSUNTO</label>
+                        <select name="slcAssunto" id="slcAssunto" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for assunto in assuntos %}
+                                <option value="{{assunto}}">{{assunto}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="slcDetalhes">DETALHES</label>
+                        <select name="slcDetalhes" id="slcDetalhes" class="form-control">
+                            <option value="">SELECIONE</option>
+                            {% for detalhe in detalhes %}
+                                <option value="{{detalhe}}">{{detalhe}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="txtPedido">PEDIDO</label>
+                        <input type="text" name="txtPedido" id="txtPedido" class="form-control" maxlength="1000"
+                            value= "{% if (data['txtPedido']) %}{{data['txtPedido'].strip()}}{% endif %}"
+                        >
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="txtObservacao">OBSERVAÇÕES</label>
+                        <input type="text" name="txtObservacao" id="txtObservacao" class="form-control" maxlength="1000"
+                            value= "{% if (data['txtObservacao']) %}{{data['txtObservacao'].strip()}}{% endif %}"
+                        >
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="resp1">RESPONSÁVEL</label>
+                        <select name="resp1" id="resp1" class="form-control" required>
+                            <option value="">SELECIONE</option>
+                            {% for responsavel in resp1 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="resp2">RESPONSÁVEL</label>
+                        <select name="resp2" id="resp2" class="form-control" required>
+                            <option value="">SELECIONE</option>
+                            {% for responsavel in resp2 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="resp3">RESPONSÁVEL</label>
+                        <select name="resp3" id="resp3" class="form-control" required>
+                            <option value="">SELECIONE</option>
+                            {% for responsavel in resp3 %}
+                                <option value="{{responsavel}}">{{responsavel}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="dataciencia">DATA DE CIÊNCIA</label>
+                        <input id="dataciencia" name="dataciencia" type="date" class="form-control" required>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="Anexar">ANEXAR</label>
+                        <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="Fotocópia">FOTOCÓPIA</label>
+                        <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo">
+                    </div>
+                    <div class="col-md-4  ml-3 mb-3">
+                        <form action="{{url_for('abertura_default2')}}" method="post" onsubmit="definirPadrao()">
+                            <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
+                            <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;">ENVIAR</button>
+                            <button type="button" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;">Pular</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">ENVIAR</button>
+        {% endif %}
+    </div>
+{% endblock %}
+
+

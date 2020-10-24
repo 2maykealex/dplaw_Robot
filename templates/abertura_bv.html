@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+    <script>
+        function limparTextArea() {
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('btnPaste').disabled = false;
+        };
+
+        function paste() {
+            var textAreaPaste = document.querySelector("#txtAbertura");
+            textAreaPaste.focus();
+
+            navigator.clipboard.readText()
+                .then(text => {
+                    text = text.replace(/^\s*\n/gm, "") //remove linhas em branco
+                    textAreaPaste.innerHTML = text
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        };
+
+        function converter(){
+            var lines = $('textarea').val().split('\n');
+            var ObjectList = {};
+            ObjectList['tipo'] = 'abertura';
+            ObjectList['clientePadrao'] = String(document.getElementById('clientePadrao').value.trim()).toUpperCase();
+            ObjectList['grupoPadrao']   = document.getElementById('grupoPadrao').value.trim();;
+            ObjectList['siglaPadrao']   = document.getElementById('siglaPadrao').value.trim();;
+            ultimoRegistro = 0;
+            registroAtual = 0;
+            registros = {};
+            for (var i = 0; i <= lines.length; i++){
+                if (lines[i]){
+                    if (ultimoRegistro == (lines[i].split(';')[0]))
+                        {} //pass
+                    else {
+                        recebeRegistroObj = (criaObjeto(lines[i]));
+                        registros[registroAtual] = recebeRegistroObj;
+                        ultimoRegistro = registros[registroAtual]['txtPasta'];
+
+                        //Definindo padrões através dos Registros
+                        if (!ObjectList['txtPedido'])
+                            if (recebeRegistroObj['txtPedido'])
+                                ObjectList['txtPedido'] = recebeRegistroObj['txtPedido'];
+                        registroAtual++;
+                    }
+                }//else{console.log(i, ' - linha vazia: ', lines[i]);}
+            }
+            ObjectList['registros'] = registros;
+            console.log(ObjectList);
+            ObjectList = JSON.stringify(ObjectList);
+            return (ObjectList)
+        };
+
+        function enviarDados(){
+            ObjectList = converter();
+            document.getElementById('txtAbertura').innerHTML = '';
+            document.getElementById('txtAbertura').innerHTML = ObjectList;
+        };
+
+        function criaObjeto(linha){
+            var objLine = {};
+            var adversa = String;
+            var isNumber = String;
+            var dataHoje = new Date();
+            parteAdversa     = {};
+            dadosAgendamento = {};
+
+            objLine['txtPasta'] = linha.split(';')[0]; //Cód. Causa
+            try {
+                if (linha.split(';')[1])
+                    parteAdversa['txtNome'] = String(linha.split(';')[1]); //Partes - CON
+            } catch {}
+            try {
+                if (Object.keys(parteAdversa).length > 0)
+                    objLine['parteAdversa'] = parteAdversa;
+            } catch {}
+            try {
+                objLine['txtNroProcesso'] = linha.split(';')[2]; //Nº Processo
+            } catch {}
+            try {
+                objLine['txtNroCnj'] = linha.split(';')[2]; //Nº Processo
+            } catch {}
+            try {
+                objLine['slcNumeroVara'] = linha.split(';')[3].split('ª')[0] + ' ª-º'; //Numeral da Vara
+            } catch {}
+            try {
+                localTramite = linha.split(';')[4].trim(); //denominação
+                try {
+                    localTramite = localTramite.split('D')[0].trim();
+                } catch {}
+                objLine['slcLocalTramite'] = localTramite;
+            } catch {}
+            try {
+                objLine['slcComarca'] = linha.split(';')[5].trim(); //Municipio
+            } catch {}
+            try {
+                objLine['txtUf'] = linha.split(';')[6]; //UF
+            } catch {}
+            try {
+                if (linha.split(';')[7])
+                    dadosAgendamento['Audiência'] = linha.split(';')[7]; //Audiência
+            } catch {}
+            try {
+                if (linha.split(';')[8])
+                    dadosAgendamento['HoraAudiencia'] = linha.split(';')[8]; //Hora
+            } catch {}
+            try {
+                if (Object.keys(dadosAgendamento).length > 0)
+                    objLine['agendamentos'] = dadosAgendamento;
+            } catch {}
+            try {
+                objLine['txtValorCausa'] = linha.split(';')[9].replace('.',''); //Valor Pleito
+            } catch {}
+
+            return (objLine);
+        };
+    </script>
+
+{% endblock%}
+
+{% block content %}
+    <div class="row  ml-1 md-1">
+        <div class="col-md-4">
+            <label class="" for="clientePadrao">Cliente</label>
+            <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO VOTORANTIM S.A" class="form-control content text-center" disabled>
+        </div>
+        <div class="col-md-4">
+            <label class="" for="grupoPadrao">Grupo</label>
+            <input type="text" name="grupoPadrao" id="grupoPadrao" value="BANCO VOTORANTIM" class="form-control content text-center" disabled>
+        </div>
+        <div class="col-md-4">
+            <label class="" for="siglaPadrao">Sigla</label>
+            <input type="text" name="siglaPadrao" id="siglaPadrao" value="BV" class="form-control content text-center" disabled>
+        </div>
+    </div>
+    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="abertura">
+        <input type="hidden" name="funcao" value="bv">
+        <input type="hidden" name="clientePadrao" id="clientePadrao" value="BANCO VOTORANTIM S.A">
+        <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="BANCO VOTORANTIM">
+        <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="BV">
+
+        <h1 class="mt-3 ml-3 text-center">ENVIE O ARQUIVO:</h1>
+        <div class="row ml-1">
+            <div class="col-md-6 mt-3">
+                <input type="file" name="arquivo" id="arquivo" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-2">
+                <button type="submit" class="btn btn-success mt-2 btn-block form-control" id="btnSend">ENVIAR</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

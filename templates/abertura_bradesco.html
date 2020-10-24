@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="abertura">
+        <input type="hidden" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A.">
+        <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco">
+        <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="BRA">
+
+        <div class="row  ml-1 md-1">
+            <div class="col-md-4">
+                <label class="" for="clientePadrao">Cliente</label>
+                <input type="text" name="clientePadrao1" id="clientePadrao1" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="grupoPadrao">Grupo</label>
+                <input type="text" name="grupoPadrao1" id="grupoPadrao1" value="Grupo Bradesco" class="   form-control content text-center" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="siglaPadrao">Sigla</label>
+                <input type="text" name="siglaPadrao1" id="siglaPadrao1" value="BRA" class="   form-control content text-center" disabled>
+            </div>
+        </div>
+
+        <h1 class="mt-4 ml-3 text-center">ENVIE O ARQUIVO:</h1>
+        <div class="row mt-4 ml-1">
+            <div class="col-md-4 ">
+                <label for="funcao">TIPO DE IMPORTAÇÃO</label>
+                <select name="funcao" id="funcao" class="form-control" required>
+                    <option value="">SELECIONE</option>
+                    <option value="bradesco_email">E-mail enviado</option>
+                    <option value="bradesco_arquivo">Arquivo enviado pelo Bradesco</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="arquivo">SELECIONE O ARQUIVO</label>
+                <input type="file" name="arquivo" id="arquivo" class="form-control">
+            </div>
+            <div class="col-md-4 mt-2">
+                <label class="" for="btnSend"></label>
+                <button type="submit" class="btn btn-success  btn-block form-control" id="btnSend">ENVIAR</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

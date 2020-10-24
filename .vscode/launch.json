@@ -11,38 +11,7 @@
             "program": "${workspaceFolder}/robo_monitor.py",
             "console": "integratedTerminal"
         },
-        {
-            "name": "Python: ATUALIZAÇÃO.py",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/atualizacao.py",
-            "console": "integratedTerminal"
-        },
-        
-        {
-            "name": "Python: ABERTURA.py",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/abertura.py",
-            "console": "integratedTerminal"
-        },
 
-        {
-            "name": "Python: VOLUMETRIA.py",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/volumetria.py",
-            "console": "integratedTerminal"
-        },
-        
-        {
-            "name": "Python: VOLUMETRIA.py",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/volumetria.py",
-            "console": "integratedTerminal"
-        },
-        
         {
             "name": "Python: Arquivo Atual",
             "type": "python",
