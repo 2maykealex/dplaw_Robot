@@ -7,6 +7,113 @@
 
     <script>
 
+        window.onload = function() {
+            // getLog();
+            // window.setInterval(getLog, 5000);
+            listLogs();
+            // window.setInterval(listLogs, 5000);
+        };
+
+        function listLogs(){
+            $.ajax({
+                url: '/listLogs',
+                type: 'POST',
+                success: function(response){
+                    lista = document.getElementById('lista');
+                    lista.innerHTML = '';
+                    for (var [key, value] of Object.entries(response)) {
+                        fileName = key;
+                        trElement = document.createElement('tr'); //Cria TR
+                        for (var x = 0; x < Object.keys(value).length; x++){
+                            if (Object.keys(value)[x] != 'PATH'){
+                                tableElement = "th";
+                                novoElemento = document.createElement(tableElement); // Cria th ou td
+                                textnode = document.createTextNode(Object.keys(value)[x]);
+                                novoElemento.appendChild(textnode);
+                                trElement.appendChild(novoElemento); //add novoElemento ao TR
+                                lista.appendChild(trElement);
+                            }
+                        };
+
+
+                        trElement = document.createElement('tr'); //Cria TR
+                        item = 0
+                        for (var x = 0; x < Object.values(value).length; x++){
+
+
+                            // aElement.href = "{{url_for('getLog', filePath=key1)}}";
+                            // console.log(value[item]['name'])
+                            // console.log(value['tipo'])
+                            // console.log(value['path'])
+                            // console.log(item)
+                            // console.log(Object.values(value)[x]);
+                            console.log(value['PATH']);
+
+                            if (Object.keys(value)[x] != 'PATH'){
+                                aElement = document.createElement('a'); //Cria TR
+                                aElement.setAttribute("class", "log");
+                                // aElement.setAttribute("id", "log_".replace("log_", "log_"+ x));
+
+                                aElement.href = "{{ url_for('getLog', filePath='ADDSHARE2') }}".replace("ADDSHARE2", value['PATH'])
+                                tableElement = "td";
+
+                                novoElemento = document.createElement(tableElement); // Cria th ou td
+                                textnode = document.createTextNode(Object.values(value)[x].toUpperCase());
+
+                                aElement.appendChild(textnode);
+                                novoElemento.appendChild(aElement);
+                                trElement.appendChild(novoElemento);
+
+                                lista.appendChild(trElement);
+                                item++;
+                            }
+                        }
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+        };
+
+        function getLog(){
+            $.ajax({
+                url: '/getLog',
+                type: 'POST',
+                success: function(response){
+                    lista = document.getElementById('lista');
+                    lista.innerHTML = '';
+                    for (var [key, value] of Object.entries(response)) {
+                        document.getElementById('tipo').innerHTML = value['tipo'].toUpperCase();
+                        document.getElementById('arquivo').innerHTML = key;
+
+                        sizeLog = parseInt(value['log'].length)-1 ;
+                        document.getElementById('status').innerHTML = sizeLog;
+                        for (var [key1, value1] of Object.entries(value['log'])) {
+
+                            if (parseInt(key1) == 0){
+                                tableElement = "th";
+                            } else{
+                                tableElement = "td";
+                            };
+
+                            dados = value1.split(';')
+                            trElement = document.createElement('tr'); //Cria TR
+                            for (i = 0; i < dados.length; i++) {
+                                novoElemento = document.createElement(tableElement); // Cria th ou td
+                                textnode = document.createTextNode(dados[i]);
+                                novoElemento.appendChild(textnode);
+                                trElement.appendChild(novoElemento); //add novoElemento ao TR
+                                lista.appendChild(trElement);
+                            }
+                        }
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+        };
     </script>
 
 {% endblock %}
@@ -14,5 +121,29 @@
 
 {% block content %}
 
+    <div id="logs">
+        <!-- <div class="row">
+            <div class="col-md-6">
+                <label for="arquivo">Arquivo:</label>
+                <h4 id="arquivo" class="mb-5"></h4>
+            </div>
+
+            <div class="col-md-3">
+                <label for="tipo">Tipo:</label>
+                <h4 id="tipo" class="mb-5"></h4>
+            </div>
+            <div class="col-md-3">
+                <label for="arquivo">STATUS:</label>
+                <h4 id="status" class="mb-5"></h4>
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <table class="table" id='lista'></table>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
 
 {% endblock %}
