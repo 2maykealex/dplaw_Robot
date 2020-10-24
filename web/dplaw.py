@@ -104,52 +104,51 @@ def defining():
             fases = open(fases, 'r', encoding='utf-8')
             objetosAcao = dados+'\\'+'objetosAcao.txt'
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
-            rota = 'abertura_default'
+
             if base['funcao'] == 'bradesco_arquivo':
+                print('ARQUIVO enviado pelo BRADESCO')
+                itemDict['txtPasta'] = registro[0]
+                if (registro[1] != ''):
+                    parteAdversa['txtNome']  = registro[1]
+                    itemDict['parteAdversa'] = parteAdversa
+                itemDict['txtDataContratacao'] = registro[2].to_pydatetime().strftime("%d/%m/%Y")
+                itemDict['txtNroProcesso'] = registro[3]
+                itemDict['txtNroCnj']      = registro[3]
+                itemDict['slcNumeroVara']  = registro[4].split('/')[0]  #registro[4]
+                itemDict['slcComarca']     = registro[4].split('/')[1].strip()
+                itemDict['txtUf']          = registro[4].split('/')[-1]
+
+                if (type(registro[5]) == type(str()) and registro[5] != ''):
+                    agendamentos['Audiência'] = registro[5]
+                    itemDict['agendamentos']  = agendamentos
+
+            elif base['funcao'] == 'bradesco_email':
+                print('TEXTO enviado pelo BRADESCO')
+                itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
+                if (registro[0][1] != ''):
+                    parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
+                    itemDict['parteAdversa'] = parteAdversa
+
+                itemDict['txtDataContratacao'] = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
+                itemDict['txtNroProcesso'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
+                itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
                 try:
-                    #ARQUIVO enviado pelo BRADESCO
-                    localidade = registro[4]
-                    itemDict['txtPasta'] = registro[0]
-                    if (registro[1] != ''):
-                        parteAdversa['txtNome']  = registro[1]
-                        itemDict['parteAdversa'] = parteAdversa
-                    itemDict['txtDataContratacao'] = registro[2]
-                    itemDict['txtNroProcesso'] = registro[3]
-                    itemDict['txtNroCnj']      = registro[3]
-                    itemDict['slcNumeroVara']  = localidade.split('/')[0]  #registro[4]
-                    itemDict['slcComarca']     = localidade.split('/')[1].strip()
-                    itemDict['txtUf']          = localidade.split('/')[-1]
-
-                    if (type(registro[5]) == type(str()) and registro[5] != ''):
-                        agendamentos['Audiência'] = registro[5]
-                        itemDict['agendamentos']  = agendamentos
+                    if (int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0])):
+                        itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0]))
+                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('    ')[1][3:]
                 except:
-                    #arquivo gerado do TEXTO enviado pelo BRADESCO
-                    print('TEXTO enviado pelo BRADESCO')
-                    itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
-                    if (registro[0][1] != ''):
-                        parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
-                        itemDict['parteAdversa'] = parteAdversa
+                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[1]
+                itemDict['slcComarca'] = registro[0].split('/')[3]
+                itemDict['txtUf']      = registro[0].split('/')[4][:2].strip()
 
-                    itemDict['txtDataContratacao']   = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
-                    itemDict['txtNroProcesso'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
-                    itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
-                    try:
-                        if (int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0])):
-                            itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0]))
-                            itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('    ')[1][3:]
-                    except:
-                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[1]
-                    itemDict['slcComarca'] = registro[0].split('/')[3]
-                    itemDict['txtUf']      = registro[0].split('/')[4][:2].strip()
+                try:
+                    if (int(registro[0].strip()[-2:])):
+                        agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
+                except:
+                    pass
+                if (len(agendamentos)>0):
+                    itemDict['agendamentos']  = agendamentos
 
-                    try:
-                        if (int(registro[0].strip()[-2:])):
-                            agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
-                    except:
-                        pass
-                    if (len(agendamentos)>0):
-                        itemDict['agendamentos']  = agendamentos
 
             elif base['funcao'] == 'bv':
                 itemDict['txtPasta']    = registro[0]
@@ -178,7 +177,6 @@ def defining():
             elif base['funcao'] == 'faro_judicial':
                 itemDict['txtNroProcesso']    = registro[0]
                 itemDict['txtNroCnj']    = registro[0]
-
                 #ADVERSA
                 if (registro[1] != ''):
                     parteAdversa['txtNome']  = registro[1].strip()
@@ -210,7 +208,6 @@ def defining():
 
             elif base['funcao'] == 'faro_alunos':
                 itemDict['txtPasta']    = registro[1]
-
                 #ADVERSA
                 if (registro[2] != ''):
                     parteAdversa['txtNome']  = registro[2].strip()
