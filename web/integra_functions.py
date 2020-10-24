@@ -211,9 +211,8 @@ class IntegraFunctions(object):
         return robo
 
     def abrePasta(self, registros, reg):
-        #todo   IDEIA -> Alterar o objeto criado para receber numeração de registro a partir do 1 (não do zero)  --  reg == int(k)
-        clienteLocalizado = True
         #todo PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
+        clienteLocalizado = True
         ultimoCliente = ''
         urlPage = ''
         while True:
@@ -224,22 +223,25 @@ class IntegraFunctions(object):
             print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format((len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
             if ('abertura' in registros['tipo']):
-                if (not(ultimoCliente) or (registro['razaoSocial'] != ultimoCliente)):
+                if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente)):
                     try:
                         clienteLocalizado, clientePesquisado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
-                        ultimoCliente = clientePesquisado.text.strip()
+                        ultimoCliente = clientePesquisado.text.strip().upper()
                         clientePesquisado.click()
                         sleep(1)
                         urlPage = self.driver.current_url
-                        if ('txtNroProcesso' in registro):
-                            registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroProcesso'])
-                        if ('txtNroCnj' in registro):
-                            registro['txtNroCnj'] = basic_functions.ajustarNumProcessoCNJ(registro['txtNroCnj'])
                     except:
                         clienteLocalizado = False
                         message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
 
             if (clienteLocalizado):
+
+                # AJUSTANDO OS CAMPOS PROCESSO E CNJ
+                if ('txtNroProcesso' in registro):
+                    registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(str(registro['txtNroProcesso']))
+                if ('txtNroCnj' in registro):
+                    registro['txtNroCnj'] = basic_functions.ajustarNumProcessoCNJ(str(registro['txtNroCnj']))
+
                 tentativa = 1
                 message = ''
                 print('=========================================================')
@@ -270,7 +272,7 @@ class IntegraFunctions(object):
                         sleep(0.5)
                         print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg)))
                         self.driver.get(urlPage)
-                        sleep(1)
+                        sleep(2)
                         element = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
                         element.click()
                         message = self.incluirProcesso(registro, reg, registros['tipo'])
@@ -374,16 +376,38 @@ class IntegraFunctions(object):
                 select.select_by_visible_text(texto.title())
             except:
                 try:
-                    select.select_by_visible_text(texto.lower())
+                    select.select_by_visible_text(texto.upper())
                 except:
                     try:
-                        select.select_by_visible_text(texto.lower().capitalize())
+                        select.select_by_visible_text(texto.lower())
                     except:
-                        pass
-                        select.select_by_visible_text('--Cadastrar Novo Item--')
-                        elemCadastro = self.waitingElement(element.replace('slc', 'txt'), 'click', form='id') # CADASTRAR NOVO ITEM
-                        elemCadastro.clear()
-                        elemCadastro.send_keys(str(texto).title())
+                        try:
+                            select.select_by_visible_text(texto.lower().capitalize())
+                        except:
+                            listaElementos = self.driver.find_elements_by_xpath('//*[@id="{}"]/option'.format(k)) #recupera os inputs abaixo dessa tag
+                            y = 1
+                            found = False
+                            while True:
+                                try:
+                                    for item in listaElementos:  #itera inputs recuperados, checa e clica
+                                        if (item.text.upper() == v.upper()):
+                                            xPathItem = '//*[@id="{}"]/option[{}]'.format(k, y)
+                                            opcaoElemento = self.waitingElement(xPathItem, 'click')
+                                            opcaoElemento.click()
+                                            sleep(1)
+                                            found=True
+                                            break
+                                        y = y + 1
+                                    break
+                                except:
+                                    print('ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS')
+                                    continue
+
+                            if (not(found)):
+                                select.select_by_visible_text('--Cadastrar Novo Item--')
+                                elemCadastro = self.waitingElement(element.replace('slc', 'txt'), 'click', form='id') # CADASTRAR NOVO ITEM
+                                elemCadastro.clear()
+                                elemCadastro.send_keys(str(texto).title())
             sleep(0.3)
 
         def _getURLpasta():
@@ -410,7 +434,7 @@ class IntegraFunctions(object):
         for k, v in registro.items():
             #todo salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
             try:
-                if (k in itensExcluidosLoop):
+                if (k in itensExcluidosLoop or v == None):
                     continue
 
                 print ('REG {}: {} - "{}"'.format(reg, k, v))
@@ -420,10 +444,13 @@ class IntegraFunctions(object):
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'select'):
                         try:
+                            #todo TRATAR A STRING INTEIRA, CHECANDO SE É TODA MAIUSCULA OU MINUSCULA PRIMEIRO
+                            valorElemento = str(v).title()
                             select = self.selenium.select(element)
-                            select.select_by_visible_text(str(v))
+                            select.select_by_visible_text(valorElemento)
                         except:
                             checkValueInCombo(str(v), k)
+
                     else: # (element.tag_name == 'input'): # inputs e textareas
                         element.clear()
                         element.send_keys(str(v))
@@ -592,11 +619,12 @@ class IntegraFunctions(object):
                     messageFinal = "{}".format(textoAgendamento.split('-')[1].strip().upper())
 
                 elif tipoAgendamento == 'Ciencia de novo processo':
-                    responsaveis = registro['slcResponsavel']# + responsaveisCiencia
+                    responsaveis = ['COI','advoi'] #registro['slcResponsavel']# + responsaveisCiencia
                     textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
 
                 elif tipoAgendamento == 'Anexar':
-                    responsaveis = registro['slcResponsavel']# + responsaveisAnexar
+                    dataAgendamento = '01/11/2020'
+                    responsaveis = ['COI','apoioOi'] #registro['slcResponsavel']# + responsaveisAnexar
                     textoAgendamento = "ANEXAR"
 
                 elif tipoAgendamento == 'Fotocópia':
