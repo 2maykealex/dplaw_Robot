@@ -61,6 +61,7 @@ class SeleniumFunctions(object):
     def iniciaWebdriver(self, modSilent = False, monitor = 2):
 
         sistemaOperacional = SO()
+        chromepath=None
 
         if (sistemaOperacional == 'Windows'):
             # acessando diretório do webdriver do chrome no WINDOWS
