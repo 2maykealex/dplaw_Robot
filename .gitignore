@@ -9,9 +9,10 @@
 *.OLD
 teste.txt
 teste.py
+arquivos_a_executar/*
 arquivos_executados/*
-arquivos_importados/*
 arquivos_ignorados/*
+arquivos_importados/*
 backup/*
 logs/*
 pIDs/*
