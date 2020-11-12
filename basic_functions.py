@@ -5,9 +5,9 @@ from time import strftime
 from psutil import pid_exists
 from pyexcel import get_sheet
 
-def checkLogin():
+def checkLogin(tipo=''):
     checarTeste = checkIfTest()
-    if (checarTeste):
+    if (checarTeste or tipo=='atualizacao'):
         print('\n------------EM MODO DE TESTE------------')
         login="robo@dplaw.com.br"
         password="dplaw00612"

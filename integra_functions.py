@@ -189,7 +189,7 @@ class IntegraFunctions(object):
         self.isTest = basic_functions.checkIfTest()
         while True:
             if (reg != 'FIM' and reg != -1 and (reg < (len(registros['registros'])))):
-                login, password = basic_functions.checkLogin()
+                login, password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
                 print("\n-----------------------------------------")
                 print("Login utilizado: {}".format(login))
                 print("-----------------------------------------\n")
@@ -574,7 +574,7 @@ class IntegraFunctions(object):
         responsaveisAudiencia = ""
         responsaveisAnexar    = ""
         responsaveisFotocopia = ""
-        responsaveisCiencia   = ""
+        # responsaveisCiencia   = ""
         # responsaveisAudiencia = ['GST']
         # responsaveisAnexar    = ['ESTAGBRA']
         # responsaveisFotocopia = ['GST','operacoes']
@@ -609,6 +609,7 @@ class IntegraFunctions(object):
                 if tipoAgendamento == 'Audiência':
                     dataAgendamento = registro['agendamentos']['Audiência']
                     responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
+                    # responsaveis = ['CBV','GST']
                     try:
                         if (registro['agendamentos']['HoraAudiencia']):
                             HoraAudiencia = "{}".format(registro['agendamentos']['HoraAudiencia'])
@@ -619,11 +620,13 @@ class IntegraFunctions(object):
                     messageFinal = "{}".format(textoAgendamento.split('-')[1].strip().upper())
 
                 elif tipoAgendamento == 'Ciencia de novo processo':
-                    responsaveis = ['COI','advoi'] #registro['slcResponsavel']# + responsaveisCiencia
+                    responsaveis = ['COI', 'advoi']
+                    # responsaveis = responsaveisCiencia
+                    # responsaveis = ['CBV'] #registro['slcResponsavel']# + responsaveisCiencia
                     textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
 
                 elif tipoAgendamento == 'Anexar':
-                    dataAgendamento = '01/11/2020'
+                    dataAgendamento = "11/11/2020"
                     responsaveis = ['COI','apoioOi'] #registro['slcResponsavel']# + responsaveisAnexar
                     textoAgendamento = "ANEXAR"
 
