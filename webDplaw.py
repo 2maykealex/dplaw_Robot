@@ -51,7 +51,8 @@ def defining():
     newPathFile = path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(newPathFile)
 
-    df = pd.read_excel(newPathFile)
+    df = pd.read_excel(newPathFile).fillna('')
+
     itensPadroes = {}
     registros    = {}
     base         = {}
@@ -67,15 +68,20 @@ def defining():
     recNum = 1
     regs={}
     for registro in df.values:
+
+        if (registro[0] in ['', ' ']):
+        # if (registro[0] == ' '):
+            continue
+
         itemDict = {}
         agendamentos = {}
         parteAdversa = {}
 
         if (base['tipo'] == 'atualizacao'):
             if base['funcao'] == 'volumetria':
-                itemDict = {'txtPasta':registro[7]}
+                itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre3': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta':registro[7]}
+                itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
 
         elif (base['tipo'] == 'abertura'):
             dados = path.abspath(getcwd()) +'\\arquivos_necessarios'
@@ -151,7 +157,6 @@ def defining():
                 if (len(agendamentos)>0):
                     itemDict['agendamentos']  = agendamentos
 
-
             elif base['funcao'] == 'bv':
                 itemDict['txtPasta']    = registro[0]
                 if (registro[1] != ''):
@@ -159,16 +164,18 @@ def defining():
                     itemDict['parteAdversa'] = parteAdversa
                 itemDict['txtNroProcesso']  = registro[2]
                 itemDict['txtNroCnj']       = registro[2]
-                itemDict['slcNumeroVara']   = "{} ª-º".format(registro[3].split('ª')[0])
-                itemDict['slcLocalTramite'] = registro[4].split(' DE ')[0]
+                if (type(registro[3]) == type(str() and registro[3] != '')):
+                    itemDict['slcNumeroVara']   = "{} ª-º".format(registro[3].split('ª')[0])
+                if (type(registro[4]) == type(str() and registro[4] != '')):
+                    itemDict['slcLocalTramite'] = registro[4].split(' DE ')[0]
                 itemDict['slcComarca']  = registro[5].strip()
                 itemDict['txtUf']       = registro[6]
 
                 if (type(registro[7]) == type(str()) and registro[7] != ''):
-                    agendamentos['Audiência'] = registro[7]
+                    agendamentos['Audiência'] = registro[7].replace('\n','')
 
                 if (type(registro[8]) == type(str()) and registro[8] != ''):
-                    agendamentos['HoraAudiencia'] = registro[8]
+                    agendamentos['HoraAudiencia'] = registro[8].replace('\n','')
 
                 if (len(agendamentos)>0):
                     itemDict['agendamentos']  = agendamentos
@@ -229,7 +236,7 @@ def defining():
 
                 itemDict['txtPedido'] = registro[8]
 
-            elif base['funcao'] == 'oi':
+            elif base['funcao'] == 'oi_migracao':
                 itemDict['txtPasta']  = registro[0]
                 itemDict['txtNroCnj'] = str(registro[1])
                 itemDict['txtNroProcesso'] = str(registro[2])
@@ -253,6 +260,50 @@ def defining():
                 if (registro[14] != '' and registro[14] != 'SEM AGENDAMENTO'):
                     agendamentos['HoraAudiencia'] = registro[14]
                 itemDict['slcFase']               = registro[15]
+
+            elif base['funcao'] == 'oi':
+                itemDict['txtPasta']  = str(int(registro[0]))
+                itemDict['txtNroCnj'] = str(registro[1]).replace('[','').replace(']','').strip()
+                itemDict['txtNroProcesso'] = str(registro[1]).replace('[','').replace(']','').strip()
+
+                if (type(registro[5]) == type(str() and registro[5] != '')):
+                    itemDict['txtUf'] = registro[5]
+
+                if (type(registro[6]) == type(str() and registro[6] != '')):
+                    itemDict['slcComarca'] = registro[6].strip()
+
+                if (type(registro[7]) == type(str() and registro[7] != '')):
+                    itemDict['slcLocalTramite'] = "Vara Cível"
+                    try:
+                        if ('º' in registro[7] or 'ª' in registro[7]):
+                            numero = 'º' if ('º' in registro[7]) else 'ª' if ('ª' in registro[7]) else ''
+                            itemDict['slcNumeroVara']   = "{} ª-º".format(str(registro[7].split('{}'.format(numero))[0]))
+                    except:
+                        pass
+
+                        # itemDict['slcLocalTramite'] = "{}".format(str(registro[7].split('º')[-1]).strip())
+
+                if (type(registro[8]) == type(str() and registro[8] != '')):
+                    itemDict['slcObjetoAcao'] = registro[8].strip()
+                if (registro[14] != ''):
+                    itemDict['txtValorCausa'] = "{}".format(registro[14])
+
+                #   PARTE ADVERSA
+                ddd = ''
+                if (type(registro[18]) == type(str() and registro[18] != '')):
+                    parteAdversa['txtNome']      = registro[18]
+                if (type(registro[20]) == type(str() and registro[20] != '')):
+                    ddd = (registro[20])
+                if (type(registro[21]) == type(str() and registro[21] != '')):
+                    parteAdversa['txtTelContato'] = '{}{}'.format(ddd, (registro[21]))
+                if (type(registro[28]) == type(float() and registro[28] != '' and registro[28] != 'nan')):
+                    parteAdversa['txtCPF'] = '{}'.format(str(int(registro[28])))
+                if (type(registro[29]) == type(str() and registro[29] != '')):
+                    parteAdversa['txtEndereco'] = '{}'.format(registro[29])
+                if (len(parteAdversa) > 0):
+                    itemDict['parteAdversa'] = parteAdversa
+
+                itemDict['txtDataContratacao'] = '03/11/2020'
 
         #todo VER SE VAI PULAR UMA SEMANA A CADA TANTOS REGISTROS
         if (itensPadroes):
@@ -346,7 +397,7 @@ def gera_arquivo_atualizacao(data):
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
-        newRegistros[int(k)+1] = v
+        newRegistros[int(k)] = v
 
     del data['registros']
     data['registros'] = newRegistros
@@ -443,7 +494,9 @@ def atualizacao_geral():
 
 if __name__ == "__main__":
     # app.run(debug=True)
-    app.run(host= '192.168.0.10', debug=True)
+    # app.run(host= '192.168.0.10', debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
 
 
 
