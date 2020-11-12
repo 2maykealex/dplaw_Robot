@@ -4,11 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: robo_monitor.py",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/robo_monitor.py",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Python: webDplaw.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/webDplaw.py",
             "console": "integratedTerminal"
         },
 
