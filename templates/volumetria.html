@@ -31,7 +31,7 @@
         };
 
         function converter(){
-            var lines = $('textarea').val().split('\n');
+            // var lines = $('textarea').val().split('\n');
             var ObjectList = {};
             var volumetria = '';
 
@@ -64,6 +64,8 @@
             ObjectList = converter();
             document.getElementById('txtAbertura').innerHTML = '';
             document.getElementById('txtAbertura').innerHTML = ObjectList;
+            console.log(objLine);
+            alert(objLine);
         };
 
         function criaObjeto(linha){
@@ -85,17 +87,21 @@
 
 {% block content %}
     <div class="row  ml-1 md-1">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="" for="clientePadrao">Cliente</label>
-            <input type="text" name="clientePadrao" id="clientePadrao" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
+            <input type="text" name="clientePadrao1" id="clientePadrao1" value="BANCO BRADESCO S.A." class="   form-control content text-center" disabled>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="" for="grupoPadrao">Grupo</label>
-            <input type="text" name="grupoPadrao" id="grupoPadrao" value="Grupo Bradesco" class="   form-control content text-center" disabled>
+            <input type="text" name="grupoPadrao1" id="grupoPadrao1" value="Grupo Bradesco" class="   form-control content text-center" disabled>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="" for="siglaPadrao">Sigla</label>
-            <input type="text" name="siglaPadrao" id="siglaPadrao" value="BRA" class="   form-control content text-center" disabled>
+            <input type="text" name="siglaPadrao1" id="siglaPadrao1" value="BRA" class="   form-control content text-center" disabled>
+        </div>
+        <div class="col-md-3">
+            <label class="" for="txtCampoLivre3">Texto do Campo 3</label>
+            <input type="text" name="txtCampoLivre3" id="txtCampoLivre3" value="" class="   form-control content text-center" disabled>
         </div>
     </div>
 
@@ -113,8 +119,10 @@
             </div>
             <div class="col-md-6 mt-2">
                 <button type="submit" class="btn btn-success mt-2 btn-block form-control" id="btnSend">ENVIAR</button>
+
             </div>
         </div>
     </form>
+    <button type="button" class="btn btn-success mt-2 btn-block form-control" id="btnSend" onclick="enviarDados()">ENVIAR</button>
 
 {% endblock %}
