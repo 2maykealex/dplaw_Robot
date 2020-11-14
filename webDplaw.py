@@ -3,6 +3,7 @@ from os import path
 import pandas as pd
 from os import getcwd
 from time import strftime
+from datetime import datetime
 from basic_functions import createFolder
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, json
@@ -10,6 +11,7 @@ from flask import Flask, render_template, request, redirect, url_for, json
 UPLOAD_FOLDER = path.abspath(getcwd()) + '\\arquivos_importados'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 DADOS = path.abspath(getcwd()) +'\\arquivos_necessarios'
+HOJE = datetime.today().strftime('%Y-%m-%d')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -42,6 +44,61 @@ def abertura_bv():
 def abertura_oi():
     return render_template('abertura_oi.html')
 
+def getDefault(sigla):
+    responsaveis = {}
+    dadosPadroes = {}
+
+    if (sigla=='BRA'):
+        dadosPadroes['slcGrupo'] = 'Grupo 4'
+        dadosPadroes['slcStatusProcessual'] = 'DEMANDADO'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcFase'] = 'Conhecimento'
+        dadosPadroes['slcLocalizador'] = 'Novo contrato Bradesco'
+        responsaveis['Anexar']    = ['ESTAGBRA']
+        responsaveis['Audiência'] = ['cbradesco','advbradesco','ESTAGBRA','GST']
+        responsaveis['Fotocópia'] = ['GST']
+        responsaveis['Processo']  = ['cbradesco','advbradesco','ESTAGBRA']
+        responsaveis['Ciencia de novo processo'] = ['cbradesco','advbradesco','ESTAGBRA']
+
+    elif (sigla=='BV'):
+        dadosPadroes['slcGrupo'] = 'Grupo 4'
+        dadosPadroes['slcStatusProcessual'] = 'DEMANDADO'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcFase'] = 'Conhecimento'
+        responsaveis['Processo']  = ['CBV']
+        responsaveis['Ciencia de novo processo'] = ['CBV']
+        responsaveis['Anexar']    = ['ESTAGBRA']
+        responsaveis['Audiência'] = ['CBV','GST']
+        responsaveis['Fotocópia'] = ['GST']
+
+    elif (sigla=='FARO'):
+        dadosPadroes['slcGrupo'] = 'Grupo 3'
+        dadosPadroes['slcStatusProcessual'] = 'DEMANDANTE'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcFase'] = 'COBRANÇA - EM ANDAMENTO'
+        dadosPadroes['slcComarca'] = 'Porto Velho'
+        dadosPadroes['txtUf'] = 'RO'
+        responsaveis['Processo'] = ['ADV1','ADV6','CGE','NEGOCIE']
+        responsaveis['Ciencia de novo processo'] = ['ADV1','ADV6']
+        responsaveis['Audiência'] = ['ADV1','ADV6','CGE','GST']
+        responsaveis['Fotocópia'] = ['GST']
+
+    elif (sigla=='OI'):
+        dadosPadroes['slcGrupo'] = 'Grupo 4'
+        dadosPadroes['slcStatusProcessual'] = 'DEMANDADO'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcFase'] = 'Conhecimento'
+        responsaveis['Processo']  = ['COI','advoi']
+        responsaveis['Ciencia de novo processo'] = ['COI','advoi']
+        responsaveis['Anexar']    = ['COI','apoioOi']
+        responsaveis['Audiência'] = ['COI','advoi','GST']
+        responsaveis['Fotocópia'] = ['GST']
+    else:
+        return False
+
+    dadosPadroes['responsaveis'] = responsaveis
+    return dadosPadroes
+
 @app.route("/defining", methods=['POST'])
 def defining():
     print(path.abspath(getcwd()))
@@ -67,6 +124,7 @@ def defining():
     registros.update(base)
     recNum = 1
     regs={}
+    dadosPadroes = None
     for registro in df.values:
 
         if (registro[0] in ['', ' ']):
@@ -76,6 +134,11 @@ def defining():
         itemDict = {}
         agendamentos = {}
         parteAdversa = {}
+
+        dadosPadroes = getDefault(base['siglaPadrao'])
+        if (dadosPadroes):
+            for k, dp in dadosPadroes.items():
+                itemDict[k] = dp
 
         if (base['tipo'] == 'atualizacao'):
             if base['funcao'] == 'volumetria':
@@ -114,7 +177,6 @@ def defining():
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
             if base['funcao'] == 'bradesco_arquivo':
-                print('ARQUIVO enviado pelo BRADESCO')
                 itemDict['txtPasta'] = registro[0]
                 if (registro[1] != ''):
                     parteAdversa['txtNome']  = registro[1]
@@ -131,7 +193,6 @@ def defining():
                     itemDict['agendamentos']  = agendamentos
 
             elif base['funcao'] == 'bradesco_email':
-                print('TEXTO enviado pelo BRADESCO')
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                 if (registro[0][1] != ''):
                     parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -154,8 +215,6 @@ def defining():
                         agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
                 except:
                     pass
-                if (len(agendamentos)>0):
-                    itemDict['agendamentos']  = agendamentos
 
             elif base['funcao'] == 'bv':
                 itemDict['txtPasta']    = registro[0]
@@ -177,9 +236,6 @@ def defining():
                 if (type(registro[8]) == type(str()) and registro[8] != ''):
                     agendamentos['HoraAudiencia'] = registro[8].replace('\n','')
 
-                if (len(agendamentos)>0):
-                    itemDict['agendamentos']  = agendamentos
-
                 itemDict['txtUf']       = registro[6]
                 itemDict['txtUf']       = registro[6]
 
@@ -191,10 +247,6 @@ def defining():
                     parteAdversa['txtNome']  = registro[1].strip()
                 if (registro[2] != ''):
                     parteAdversa['txtCPF']  = registro[2]
-
-                if (len(parteAdversa) > 0):
-                    itemDict['parteAdversa'] = parteAdversa
-
                 if (registro[3] != ''):
                     itemDict['txtValorCausa'] = registro[3]
 
@@ -208,12 +260,6 @@ def defining():
 
                 if (type(registro[5]) == type(str())):
                     itemDict['txtObservacao'] = registro[5]
-
-                #padrões pre definidos
-                itemDict['slcComarca'] = 'Porto Velho'
-                itemDict['txtUf'] = 'RO'
-                itemDict['txtDataDistribuicao']  = '13/10/2020'
-                itemDict['txtDataContratacao']   = '13/10/2020'
 
             elif base['funcao'] == 'faro_alunos':
                 itemDict['txtPasta']    = registro[1]
@@ -230,10 +276,6 @@ def defining():
                     parteAdversa['txtEndereco']  = registro[6]
                 if (registro[7] != ''):
                     parteAdversa['txtProfissao']  = registro[7]
-
-                if (len(parteAdversa) > 0):
-                    itemDict['parteAdversa'] = parteAdversa
-
                 itemDict['txtPedido'] = registro[8]
 
             elif base['funcao'] == 'oi_migracao':
@@ -280,7 +322,6 @@ def defining():
                             itemDict['slcNumeroVara']   = "{} ª-º".format(str(registro[7].split('{}'.format(numero))[0]))
                     except:
                         pass
-
                         # itemDict['slcLocalTramite'] = "{}".format(str(registro[7].split('º')[-1]).strip())
 
                 if (type(registro[8]) == type(str() and registro[8] != '')):
@@ -300,22 +341,30 @@ def defining():
                     parteAdversa['txtCPF'] = '{}'.format(str(int(registro[28])))
                 if (type(registro[29]) == type(str() and registro[29] != '')):
                     parteAdversa['txtEndereco'] = '{}'.format(registro[29])
-                if (len(parteAdversa) > 0):
-                    itemDict['parteAdversa'] = parteAdversa
 
-                itemDict['txtDataContratacao'] = '03/11/2020'
+        if (len(agendamentos)>0):
+            itemDict['agendamentos'] = agendamentos
 
-        #todo VER SE VAI PULAR UMA SEMANA A CADA TANTOS REGISTROS
+        if (len(parteAdversa) > 0):
+            itemDict['parteAdversa'] = parteAdversa
+
+        if not("txtDataContratacao" in itemDict):
+            itemDict['txtDataContratacao'] = HOJE
+
         if (itensPadroes):
             itemDict.update(itensPadroes)
 
         regs[recNum] = itemDict
         recNum = recNum + 1
 
+    data = {}
     registros['registros'] = regs
+    data.update(registros)
+
+    data['dadosPadroes'] = dadosPadroes
     # pprint(registros)
     if (base['tipo'] == 'abertura'):
-        return render_template('abertura_default.html', data=registros, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
+        return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros)
         return redirect(url_for('monitoramento'))
@@ -493,56 +542,4 @@ def atualizacao_geral():
     return render_template('geral.html')
 
 if __name__ == "__main__":
-    # app.run(debug=True)
-    # app.run(host= '192.168.0.10', debug=True)
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-
-
-
-# @app.route("/abertura/oi/default", methods=['POST'])
-# @app.route("/abertura/bv/default", methods=['POST'])
-# @app.route("/abertura/faro/default", methods=['POST'])
-# @app.route("/abertura/bradesco/default", methods=['POST'])
-# def abertura_default():
-#     dados = path.dirname(getcwd())+'\\dados'
-#     #importando dados base
-#     clientes = DADOS +'\\'+'clientes.txt'
-#     clientes = open(clientes, 'r')
-#     gruposprocessos = DADOS +'\\'+'gruposprocessos.txt'
-#     gruposprocessos = open(gruposprocessos, 'r')
-#     locaistramites = DADOS +'\\'+'locaistramites.txt'
-#     locaistramites = open(locaistramites, 'r')
-#     localizadores = DADOS +'\\'+'localizadores.txt'
-#     localizadores = open(localizadores, 'r')
-#     responsaveis = DADOS +'\\'+'responsaveis.txt'
-#     resp1 = open(responsaveis, 'r')
-#     resp2 = open(responsaveis, 'r')
-#     resp3 = open(responsaveis, 'r')
-#     status = DADOS +'\\'+'status.txt'
-#     status = open(status, 'r')
-#     varas = DADOS +'\\'+'varas.txt'
-#     varas = open(varas, 'r')
-#     assuntos = DADOS +'\\'+'assuntos.txt'
-#     assuntos = open(assuntos, 'r', encoding='utf-8')
-#     detalhes = DADOS +'\\'+'detalhes.txt'
-#     detalhes = open(detalhes, 'r', encoding='utf-8')
-#     areasAtuacao = DADOS +'\\'+'areasAtuacao.txt'
-#     areasAtuacao = open(areasAtuacao, 'r', encoding='utf-8')
-#     fases = DADOS +'\\'+'fases.txt'
-#     fases = open(fases, 'r', encoding='utf-8')
-#     objetosAcao = DADOS +'\\'+'objetosAcao.txt'
-#     objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
-
-#     requested = request.data
-#     print('Aqui', requested)
-
-#     data = requested['txtAbertura']
-#     data = json.loads(data)
-#     try:
-#         data['clientePadrao'] = requested['clientePadrao']
-#     except:
-#         pass
-
-#     return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
