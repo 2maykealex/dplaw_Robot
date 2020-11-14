@@ -16,6 +16,26 @@
     {% block scripts %}
     {% endblock %}
 
+    <script>
+
+        function changeclassstyle() {
+            var limbs = document.getElementsByClassName('campo');
+            for (let item of limbs) {
+                if (item.value.trim() != 'SELECIONE' && item.value != ''){
+                    item.style.backgroundColor = 'lightgreen';
+                }else{
+                    item.style.backgroundColor = 'khaki';
+                };
+            };
+        };
+
+        $(document).on('change', '.campo', function() {
+            changeclassstyle()
+        });
+    </script>
+
+
+
 </head>
 <body>
     <div class="container-fluid text-center mt-3 md-5">
