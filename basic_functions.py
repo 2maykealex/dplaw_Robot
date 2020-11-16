@@ -72,7 +72,7 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
     arquivo.close()
 
 def createFolder(folder):
-    print(folder)
+    # print(folder)
     if (not(path.exists(folder))):
         mkdir(folder)
 

@@ -105,6 +105,8 @@ def defining():
     data = request.form.to_dict()
     file = request.files['arquivo']
     filename = secure_filename(file.filename)
+    createFolder(UPLOAD_FOLDER)
+
     newPathFile = path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(newPathFile)
 
