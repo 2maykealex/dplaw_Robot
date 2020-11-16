@@ -17,6 +17,7 @@
             let today = new Date().toISOString().slice(0, 10)
             obj = {{ data|tojson }};
             document.getElementById('dataciencia').value = today;
+            changeclassstyle();
         };
 
         function mostrar(element){
@@ -146,236 +147,243 @@
 
     <div class="content ml-5 mr-5 mt-5" id='corpo'>
         {% if (data) %}
-            <div id="padroes" class="form-group ml-5 mr-5">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="razaoSocial">CLIENTE</label>
-                        <select name="razaoSocial" id="razaoSocial" class="form-control" onclick="atualizaGrupoSigla(this)" disabled>
-                            <option value="-1">SELECIONE</option>
-                            {% for cliente in clientes %}
-                                <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}"
-                                    {% if (data['clientePadrao'] == cliente.split(';')[0]) %}
-                                        selected
-                                    {% endif %}
-                                    >{{cliente.split(';')[0]}}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="sigla">SIGLA</label>
-                        <input name="sigla" id="sigla" type="text"
-                            value= "{% if (data['siglaPadrao']) %}{{data['siglaPadrao'].strip()}}{% endif %}"
-                            class="form-control" disabled>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="grupocli">GRUPO</label>
-                        <input name="grupocli" id="grupocli" type="text"
-                            value= "{% if (data['grupoPadrao']) %}{{data['grupoPadrao'].strip()}}{% endif %}"
-                            class="form-control" disabled>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcStatusProcessual">STATUS DO PROCESSO</label>
-                        <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for statusproc in status %}
-                                <option value="{{statusproc}}"
-                                    {% if (data['dadosPadroes']['slcStatusProcessual']|trim == statusproc|trim) %}
-                                        selected
-                                    {% endif %}
-                                    >{{statusproc}}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcGrupo">GRUPO DO PROCESSO</label>
-                        <select name="slcGrupo" id="slcGrupo" class="form-control campo">
-                            <option value="">SELECIONE</option>
-                            {% for slcGrupo in gruposprocessos %}
-                                <option value="{{slcGrupo}}"
-                                    {% if (data['dadosPadroes']['slcGrupo']|trim == slcGrupo|trim) %}
-                                        selected
-                                    {% endif %}
-                                    >{{slcGrupo}}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcLocalizador">LOCALIZADOR</label>
-                        <select name="slcLocalizador" id="slcLocalizador" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for localizador in localizadores %}
-                                <option value="{{localizador}}"
-                                    {% if (data['dadosPadroes']['slcLocalizador']|trim == localizador|trim) %}
-                                        selected
-                                    {% endif %}
-                                    >{{localizador}}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcFase">FASE</label>
-                        <select name="slcFase" id="slcFase" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for fase in fases %}
-                                <option value="{{fase}}"
-                                    {% if (data['dadosPadroes']['slcFase']|trim == fase|trim) %}
-                                        selected
-                                    {% endif %}
-                                    >{{fase}}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcAreaAtuacao">ÁREA DE ATUAÇÃO</label>
-                        <select name="slcAreaAtuacao" id="slcAreaAtuacao" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for areaAtuacao in areasAtuacao %}
-                                <option value="{{areaAtuacao}}"
-                                    {% if (data['dadosPadroes']['slcAreaAtuacao']|trim == areaAtuacao|trim) %}
-                                        selected
-                                    {% endif %}
-                                    >{{areaAtuacao}}
-                                </option>
-                                <option value="{{areaAtuacao}}">{{areaAtuacao}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcObjetoAcao">OBJETO DA AÇÃO</label>
-                        <select name="slcObjetoAcao" id="slcObjetoAcao" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for objetoAcao in objetosAcao %}
-                                <option value="{{objetoAcao}}">{{objetoAcao}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcAssunto">ASSUNTO</label>
-                        <select name="slcAssunto" id="slcAssunto" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for assunto in assuntos %}
-                                <option value="{{assunto}}">{{assunto}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="slcDetalhes">DETALHES</label>
-                        <select name="slcDetalhes" id="slcDetalhes" class="form-control  campo">
-                            <option value="">SELECIONE</option>
-                            {% for detalhe in detalhes %}
-                                <option value="{{detalhe}}">{{detalhe}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="txtPedido">PEDIDO</label>
-                        <input type="text" name="txtPedido" id="txtPedido" class="form-control  campo" maxlength="1000"
-                            value= "{% if (data['txtPedido']) %}{{data['txtPedido'].strip()}}{% endif %}"
-                        >
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="txtObservacao">OBSERVAÇÕES</label>
-                        <input type="text" name="txtObservacao" id="txtObservacao" class="form-control  campo" maxlength="1000"
-                            value= "{% if (data['txtObservacao']) %}{{data['txtObservacao'].strip()}}{% endif %}"
-                        >
-                    </div>
-                </div>
-
-                <!-- <label for="resp1">RESPONSAVEIS PELA PASTA</label>
-                <div class="row">
-                    <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div id="padroes" class="form-group ml-5 mr-5">
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <select name="resp1" id="resp1" class="form-control  campo" required>
-                                    <option value="">SELECIONE</option>
-                                    {% for responsavel in resp1 %}
-                                        <option value="{{responsavel}}">{{responsavel}}</option>
+                                <label for="razaoSocial">CLIENTE</label>
+                                <select name="razaoSocial" id="razaoSocial" class="form-control" onclick="atualizaGrupoSigla(this)" disabled>
+                                    <option value="-1">SELECIONE</option>
+                                    {% for cliente in clientes %}
+                                        <option value="{{cliente.split(';')[0]}}*{{cliente.split(';')[1]}}*{{cliente.split(';')[2].upper()}}"
+                                            {% if (data['clientePadrao'] == cliente.split(';')[0]) %}
+                                                selected
+                                            {% endif %}
+                                            >{{cliente.split(';')[0]}}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <select name="resp2" id="resp2" class="form-control  campo" required>
+                                <label for="sigla">SIGLA</label>
+                                <input name="sigla" id="sigla" type="text"
+                                    value= "{% if (data['siglaPadrao']) %}{{data['siglaPadrao'].strip()}}{% endif %}"
+                                    class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="grupocli">GRUPO</label>
+                                <input name="grupocli" id="grupocli" type="text"
+                                    value= "{% if (data['grupoPadrao']) %}{{data['grupoPadrao'].strip()}}{% endif %}"
+                                    class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcStatusProcessual">STATUS DO PROCESSO</label>
+                                <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control  campo">
                                     <option value="">SELECIONE</option>
-                                    {% for responsavel in resp2 %}
-                                        <option value="{{responsavel}}">{{responsavel}}</option>
+                                    {% for statusproc in status %}
+                                        <option value="{{statusproc}}"
+                                            {% if (data['dadosPadroes']['slcStatusProcessual']|trim == statusproc|trim) %}
+                                                selected
+                                            {% endif %}
+                                            >{{statusproc}}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <select name="resp3" id="resp3" class="form-control  campo" required>
+                                <label for="slcGrupo">GRUPO DO PROCESSO</label>
+                                <select name="slcGrupo" id="slcGrupo" class="form-control campo">
                                     <option value="">SELECIONE</option>
-                                    {% for responsavel in resp3 %}
-                                        <option value="{{responsavel}}">{{responsavel}}</option>
+                                    {% for slcGrupo in gruposprocessos %}
+                                        <option value="{{slcGrupo}}"
+                                            {% if (data['dadosPadroes']['slcGrupo']|trim == slcGrupo|trim) %}
+                                                selected
+                                            {% endif %}
+                                            >{{slcGrupo}}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
-                    </div>
-                </div> -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcLocalizador">LOCALIZADOR</label>
+                                <select name="slcLocalizador" id="slcLocalizador" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for localizador in localizadores %}
+                                        <option value="{{localizador}}"
+                                            {% if (data['dadosPadroes']['slcLocalizador']|trim == localizador|trim) %}
+                                                selected
+                                            {% endif %}
+                                            >{{localizador}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcFase">FASE</label>
+                                <select name="slcFase" id="slcFase" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for fase in fases %}
+                                        <option value="{{fase}}"
+                                            {% if (data['dadosPadroes']['slcFase']|trim == fase|trim) %}
+                                                selected
+                                            {% endif %}
+                                            >{{fase}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcAreaAtuacao">ÁREA DE ATUAÇÃO</label>
+                                <select name="slcAreaAtuacao" id="slcAreaAtuacao" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for areaAtuacao in areasAtuacao %}
+                                        <option value="{{areaAtuacao}}"
+                                            {% if (data['dadosPadroes']['slcAreaAtuacao']|trim == areaAtuacao|trim) %}
+                                                selected
+                                            {% endif %}
+                                            >{{areaAtuacao}}
+                                        </option>
+                                        <option value="{{areaAtuacao}}">{{areaAtuacao}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcObjetoAcao">OBJETO DA AÇÃO</label>
+                                <select name="slcObjetoAcao" id="slcObjetoAcao" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for objetoAcao in objetosAcao %}
+                                        <option value="{{objetoAcao}}">{{objetoAcao}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcAssunto">ASSUNTO</label>
+                                <select name="slcAssunto" id="slcAssunto" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for assunto in assuntos %}
+                                        <option value="{{assunto}}">{{assunto}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="slcDetalhes">DETALHES</label>
+                                <select name="slcDetalhes" id="slcDetalhes" class="form-control  campo">
+                                    <option value="">SELECIONE</option>
+                                    {% for detalhe in detalhes %}
+                                        <option value="{{detalhe}}">{{detalhe}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="txtPedido">PEDIDO</label>
+                                <input type="text" name="txtPedido" id="txtPedido" class="form-control  campo" maxlength="1000"
+                                    value= "{% if (data['txtPedido']) %}{{data['txtPedido'].strip()}}{% endif %}"
+                                >
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="txtObservacao">OBSERVAÇÕES</label>
+                                <input type="text" name="txtObservacao" id="txtObservacao" class="form-control  campo" maxlength="1000"
+                                    value= "{% if (data['txtObservacao']) %}{{data['txtObservacao'].strip()}}{% endif %}"
+                                >
+                            </div>
+                        </div>
 
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="dataciencia">DATA DE CIÊNCIA</label>
-                        <input id="dataciencia" name="dataciencia" type="date" class="form-control campo">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <label for="Anexar">TERÁ AGENDAMENTO PARA <strong>ANEXAR?</strong></label>
-                        <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mt-3 text-center">
-                        <label for="Fotocópia">TERÁ AGENDAMENTO PARA <strong>FOTOCÓPIA?</strong></label>
-                        <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo">
-                    </div>
-                </div>
+                        <!-- <label for="resp1">RESPONSAVEIS PELA PASTA</label>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <select name="resp1" id="resp1" class="form-control  campo" required>
+                                            <option value="">SELECIONE</option>
+                                            {% for responsavel in resp1 %}
+                                                <option value="{{responsavel}}">{{responsavel}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <select name="resp2" id="resp2" class="form-control  campo" required>
+                                            <option value="">SELECIONE</option>
+                                            {% for responsavel in resp2 %}
+                                                <option value="{{responsavel}}">{{responsavel}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <select name="resp3" id="resp3" class="form-control  campo" required>
+                                            <option value="">SELECIONE</option>
+                                            {% for responsavel in resp3 %}
+                                                <option value="{{responsavel}}">{{responsavel}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
 
-                <div class="row">
-                    <div class="col-md-12 mt-3">
-                        <form action="{{url_for('abertura_default2')}}" method="post" onsubmit="definirPadrao()">
-                            <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
-                            <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 100%;">ENVIAR</button>
-                        </form>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="dataciencia">DATA DE CIÊNCIA</label>
+                                <input id="dataciencia" name="dataciencia" type="date" class="form-control campo">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <label for="Anexar">TERÁ AGENDAMENTO PARA <strong>ANEXAR?</strong></label>
+                                <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mt-3 text-center">
+                                <label for="Fotocópia">TERÁ AGENDAMENTO PARA <strong>FOTOCÓPIA?</strong></label>
+                                <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mt-3">
+                                <form action="{{url_for('abertura_default2')}}" method="post" onsubmit="definirPadrao()">
+                                    <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
+                                    <button type="submit" class="btn btn-success form-control mt-2" style="width: 100%; height: 100%;">ENVIAR</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                    <!-- <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">ENVIAR</button> -->
                 </div>
+                <div class="col-md-2"></div>
             </div>
-            <!-- <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="definirPadrao()">ENVIAR</button> -->
+
         {% endif %}
     </div>
 {% endblock %}
