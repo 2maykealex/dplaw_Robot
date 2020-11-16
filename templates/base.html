@@ -17,17 +17,21 @@
     {% endblock %}
 
     <script>
-
         function changeclassstyle() {
             var limbs = document.getElementsByClassName('campo');
             for (let item of limbs) {
                 if (item.value.trim() != 'SELECIONE' && item.value != ''){
                     item.style.backgroundColor = 'lightgreen';
+                    item.style.fontWeight = 'bold';
                 }else{
                     item.style.backgroundColor = 'khaki';
                 };
             };
         };
+
+        $( document ).ready(function() {
+            changeclassstyle();
+        });
 
         $(document).on('change', '.campo', function() {
             changeclassstyle()
