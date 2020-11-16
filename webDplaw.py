@@ -96,7 +96,7 @@ def getDefault(sigla):
     else:
         return False
 
-    dadosPadroes['responsaveis'] = responsaveis
+    dadosPadroes['slcResponsavel'] = responsaveis
     return dadosPadroes
 
 @app.route("/defining", methods=['POST'])
