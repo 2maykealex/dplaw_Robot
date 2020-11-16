@@ -89,6 +89,14 @@
             } else{
                 document.getElementById('HoraAudiencia').value = '';
             }
+            if (objNovo['registros'][i]['txtDataContratacao']){
+                newDate = objNovo['registros'][i]['txtDataContratacao']
+                newDate = newDate.split("/")
+                newDate = newDate[2] + '-' + newDate[1] + '-' + newDate[0];
+                document.getElementById('txtDataContratacao').value = newDate
+            } else {
+                document.getElementById('txtDataContratacao').value = '';
+            }
             if (objNovo['registros'][i]['agendamentos']['Ciencia de novo processo']){
                 newDate = objNovo['registros'][i]['agendamentos']['Ciencia de novo processo']
                 newDate = newDate.split("/")
@@ -185,6 +193,10 @@
                     }else{
                         objNovo['registros'][i]['agendamentos'][elemento.id] = dataConvertida;
                     };
+                } else if (elemento.id == 'txtDataContratacao'){
+                    dataConvertida = elemento.value.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    objNovo['registros'][i][elemento.id] = dataConvertida;
                 }  else {
                     if (elemento.value != ''){
                         objNovo['registros'][i][elemento.id] = elemento.value.trim();
@@ -373,6 +385,10 @@
                 <div class="col-md-2">
                     <label for="Fotocópia">DATA PARA FOTOCÓPIA</label>
                     <input name="Fotocópia" id="Fotocópia" type="date" class="form-control campo" onchange="alteraValor(this);">
+                </div>
+                <div class="col-md-2">
+                    <label for="txtDataContratacao">DATA CONTRATAÇÃO</label>
+                    <input name="txtDataContratacao" id="txtDataContratacao" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
             </div>
 
