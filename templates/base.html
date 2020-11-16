@@ -20,7 +20,7 @@
         function changeclassstyle() {
             var limbs = document.getElementsByClassName('campo');
             for (let item of limbs) {
-                if (item.value.trim() != 'SELECIONE' && item.value != ''){
+                if (item.value.trim() != 'SELECIONE' && item.value.trim() != 'dd/mm/aaaa' && item.value != ''){
                     item.style.backgroundColor = 'lightgreen';
                     item.style.fontWeight = 'bold';
                 }else{
