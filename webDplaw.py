@@ -261,7 +261,7 @@ def defining():
                 if (type(registro[5]) == type(str())):
                     itemDict['txtObservacao'] = registro[5]
 
-            elif base['funcao'] == 'faro_alunos':
+            elif base['funcao'] == 'faro_extrajudicial':
                 itemDict['txtPasta']    = registro[1]
                 #ADVERSA
                 if (registro[2] != ''):
