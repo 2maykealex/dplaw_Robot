@@ -74,7 +74,7 @@ def getDefault(sigla):
     elif (sigla=='FARO'):
         dadosPadroes['slcGrupo'] = 'Grupo 3'
         dadosPadroes['slcStatusProcessual'] = 'DEMANDANTE'
-        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito Cível'
         dadosPadroes['slcFase'] = 'COBRANÇA - EM ANDAMENTO'
         dadosPadroes['slcComarca'] = 'Porto Velho'
         dadosPadroes['txtUf'] = 'RO'
