@@ -16,7 +16,7 @@
         window.onload = function() {
             objNovo = {{ data|tojson }};
             mudaRegistro(2);
-            changeclassstyle()
+            changeclassstyle();
         };
 
         function preencherRegistros(){
@@ -50,7 +50,11 @@
                 document.getElementById('slcNumeroVara').value = '';
             }
             if (objNovo['registros'][i]['slcLocalTramite']){
-                document.getElementById('slcLocalTramite').value = objNovo['registros'][i]['slcLocalTramite'];
+                if (objNovo['registros'][i]['slcLocalTramite'] == 'VARA CIVEL'){
+                    document.getElementById('slcLocalTramite').value = 'Vara Civel'
+                }else{
+                    document.getElementById('slcLocalTramite').value = objNovo['registros'][i]['slcLocalTramite'];
+                }
             } else {
                 document.getElementById('slcLocalTramite').value = "";
             }
@@ -94,15 +98,31 @@
                 document.getElementById('dataCiencia').value = '';
             }
             if (objNovo['registros'][i]['agendamentos']['Anexar']){
-                document.getElementById('Anexar').checked = true;
+                newDate = objNovo['registros'][i]['agendamentos']['Anexar']
+                newDate = newDate.split("/")
+                newDate = newDate[2] + '-' + newDate[1] + '-' + newDate[0];
+                document.getElementById('Anexar').value = newDate
             } else {
-                document.getElementById('Anexar').checked = false;
+                document.getElementById('Anexar').value = '';
             }
             if (objNovo['registros'][i]['agendamentos']['Fotocópia']){
-                document.getElementById('Fotocópia').checked = true;
+                newDate = objNovo['registros'][i]['agendamentos']['Fotocópia']
+                newDate = newDate.split("/")
+                newDate = newDate[2] + '-' + newDate[1] + '-' + newDate[0];
+                document.getElementById('Fotocópia').value = newDate
             } else {
-                document.getElementById('Fotocópia').checked = false;
+                document.getElementById('Fotocópia').value = '';
             }
+            // if (objNovo['registros'][i]['agendamentos']['Anexar']){
+            //     document.getElementById('Anexar').checked = true;
+            // } else {
+            //     document.getElementById('Anexar').checked = false;
+            // }
+            // if (objNovo['registros'][i]['agendamentos']['Fotocópia']){
+            //     document.getElementById('Fotocópia').checked = true;
+            // } else {
+            //     document.getElementById('Fotocópia').checked = false;
+            // }
         };
 
         function mudaRegistro(tipo){//1 - anterior  //2 - próximo
@@ -128,6 +148,7 @@
                 }
             };
             preencherRegistros();
+            changeclassstyle();
         };
 
         function alteraValor(elemento){
@@ -156,19 +177,15 @@
                     } else {
                         delete objNovo['registros'][i][elemento.id];
                     }
-                } else if (elemento.id == 'Anexar'){
-                    if (elemento.checked){
-                        objNovo['registros'][i][elemento.id] = true;
-                    } else {
-                        delete objNovo['registros'][i][elemento.id];
-                    }
-                } else if (elemento.id == 'Fotocópia'){
-                    if (elemento.checked){
-                        objNovo['registros'][i][elemento.id] = true;
-                    } else {
-                        delete objNovo['registros'][i][elemento.id];
-                    }
-                } else {
+                } else if (elemento.id == 'Audiência' || elemento.id == 'dataCiencia' || elemento.id == 'Anexar' || elemento.id == 'Fotocópia'){
+                    dataConvertida = elemento.value.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    if (elemento.id == 'dataCiencia'){
+                        objNovo['registros'][i]['agendamentos']['Ciencia de novo processo'] = dataConvertida;
+                    }else{
+                        objNovo['registros'][i]['agendamentos'][elemento.id] = dataConvertida;
+                    };
+                }  else {
                     if (elemento.value != ''){
                         objNovo['registros'][i][elemento.id] = elemento.value.trim();
                     } else {
@@ -176,6 +193,7 @@
                         delete objNovo['registros'][i][elemento.id];
                     }
                 }
+                console.log(objNovo);
             };
         };
 
@@ -306,7 +324,7 @@
                     <input name="txtValorCausa" id="txtValorCausa" type="number" placeholder="0.00" class="form-control campo" onchange="alteraValor(this);">
                 </div>
             </div>
-            <div class="row mb-2">
+            <!-- <div class="row mb-2">
                 <div class="col-md-4">
                     <label for="responsavel1">RESPONSÁVEL</label>
                     <select name="responsavel1" id="responsavel1" class="form-control campo" onchange="alteraValor(this);">
@@ -334,7 +352,7 @@
                         {% endfor %}
                     </select>
                 </div>
-            </div>
+            </div> -->
             <div class="row mb-2">
                 <div class="col-md-2">
                     <label for="Audiência">DATA DA AUDIENCIA</label>
@@ -348,15 +366,17 @@
                     <label for="dataCiencia">DATA DA CIÊNCIA</label>
                     <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
-                <div class="col-md-1">
-                    <label for="Anexar">Anexar</label>
-                    <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                <div class="col-md-2">
+                    <label for="Anexar">DATA PARA ANEXAR</label>
+                    <input name="Anexar" id="Anexar" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
-                <div class="col-md-1">
-                    <label for="Fotocópia">FOTOCÓPIA</label>
-                    <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
+                <div class="col-md-2">
+                    <label for="Fotocópia">DATA PARA FOTOCÓPIA</label>
+                    <input name="Fotocópia" id="Fotocópia" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
             </div>
+
+
         </div>
     {% endif %}
 </div>
