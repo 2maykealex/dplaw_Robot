@@ -14,9 +14,9 @@
         var i = 0;
         var first = true;
         window.onload = function() {
-            let today = new Date().toISOString().slice(0, 10)
+            var today = new Date();
+            document.getElementById("dataciencia").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
             obj = {{ data|tojson }};
-            document.getElementById('dataciencia').value = today;
             changeclassstyle();
         };
 
@@ -50,6 +50,7 @@
         function definirPadrao(){ //percorre todo o objeto preenchendo os campos padrões
             var dataCiencia1 = document.getElementById('dataciencia').value;
             countCiencia = 0;
+            dataConvertida = '';
             for (var i = 1; i <= (Object.keys(obj['registros']).length); i++){
                 if (checkElementValue('razaoSocial') == true){
                     obj['registros'][i]['razaoSocial'] = document.getElementById('razaoSocial').value.split('*')[0].trim();
@@ -107,19 +108,21 @@
                     //     countCiencia = 0;
                     //     dataCiencia1.setDate(dataCiencia1.getDate() + 7); // Adiciona 7 dias a cada 100 Registros
                     // };
-                    dataConvertida = dataCiencia1.split('-');
+                    dataConvertida = document.getElementById('dataciencia').value.split('-');
                     dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
                     agendamentos['Ciencia de novo processo'] = dataConvertida;
                     countCiencia++;
                 };
 
                 if (checkElementValue('Anexar') == true){
-                    if (document.getElementById('Anexar').checked)
-                        agendamentos['Anexar'] = true;
+                    dataConvertida = document.getElementById('Anexar').value.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    agendamentos['Anexar'] = dataConvertida;
                 };
                 if (checkElementValue('Fotocópia') == true){
-                    if (document.getElementById('Fotocópia').checked)
-                        agendamentos['Fotocópia'] = true;
+                    dataConvertida = document.getElementById('Fotocópia').value.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    agendamentos['Fotocópia'] = dataConvertida;
                 };
                 if (Object.keys(agendamentos).length > 0 && agendamentos){
                     try {
@@ -353,20 +356,20 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label for="dataciencia">DATA DE CIÊNCIA</label>
-                                <input id="dataciencia" name="dataciencia" type="date" class="form-control campo">
+                                <label for="dataciencia">AGENDAMENTO: DATA PARA CIÊNCIA</label>
+                                <input id="dataciencia" name="dataciencia" type="date" class="form-control campo" required>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 text-center">
-                                <label for="Anexar">TERÁ AGENDAMENTO PARA <strong>ANEXAR?</strong></label>
-                                <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo">
+                            <div class="col-md-12 mb-3">
+                                <label for="Anexar">AGENDAMENTO: DATA PARA ANEXAR</label>
+                                <input id="Anexar" name="Anexar" type="date" class="form-control campo">
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 mt-3 text-center">
-                                <label for="Fotocópia">TERÁ AGENDAMENTO PARA <strong>FOTOCÓPIA?</strong></label>
-                                <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo">
+                            <div class="col-md-12 mb-3">
+                                <label for="Fotocópia">AGENDAMENTO: DATA PARA FOTOCÓPIA</label>
+                                <input id="Fotocópia" name="Fotocópia" type="date" class="form-control campo">
                             </div>
                         </div>
 
