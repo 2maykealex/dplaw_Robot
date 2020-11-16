@@ -16,6 +16,7 @@
         window.onload = function() {
             var today = new Date();
             document.getElementById("dataciencia").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+            document.getElementById("txtDataContratacao").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
             obj = {{ data|tojson }};
             changeclassstyle();
         };
@@ -87,6 +88,11 @@
                 };
                 if (checkElementValue('slcLocalizador') == true){
                     obj['registros'][i]['slcLocalizador'] = document.getElementById('slcLocalizador').value.trim();
+                };
+                if (checkElementValue('txtDataContratacao') == true){
+                    dataConvertida = document.getElementById('txtDataContratacao').value.split('-');
+                    dataConvertida = dataConvertida[2]+'/'+dataConvertida[1]+'/'+dataConvertida[0];
+                    obj['registros'][i]['txtDataContratacao'] = dataConvertida;
                 };
                 // var responsavel = [];
                 // if (checkElementValue('resp1') == true){
@@ -370,6 +376,12 @@
                             <div class="col-md-12 mb-3">
                                 <label for="Fotocópia">AGENDAMENTO: DATA PARA FOTOCÓPIA</label>
                                 <input id="Fotocópia" name="Fotocópia" type="date" class="form-control campo">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="txtDataContratacao">DATA DA CONTRATAÇÃO</label>
+                                <input id="txtDataContratacao" name="txtDataContratacao" type="date" class="form-control campo">
                             </div>
                         </div>
 
