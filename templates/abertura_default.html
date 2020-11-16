@@ -15,10 +15,8 @@
         var first = true;
         window.onload = function() {
             let today = new Date().toISOString().slice(0, 10)
-            obj = {{ data|tojson }}; // verificar se ao invés de adicionar em cada objeto, fosse criado outro só com os padrões
+            obj = {{ data|tojson }};
             document.getElementById('dataciencia').value = today;
-            console.log(obj);
-            changeclassstyle()
         };
 
         function mostrar(element){
