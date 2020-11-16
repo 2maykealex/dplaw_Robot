@@ -273,8 +273,8 @@ class IntegraFunctions(object):
                         print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg)))
                         self.driver.get(urlPage)
                         sleep(2)
-                        element = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                        element.click()
+                        IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                        IncluirProcesso.click()
                         message = self.incluirProcesso(registro, reg, registros['tipo'])
                     except:
                         print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
@@ -309,7 +309,7 @@ class IntegraFunctions(object):
 
     def incluirProcesso(self, registro, reg, tipo, itensExcluidosLoop = []):
 
-        def selecionaResponsaveis():
+        def selecionaResponsaveis(respProcesso):
             #TODO em caso de alteração - desmarcar todas primeiro
             self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
             comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
@@ -320,11 +320,11 @@ class IntegraFunctions(object):
             listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
             # CARREGA LISTA DE RESPONSÁVEIS
             y = 1
-            totalResp = len(registro[k])
+            totalResp = len(respProcesso)
             countResp = 0
             respSelecionados = []
             for item in listInputs:  #itera inputs recuperados, checa e clica
-                if (item.text in registro[k]):
+                if (item.text in respProcesso):
                     try:
                         xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
                         element = self.waitingElement(xPathItem, 'click')
@@ -439,7 +439,8 @@ class IntegraFunctions(object):
 
                 print ('REG {}: {} - "{}"'.format(reg, k, v))
                 if (k == 'slcResponsavel'):
-                    selecionaResponsaveis()
+                    selecionaResponsaveis(v['Processo'])
+                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v['Processo'])
                 else:
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'select'):
@@ -450,15 +451,14 @@ class IntegraFunctions(object):
                             select.select_by_visible_text(valorElemento)
                         except:
                             checkValueInCombo(str(v), k)
-
                     else: # (element.tag_name == 'input'): # inputs e textareas
                         element.clear()
                         element.send_keys(str(v))
                         if (k == 'txtNroCnj'):
                             segredoJusticaAndamentos()
 
+                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
                     sleep(.8)
-                camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
             except:
                 naoInserido[k] = str(v)
 
@@ -571,15 +571,6 @@ class IntegraFunctions(object):
             agendNaoAbertos.remove('HoraAudiencia')
             del agendamentos['HoraAudiencia']
 
-        responsaveisAudiencia = ""
-        responsaveisAnexar    = ""
-        responsaveisFotocopia = ""
-        # responsaveisCiencia   = ""
-        # responsaveisAudiencia = ['GST']
-        # responsaveisAnexar    = ['ESTAGBRA']
-        # responsaveisFotocopia = ['GST','operacoes']
-        # responsaveisCiencia   = ['cbradesco']
-
         message = ''
         messageFinal = ''
         messageNaoAbertos = ''
@@ -593,7 +584,6 @@ class IntegraFunctions(object):
 
                 responsaveis = []
                 textoAgendamento = ''
-                dataAgendamento = registro['agendamentos']['Ciencia de novo processo']
 
                 print('REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(reg, tipoAgendamento, agendamento))
                 sleep(1)
@@ -605,33 +595,25 @@ class IntegraFunctions(object):
                     print('ERRO NO COMBO DESTINATÁRIO - INICIANDO NOVAMENTE')
                     break
 
-                #TODO ADD NO OBJETO RESPONSÁVEIS POR CADA AGENDAMENTO - EVITANDO ESSA GAMBIARRA
+                responsaveis    = registro['slcResponsavel'][tipoAgendamento]
+                dataAgendamento = registro['agendamentos'][tipoAgendamento]
+
                 if tipoAgendamento == 'Audiência':
-                    dataAgendamento = registro['agendamentos']['Audiência']
-                    responsaveis = registro['slcResponsavel'] + responsaveisAudiencia
-                    # responsaveis = ['CBV','GST']
-                    try:
-                        if (registro['agendamentos']['HoraAudiencia']):
-                            HoraAudiencia = "{}".format(registro['agendamentos']['HoraAudiencia'])
-                            textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
-                    except:
+                    if ('HoraAudiencia' in registro['agendamentos']):
+                        HoraAudiencia = "{}".format(registro['agendamentos']['HoraAudiencia'])
+                        textoAgendamento = "{} - Audiência designada para dia {} às {}".format(registro['sigla'], registro['agendamentos']['Audiência'], registro['agendamentos']['HoraAudiencia'])
+                    else:
                         HoraAudiencia = "00:00"
                         textoAgendamento = "{} - Audiência designada para dia {}".format(registro['sigla'], registro['agendamentos']['Audiência'])
                     messageFinal = "{}".format(textoAgendamento.split('-')[1].strip().upper())
 
                 elif tipoAgendamento == 'Ciencia de novo processo':
-                    responsaveis = ['COI', 'advoi']
-                    # responsaveis = responsaveisCiencia
-                    # responsaveis = ['CBV'] #registro['slcResponsavel']# + responsaveisCiencia
                     textoAgendamento = "{} - Certificar abertura, risco e promover agendamentos".format(registro['sigla'])
 
                 elif tipoAgendamento == 'Anexar':
-                    dataAgendamento = "11/11/2020"
-                    responsaveis = ['COI','apoioOi'] #registro['slcResponsavel']# + responsaveisAnexar
                     textoAgendamento = "ANEXAR"
 
                 elif tipoAgendamento == 'Fotocópia':
-                    responsaveis = registro['slcResponsavel']# + responsaveisFotocopia
                     textoAgendamento = "Fotocópia integral"
 
                 totalResp = len(responsaveis)
@@ -648,7 +630,7 @@ class IntegraFunctions(object):
                                 element.click()
                                 sleep(1)
                                 countResp = countResp + 1
-                                if (countResp == (totalResp + 1)):
+                                if (countResp == totalResp):
                                     break
                             y = y + 1
                         break
