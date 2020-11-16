@@ -15,8 +15,8 @@
         var first = true;
         window.onload = function() {
             objNovo = {{ data|tojson }};
-            console.log(objNovo);
             mudaRegistro(2);
+            changeclassstyle()
         };
 
         function preencherRegistros(){
@@ -256,7 +256,7 @@
                 </div>
                 <div class="col-md-2">
                     <label for="slcGrupo">GRUPO DE PROCESSO</label>
-                    <select name="slcGrupo" id="slcGrupo" class="form-control" onchange="alteraValor(this);">
+                    <select name="slcGrupo" id="slcGrupo" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for gpProcess in gruposprocessos %}
                             <option value="{{gpProcess.strip()}}">{{gpProcess.strip()}}</option>
@@ -265,7 +265,7 @@
                 </div>
                 <div class="col-md-2">
                     <label for="slcStatusProcessual">STATUS</label>
-                    <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control" onchange="alteraValor(this);">
+                    <select name="slcStatusProcessual" id="slcStatusProcessual" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for state in status %}
                             <option value="{{state.strip()}}">{{state.strip()}}</option>
@@ -276,7 +276,7 @@
             <div class="row mb-2">
                 <div class="col-md-4">
                     <label for="slcLocalizador">LOCALIZADOR</label>
-                    <select name="slcLocalizador" id="slcLocalizador" class="form-control" onchange="alteraValor(this);">
+                    <select name="slcLocalizador" id="slcLocalizador" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for slcLocalizador in localizadores %}
                             <option value="{{slcLocalizador.strip()}}">{{slcLocalizador.strip()}}</option>
@@ -285,7 +285,7 @@
                 </div>
                 <div class="col-md-2">
                     <label for="slcNumeroVara">N.º VARA</label>
-                    <select name="slcNumeroVara" id="slcNumeroVara" class="form-control" onchange="alteraValor(this);">
+                    <select name="slcNumeroVara" id="slcNumeroVara" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for vara in varas %}
                             <option value="{{vara.strip()}}">{{vara.strip()}}</option>
@@ -294,7 +294,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="slcLocalTramite">LOCAL DE TRÂMITE</label>
-                    <select name="slcLocalTramite" id="slcLocalTramite" class="form-control" onchange="alteraValor(this);">
+                    <select name="slcLocalTramite" id="slcLocalTramite" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for localtramite in locaistramites %}
                             <option value="{{localtramite.strip()}}">{{localtramite.strip()}}</option>
@@ -303,13 +303,13 @@
                 </div>
                 <div class="col-md-2">
                     <label for="txtValorCausa">VALOR DA CAUSA</label>
-                    <input name="txtValorCausa" id="txtValorCausa" type="number" placeholder="0.00" class="form-control" onchange="alteraValor(this);">
+                    <input name="txtValorCausa" id="txtValorCausa" type="number" placeholder="0.00" class="form-control campo" onchange="alteraValor(this);">
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-4">
                     <label for="responsavel1">RESPONSÁVEL</label>
-                    <select name="responsavel1" id="responsavel1" class="form-control" onchange="alteraValor(this);">
+                    <select name="responsavel1" id="responsavel1" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for responsavel1 in resp1 %}
                             <option value="{{responsavel1.strip()}}">{{responsavel1.strip()}}</option>
@@ -318,7 +318,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="responsavel2">RESPONSÁVEL</label>
-                    <select name="responsavel2" id="responsavel2" class="form-control" onchange="alteraValor(this);">
+                    <select name="responsavel2" id="responsavel2" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for responsavel2 in resp2 %}
                             <option value="{{responsavel2.strip()}}">{{responsavel2.strip()}}</option>
@@ -327,7 +327,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="responsavel3">RESPONSÁVEL</label>
-                    <select name="responsavel3" id="responsavel3" class="form-control" onchange="alteraValor(this);">
+                    <select name="responsavel3" id="responsavel3" class="form-control campo" onchange="alteraValor(this);">
                         <option value="">SELECIONE</option>
                         {% for responsavel3 in resp3 %}
                             <option value="{{responsavel3.strip()}}">{{responsavel3.strip()}}</option>
@@ -338,23 +338,23 @@
             <div class="row mb-2">
                 <div class="col-md-2">
                     <label for="Audiência">DATA DA AUDIENCIA</label>
-                    <input name="Audiência" id="Audiência" type="date" class="form-control" onchange="alteraValor(this);">
+                    <input name="Audiência" id="Audiência" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-2">
                     <label for="HoraAudiencia">HORA DA AUDIENCIA</label>
-                    <input name="HoraAudiencia" id="HoraAudiencia" type="time" class="form-control" onchange="alteraValor(this);">
+                    <input name="HoraAudiencia" id="HoraAudiencia" type="time" class="form-control campo" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-2">
                     <label for="dataCiencia">DATA DA CIÊNCIA</label>
-                    <input name="dataCiencia" id="dataCiencia" type="date" class="form-control" onchange="alteraValor(this);">
+                    <input name="dataCiencia" id="dataCiencia" type="date" class="form-control campo" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-1">
                     <label for="Anexar">Anexar</label>
-                    <input name="Anexar" id="Anexar" type="checkbox" class="form-control" onchange="alteraValor(this);">
+                    <input name="Anexar" id="Anexar" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
                 </div>
                 <div class="col-md-1">
                     <label for="Fotocópia">FOTOCÓPIA</label>
-                    <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control" onchange="alteraValor(this);">
+                    <input name="Fotocópia" id="Fotocópia" type="checkbox" class="form-control campo" onchange="alteraValor(this);">
                 </div>
             </div>
         </div>
