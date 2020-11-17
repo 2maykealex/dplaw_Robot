@@ -51,7 +51,7 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
 
 
 #============================ ROBO PRINCIPAL====================================================
-executePath = "{}\\arquivos_a_executar".format(path.dirname(__file__))
+executePath = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
 print(executePath)
 executeRobot = []
 executingFiles =  []
