@@ -101,6 +101,7 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
                 createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
                 move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
                 print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
+                print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
         if (executeRobot):
             for executa in executeRobot:
