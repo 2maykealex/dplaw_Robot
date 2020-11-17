@@ -35,14 +35,14 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
         integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
-            executedPath = "{}\\arquivos_executados\\{}".format(path.dirname(path.realpath(__file__)), folderName)
-            executedFile = "{}\\{}".format(executedPath, pathFile.split('\\')[-1])
-            createFolder(executedPath)
+            # ARQUIVOS_EXECUTADOS = "{}\\arquivos_executados\\{}".format(path.dirname(path.realpath(__file__)), folderName)
+            executedFile = "{}\\{}".format(ARQUIVOS_EXECUTADOS.replace('folder', folderName), pathFile.split('\\')[-1])
+            createFolder(ARQUIVOS_EXECUTADOS)
 
             if (path.isfile(executedFile)):#todo Testar
                 rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
-            move("{}".format(pathFile), executedPath) #move o arquivo para a pasta 'arquivos_executados'
+            move("{}".format(pathFile), ARQUIVOS_EXECUTADOS) #move o arquivo para a pasta 'arquivos_executados'
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
         pass
@@ -51,14 +51,20 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
 
 
 #============================ ROBO PRINCIPAL====================================================
-executePath = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
+ARQUIVOS_A_EXECUTAR = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
+ARQUIVOS_EXECUTADOS = "{}\\arquivos_executados".format(path.dirname(path.realpath(__file__)))
+LOGS = "{}\\LOGS".format(path.dirname(path.realpath(__file__)))
+createFolder(ARQUIVOS_A_EXECUTAR)
+createFolder(ARQUIVOS_EXECUTADOS)
+createFolder(LOGS)
+
 executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
 while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, checando a existência de novos arquivos
     files =  {}
-    for folder, subdirs, filesFolder in walk(executePath):
+    for folder, subdirs, filesFolder in walk(ARQUIVOS_A_EXECUTAR):
         for name in filesFolder:
             if (name not in executingFiles):
                 files[folder] = name
@@ -74,7 +80,7 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
 
             # CRIANDO ARQUIVO DE LOG .CSV
             logFileName = file.split('\\')[-1].split('.txt')[0]
-            logPath     = '{}\\logs\\{}'.format(path.dirname(path.realpath(__file__)), registros['tipo'])
+            logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
             logFileCSV = "{}\\{}.csv".format(logPath, logFileName)
             createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
@@ -88,13 +94,19 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
                 createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
             reg = checkEndFile(logFileCSV)
-            executingFiles.append(file)
-            executeRobot.append(Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
+            if (reg != 'FIM'):
+                executingFiles.append(file)
+                executeRobot.append(Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
+            else:
+                createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
+                move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
+                print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
 
-        for executa in executeRobot:
-            print('\n', executa.name,'\n')
-            try:
-                executa.start() # ABRIRÁ TODOS OS ARQUIVOS SIMULTÂNEAMENTE
-            except Exception as err:
-                print(err)
-                print('\n ERRO EM {}'.format(executa.name))
+        if (executeRobot):
+            for executa in executeRobot:
+                print('\n', executa.name,'\n')
+                try:
+                    executa.start() # ABRIRÁ TODOS OS ARQUIVOS SIMULTÂNEAMENTE
+                except Exception as err:
+                    print(err)
+                    print('\n ERRO EM {}'.format(executa.name))
