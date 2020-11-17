@@ -52,7 +52,6 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
 
 #============================ ROBO PRINCIPAL====================================================
 executePath = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
-print(executePath)
 executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
@@ -75,7 +74,7 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
 
             # CRIANDO ARQUIVO DE LOG .CSV
             logFileName = file.split('\\')[-1].split('.txt')[0]
-            logPath     = '{}\\logs\\{}'.format(path.dirname(__file__), registros['tipo'])
+            logPath     = '{}\\logs\\{}'.format(path.dirname(path.realpath(__file__)), registros['tipo'])
             logFileCSV = "{}\\{}.csv".format(logPath, logFileName)
             createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
