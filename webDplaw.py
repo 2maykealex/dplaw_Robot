@@ -78,9 +78,9 @@ def getDefault(sigla):
         dadosPadroes['slcFase'] = 'COBRANÇA - EM ANDAMENTO'
         dadosPadroes['slcComarca'] = 'Porto Velho'
         dadosPadroes['txtUf'] = 'RO'
-        responsaveis['Processo'] = ['ADV1','ADV6','CGE','NEGOCIE']
-        responsaveis['Ciencia de novo processo'] = ['ADV1','ADV6']
-        responsaveis['Audiência'] = ['ADV1','ADV6','CGE','GST']
+        responsaveis['Processo'] = ['ADV1GE','ADV6GE','CGE','NEGOCIEGE']
+        responsaveis['Ciencia de novo processo'] = ['ADV1GE','ADV6GE']
+        responsaveis['Audiência'] = ['ADV1GE','ADV6GE','CGE','GST']
         responsaveis['Fotocópia'] = ['GST']
 
     elif (sigla=='OI'):
