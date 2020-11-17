@@ -52,6 +52,7 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
 
 #============================ ROBO PRINCIPAL====================================================
 executePath = "{}\\arquivos_a_executar".format(path.dirname(__file__))
+print(executePath)
 executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
