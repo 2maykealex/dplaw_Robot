@@ -35,7 +35,7 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
         integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
-            executedPath = "{}\\arquivos_executados\\{}".format(path.dirname(__file__), folderName)
+            executedPath = "{}\\arquivos_executados\\{}".format(path.dirname(path.realpath(__file__)), folderName)
             executedFile = "{}\\{}".format(executedPath, pathFile.split('\\')[-1])
             createFolder(executedPath)
 
