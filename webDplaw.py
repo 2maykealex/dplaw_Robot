@@ -281,7 +281,10 @@ def defining():
                 itemDict['txtPedido'] = registro[8]
 
             elif base['funcao'] == 'oi_migracao':
-                itemDict['txtPasta']  = registro[0]
+                try:
+                    itemDict['txtPasta']  = str(int(registro[0]))
+                except:
+                    continue
                 itemDict['txtNroCnj'] = str(registro[1])
                 itemDict['txtNroProcesso'] = str(registro[2])
                 itemDict['slcStatusProcessual']  = str(registro[3])
@@ -306,7 +309,11 @@ def defining():
                 itemDict['slcFase']               = registro[15]
 
             elif base['funcao'] == 'oi':
-                itemDict['txtPasta']  = str(int(registro[0]))
+                try:
+                    itemDict['txtPasta']  = str(int(registro[0]))
+                except:
+                    continue
+
                 itemDict['txtNroCnj'] = str(registro[1]).replace('[','').replace(']','').strip()
                 itemDict['txtNroProcesso'] = str(registro[1]).replace('[','').replace(']','').strip()
 
