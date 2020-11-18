@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, json
 
 UPLOAD_FOLDER = path.abspath(getcwd()) + '\\arquivos_importados'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'xls', 'xls'}
 DADOS = path.abspath(getcwd()) +'\\arquivos_necessarios'
 HOJE = datetime.today().strftime('%Y-%m-%d')
 
