@@ -308,13 +308,56 @@ def defining():
                     agendamentos['HoraAudiencia'] = registro[14]
                 itemDict['slcFase']               = registro[15]
 
-            elif base['funcao'] == 'oi':
+            elif base['funcao'] == 'oi_civel':
                 try:
                     itemDict['txtPasta']  = str(int(registro[0]))
                 except:
                     continue
 
-                itemDict['txtNroCnj'] = str(registro[1]).replace('[','').replace(']','').strip()
+                itemDict['txtNroCnj']      = str(registro[1]).replace('[','').replace(']','').strip()
+                itemDict['txtNroProcesso'] = str(registro[1]).replace('[','').replace(']','').strip()
+
+                if (type(registro[4]) == type(str() and registro[4] != '')):
+                    itemDict['txtUf'] = registro[4]
+
+                if (type(registro[5]) == type(str() and registro[5] != '')):
+                    itemDict['slcComarca'] = registro[5].strip()
+
+                if (type(registro[6]) == type(str() and registro[6] != '')):
+                    itemDict['slcLocalTramite'] = "Vara Cível"
+                    try:
+                        if ('º' in registro[6] or 'ª' in registro[6]):
+                            numero = 'º' if ('º' in registro[6]) else 'ª' if ('ª' in registro[6]) else ''
+                            itemDict['slcNumeroVara']   = "{} ª-º".format(str(registro[6].split('{}'.format(numero))[0]))
+                    except:
+                        pass
+                        # itemDict['slcLocalTramite'] = "{}".format(str(registro[7].split('º')[-1]).strip())
+
+                if (type(registro[7]) == type(str() and registro[7] != '')):
+                    itemDict['slcObjetoAcao'] = registro[7].strip()
+                if (registro[12] != ''):
+                    itemDict['txtValorCausa'] = "{}".format(registro[12])
+
+                #   PARTE ADVERSA
+                ddd = ''
+                if (type(registro[16]) == type(str() and registro[16] != '')):
+                    parteAdversa['txtNome']      = registro[16]
+                if (type(registro[18]) == type(str() and registro[18] != '')):
+                    ddd = (registro[18])
+                if (type(registro[19]) == type(str() and registro[19] != '')):
+                    parteAdversa['txtTelContato'] = '{}{}'.format(ddd, (registro[19]))
+                if (type(registro[26]) == type(float() and registro[26] != '' and registro[26] != 'nan')):
+                    parteAdversa['txtCPF'] = '{}'.format(str(int(registro[26])))
+                if (type(registro[27]) == type(str() and registro[27] != '')):
+                    parteAdversa['txtEndereco'] = '{}'.format(registro[27])
+
+            elif base['funcao'] == 'oi_jec':
+                try:
+                    itemDict['txtPasta']  = str(int(registro[0]))
+                except:
+                    continue
+
+                itemDict['txtNroCnj']      = str(registro[1]).replace('[','').replace(']','').strip()
                 itemDict['txtNroProcesso'] = str(registro[1]).replace('[','').replace(']','').strip()
 
                 if (type(registro[5]) == type(str() and registro[5] != '')):
@@ -324,7 +367,7 @@ def defining():
                     itemDict['slcComarca'] = registro[6].strip()
 
                 if (type(registro[7]) == type(str() and registro[7] != '')):
-                    itemDict['slcLocalTramite'] = "Vara Cível"
+                    itemDict['slcLocalTramite'] = "Juizado Especial Cível"
                     try:
                         if ('º' in registro[7] or 'ª' in registro[7]):
                             numero = 'º' if ('º' in registro[7]) else 'ª' if ('ª' in registro[7]) else ''

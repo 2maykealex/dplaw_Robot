@@ -28,7 +28,6 @@
     </div>
     <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="tipo" value="abertura">
-        <input type="hidden" name="funcao" value="oi">
         <input type="hidden" name="clientePadrao" id="clientePadrao" value="OI S.A">
         <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="OI TELECOMUNICAÇÕES">
         <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="OI">
@@ -38,7 +37,8 @@
                 <label for="funcao">TIPO DE IMPORTAÇÃO</label>
                 <select name="funcao" id="funcao" class="form-control campo" required>
                     <option value="">SELECIONE</option>
-                    <option value="oi_abertura">Abertura OI</option>
+                    <option value="oi_civel">Abertura VARA CIVEL</option>
+                    <option value="oi_jec">Abertura VARA JEC</option>
                     <option value="oi_migracao">Migração OI</option>
                 </select>
             </div>
