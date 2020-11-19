@@ -116,6 +116,12 @@ def defining():
     registros    = {}
     base         = {}
 
+    #padroes dos links dos Clientes
+    urlBRA  = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=14421241&codigo2=14421241'
+    urlBV   = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=15208822&codigo2=15208822'
+    urlOi   = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=103848554&codigo2=103848554'
+    urlFARO = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104066917&codigo2=104066917'
+
     #separando base e padrões
     for k, item in data.items():
         if k in ['clientePadrao', 'grupoPadrao', 'siglaPadrao', 'tipo', 'funcao']:
@@ -193,6 +199,7 @@ def defining():
                 if (type(registro[5]) == type(str()) and registro[5] != ''):
                     agendamentos['Audiência'] = registro[5]
                     itemDict['agendamentos']  = agendamentos
+                itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bradesco_email':
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
@@ -217,6 +224,7 @@ def defining():
                         agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
                 except:
                     pass
+                itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bv':
                 itemDict['txtPasta']    = registro[0]
@@ -240,6 +248,7 @@ def defining():
 
                 itemDict['txtUf']       = registro[6]
                 itemDict['txtUf']       = registro[6]
+                itemDict['urlCliente']  = urlBV
 
             elif base['funcao'] == 'faro_judicial':
                 itemDict['txtNroProcesso']    = registro[0]
@@ -263,6 +272,8 @@ def defining():
                 if (type(registro[5]) == type(str())):
                     itemDict['txtObservacao'] = registro[5]
 
+                itemDict['urlCliente']  = urlFARO
+
             elif base['funcao'] == 'faro_extrajudicial':
                 itemDict['txtPasta']    = registro[1]
                 #ADVERSA
@@ -279,6 +290,7 @@ def defining():
                 if (registro[7] != ''):
                     parteAdversa['txtProfissao']  = registro[7]
                 itemDict['txtPedido'] = registro[8]
+                itemDict['urlCliente']  = urlFARO
 
             elif base['funcao'] == 'oi_migracao':
                 try:
@@ -307,6 +319,7 @@ def defining():
                 if (registro[14] != '' and registro[14] != 'SEM AGENDAMENTO'):
                     agendamentos['HoraAudiencia'] = registro[14]
                 itemDict['slcFase']               = registro[15]
+                itemDict['urlCliente']  = urlOi
 
             elif base['funcao'] == 'oi_civel':
                 try:
@@ -350,6 +363,7 @@ def defining():
                     parteAdversa['txtCPF'] = '{}'.format(str(int(registro[26])))
                 if (type(registro[27]) == type(str() and registro[27] != '')):
                     parteAdversa['txtEndereco'] = '{}'.format(registro[27])
+                itemDict['urlCliente']  = urlOi
 
             elif base['funcao'] == 'oi_jec':
                 try:
@@ -393,6 +407,8 @@ def defining():
                     parteAdversa['txtCPF'] = '{}'.format(str(int(registro[28])))
                 if (type(registro[29]) == type(str() and registro[29] != '')):
                     parteAdversa['txtEndereco'] = '{}'.format(registro[29])
+
+                itemDict['urlCliente']  = urlOi
 
         if (len(agendamentos)>0):
             itemDict['agendamentos'] = agendamentos
@@ -473,7 +489,7 @@ def executa():
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
-        newRegistros[int(k)] = v   #TODO CHECK INCREMENTO
+        newRegistros[int(k)] = v
 
     del data['registros']
     data['registros'] = newRegistros

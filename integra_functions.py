@@ -211,10 +211,18 @@ class IntegraFunctions(object):
         return robo
 
     def abrePasta(self, registros, reg):
+
+        def buscaCliente():
+            clienteLocalizado, clientePesquisado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
+            ultimoCliente = clientePesquisado.text.strip().upper()
+            clientePesquisado.click()
+            sleep(1)
+            return ultimoCliente
+
         #todo PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
         clienteLocalizado = True
         ultimoCliente = ''
-        urlPage = ''
+
         while True:
             if (reg > len(registros['registros'])):
                 break
@@ -223,19 +231,18 @@ class IntegraFunctions(object):
             print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format((len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
             if ('abertura' in registros['tipo']):
-                if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente)):
+                if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
                     try:
-                        clienteLocalizado, clientePesquisado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
-                        ultimoCliente = clientePesquisado.text.strip().upper()
-                        clientePesquisado.click()
-                        sleep(1)
-                        urlPage = self.driver.current_url
+                        ultimoCliente = registro['razaoSocial']
+                        self.driver.get(registro['urlCliente'])
                     except:
-                        clienteLocalizado = False
-                        message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
+                        try:
+                            ultimoCliente = buscaCliente()
+                        except:
+                            clienteLocalizado = False
+                            message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
 
             if (clienteLocalizado):
-
                 # AJUSTANDO OS CAMPOS PROCESSO E CNJ
                 if ('txtNroProcesso' in registro):
                     registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(str(registro['txtNroProcesso']))
@@ -269,13 +276,16 @@ class IntegraFunctions(object):
 
                 if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
                     try:
-                        sleep(0.5)
-                        print('REG {}: REDIRECIONANDO À PÁGINA DO CLIENTE -'.format(str(reg)))
-                        self.driver.get(urlPage)
-                        sleep(2)
-                        IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                        IncluirProcesso.click()
-                        message = self.incluirProcesso(registro, reg, registros['tipo'])
+                        while True:
+                            sleep(2)
+                            getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
+                            if (getClientName.parent.title.upper() == registro['razaoSocial']):
+                                IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                                IncluirProcesso.click()
+                                message = self.incluirProcesso(registro, reg, registros['tipo'])
+                                break
+                            else:
+                                ultimoCliente = buscaCliente()
                     except:
                         print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
                         if (tentativa > 5):
@@ -430,7 +440,7 @@ class IntegraFunctions(object):
         message = "REG {};{} às {};".format(reg, hoje, hora)  #Insere a primeira linha do item no log
 
         print('REG {}: INICIANDO LOOPING'.format(reg))
-        itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos'])
+        itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
         for k, v in registro.items():
             #todo salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
             try:
@@ -828,5 +838,5 @@ class IntegraFunctions(object):
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
 
 #TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
-#TODO ADD NO LOG AGENDAMENTOS CRIADOS: AS DATAS DOS AGENDAMENTOS
+
 
