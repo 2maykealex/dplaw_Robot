@@ -17,7 +17,7 @@ def checkLogin(tipo=''):
     return login, password
 
 def checkIfTest():
-    pathRootScript = path.abspath(path.dirname(__file__))
+    pathRootScript = path.dirname(path.realpath(__file__))
     pathFileTeste = pathRootScript + "\\teste.txt"
     if (path.isfile(pathFileTeste)):
         return True
