@@ -197,7 +197,6 @@ class IntegraFunctions(object):
                 _abreWebDriver = self.acessToIntegra(login, password)
 
                 robo = self.abrePasta(registros, reg)
-                #TODO TRAZER O LOOPING AQUI
                 print('ROBO = {}'.format(robo))
                 if (robo):
                     basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
@@ -211,7 +210,6 @@ class IntegraFunctions(object):
         return robo
 
     def abrePasta(self, registros, reg):
-        #todo PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
         clienteLocalizado = True
         ultimoCliente = ''
         elementoPesquisado = None
@@ -244,9 +242,7 @@ class IntegraFunctions(object):
                 if (self.isTest and 'abertura' in registros['tipo']):
                     searchFolder = False
                 else:
-                    #TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA
                     try:
-                        #TODO CHECAR SE É PASTA OU PROCESSO NA EXTRAÇÃO DOS DADOS NAS PLANILHAS
                         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                         if (countChar >= 14):
                             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['pasta'], 'processo')  # INVERTIDO
@@ -829,7 +825,6 @@ class IntegraFunctions(object):
 
 
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
-
 #TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
-
-
+#TODO PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
+#TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA

@@ -102,7 +102,6 @@ def getDefault(sigla):
 
 @app.route("/defining", methods=['POST'])
 def defining():
-    print(path.abspath(getcwd()))
     data = request.form.to_dict()
     file = request.files['arquivo']
     filename = secure_filename(file.filename)
@@ -135,9 +134,7 @@ def defining():
     regs={}
     dadosPadroes = None
     for registro in df.values:
-
         if (registro[0] in ['', ' ']):
-        # if (registro[0] == ' '):
             continue
 
         itemDict = {}
@@ -156,7 +153,6 @@ def defining():
                 itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
 
         elif (base['tipo'] == 'abertura'):
-            dados = path.abspath(getcwd()) +'\\arquivos_necessarios'
             #importando dados base
             clientes = DADOS +'\\'+'clientes.txt'
             clientes = open(clientes, 'r')
