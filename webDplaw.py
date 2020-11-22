@@ -6,6 +6,7 @@ from time import strftime
 from datetime import datetime
 from basic_functions import createFolder
 from werkzeug.utils import secure_filename
+from basic_functions import ajustarNumProcessoCNJ
 from flask import Flask, render_template, request, redirect, url_for, json
 
 UPLOAD_FOLDER = path.abspath(getcwd()) + '\\arquivos_importados'
@@ -409,6 +410,12 @@ def defining():
                     parteAdversa['txtEndereco'] = '{}'.format(registro[29])
 
                 itemDict['urlCliente']  = urlOi
+
+        if ('txtNroProcesso' in itemDict):
+            itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
+
+        if ('txtNroCnj' in itemDict):
+            itemDict['txtNroCnj'] = ajustarNumProcessoCNJ(str(itemDict['txtNroCnj']))
 
         if (len(agendamentos)>0):
             itemDict['agendamentos'] = agendamentos
