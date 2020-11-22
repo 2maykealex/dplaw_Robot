@@ -211,107 +211,100 @@ class IntegraFunctions(object):
         return robo
 
     def abrePasta(self, registros, reg):
-
-        def buscaCliente():
-            clienteLocalizado, clientePesquisado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
-            ultimoCliente = clientePesquisado.text.strip().upper()
-            clientePesquisado.click()
-            sleep(1)
-            return ultimoCliente
-
         #todo PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
         clienteLocalizado = True
         ultimoCliente = ''
+        elementoPesquisado = None
 
         while True:
             if (reg > len(registros['registros'])):
                 break
             registro = registros['registros']['{}'.format(reg)]
+            message = ''
             print('=========================================================')
             print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format((len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
             if ('abertura' in registros['tipo']):
                 if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
-                    try:
+                    if not(self.isTest):
                         ultimoCliente = registro['razaoSocial']
-                        self.driver.get(registro['urlCliente'])
-                    except:
-                        try:
-                            ultimoCliente = buscaCliente()
-                        except:
-                            clienteLocalizado = False
-                            message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
+                        self.driver.get(registro['urlCliente']) #redireciona p/ URL
+                    else: #cliente teste
+                        ultimoCliente = 'Cliente teste'
+                        registro['razaoSocial'] = ultimoCliente
+                        self.driver.get('https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104330872&codigo2=104330872') #redireciona p/ URL
 
-            if (clienteLocalizado):
-                # AJUSTANDO OS CAMPOS PROCESSO E CNJ
-                if ('txtNroProcesso' in registro):
-                    registro['txtNroProcesso'] = basic_functions.ajustarNumProcessoCNJ(str(registro['txtNroProcesso']))
-                if ('txtNroCnj' in registro):
-                    registro['txtNroCnj'] = basic_functions.ajustarNumProcessoCNJ(str(registro['txtNroCnj']))
+            tentativa = 1
+            message = ''
+            print('=========================================================')
+            print('REG {}: INICIANDO: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
 
-                tentativa = 1
-                message = ''
-                print('=========================================================')
-                print('REG {}: INICIANDO: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-
-                try:
-                    print('REG {}: REALIZANDO PESQUISA: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                    if (self.isTest and 'abertura' in registros['tipo']):
-                        searchFolder = False
-                    else:
-                        #TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA
-                        try:
-                            #TODO CHECAR SE É PASTA OU PROCESSO NA EXTRAÇÃO DOS DADOS NAS PLANILHAS
-                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                            if (countChar >= 14):
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['pasta'], 'processo')  # INVERTIDO
-                            else:
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                        except:
-                            return False
-                        # searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                except:
-                    print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA POR {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                    return False
-
-                if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
-                    try:
-                        while True:
-                            sleep(2)
-                            getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
-                            if (getClientName.parent.title.upper() == registro['razaoSocial']):
-                                IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                                IncluirProcesso.click()
-                                message = self.incluirProcesso(registro, reg, registros['tipo'])
-                                break
-                            else:
-                                ultimoCliente = buscaCliente()
-                    except:
-                        print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
-                        if (tentativa > 5):
-                            message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                            reg = reg + 1
-                        tentativa = tentativa + 1
-                        continue
-
-                    messageAgendamentos = ''
-                    if (('abertura' in registros['tipo']) and ('slcResponsavel' in registro) and message):
-                        messageAgendamentos = self.criaAgendammentos(registro, reg)
-                        if (self.isTest):
-                            self.removeAgendamentos()
-                    else:
-                        message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
-
-                    if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
-
-                elif (searchFolder) and ('atualizacao' in registros['tipo']):
-                    elementoPesquisado.click()
-                    message = self.incluirProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
-                elif not(searchFolder) and ('atualizacao' in registros['tipo']):
-                    message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+            try:
+                print('REG {}: REALIZANDO PESQUISA: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                if (self.isTest and 'abertura' in registros['tipo']):
+                    searchFolder = False
                 else:
-                    message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
-                    print(message)
+                    #TODO ENVIAR OS ITENS PARA PESQUISA - CASO A PASTA EXISTA -> É FEITO O LOOPING SEM ATUALIZAR A PÁGINA
+                    try:
+                        #TODO CHECAR SE É PASTA OU PROCESSO NA EXTRAÇÃO DOS DADOS NAS PLANILHAS
+                        countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                        if (countChar >= 14):
+                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['pasta'], 'processo')  # INVERTIDO
+                        else:
+                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                    except:
+                        return False
+                    # searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+            except:
+                print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA POR {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                return False
+
+            if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
+                try:
+                    sleep(2)
+                    getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
+                    if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
+                        clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
+                        if (clienteLocalizado):
+                            ultimoCliente = clienteEncontrado.text.strip().upper()
+                            clienteEncontrado.click()
+                            sleep(2)
+                        else:
+                            message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
+                            print(message)
+                            continue
+
+                    IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                    IncluirProcesso.click()
+                    message = self.incluirProcesso(registro, reg, registros['tipo'])
+
+                except:
+                    print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
+                    if (tentativa > 5):
+                        message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                        reg = reg + 1
+                    tentativa = tentativa + 1
+                    continue
+
+                messageAgendamentos = ''
+                if (('abertura' in registros['tipo']) and ('slcResponsavel' in registro) and message):
+                    messageAgendamentos = self.criaAgendammentos(registro, reg)
+                    if (self.isTest):
+                        self.removeAgendamentos()
+                else:
+                    message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
+
+                if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
+
+            elif (searchFolder) and ('atualizacao' in registros['tipo']):
+                elementoPesquisado.click()
+                message = self.incluirProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
+            elif not(searchFolder) and ('atualizacao' in registros['tipo']):
+                message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+            else:
+                message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+                print(message)
+
             basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
             reg = reg + 1
         print('<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>')
