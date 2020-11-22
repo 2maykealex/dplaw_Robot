@@ -253,14 +253,14 @@ class IntegraFunctions(object):
 
             if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
                 try:
-                    sleep(2)
+                    sleep(3)
                     getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
                     if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
                         clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
                         if (clienteLocalizado):
                             ultimoCliente = clienteEncontrado.text.strip().upper()
                             clienteEncontrado.click()
-                            sleep(2)
+                            sleep(3)
                         else:
                             message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
                             print(message)
@@ -309,7 +309,7 @@ class IntegraFunctions(object):
             self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
             comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
             comboResponsavel.click()  # clica e abre as opções
-            sleep(.8)
+            sleep(1)
             #recupera lista de RESPONSÁVEIS do PROMAD
             xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
             listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
@@ -327,7 +327,7 @@ class IntegraFunctions(object):
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
-                    sleep(0.8)
+                    sleep(1)
                     countResp = countResp + 1
                     if (countResp == totalResp):
                         break
@@ -339,7 +339,7 @@ class IntegraFunctions(object):
             try:   # Segredo de Justiça  #por padrão, será marcado não
                 element = self.driver.find_element_by_id("segredoJusticaN")
                 self.driver.execute_script("arguments[0].click();", element)
-                sleep(0.3)
+                sleep(0.5)
                 element = self.driver.find_element_by_id("capturarAndamentosS")
                 self.driver.execute_script("arguments[0].click();", element)
             except:
@@ -403,7 +403,7 @@ class IntegraFunctions(object):
                                 elemCadastro = self.waitingElement(element.replace('slc', 'txt'), 'click', form='id') # CADASTRAR NOVO ITEM
                                 elemCadastro.clear()
                                 elemCadastro.send_keys(str(texto).title())
-            sleep(0.3)
+            sleep(0.5)
 
         def _getURLpasta():
             link = self.driver.current_url
@@ -453,7 +453,7 @@ class IntegraFunctions(object):
                             segredoJusticaAndamentos()
 
                     camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
-                    sleep(.8)
+                    sleep(1)
             except:
                 naoInserido[k] = str(v)
 
@@ -465,12 +465,12 @@ class IntegraFunctions(object):
                     try:
                         menuCliente = self.waitingElement("//*[@id='div_menu17']", 'click')
                         menuCliente.click()
-                        sleep(.8)
+                        sleep(1)
                         try: #checa se há mensagens que bloqueiam o salvamento #todo ver para demais elementos que não forem localizados
                             element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
                             self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
                             naoInserido['comarcaNova'] = str(registro['comarcaNova'])
-                            sleep(.8)
+                            sleep(1)
                             continue
                         except:
                             break
@@ -480,7 +480,7 @@ class IntegraFunctions(object):
                 complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
 
             print('REG {}: FINALIZADO O LOOPING'.format(reg))
-            sleep(0.8)
+            sleep(1)
 
         try: # Botão salvar
             print('REG {}: ANTES DE SALVAR'.format(reg))
@@ -548,7 +548,7 @@ class IntegraFunctions(object):
                     except:
                         # checkValueInCombo(str(v), k)
                         pass
-                sleep(.8)
+                sleep(1)
             except:
                 print('REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(reg, k, v))
                 naoInserido[k] = str(v)
