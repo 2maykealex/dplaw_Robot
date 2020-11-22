@@ -55,15 +55,17 @@ class IntegraFunctions(object):
         return True
 
     def realizarPesquisa(self, search, tipoPesquisa):
-        sleep(2)
+        sleep(3)
         try:
             self.driver.get('https://integra.adv.br/integra4/modulo/21/default.asp')
             abriuPesquisa = True
         except:
             abriuPesquisa = self.acessaMenuPesquisa()
 
+        element = None
+        xPathClick = None
         if (abriuPesquisa):
-            sleep(2)
+            sleep(3)
             self.checkPopUps()
             xPathOption = ''
 
@@ -80,36 +82,30 @@ class IntegraFunctions(object):
 
             selecionaOpcao = self.waitingElement('{}'.format(xPathOption))
             selecionaOpcao.click()
-            sleep(2)
+            sleep(3)
 
             # valor do parâmetro
             textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
             textoPesquisa.send_keys(str(search))
-            # self.driver.execute_script("document.getElementById('txtPesquisa').value='{}' ".format(search))
 
             print("PESQUISANDO POR {}: {}".format(tipoPesquisa, search).upper())
-            sleep(2)
-            #botão pesquisar
+            sleep(3)
             botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
             botaoPesquisar.click()
-            sleep(2)
+            sleep(3)
 
-            try:
-                #Checa se não existe registros para essa pasta
+            try:   #Checa se não existe registros para essa pasta
                 element = self.driver.find_element_by_id('loopVazio').is_displayed()
                 hora = strftime("%H:%M:%S")
                 print('{} - A/O {} {} NÃO FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
                 retorno = False
-
-            except:
-                # SELECIONA O CLIENTE PESQUISADO        -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
+            except:  # SELECIONA O CLIENTE PESQUISADO  -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
                 try:
                     element = self.waitingElement("{}/div".format(xPathClick))
                 except:
-                        pass
-                        # element = self.waitingElement('//*[@id="divCliente"]/div[3]/table/tbody/tr')  #clica no registro -> abre a pasta
+                    pass
+                    # element = self.waitingElement('//*[@id="divCliente"]/div[3]/table/tbody/tr')  #clica no registro -> abre a pasta
                 retorno = True
-
         else:
             retorno = False
             element = ''
@@ -270,9 +266,9 @@ class IntegraFunctions(object):
                             print(message)
                             continue
 
-                    IncluirProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                    IncluirProcesso.click()
-                    message = self.incluirProcesso(registro, reg, registros['tipo'])
+                    incluiAlteraProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                    incluiAlteraProcesso.click()
+                    message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
 
                 except:
                     print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
@@ -294,7 +290,7 @@ class IntegraFunctions(object):
 
             elif (searchFolder) and ('atualizacao' in registros['tipo']):
                 elementoPesquisado.click()
-                message = self.incluirProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
+                message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
             elif not(searchFolder) and ('atualizacao' in registros['tipo']):
                 message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
             else:
@@ -306,7 +302,7 @@ class IntegraFunctions(object):
         print('<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>')
         return True
 
-    def incluirProcesso(self, registro, reg, tipo, itensExcluidosLoop = []):
+    def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = []):
 
         def selecionaResponsaveis(respProcesso):
             #TODO em caso de alteração - desmarcar todas primeiro
