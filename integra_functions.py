@@ -254,6 +254,7 @@ class IntegraFunctions(object):
                 try:
                     sleep(3)
                     self.driver.get(registro['urlCliente']) #redireciona p/ URL
+                    sleep(3)
                     getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
                     if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
                         clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
