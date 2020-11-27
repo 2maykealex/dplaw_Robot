@@ -97,7 +97,7 @@ class IntegraFunctions(object):
             try:   #Checa se não existe registros para essa pasta
                 element = self.driver.find_element_by_id('loopVazio').is_displayed()
                 hora = strftime("%H:%M:%S")
-                print('{} - A/O {} {} NÃO FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
+                print('{} - {} {} NÃO FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
                 retorno = False
             except:  # SELECIONA O CLIENTE PESQUISADO  -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
                 try:
@@ -222,7 +222,6 @@ class IntegraFunctions(object):
                 if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
                     if not(self.isTest):
                         ultimoCliente = registro['razaoSocial']
-                        self.driver.get(registro['urlCliente']) #redireciona p/ URL
                     else: #cliente teste
                         ultimoCliente = 'Cliente teste'
                         registro['razaoSocial'] = ultimoCliente
@@ -254,6 +253,7 @@ class IntegraFunctions(object):
             if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
                 try:
                     sleep(3)
+                    self.driver.get(registro['urlCliente']) #redireciona p/ URL
                     getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
                     if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
                         clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
