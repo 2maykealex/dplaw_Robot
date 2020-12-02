@@ -419,9 +419,6 @@ def defining():
         if (len(parteAdversa) > 0):
             itemDict['parteAdversa'] = parteAdversa
 
-        if not("txtDataContratacao" in itemDict):
-            itemDict['txtDataContratacao'] = HOJE
-
         if (itensPadroes):
             itemDict.update(itensPadroes)
 
