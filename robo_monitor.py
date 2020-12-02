@@ -3,7 +3,7 @@ from os import path
 from os import walk
 from os import rename
 from shutil import move
-from time import strftime
+from time import sleep, strftime
 from datetime import date
 from datetime import datetime
 from threading import Thread
@@ -68,6 +68,7 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
         for name in filesFolder:
             if (name not in executingFiles):
                 files[folder] = name
+    sleep(3)
 
     if (files):
         for localFile, file in files.items():
