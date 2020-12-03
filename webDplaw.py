@@ -150,7 +150,7 @@ def defining():
             if base['funcao'] == 'volumetria':
                 itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre3': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
+                itemDict = {'txtPasta': '{}'.format(registro[0]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
