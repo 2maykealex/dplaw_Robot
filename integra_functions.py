@@ -240,7 +240,7 @@ class IntegraFunctions(object):
                     try:
                         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                         if (countChar >= 14):
-                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['pasta'], 'processo')  # INVERTIDO
+                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
                         else:
                             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
                     except:
