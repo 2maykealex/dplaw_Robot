@@ -184,7 +184,7 @@ class IntegraFunctions(object):
         self.logFileCSV = logFileCSV
         self.isTest = basic_functions.checkIfTest()
         while True:
-            if (reg != 'FIM' and reg != -1 and (reg < (len(registros['registros'])))):
+            if (reg != 'FIM' and reg != -1 and (reg <= (len(registros['registros'])))):
                 login, password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
                 print("\n-----------------------------------------")
                 print("Login utilizado: {}".format(login))
