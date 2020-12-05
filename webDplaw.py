@@ -1,3 +1,4 @@
+# coding=utf-8
 from pprint import pprint
 from os import path
 import pandas as pd
@@ -148,9 +149,9 @@ def defining():
 
         if (base['tipo'] == 'atualizacao'):
             if base['funcao'] == 'volumetria':
-                itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre3': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
+                itemDict = {'txtPasta': '{}'.format((registro[7].strip())), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta': '{}'.format(registro[0]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
+                itemDict = {'txtPasta': '{}'.format((registro[0].strip())), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
@@ -198,7 +199,7 @@ def defining():
                     itemDict['agendamentos']  = agendamentos
                 itemDict['urlCliente']  = urlBRA
 
-            elif base['funcao'] == 'bradesco_email':
+            elif base['funcao'] == 'bradesco_texto':
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                 if (registro[0][1] != ''):
                     parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -406,6 +407,9 @@ def defining():
                     parteAdversa['txtEndereco'] = '{}'.format(registro[29])
 
                 itemDict['urlCliente']  = urlOi
+
+        if (len(itemDict['txtPasta']) >= 14):
+            itemDict['txtPasta'] = ajustarNumProcessoCNJ(str(itemDict['txtPasta']))
 
         if ('txtNroProcesso' in itemDict):
             itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
