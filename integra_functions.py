@@ -490,17 +490,24 @@ class IntegraFunctions(object):
             print('REG {}: SALVANDO'.format(reg))
             sleep(2)
 
+            # POP-UPS APÓS O SALVAMENTO
             try:
-                element = self.driver.find_element_by_class_name("confirm")
-                complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
-            except:
-                pass
+                while True:
+                    _container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
+                    try:
+                        janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
+                    except:
+                        janelaOutrosProcessos = False
 
-            try:  #popup Ok em que a parte Adversa já possui outros processos.
-                sleep(2)
-                element = self.driver.find_element_by_id("popup_ok")
-                self.driver.execute_script("arguments[0].click();", element)
+                    btnOk = self.waitingElement('popup_ok', 'show', 'id')
+                    btnOk.click()
+
+                    if (janelaOutrosProcessos):
+                        complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
+                        print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
+                        continue
+                    else:
+                        break
             except:
                 pass
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
