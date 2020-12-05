@@ -438,7 +438,7 @@ def defining():
     if (base['tipo'] == 'abertura'):
         return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
-        gera_arquivo_atualizacao(registros)
+        gera_arquivo_atualizacao(registros, filename)
         return redirect(url_for('monitoramento'))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
@@ -514,7 +514,7 @@ def executa():
 
     return render_template('monitoramento.html')#TODO ENVIAR PARA ROTA!
 
-def gera_arquivo_atualizacao(data):
+def gera_arquivo_atualizacao(data, filename):
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
@@ -533,7 +533,7 @@ def gera_arquivo_atualizacao(data):
     pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
     createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, hoje, hora, filename.replace('.{}'.format(filename.split('.')[-1]),'').replace('.','_').upper())
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
