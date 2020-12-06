@@ -290,6 +290,27 @@ def defining():
                 itemDict['txtPedido'] = registro[8]
                 itemDict['urlCliente']  = urlFARO
 
+            elif base['funcao'] == 'oi_consolidado':
+                try:
+                    itemDict['txtPasta']  = str(int(registro[0]))
+                except:
+                    continue
+                itemDict['txtNroCnj']       = str(registro[1].replace('[','').replace(']', ''))
+                itemDict['txtNroProcesso']  = str(registro[1].replace('[','').replace(']', ''))
+                itemDict['txtUf']           = registro[2].strip()
+                itemDict['slcComarca']      = registro[3].strip()
+                itemDict['slcNumeroVara']   = "{} ª-º".format(registro[4].replace('º','').replace('ª','').strip())
+                itemDict['slcLocalTramite'] = registro[5].split(' DE ')[0].strip()
+
+                if (type(registro[6]) == type(str() and registro[6] != '')):
+                    itemDict['txtDataDistribuicao']  = str(registro[6])
+                if (type(registro[7]) == type(str() and registro[7] != '')):
+                    itemDict['txtValorCausa']        = registro[7]
+                if (type(registro[8]) == type(str() and registro[8] != '')):
+                    parteAdversa['txtNome']      = registro[8].strip()
+                    itemDict['parteAdversa']     = parteAdversa
+                itemDict['urlCliente']  = urlOi
+
             elif base['funcao'] == 'oi_migracao':
                 try:
                     itemDict['txtPasta']  = str(int(registro[0]))
@@ -508,7 +529,7 @@ def executa():
     pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
     createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    criaArquivo = "{}\\{}__{}__{}__{}.txt".format(pathPasta, hoje, hora, data['tipo'].upper(), data['siglaPadrao'])
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
