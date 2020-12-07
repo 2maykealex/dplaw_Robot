@@ -8,7 +8,7 @@ from datetime import datetime
 from basic_functions import createFolder
 from werkzeug.utils import secure_filename
 from basic_functions import ajustarNumProcessoCNJ
-from flask import Flask, render_template, request, redirect, url_for, json
+from flask import Flask, render_template, request, redirect, url_for, json, send_file
 
 UPLOAD_FOLDER = path.abspath(getcwd()) + '\\arquivos_importados'
 ALLOWED_EXTENSIONS = {'xls', 'xls'}
@@ -182,7 +182,7 @@ def defining():
             objetosAcao = DADOS +'\\'+'objetosAcao.txt'
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
-            if base['funcao'] == 'bradesco_arquivo':
+            if (base['funcao'] == 'bradesco_arquivo'):
                 itemDict['txtPasta'] = registro[0]
                 if (registro[1] != ''):
                     parteAdversa['txtNome']  = registro[1]
@@ -199,7 +199,11 @@ def defining():
                     itemDict['agendamentos']  = agendamentos
                 itemDict['urlCliente']  = urlBRA
 
+<<<<<<< HEAD
             elif base['funcao'] == 'bradesco_texto':
+=======
+            elif (base['funcao'] == 'bradesco_texto'):
+>>>>>>> monitoramento-de-Logs
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                 if (registro[0][1] != ''):
                     parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -210,10 +214,10 @@ def defining():
                 itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
                 try:
                     if (int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0])):
-                        itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0]))
-                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('    ')[1][3:]
+                        itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('')[1].split('    ')[1].split(' ')[0]))
+                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('')[1][3:]
                 except:
-                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[1]
+                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('')[1]
                 itemDict['slcComarca'] = registro[0].split('/')[3]
                 itemDict['txtUf']      = registro[0].split('/')[4][:2].strip()
 
@@ -301,7 +305,10 @@ def defining():
                 itemDict['slcComarca']      = registro[3].strip()
                 itemDict['slcNumeroVara']   = "{} ª-º".format(registro[4].replace('º','').replace('ª','').strip())
                 itemDict['slcLocalTramite'] = registro[5].split(' DE ')[0].strip()
+<<<<<<< HEAD
 
+=======
+>>>>>>> monitoramento-de-Logs
                 if (type(registro[6]) == type(str() and registro[6] != '')):
                     itemDict['txtDataDistribuicao']  = str(registro[6])
                 if (type(registro[7]) == type(str() and registro[7] != '')):
@@ -457,10 +464,14 @@ def defining():
     data['dadosPadroes'] = dadosPadroes
     # pprint(registros)
     if (base['tipo'] == 'abertura'):
-        return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
+        return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros, filename)
+<<<<<<< HEAD
         return redirect(url_for('monitoramento'))
+=======
+        return redirect(url_for('logs'))
+>>>>>>> monitoramento-de-Logs
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
 @app.route("/abertura/bv/default/part2", methods=['POST'])
@@ -533,7 +544,7 @@ def executa():
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
-    return render_template('monitoramento.html')#TODO ENVIAR PARA ROTA!
+    return render_template('logs.html')#TODO ENVIAR PARA ROTA!
 
 def gera_arquivo_atualizacao(data, filename):
     #reordenando os registros
@@ -558,31 +569,42 @@ def gera_arquivo_atualizacao(data, filename):
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
-@app.route("/monitoramento")
-def monitoramento():
-    return render_template('monitoramento.html')
+@app.route("/logs")
+def logs():
+    return render_template('logs.html')
 
 # @app.route("/monitoramento/<log>", methods=['POST'])
 # def monitoramento(log):
 #     return render_template('log.html')
 
-@app.route("/getLog/<filePath>", methods=['POST'])
+@app.route("/getLog/<filePath>", methods=['POST','GET'])
 def getLog(filePath):
-    from os import walk
+    # from os import walk
     files = {}
-    logsPath = '{}\\logs'.format(path.dirname(__file__))
-    # for folder, _subdirs, filesFolder in walk(logsPath):
-    #     for name in filesFolder:
-    #         tipo = folder.split('\\')[-1]
-    arquivo =  open('{}'.format(filePath), 'r')
-    message = arquivo.readlines()
-    files = {
-                name: {'tipo': tipo,
-                        'path': folder,
-                        'log' : message,
-                }
-            }
-    return files
+    logsPath = '{}\\LOGS\\{}\\{}'.format(path.dirname(__file__), filePath.split(';')[0], filePath.split(';')[-1])
+
+    # return send_file(logsPath, as_attachment=True)
+    return send_file(logsPath,
+                     mimetype='text/csv',
+                     attachment_filename=filePath.split(';')[-1],
+                     as_attachment=True)
+
+
+
+
+    # # for folder, _subdirs, filesFolder in walk(logsPath):
+    # #     for name in filesFolder:
+    # #         tipo = folder.split('\\')[-1]
+    # arquivo =  open('{}'.format(filePath), 'r')
+    # message = arquivo.readlines()
+    # files = {
+    #             name: {'tipo': tipo,
+    #                     'path': folder,
+    #                     'log' : message,
+    #             }
+    #         }
+    # return files
+
 # @app.route("/getLog", methods=['POST'])
 # def getLog():
 #     from os import walk
@@ -601,21 +623,25 @@ def getLog(filePath):
 #                     }
 #     return files
 
-@app.route("/listLogs", methods=['POST'])
-def listLogs():
+@app.route("/listLogs/<filtro>", methods=['POST'])
+def listLogs(filtro):
     from os import walk
     files = {}
     item = 1
     logsPath = '{}\\logs'.format(path.dirname(__file__))
     for folder, _subdirs, filesFolder in walk(logsPath):
         for name in filesFolder:
-            tipo = folder.split('\\')[-1]
-            files = {
-                        item: {'ARQUIVO':name,
-                               'TIPO': tipo,
-                               'PATH': folder,
+            if (folder.split('\\')[-1] in filtro or filtro == 'all'):
+                tipo = folder.split('\\')[-1]
+                file = {
+                        item: {
+                                'ARQUIVO':name,
+                                'TIPO': tipo,
+                                'PATH': folder,
                         }
                     }
+                files.update(file)
+                item = item + 1
     return files
 
 @app.route("/atualizacao")
