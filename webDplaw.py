@@ -199,11 +199,7 @@ def defining():
                     itemDict['agendamentos']  = agendamentos
                 itemDict['urlCliente']  = urlBRA
 
-<<<<<<< HEAD
             elif base['funcao'] == 'bradesco_texto':
-=======
-            elif (base['funcao'] == 'bradesco_texto'):
->>>>>>> monitoramento-de-Logs
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                 if (registro[0][1] != ''):
                     parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -305,10 +301,6 @@ def defining():
                 itemDict['slcComarca']      = registro[3].strip()
                 itemDict['slcNumeroVara']   = "{} ª-º".format(registro[4].replace('º','').replace('ª','').strip())
                 itemDict['slcLocalTramite'] = registro[5].split(' DE ')[0].strip()
-<<<<<<< HEAD
-
-=======
->>>>>>> monitoramento-de-Logs
                 if (type(registro[6]) == type(str() and registro[6] != '')):
                     itemDict['txtDataDistribuicao']  = str(registro[6])
                 if (type(registro[7]) == type(str() and registro[7] != '')):
@@ -467,11 +459,7 @@ def defining():
         return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros, filename)
-<<<<<<< HEAD
-        return redirect(url_for('monitoramento'))
-=======
         return redirect(url_for('logs'))
->>>>>>> monitoramento-de-Logs
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
 @app.route("/abertura/bv/default/part2", methods=['POST'])
