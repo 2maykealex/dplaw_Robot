@@ -1,3 +1,4 @@
+# coding=utf-8
 from pprint import pprint
 from os import path
 import pandas as pd
@@ -148,9 +149,9 @@ def defining():
 
         if (base['tipo'] == 'atualizacao'):
             if base['funcao'] == 'volumetria':
-                itemDict = {'txtPasta': '{}'.format(registro[7]), 'txtCampoLivre3': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
+                itemDict = {'txtPasta': '{}'.format((registro[7].strip())), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta': '{}'.format(registro[0]), 'txtCampoLivre4': '{}'.format(filename.replace(filename[-5:], '').replace('_', ' ').strip())}
+                itemDict = {'txtPasta': '{}'.format((registro[0].strip())), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
@@ -181,7 +182,7 @@ def defining():
             objetosAcao = DADOS +'\\'+'objetosAcao.txt'
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
-            if base['funcao'] == 'bradesco_arquivo':
+            if (base['funcao'] == 'bradesco_arquivo'):
                 itemDict['txtPasta'] = registro[0]
                 if (registro[1] != ''):
                     parteAdversa['txtNome']  = registro[1]
@@ -198,7 +199,7 @@ def defining():
                     itemDict['agendamentos']  = agendamentos
                 itemDict['urlCliente']  = urlBRA
 
-            elif base['funcao'] == 'bradesco_email':
+            elif (base['funcao'] == 'bradesco_texto'):
                 itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
                 if (registro[0][1] != ''):
                     parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
@@ -209,10 +210,10 @@ def defining():
                 itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
                 try:
                     if (int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0])):
-                        itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0]))
-                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('    ')[1][3:]
+                        itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('')[1].split('    ')[1].split(' ')[0]))
+                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('')[1][3:]
                 except:
-                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[1]
+                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('')[1]
                 itemDict['slcComarca'] = registro[0].split('/')[3]
                 itemDict['txtUf']      = registro[0].split('/')[4][:2].strip()
 
@@ -288,6 +289,26 @@ def defining():
                     parteAdversa['txtProfissao']  = registro[7]
                 itemDict['txtPedido'] = registro[8]
                 itemDict['urlCliente']  = urlFARO
+
+            elif base['funcao'] == 'oi_consolidado':
+                try:
+                    itemDict['txtPasta']  = str(int(registro[0]))
+                except:
+                    continue
+                itemDict['txtNroCnj']       = str(registro[1].replace('[','').replace(']', ''))
+                itemDict['txtNroProcesso']  = str(registro[1].replace('[','').replace(']', ''))
+                itemDict['txtUf']           = registro[2].strip()
+                itemDict['slcComarca']      = registro[3].strip()
+                itemDict['slcNumeroVara']   = "{} ª-º".format(registro[4].replace('º','').replace('ª','').strip())
+                itemDict['slcLocalTramite'] = registro[5].split(' DE ')[0].strip()
+                if (type(registro[6]) == type(str() and registro[6] != '')):
+                    itemDict['txtDataDistribuicao']  = str(registro[6])
+                if (type(registro[7]) == type(str() and registro[7] != '')):
+                    itemDict['txtValorCausa']        = registro[7]
+                if (type(registro[8]) == type(str() and registro[8] != '')):
+                    parteAdversa['txtNome']      = registro[8].strip()
+                    itemDict['parteAdversa']     = parteAdversa
+                itemDict['urlCliente']  = urlOi
 
             elif base['funcao'] == 'oi_migracao':
                 try:
@@ -407,6 +428,9 @@ def defining():
 
                 itemDict['urlCliente']  = urlOi
 
+        if (len(itemDict['txtPasta']) >= 14):
+            itemDict['txtPasta'] = ajustarNumProcessoCNJ(str(itemDict['txtPasta']))
+
         if ('txtNroProcesso' in itemDict):
             itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
 
@@ -432,9 +456,9 @@ def defining():
     data['dadosPadroes'] = dadosPadroes
     # pprint(registros)
     if (base['tipo'] == 'abertura'):
-        return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
+        return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
-        gera_arquivo_atualizacao(registros)
+        gera_arquivo_atualizacao(registros, filename)
         return redirect(url_for('logs'))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
@@ -504,13 +528,13 @@ def executa():
     pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
     createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    criaArquivo = "{}\\{}__{}__{}__{}.txt".format(pathPasta, hoje, hora, data['tipo'].upper(), data['siglaPadrao'])
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
     return render_template('logs.html')#TODO ENVIAR PARA ROTA!
 
-def gera_arquivo_atualizacao(data):
+def gera_arquivo_atualizacao(data, filename):
     #reordenando os registros
     newRegistros= {}
     for k, v in data['registros'].items():
@@ -529,7 +553,7 @@ def gera_arquivo_atualizacao(data):
     pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
     createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, data['siglaPadrao'], hoje, hora)
+    criaArquivo = "{}\\{}__{}__{}.txt".format(pathPasta, hoje, hora, filename.replace('.{}'.format(filename.split('.')[-1]),'').replace('.','_').upper())
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
