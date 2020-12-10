@@ -7,14 +7,16 @@
 
     <script>
 
+        let filtro = 'all'
+
+        setInterval(function(){ listLogs(filtro); }, 5000);
+
         window.onload = function() {
-            // getLog();
-            // window.setInterval(getLog, 5000);
-            listLogs('all');
-            // window.setInterval(listLogs, 5000);
+            listLogs(filtro);
         };
 
-        function listLogs(filtro){
+        function listLogs(filter){
+            filtro = filter;
             $.ajax({
                 type: 'POST',
                 url: '/listLogs/'+ filtro,
@@ -24,7 +26,6 @@
                     for (var [key, value] of Object.entries(response)) {
                         // fileName = key;
                         // trElement = document.createElement('tr'); //Cria TR
-                        // console.log(key, value)
                         // for (var x = 0; x < Object.keys(value).length; x++){
                         //     if (Object.keys(value)[x] != 'PATH'){
                         //         tableElement = "th";
@@ -39,9 +40,7 @@
                         trElement = document.createElement('tr'); //Cria TR
                         item = 0
                         inicio = Object.values(value).length;
-                        // console.log(inicio)
                         for (var x = inicio-1; x >= 0; x--){
-                            console.log(Object.keys(value)[x]);
                             // aElement.href = "{{url_for('getLog', filePath=key1)}}";
                             // console.log(value[item]['name'])
                             // console.log(value['tipo'])
@@ -66,7 +65,6 @@
                                 trElement.appendChild(novoElemento);
                                 lista.appendChild(trElement);
                                 item++;
-
                             }
                         }
                     }
