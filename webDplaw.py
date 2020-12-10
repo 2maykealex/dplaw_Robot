@@ -428,7 +428,7 @@ def defining():
 
                 itemDict['urlCliente']  = urlOi
 
-        if (len(itemDict['txtPasta']) >= 14):
+        if (len(str(itemDict['txtPasta'])) >= 14):
             itemDict['txtPasta'] = ajustarNumProcessoCNJ(str(itemDict['txtPasta']))
 
         if ('txtNroProcesso' in itemDict):
