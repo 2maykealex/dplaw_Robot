@@ -17,9 +17,9 @@ class SeleniumFunctions(object):
         return Select(element)
 
     def waitInstance(self, driver, object, poll, type, form = 'xpath'):
-        timeOut = 5 #segundos
+        timeOut = 4 #segundos
         count = 0
-        while (count < 5):
+        while (count < 3):
             try:
                 if type == 'click':
                     if form == 'xpath':
