@@ -488,24 +488,27 @@ class IntegraFunctions(object):
             botaoSalvar = self.driver.find_element_by_id("btnSalvar")
             botaoSalvar.click()
             print('REG {}: SALVANDO'.format(reg))
-            sleep(2)
-
+            sleep(1)
             # POP-UPS APÓS O SALVAMENTO
             try:
                 while True:
-                    _container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
-                    try:
-                        janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
-                    except:
-                        janelaOutrosProcessos = False
+                    sleep(1)
+                    container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
+                    if (container):
+                        try:
+                            janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
+                        except:
+                            janelaOutrosProcessos = False
 
-                    btnOk = self.waitingElement('popup_ok', 'show', 'id')
-                    btnOk.click()
+                        btnOk = self.waitingElement('popup_ok', 'show', 'id')
+                        btnOk.click()
 
-                    if (janelaOutrosProcessos):
-                        complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                        print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
-                        continue
+                        if (janelaOutrosProcessos):
+                            complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
+                            print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
+                            continue
+                        else:
+                            break
                     else:
                         break
             except:
