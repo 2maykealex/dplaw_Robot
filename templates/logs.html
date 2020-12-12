@@ -6,16 +6,14 @@
 {% block scripts %}
 
     <script>
-
-        let filtro = 'all'
-
+        // #TODO capturar variavel que vem do backend
+        let filtro = 'all';
         setInterval(function(){ listLogs(filtro); }, 5000);
-
         window.onload = function() {
-            listLogs(filtro);
+            listLogs(filtro, document.getElementById('btnAll'));
         };
 
-        function listLogs(filter){
+        function listLogs(filter, element=''){
             filtro = filter;
             $.ajax({
                 type: 'POST',
@@ -23,56 +21,44 @@
                 success: function(response){
                     lista = document.getElementById('lista');
                     lista.innerHTML = '';
-                    for (var [key, value] of Object.entries(response)) {
-                        // fileName = key;
-                        // trElement = document.createElement('tr'); //Cria TR
-                        // for (var x = 0; x < Object.keys(value).length; x++){
-                        //     if (Object.keys(value)[x] != 'PATH'){
-                        //         tableElement = "th";
-                        //         novoElemento = document.createElement(tableElement); // Cria th ou td
-                        //         textnode = document.createTextNode(Object.keys(value)[x]);
-                        //         novoElemento.appendChild(textnode);
-                        //         trElement.appendChild(novoElemento); //add novoElemento ao TR
-                        //         lista.appendChild(trElement);
-                        //     }
-                        // };
-
+                    console.log(Object.values(response).length, response);
+                    for (var x = Object.values(response).length-1; x >= 0; x--){
+                        value = Object.values(response)[x];
+                        key = Object.keys(response)[x];
                         trElement = document.createElement('tr'); //Cria TR
-                        item = 0
-                        inicio = Object.values(value).length;
-                        for (var x = inicio-1; x >= 0; x--){
-                            // aElement.href = "{{url_for('getLog', filePath=key1)}}";
-                            // console.log(value[item]['name'])
-                            // console.log(value['tipo'])
-                            // console.log(value['path'])
-                            // console.log(item)
-                            // console.log(Object.values(value)[x]);
-
-                               if (Object.keys(value)[x] != 'PATH'){
-                                aElement = document.createElement('a'); //Cria TR
-                                aElement.setAttribute("class", "log");
-                                // aElement.setAttribute("id", "log_".replace("log_", "log_"+ x));
-
-                                arquivoCaminho = value['PATH'] + '\\' + value['ARQUIVO']
-                                aElement.href = "{{ url_for('getLog', filePath='ADDSHARE1;ADDSHARE2') }}".replace("ADDSHARE2", value['ARQUIVO']).replace("ADDSHARE1", value['TIPO']);
-                                tableElement = "td";
-
-                                novoElemento = document.createElement(tableElement); // Cria th ou td
-                                textnode = document.createTextNode(Object.values(value)[x].toUpperCase());
-
-                                aElement.appendChild(textnode);
-                                novoElemento.appendChild(aElement);
-                                trElement.appendChild(novoElemento);
-                                lista.appendChild(trElement);
-                                item++;
-                            }
-                        }
-                    }
+                        aElement = document.createElement('a'); //Cria TR
+                        aElement.setAttribute("class", "log");
+                        arquivoCaminho = value['PATH'] + '\\' + value['ARQUIVO']
+                        dataLog = value['ARQUIVO'].split('__')[0].split('_')[2] + '/' + value['ARQUIVO'].split('__')[0].split('_')[1] + '/' + value['ARQUIVO'].split('__')[0].split('_')[0]
+                        horaLog = value['ARQUIVO'].split('__')[1].replace('_',':').replace('_',':')
+                        arquivo = value['ARQUIVO']
+                        tipo = value['TIPO']
+                        aElement.href = "{{ url_for('getLog', filePath='ADDSHARE1;ADDSHARE2') }}".replace("ADDSHARE2", arquivo).replace("ADDSHARE1", value['TIPO']);
+                        tableElement = "td";
+                        novoElemento = document.createElement(tableElement); // Cria th ou td
+                        textnode = document.createTextNode(dataLog + ' ' + horaLog + ' - ' + arquivo.split('__')[2].replace('.csv', '').toUpperCase());
+                        aElement.appendChild(textnode);
+                        novoElemento.appendChild(aElement);
+                        trElement.appendChild(novoElemento);
+                        lista.appendChild(trElement);
+                    };
                 },
                 error: function(error){
                     console.log(error);
                 }
             });
+
+            if (element){
+                let elementos = document.getElementsByClassName("botaoFiltro");
+                for (el of elementos) {
+                    el.classList.remove('btn-warning')
+                    el.classList.add('btn-primary')
+                };
+
+                if (filter = 'all'){
+                    element.classList.add('btn-warning')
+                };
+            };
         };
 
         function getLog(){
@@ -122,20 +108,20 @@
         <div class="col-md-6">
             <div class="row mb-5">
                 <div class="col-md-4 list-group">
-                    <button class="btn btn-primary list-item" onclick="listLogs('abertura')">ABERTURAS</button>
+                    <button id="btnAbertura" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('abertura', this)">ABERTURAS</button>
                 </div>
                 <div class="col-md-4 list-group">
-                    <button class="btn btn-primary list-item" onclick="listLogs('atualizacao')">ATUALIZAÇÕES</button>
+                    <button id="btnAtualizacao" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('atualizacao', this)">ATUALIZAÇÕES</button>
                 </div>
                 <div class="col-md-4 list-group">
-                    <button class="btn btn-primary list-item" onclick="listLogs('all')">TODOS</button>
+                    <button id="btnAll" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('all', this)">TODOS</button>
                 </div>
             </div>
         </div>
         <div class="col-md-3"></div>
     </div>
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
             <h3>BAIXAR LOGS</h3>

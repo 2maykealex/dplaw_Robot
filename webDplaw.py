@@ -459,7 +459,7 @@ def defining():
         return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros, filename)
-        return redirect(url_for('logs'))
+        return redirect(url_for('logs', filter=base['tipo']))
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
 @app.route("/abertura/bv/default/part2", methods=['POST'])
@@ -617,12 +617,12 @@ def listLogs(filtro):
     files = {}
     item = 1
     logsPath = '{}\\logs'.format(path.dirname(__file__))
-    for folder, _subdirs, filesFolder in walk(logsPath):
+    for folder, _subdirs, filesFolder in walk(logsPath, topdown=True):
         for name in filesFolder:
             if (folder.split('\\')[-1] in filtro or filtro == 'all'):
                 tipo = folder.split('\\')[-1]
                 file = {
-                        item: {
+                        name: {
                                 'ARQUIVO':name,
                                 'TIPO': tipo,
                                 'PATH': folder,
@@ -630,6 +630,8 @@ def listLogs(filtro):
                     }
                 files.update(file)
                 item = item + 1
+    # files.sort()
+
     return files
 
 @app.route("/atualizacao")
