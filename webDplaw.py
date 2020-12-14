@@ -528,7 +528,7 @@ def executa():
     pathPasta   = '{}\\{}'.format(pathPasta, data['tipo'])
     createFolder(pathPasta) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-    criaArquivo = "{}\\{}__{}__{}__{}.txt".format(pathPasta, hoje, hora, data['tipo'].upper(), data['siglaPadrao'])
+    criaArquivo = "{}\\{}__{}__{}_{}.txt".format(pathPasta, hoje, hora, data['tipo'].upper(), data['siglaPadrao'])
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
