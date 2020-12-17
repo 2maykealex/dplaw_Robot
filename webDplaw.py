@@ -190,9 +190,16 @@ def defining():
                 itemDict['txtDataContratacao'] = registro[2].to_pydatetime().strftime("%d/%m/%Y")
                 itemDict['txtNroProcesso'] = registro[3]
                 itemDict['txtNroCnj']      = registro[3]
-                itemDict['slcNumeroVara']  = registro[4].split('/')[0]  #registro[4]
-                itemDict['slcComarca']     = registro[4].split('/')[1].strip()
-                itemDict['txtUf']          = registro[4].split('/')[-1]
+
+                try: # SE TIVER NUMERAÇÃO DA VARA
+                    _numVara = int(registro[4].split('/')[0].split(' ')[0].strip())
+                    itemDict['slcNumeroVara'] = "{} ª-º".format(registro[4].split('/')[0].split(' ')[0].strip())
+                    itemDict['slcLocalTramite'] = registro[4].split('/')[0].replace(registro[4].split('/')[0].split(' ')[0].strip(),'').strip()
+                except:
+                    itemDict['slcLocalTramite'] = registro[4].split('/')[0].strip()
+
+                itemDict['slcComarca'] = registro[4].split('/')[1].strip()
+                itemDict['txtUf']      = registro[4].split('/')[-1]
 
                 if (type(registro[5]) == type(str()) and registro[5] != ''):
                     agendamentos['Audiência'] = registro[5]
@@ -437,6 +444,9 @@ def defining():
         if ('txtNroCnj' in itemDict):
             itemDict['txtNroCnj'] = ajustarNumProcessoCNJ(str(itemDict['txtNroCnj']))
 
+        if (itemDict['slcLocalTramite']):
+            itemDict['slcLocalTramite'] = checkLocalTramite(itemDict['slcLocalTramite'])
+
         if (len(agendamentos)>0):
             itemDict['agendamentos'] = agendamentos
 
@@ -460,6 +470,25 @@ def defining():
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros, filename)
         return redirect(url_for('logs', filter=base['tipo']))
+
+def checkLocalTramite(tramite):
+    jec    = ['JEC', 'JEC CRIMINAL', 'VARA DO JEC', 'VARA JUIZADO ESPECIAL CIVEL CRIMINAL', 'JUIZADO ESPECIAL CIVEL','VARA DO JUIZADO ESPECIAL CIVEL NORTE']
+    cejusc = ['CENTRO JUD CONF CIDADANIA JESP']
+    jef    = ['JEF', 'VARA JEF CIVEL CRIMINAL']
+    civel  = ['VARA']
+    empresarial = ['VARA CIVEL E EMPRESARIAL DE TUCURUI']
+
+    if (tramite in jec):
+        tramite = 'Juizado Especial Cível'
+    elif (tramite in civel):
+        tramite = 'Vara Cível'
+    elif (tramite in jef):
+        tramite = 'Juizado Especial Federal'
+    elif (tramite in empresarial):
+        tramite = 'Vara Cível e Empresarial'
+    elif (tramite in cejusc):
+        tramite = 'Centro Judiciário de Solução de Conflitos e Cidada'
+    return tramite
 
 @app.route("/abertura/oi/default/part2", methods=['POST'])
 @app.route("/abertura/bv/default/part2", methods=['POST'])
