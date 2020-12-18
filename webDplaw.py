@@ -193,7 +193,7 @@ def defining():
 
                 try: # SE TIVER NUMERAÇÃO DA VARA
                     _numVara = int(registro[4].split('/')[0].split(' ')[0].strip())
-                    itemDict['slcNumeroVara'] = "{} ª-º".format(registro[4].split('/')[0].split(' ')[0].strip())
+                    itemDict['slcNumeroVara'] = "{} ª-º".format(int(registro[4].split('/')[0].split(' ')[0].strip()))
                     itemDict['slcLocalTramite'] = registro[4].split('/')[0].replace(registro[4].split('/')[0].split(' ')[0].strip(),'').strip()
                 except:
                     itemDict['slcLocalTramite'] = registro[4].split('/')[0].strip()
