@@ -472,11 +472,14 @@ def defining():
         return redirect(url_for('logs', filter=base['tipo']))
 
 def checkLocalTramite(tramite):
-    jec    = ['JEC', 'JEC CRIMINAL', 'VARA DO JEC', 'VARA JUIZADO ESPECIAL CIVEL CRIMINAL', 'JUIZADO ESPECIAL CIVEL','VARA DO JUIZADO ESPECIAL CIVEL NORTE']
+    jec    = ['JEC', 'JEC CRIMINAL', 'VARA DO JEC', 'VARA JUIZADO ESPECIAL CIVEL CRIMINAL',
+              'JUIZADO ESPECIAL CIVEL','VARA DO JUIZADO ESPECIAL CIVEL NORTE']
     cejusc = ['CENTRO JUD CONF CIDADANIA JESP']
     jef    = ['JEF', 'VARA JEF CIVEL CRIMINAL']
     civel  = ['VARA']
     empresarial = ['VARA CIVEL E EMPRESARIAL DE TUCURUI']
+    trabalho    = ['VARA TRABALHO']
+    falencia    = ['VARA CIVE FAL CONC']
 
     if (tramite in jec):
         tramite = 'Juizado Especial Cível'
@@ -486,6 +489,10 @@ def checkLocalTramite(tramite):
         tramite = 'Juizado Especial Federal'
     elif (tramite in empresarial):
         tramite = 'Vara Cível e Empresarial'
+    elif (tramite in trabalho):
+        tramite = 'Vara do Trabalho'
+    elif (tramite in falencia):
+        tramite = 'Vara Cível, Falências e Recuperações Judiciais'
     elif (tramite in cejusc):
         tramite = 'Centro Judiciário de Solução de Conflitos e Cidada'
     return tramite
