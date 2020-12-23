@@ -192,7 +192,7 @@ def defining():
                 itemDict['txtNroCnj']      = registro[3]
 
                 try: # SE TIVER NUMERAÇÃO DA VARA
-                    _numVara = int(registro[4].split('/')[0].split(' ')[0].strip())
+                    _numVara = int(registro[4].split('/')[0].split(' ')[0].strip()) #check NumVara
                     itemDict['slcNumeroVara'] = "{} ª-º".format(int(registro[4].split('/')[0].split(' ')[0].strip()))
                     itemDict['slcLocalTramite'] = registro[4].split('/')[0].replace(registro[4].split('/')[0].split(' ')[0].strip(),'').strip()
                 except:
@@ -207,28 +207,58 @@ def defining():
                 itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bradesco_texto':
-                itemDict['txtPasta'] = registro[0].split('      ')[0].strip()
-                if (registro[0][1] != ''):
-                    parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip()
-                    itemDict['parteAdversa'] = parteAdversa
+                pasta = registro[0].split('      ')[0].strip()
+                itemDict['txtPasta'] = pasta
 
-                itemDict['txtDataContratacao'] = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
-                itemDict['txtNroProcesso'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
-                itemDict['txtNroCnj']      = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
+                try:
+                    if (registro[0].split('      ')[1].strip() != ''):
+                        parteAdversa['txtNome']  = registro[0].split('/')[0][:-2].strip().split('      ')[1].strip().replace('  ', ' ')
+                        itemDict['parteAdversa'] = parteAdversa
+                except:
+                    pass
+
+                try:
+                    if (registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip() != ''):
+                        itemDict['txtDataContratacao'] = registro[0][(int(registro[0].find('/'))-2):((int(registro[0].find('/'))-2)+10)].strip()
+                except:
+                    pass
+
+                try:
+                    itemDict['txtNroProcesso'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
+                except:
+                    pass
+
+                try:
+                    itemDict['txtNroCnj'] = registro[0].split('/')[2].split('      ')[-1].split('    ')[0]
+                except:
+                    pass
+
                 try:
                     if (int(registro[0].split('/')[2].split('      ')[1].split('    ')[1].split(' ')[0])):
                         itemDict['slcNumeroVara']   = "{} ª-º".format(int(registro[0].split('/')[2].split('')[1].split('    ')[1].split(' ')[0]))
                         itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[1].split('')[1][3:]
                 except:
-                    itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('')[1]
-                itemDict['slcComarca'] = registro[0].split('/')[3]
-                itemDict['txtUf']      = registro[0].split('/')[4][:2].strip()
+                    try:
+                        itemDict['slcLocalTramite'] = registro[0].split('/')[2].split('      ')[-1].split('')[1]
+                    except:
+                        pass
+
+                try:
+                    itemDict['slcComarca'] = registro[0].split('/')[3]
+                except:
+                    pass
+
+                try:
+                    itemDict['txtUf'] = registro[0].split('/')[4][:2].strip()
+                except:
+                    pass
 
                 try:
                     if (int(registro[0].strip()[-2:])):
                         agendamentos['Audiência'] = registro[0].strip()[-10:].strip()
                 except:
                     pass
+
                 itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bv':
@@ -444,7 +474,7 @@ def defining():
         if ('txtNroCnj' in itemDict):
             itemDict['txtNroCnj'] = ajustarNumProcessoCNJ(str(itemDict['txtNroCnj']))
 
-        if (itemDict['slcLocalTramite']):
+        if ('slcLocalTramite' in itemDict):
             itemDict['slcLocalTramite'] = checkLocalTramite(itemDict['slcLocalTramite'])
 
         if (len(agendamentos)>0):
@@ -464,7 +494,6 @@ def defining():
     data.update(registros)
 
     data['dadosPadroes'] = dadosPadroes
-    # pprint(registros)
     if (base['tipo'] == 'abertura'):
         return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
