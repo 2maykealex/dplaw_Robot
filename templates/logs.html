@@ -49,7 +49,10 @@
                             }
                             if (value1 == status)
                                 if (value1 != 'FIM')
-                                    value1 = 'REG ' + value1
+                                    if (value1-1 == 0)
+                                        value1 = 'INICIADO'
+                                    else
+                                        value1 = 'REGISTRO ' + (value1-1)
 
                             console.log(value1)
                             novoElemento = document.createElement(tdElement);
