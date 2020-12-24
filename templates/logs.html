@@ -21,23 +21,59 @@
                 success: function(response){
                     lista = document.getElementById('lista');
                     lista.innerHTML = '';
-                    console.log(Object.values(response).length, response);
                     for (var x = Object.values(response).length-1; x >= 0; x--){
+                        dados = [];
                         value = Object.values(response)[x];
                         key = Object.keys(response)[x];
-                        trElement = document.createElement('tr'); //Cria TR
-                        aElement = document.createElement('a'); //Cria TR
-                        aElement.setAttribute("class", "log");
-                        arquivoCaminho = value['PATH'] + '\\' + value['ARQUIVO']
+
+                        // arquivoCaminho = value['PATH'] + '\\' + value['ARQUIVO']
                         dataLog = value['ARQUIVO'].split('__')[0].split('_')[2] + '/' + value['ARQUIVO'].split('__')[0].split('_')[1] + '/' + value['ARQUIVO'].split('__')[0].split('_')[0]
                         horaLog = value['ARQUIVO'].split('__')[1].replace('_',':').replace('_',':')
                         arquivo = value['ARQUIVO']
-                        tipo = value['TIPO']
-                        aElement.href = "{{ url_for('getLog', filePath='ADDSHARE1;ADDSHARE2') }}".replace("ADDSHARE2", arquivo).replace("ADDSHARE1", value['TIPO']);
-                        tableElement = "td";
-                        novoElemento = document.createElement(tableElement); // Cria th ou td
-                        textnode = document.createTextNode(dataLog + ' ' + horaLog + ' - ' + arquivo.split('__')[2].replace('.csv', '').toUpperCase());
-                        aElement.appendChild(textnode);
+                        tipo    = value['TIPO']
+                        status  = value['STATUS']
+
+                        dados.unshift(tipo)
+                        dados.unshift(status)
+                        dados.unshift(arquivo)
+                        dados.unshift(dataLog + ' - ' + horaLog)
+
+                        trElement = document.createElement('tr'); //Cria TR
+                        trElement.setAttribute("class", "limpaLog");
+                        botaoElement = document.createElement('button'); //Cria btn
+                        botaoElement.setAttribute("class", "btn btn-warning");
+                        for (var [key1, value1] of Object.entries(dados)) {
+                            tdElement = "td";
+                            if (value1 == arquivo){
+                                value1 = value1.split('__')[2];
+                            }
+                            if (value1 == status)
+                                if (value1 != 'FIM')
+                                    value1 = 'REG ' + value1
+
+                            console.log(value1)
+                            novoElemento = document.createElement(tdElement);
+                            textnode = document.createTextNode(value1.replace('.csv', '').toUpperCase());
+                            novoElemento.appendChild(textnode);
+                            trElement.appendChild(novoElemento);
+                            lista.appendChild(trElement);
+                        }
+
+                        tdElement = "td";
+                        novoElemento = document.createElement(tdElement);
+                        textnode = document.createTextNode('Baixar');
+                        botaoElement.appendChild(textnode);
+                        aElement = document.createElement('a');
+                        aElement.setAttribute("class", "log");
+                        aElement.href = "{{ url_for('getLog', filePath='ADDSHARE1;ADDSHARE2') }}".replace("ADDSHARE2", arquivo).replace("ADDSHARE1", tipo);
+
+                        if (status == 'FIM'){
+                            botaoElement.setAttribute("class", "btn btn-success");
+                            botaoElement.disabled = false;
+                        } else
+                            botaoElement.disabled = true;
+
+                        aElement.appendChild(botaoElement);
                         novoElemento.appendChild(aElement);
                         trElement.appendChild(novoElemento);
                         lista.appendChild(trElement);
@@ -132,11 +168,24 @@
 
     <div id="logs">
         <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <table class="table text-center" id='lista'></table>
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>DATA - HORA</th>
+                            <th>ARQUIVO DE LOG</th>
+                            <th>STATUS</th>
+                            <th>TIPO</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista">
+
+                    </tbody>
+                </table>
             </div>
-            <div class="col-md-3"></div>
+            <div class="col-md-2"></div>
         </div>
     </div>
 
