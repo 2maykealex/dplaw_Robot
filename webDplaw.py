@@ -5,7 +5,7 @@ import pandas as pd
 from os import getcwd
 from time import strftime
 from datetime import datetime
-from basic_functions import createFolder
+from basic_functions import abreArquivo, checkEndFile, createFolder
 from werkzeug.utils import secure_filename
 from basic_functions import ajustarNumProcessoCNJ
 from flask import Flask, render_template, request, redirect, url_for, json, send_file
@@ -685,12 +685,14 @@ def listLogs(filtro):
     for folder, _subdirs, filesFolder in walk(logsPath, topdown=True):
         for name in filesFolder:
             if (folder.split('\\')[-1] in filtro or filtro == 'all'):
+                status = checkEndFile("{}\\{}".format(folder, name))
                 tipo = folder.split('\\')[-1]
                 file = {
                         name: {
-                                'ARQUIVO':name,
+                                'ARQUIVO': name,
                                 'TIPO': tipo,
                                 'PATH': folder,
+                                'STATUS': status
                         }
                     }
                 files.update(file)
