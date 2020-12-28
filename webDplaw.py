@@ -184,12 +184,25 @@ def defining():
 
             if (base['funcao'] == 'bradesco_arquivo'):
                 itemDict['txtPasta'] = registro[0]
-                if (registro[1] != ''):
-                    parteAdversa['txtNome']  = registro[1]
-                    itemDict['parteAdversa'] = parteAdversa
-                itemDict['txtDataContratacao'] = registro[2].to_pydatetime().strftime("%d/%m/%Y")
-                itemDict['txtNroProcesso'] = registro[3]
-                itemDict['txtNroCnj']      = registro[3]
+
+                try:
+                    if (registro[1] != ''):
+                        parteAdversa['txtNome']  = registro[1]
+                        itemDict['parteAdversa'] = parteAdversa
+                except:
+                    pass
+
+                try:
+                    if (registro[2]):
+                        itemDict['txtDataContratacao'] = registro[2].to_pydatetime().strftime("%d/%m/%Y")
+                except:
+                    pass
+
+                try:
+                    itemDict['txtNroProcesso'] = registro[3]
+                    itemDict['txtNroCnj']      = registro[3]
+                except:
+                    pass
 
                 try: # SE TIVER NUMERAÇÃO DA VARA
                     _numVara = int(registro[4].split('/')[0].split(' ')[0].strip()) #check NumVara
@@ -201,9 +214,13 @@ def defining():
                 itemDict['slcComarca'] = registro[4].split('/')[1].strip()
                 itemDict['txtUf']      = registro[4].split('/')[-1]
 
-                if (type(registro[5]) == type(str()) and registro[5] != ''):
-                    agendamentos['Audiência'] = registro[5]
-                    itemDict['agendamentos']  = agendamentos
+                try:
+                    if (type(registro[5]) == type(str()) and registro[5] != ''):
+                        agendamentos['Audiência'] = registro[5]
+                        itemDict['agendamentos']  = agendamentos
+                except:
+                    pass
+
                 itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bradesco_texto':
