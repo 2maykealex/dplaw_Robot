@@ -216,6 +216,7 @@ def defining():
 
                 try:
                     if (type(registro[5]) == type(str()) and registro[5] != ''):
+                        _dataAg = datetime.strptime(registro[5], '%d/%m/%Y') #CHECK SE CAMPO PREENCHIDO É UMA DATA
                         agendamentos['Audiência'] = registro[5]
                         itemDict['agendamentos']  = agendamentos
                 except:
