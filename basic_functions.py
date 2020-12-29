@@ -109,7 +109,7 @@ def ajustarNumProcessoCNJ(numProcessCNJ):
     numProcessCNJ = '{}-{}.{}.{}.{}.{}'.format(numProcessCNJ[:7], numProcessCNJ[7:9], numProcessCNJ[9:13], numProcessCNJ[13:14], numProcessCNJ[14:16], numProcessCNJ[16:20])
     if (numProcessCNJ == '-....'):
         numProcessCNJ = ''
-    return numProcessCNJ
+    return numProcessCNJ.strip()
 
 def getTodayTime():
     hoje = "%s" % (strftime("%Y-%m-%d"))

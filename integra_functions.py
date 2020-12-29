@@ -441,15 +441,14 @@ class IntegraFunctions(object):
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'select'):
                         try:
-                            #todo TRATAR A STRING INTEIRA, CHECANDO SE É TODA MAIUSCULA OU MINUSCULA PRIMEIRO
-                            valorElemento = str(v).title()
+                            valorElemento = str(v.strip()).title()
                             select = self.selenium.select(element)
                             select.select_by_visible_text(valorElemento)
                         except:
-                            checkValueInCombo(str(v), k)
+                            checkValueInCombo(str(v.strip()), k)
                     else: # (element.tag_name == 'input'): # inputs e textareas
                         element.clear()
-                        element.send_keys(str(v))
+                        element.send_keys(str(v.strip()))
                         if (k == 'txtNroCnj'):
                             segredoJusticaAndamentos()
 
