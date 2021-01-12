@@ -192,9 +192,30 @@ class IntegraFunctions(object):
                 print("\nINICIANDO WebDriver")
                 _abreWebDriver = self.acessToIntegra(login, password)
 
-                robo = self.abrePasta(registros, reg)
-                print('ROBO = {}'.format(robo))
+                # robo = self.abrePasta(registros, reg)
+                robo = True
                 if (robo):
+                    reg = 1
+                    while True:
+                        if (reg > len(registros['registros'])):
+                            break
+                        registro = registros['registros']['{}'.format(reg)]
+                        try:
+                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                            else:
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
+
+                        if (searchFolder):
+                            elementoPesquisado.click()
+                            messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                        # confereAgendamentos = self.criaAgendammentos(registro, reg)
+                        reg = reg + 1
+
+
                     basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
                     self.logoutIntegra()
                     break
@@ -303,28 +324,32 @@ class IntegraFunctions(object):
         print('<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>')
         return True
 
-    def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = []):
+    def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = [], check=False):
 
         def selecionaResponsaveis(respProcesso):
-            #TODO em caso de alteração - desmarcar todas primeiro
-            self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-            comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
-            comboResponsavel.click()  # clica e abre as opções
-            sleep(1)
+            # self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
+            # comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
+            # comboResponsavel.click()  # clica e abre as opções
+            # sleep(1)
             #recupera lista de RESPONSÁVEIS do PROMAD
-            xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
-            listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+            # xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
+            # listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
+
+            # select = self.selenium.select(selectResponsaveis)
+            # listInputs = self.driver.find_element_by_id(k) #recupera os inputs abaixo dessa tag
+            # listInputs = listInputs.find_elements_by_tag('option')
             # CARREGA LISTA DE RESPONSÁVEIS
             y = 1
             totalResp = len(respProcesso)
             countResp = 0
             respSelecionados = []
-            for item in listInputs:  #itera inputs recuperados, checa e clica
+            for item in selectResponsaveis.options:  #itera inputs recuperados, checa e clica
                 if (item.text in respProcesso):
                     try:
-                        xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        element = self.waitingElement(xPathItem, 'click')
-                        element.click()
+                        # xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
+                        # element = self.waitingElement(xPathItem, 'click')
+                        item.click()
+                        print ('REG {}: {} -> RESPONSÁVEL SELECIONADO: "{}"'.format(reg, k, item.text))
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
@@ -333,7 +358,7 @@ class IntegraFunctions(object):
                     if (countResp == totalResp):
                         break
                 y = y + 1
-            comboResponsavel.click()  # clica e Fecha as opções
+            # comboResponsavel.click()  # clica e Fecha as opções
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
         def segredoJusticaAndamentos():
@@ -361,7 +386,7 @@ class IntegraFunctions(object):
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
                 numIdPromad = numIdPromad.split(' ')[-1].strip()
-                print("REG {}: ID PROMAD: {}".format(reg, numIdPromad))
+                print("\nREG {}: ID PROMAD: {}".format(reg, numIdPromad))
                 return numIdPromad
             else:
                 return numIdPromad
@@ -433,26 +458,53 @@ class IntegraFunctions(object):
                 if (k in itensExcluidosLoop or v == None):
                     continue
 
-                print ('REG {}: {} - "{}"'.format(reg, k, v))
+                if (check):
+                    print ('\nREG {}: -> CHECANDO VALORES: {} - "{}"'.format(reg, k, v))
+
                 if (k == 'slcResponsavel'):
-                    selecionaResponsaveis(v['Processo'])
-                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v['Processo'])
+                    self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
+                    selectResponsaveis = self.waitingElement(k, 'click', form='id')
+
+                    if (check): #CONFERENCIA
+                        listaNaoMarcados = []
+                        selecionados = []
+                        selectResponsaveis = self.selenium.select(selectResponsaveis)
+                        all_selected_options = selectResponsaveis.all_selected_options
+
+                        for item in all_selected_options:
+                            selecionados.append(item.text)
+                        listaNaoMarcados = list(set(v['Processo']) - set(selecionados))
+
+                        if (check and listaNaoMarcados):
+                            selecionaResponsaveis(listaNaoMarcados)
+                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, listaNaoMarcados)
+
+                    else: # ABERTURAS E ATUALIZAÇÕES
+                        selecionaResponsaveis(v['Processo'])
+                        camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v['Processo'])
+
                 else:
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'select'):
-                        try:
-                            valorElemento = str(v.strip()).title()
-                            select = self.selenium.select(element)
-                            select.select_by_visible_text(valorElemento)
-                        except:
-                            checkValueInCombo(str(v.strip()), k)
-                    else: # (element.tag_name == 'input'): # inputs e textareas
-                        element.clear()
-                        element.send_keys(str(v.strip()))
-                        if (k == 'txtNroCnj'):
-                            segredoJusticaAndamentos()
+                        valorElemento = str(v.strip()).title()
+                        valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
+                        select = self.selenium.select(element)
+                        if (not(check) or (check and select.first_selected_option.text != (str(v)))):
+                            try:
+                                select.select_by_visible_text(valorElemento)
+                                camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                                print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
+                            except:
+                                checkValueInCombo(str(v.strip()), k)
 
-                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                    else: #QUANDO É INPUTS OU TEXTAREAS
+                        if (not(check) or (check and element.get_attribute('value') != (str(v)))):
+                            element.clear()
+                            element.send_keys(str(v))
+                            if (k == 'txtNroCnj'):
+                                segredoJusticaAndamentos()
+                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                            print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
                     sleep(1)
             except:
                 naoInserido[k] = str(v)
@@ -463,8 +515,11 @@ class IntegraFunctions(object):
             if ("parteAdversa" in registro):
                 while True: # ABRE A PARTE ADVERSA
                     try:
-                        menuCliente = self.waitingElement("//*[@id='div_menu17']", 'click')
-                        menuCliente.click()
+                        try:
+                            menuAdversa = self.driver.find_element_by_xpath("//*[@id='div_menu17']")
+                        except:
+                            menuAdversa = self.driver.find_element_by_id("divMenuProcesso26")
+                        menuAdversa.click()
                         sleep(1)
                         try: #checa se há mensagens que bloqueiam o salvamento #todo ver para demais elementos que não forem localizados
                             element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
@@ -477,7 +532,7 @@ class IntegraFunctions(object):
                     except:
                         pass
                 self.checkPopUps()
-                complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
+                complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
 
             print('REG {}: FINALIZADO O LOOPING'.format(reg))
             sleep(1)
@@ -540,33 +595,42 @@ class IntegraFunctions(object):
             message = "{}; NÃO FOI POSSÍVEL A ABERTURA/ATUALIZAÇÃO".format(message)
         return message
 
-    def inserirParteAdversa(self, registro, reg, naoInserido):
+    def inserirParteAdversa(self, registro, reg, naoInserido, check=False):
         complementoAdversa = ""
+
+        if (check):
+            tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
+            tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
+            tabelaAdversa.click()
+            sleep(1)
+
         for k, v in registro['parteAdversa'].items():
-            print ('REG {}: {} - {}'.format(reg, k, v))
+            if (check):
+                print ('\nREG {}: -> CHECANDO VALORES: {} - "{}"'.format(reg, k, v))
             try:
                 element = self.waitingElement(k, 'click', form='id')
-                if (element.tag_name == 'input'):
-                    element.clear()
-                    element.send_keys(str(v))
-                    print('REG {}: PREENCHENDO {} O VALOR: {}'.format(reg, k, v))
+                if (not(check) or (check and element.get_attribute('value').upper() != (str(v.upper())))):
+                    if (element.tag_name == 'input'):
+                        element.clear()
+                        element.send_keys(str(v))
 
-                elif (element.tag_name == 'select'):
-                    try:
-                        select = self.selenium.select(element)
-                        select.select_by_visible_text(str(v))
-                    except:
-                        # checkValueInCombo(str(v), k)
-                        pass
-                sleep(1)
+                    elif (element.tag_name == 'select'):
+                        try: #TODO CHECAR OS SELECTS DA PARTE ADVERSA
+                            select = self.selenium.select(element)
+                            select.select_by_visible_text(str(v))
+                        except:
+                            # checkValueInCombo(str(v), k) #TODO CHECAR ISSO
+                            pass
+                    sleep(1)
+                    print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
             except:
                 print('REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(reg, k, v))
                 naoInserido[k] = str(v)
         complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
         return (complementoAdversa, naoInserido)
 
-    def criaAgendammentos(self, registro, reg):
-        #TODO OS ITENS QUE NÃO FOREM CRIADOS OS SEUS AGENDAMENTOS: SALVA E OUTRO ARQUIVO PARA REFAZÊ-LOS
+    def criaAgendammentos(self, registro, reg, check=False):
+        #TODO CHECAR OS AGENDAMENTOS
         print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
