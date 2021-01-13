@@ -453,7 +453,8 @@ class IntegraFunctions(object):
         print('REG {}: INICIANDO LOOPING'.format(reg))
         itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
         for k, v in registro.items():
-            #todo salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
+            valorAntigo = ''
+            #TODO salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
             try:
                 if (k in itensExcluidosLoop or v == None):
                     continue
@@ -461,6 +462,7 @@ class IntegraFunctions(object):
                 if (check):
                     print ('\nREG {}: -> CHECANDO VALORES: {} - "{}"'.format(reg, k, v))
 
+                #TODO ----- PEGAR O ELEMENTO PRIMEIRO -->   USA O ELEMENTO NAS COMPARAÇÕES  E CAPTURAR O VALOR DO ELEMENTO (SEJA DE UM INPUT, SEJA DE UM ITEM SELECIONADO NO SELECT)
                 if (k == 'slcResponsavel'):
                     self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
                     selectResponsaveis = self.waitingElement(k, 'click', form='id')
@@ -474,6 +476,8 @@ class IntegraFunctions(object):
                         for item in all_selected_options:
                             selecionados.append(item.text)
                         listaNaoMarcados = list(set(v['Processo']) - set(selecionados))
+
+                        valorAntigo = ''.join(selecionados)
 
                         if (check and listaNaoMarcados):
                             selecionaResponsaveis(listaNaoMarcados)
@@ -489,13 +493,14 @@ class IntegraFunctions(object):
                         valorElemento = str(v.strip()).title()
                         valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
                         select = self.selenium.select(element)
-                        if (not(check) or (check and select.first_selected_option.text != (str(v)))):
+                        valorAntigo = select.first_selected_option.text
+                        if (not(check) or (check and valorAntigo != (str(v)))):
                             try:
                                 select.select_by_visible_text(valorElemento)
-                                camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
-                                print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
                             except:
                                 checkValueInCombo(str(v.strip()), k)
+                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                            print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
 
                     else: #QUANDO É INPUTS OU TEXTAREAS
                         if (not(check) or (check and element.get_attribute('value') != (str(v)))):
