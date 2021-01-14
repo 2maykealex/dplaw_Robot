@@ -197,6 +197,10 @@ class IntegraFunctions(object):
                 # robo = self.abrePasta(registros, reg)
                 robo = True
                 if (robo):
+                    basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
+                    self.logoutIntegra()
+
+                    _abreWebDriver = self.acessToIntegra(login, password)
                     reg = 1
                     while True:
                         if (reg > len(registros['registros'])):
@@ -219,8 +223,7 @@ class IntegraFunctions(object):
                             #confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
 
-                    basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
-                    self.logoutIntegra()
+
                     break
                 else:
                     self.driver.quit()
