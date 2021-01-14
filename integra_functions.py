@@ -216,7 +216,7 @@ class IntegraFunctions(object):
                             elementoPesquisado.click()
                             print('INCLUIR/ALTERAR PROCESSO')
                             messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                        # confereAgendamentos = self.criaAgendammentos(registro, reg)
+                            #confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
