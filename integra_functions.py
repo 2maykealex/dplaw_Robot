@@ -219,7 +219,6 @@ class IntegraFunctions(object):
                         # confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
 
-
                     basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
                     self.logoutIntegra()
                     break
@@ -538,10 +537,12 @@ class IntegraFunctions(object):
             sleep(1)
 
         try: # Botão salvar
-
-            botoesSalvar = self.driver.find_elements_by_id("btnSalvar")
-
-            for botaoSalvar in botoesSalvar:
+            for contSalvar in range(2):
+                if (not(check)):
+                    continue
+                botaoSalvar = None
+                botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
+                # botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
                 print('REG {}: ANTES DE SALVAR'.format(reg))
                 # botaoSalvar = self.driver.find_element_by_id("btnSalvar")
                 botaoSalvar.click()
@@ -571,8 +572,9 @@ class IntegraFunctions(object):
                             break
                 except:
                     pass
-                _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
+                sleep(2)
 
+            _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
             try:
                 complementoNaoInseridos =''
                 if (naoInserido):
