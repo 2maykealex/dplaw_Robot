@@ -192,6 +192,8 @@ class IntegraFunctions(object):
                 print("\nINICIANDO WebDriver")
                 _abreWebDriver = self.acessToIntegra(login, password)
 
+                print('LOGIN REALIZADO NO INTEGRA')
+
                 # robo = self.abrePasta(registros, reg)
                 robo = True
                 if (robo):
@@ -202,6 +204,7 @@ class IntegraFunctions(object):
                         registro = registros['registros']['{}'.format(reg)]
                         try:
                             countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            print('REALIZANDO PESQUISA')
                             if (countChar >= 14):
                                 searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
                             else:
@@ -211,6 +214,7 @@ class IntegraFunctions(object):
 
                         if (searchFolder):
                             elementoPesquisado.click()
+                            print('INCLUIR/ALTERAR PROCESSO')
                             messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
                         # confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
@@ -326,30 +330,15 @@ class IntegraFunctions(object):
 
     def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = [], check=False):
 
-        def selecionaResponsaveis(respProcesso):
-            # self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-            # comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
-            # comboResponsavel.click()  # clica e abre as opções
-            # sleep(1)
-            #recupera lista de RESPONSÁVEIS do PROMAD
-            # xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
-            # listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
-
-            # select = self.selenium.select(selectResponsaveis)
-            # listInputs = self.driver.find_element_by_id(k) #recupera os inputs abaixo dessa tag
-            # listInputs = listInputs.find_elements_by_tag('option')
-            # CARREGA LISTA DE RESPONSÁVEIS
-            y = 1
+        def selecionaResponsaveis():
             totalResp = len(respProcesso)
             countResp = 0
             respSelecionados = []
-            for item in selectResponsaveis.options:  #itera inputs recuperados, checa e clica
+            for item in selectResponsaveis.options:
                 if (item.text in respProcesso):
                     try:
-                        # xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        # element = self.waitingElement(xPathItem, 'click')
                         item.click()
-                        print ('REG {}: {} -> RESPONSÁVEL SELECIONADO: "{}"'.format(reg, k, item.text))
+                        print ('\nREG {}: {} -> RESPONSÁVEL SELECIONADO: "{}"'.format(reg, k, item.text))
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
@@ -357,7 +346,7 @@ class IntegraFunctions(object):
                     countResp = countResp + 1
                     if (countResp == totalResp):
                         break
-                y = y + 1
+                # y = y + 1
             # comboResponsavel.click()  # clica e Fecha as opções
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
@@ -455,64 +444,70 @@ class IntegraFunctions(object):
         for k, v in registro.items():
             valorAntigo = ''
             #TODO salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
-            try:
-                if (k in itensExcluidosLoop or v == None):
-                    continue
+            # try:
+            if (k in itensExcluidosLoop or v == None):
+                continue
 
-                if (check):
-                    print ('\nREG {}: -> CHECANDO VALORES: {} - "{}"'.format(reg, k, v))
+            if (check):
+                print ('\nREG {}: -> CHECANDO VALORES: {} - "{}"'.format(reg, k, v))
 
-                #TODO ----- PEGAR O ELEMENTO PRIMEIRO -->   USA O ELEMENTO NAS COMPARAÇÕES  E CAPTURAR O VALOR DO ELEMENTO (SEJA DE UM INPUT, SEJA DE UM ITEM SELECIONADO NO SELECT)
-                if (k == 'slcResponsavel'):
-                    self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-                    selectResponsaveis = self.waitingElement(k, 'click', form='id')
+            #TODO ----- PEGAR O ELEMENTO PRIMEIRO -->   USA O ELEMENTO NAS COMPARAÇÕES  E CAPTURAR O VALOR DO ELEMENTO (SEJA DE UM INPUT, SEJA DE UM ITEM SELECIONADO NO SELECT)
+            if (k == 'slcResponsavel'):
+                self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
+                selectResponsaveis = self.waitingElement(k, 'click', form='id')
+                selectResponsaveis = self.selenium.select(selectResponsaveis)
+                respProcesso = v.copy()
 
-                    if (check): #CONFERENCIA
-                        listaNaoMarcados = []
-                        selecionados = []
-                        selectResponsaveis = self.selenium.select(selectResponsaveis)
-                        all_selected_options = selectResponsaveis.all_selected_options
-
+                if (check): #CONFERENCIA
+                    antigosSelecionados = []
+                    all_selected_options = selectResponsaveis.all_selected_options
+                    if (all_selected_options):
                         for item in all_selected_options:
-                            selecionados.append(item.text)
-                        listaNaoMarcados = list(set(v['Processo']) - set(selecionados))
+                            antigosSelecionados.append(item.text)
+                        respProcesso = list(set(respProcesso) - set(antigosSelecionados))
+                        valorAntigo = ''.join(antigosSelecionados)
 
-                        valorAntigo = ''.join(selecionados)
+                    # selecionaResponsaveis()
+                    # camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, respProcesso)
+                    # else:
+                    #     selecionaResponsaveis()
+                    #     camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, respProcesso)
 
-                        if (check and listaNaoMarcados):
-                            selecionaResponsaveis(listaNaoMarcados)
-                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, listaNaoMarcados)
+                # else: # ABERTURAS E ATUALIZAÇÕES
+                selecionaResponsaveis()
+                camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, respProcesso)
 
-                    else: # ABERTURAS E ATUALIZAÇÕES
-                        selecionaResponsaveis(v['Processo'])
-                        camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v['Processo'])
+            else:
+                element = self.waitingElement(k, 'click', form='id')
+                if (element.tag_name == 'select'):
+                    valorElemento = str(v.strip()).title()
+                    valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
+                    select = self.selenium.select(element)
+                    valorAntigo = select.first_selected_option.text
+                    if (not(check) or (check and valorAntigo != (str(v)))):
+                        try:
+                            select.select_by_visible_text(valorElemento)
+                        except:
+                            checkValueInCombo(str(v.strip()), k)
+                        camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                        print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
 
-                else:
-                    element = self.waitingElement(k, 'click', form='id')
-                    if (element.tag_name == 'select'):
-                        valorElemento = str(v.strip()).title()
-                        valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
-                        select = self.selenium.select(element)
-                        valorAntigo = select.first_selected_option.text
-                        if (not(check) or (check and valorAntigo != (str(v)))):
-                            try:
-                                select.select_by_visible_text(valorElemento)
-                            except:
-                                checkValueInCombo(str(v.strip()), k)
-                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
-                            print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
+                else: #QUANDO É INPUTS OU TEXTAREAS
+                    if (not(check) or (check and element.get_attribute('value') != (str(v)))):
+                        element.clear()
+                        element.send_keys(str(v))
+                        if (k == 'txtNroCnj'):
+                            segredoJusticaAndamentos()
+                        camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                        print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
+                sleep(1)
+            # except Exception as err:
+            #     print(err)
+            #     naoInserido[k] = str(v)
 
-                    else: #QUANDO É INPUTS OU TEXTAREAS
-                        if (not(check) or (check and element.get_attribute('value') != (str(v)))):
-                            element.clear()
-                            element.send_keys(str(v))
-                            if (k == 'txtNroCnj'):
-                                segredoJusticaAndamentos()
-                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
-                            print ('REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(reg, k, v))
-                    sleep(1)
-            except:
-                naoInserido[k] = str(v)
+        if (naoInserido):
+            print ('\nREG {}: -> NÃO INSERIDOS: {} - "{}"'.format(reg, naoInserido))
+            print(naoInserido)
 
         idNovaPasta = recuperaIdIntegra()
         complementoAdversa = ""
@@ -543,36 +538,40 @@ class IntegraFunctions(object):
             sleep(1)
 
         try: # Botão salvar
-            print('REG {}: ANTES DE SALVAR'.format(reg))
-            botaoSalvar = self.driver.find_element_by_id("btnSalvar")
-            botaoSalvar.click()
-            print('REG {}: SALVANDO'.format(reg))
-            sleep(1)
-            # POP-UPS APÓS O SALVAMENTO
-            try:
-                while True:
-                    sleep(1)
-                    container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
-                    if (container):
-                        try:
-                            janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
-                        except:
-                            janelaOutrosProcessos = False
 
-                        btnOk = self.waitingElement('popup_ok', 'show', 'id')
-                        btnOk.click()
+            botoesSalvar = self.driver.find_elements_by_id("btnSalvar")
 
-                        if (janelaOutrosProcessos):
-                            complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                            print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
-                            continue
+            for botaoSalvar in botoesSalvar:
+                print('REG {}: ANTES DE SALVAR'.format(reg))
+                # botaoSalvar = self.driver.find_element_by_id("btnSalvar")
+                botaoSalvar.click()
+                print('REG {}: SALVANDO'.format(reg))
+                sleep(1)
+                # POP-UPS APÓS O SALVAMENTO
+                try:
+                    while True:
+                        sleep(1)
+                        container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
+                        if (container):
+                            try:
+                                janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
+                            except:
+                                janelaOutrosProcessos = False
+
+                            btnOk = self.waitingElement('popup_ok', 'show', 'id')
+                            btnOk.click()
+
+                            if (janelaOutrosProcessos):
+                                complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
+                                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
+                                continue
+                            else:
+                                break
                         else:
                             break
-                    else:
-                        break
-            except:
-                pass
-            _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
+                except:
+                    pass
+                _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
 
             try:
                 complementoNaoInseridos =''
@@ -602,10 +601,13 @@ class IntegraFunctions(object):
 
     def inserirParteAdversa(self, registro, reg, naoInserido, check=False):
         complementoAdversa = ""
-
         if (check):
             tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
-            tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
+            try:
+                tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
+            except:
+                tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
+                pass
             tabelaAdversa.click()
             sleep(1)
 
