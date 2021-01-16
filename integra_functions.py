@@ -109,7 +109,6 @@ class IntegraFunctions(object):
                 tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
                 tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
                 tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
-                tabelaRegistro.click()
                 print('{} - {} {} FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
                 retorno = True
             except:
