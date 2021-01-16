@@ -547,14 +547,11 @@ class IntegraFunctions(object):
                     continue
                 botaoSalvar = None
                 botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
-                # botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
-                print('REG {}: ANTES DE SALVAR'.format(reg))
-                # botaoSalvar = self.driver.find_element_by_id("btnSalvar")
                 botaoSalvar.click()
                 print('REG {}: SALVANDO'.format(reg))
                 sleep(1)
-                # POP-UPS APÓS O SALVAMENTO
-                try:
+
+                try: # POP-UPS APÓS O SALVAMENTO
                     while True:
                         sleep(1)
                         container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
@@ -566,6 +563,7 @@ class IntegraFunctions(object):
 
                             btnOk = self.waitingElement('popup_ok', 'show', 'id')
                             btnOk.click()
+                            sleep(1.5)
 
                             if (janelaOutrosProcessos):
                                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
@@ -577,7 +575,7 @@ class IntegraFunctions(object):
                             break
                 except:
                     pass
-                sleep(2)
+                sleep(1.5)
 
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
             try:
