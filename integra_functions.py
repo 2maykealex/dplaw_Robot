@@ -210,17 +210,16 @@ class IntegraFunctions(object):
                             countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                             print('REALIZANDO PESQUISA')
                             if (countChar >= 14):
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                                _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
                             else:
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                                _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
                         except:
                             return False
 
-                        if (searchFolder):
-                            elementoPesquisado.click()
-                            print('INCLUIR/ALTERAR PROCESSO')
-                            messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                            #confereAgendamentos = self.criaAgendammentos(registro, reg)
+                        elementoPesquisado.click() # Na conferência, sempre vai clicar
+                        print('INCLUIR/ALTERAR PROCESSO')
+                        messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                        #confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
                     break
                 else:
@@ -353,8 +352,6 @@ class IntegraFunctions(object):
                     countResp = countResp + 1
                     if (countResp == totalResp):
                         break
-                # y = y + 1
-            # comboResponsavel.click()  # clica e Fecha as opções
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
         def segredoJusticaAndamentos():
