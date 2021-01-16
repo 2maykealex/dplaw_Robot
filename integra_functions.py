@@ -66,8 +66,7 @@ class IntegraFunctions(object):
         except:
             abriuPesquisa = self.acessaMenuPesquisa()
 
-        element = None
-        xPathClick = None
+        tabelaRegistro = ''
         if (abriuPesquisa):
             sleep(3)
             self.checkPopUps()
@@ -96,25 +95,31 @@ class IntegraFunctions(object):
             sleep(3)
             botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
             botaoPesquisar.click()
-            sleep(3)
 
-            try:   #Checa se não existe registros para essa pasta
-                element = self.driver.find_element_by_id('loopVazio').is_displayed()
-                hora = strftime("%H:%M:%S")
+            #AGUARDA PELO CARREGAMENTO
+            while True:
+                element = self.driver.find_element_by_id('backgroundPopup').is_displayed()
+                if (not (element)):
+                    break
+
+            tabelaRegistro = self.waitingElement('divCliente', 'click', 'id')
+            hora = strftime("%H:%M:%S")
+            try:
+                tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
+                tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
+                tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
+                tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
+                tabelaRegistro.click()
+                print('{} - {} {} FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
+                retorno = True
+            except:
+                tabelaRegistro = tabelaRegistro.find_element_by_id('loopVazio')
                 print('{} - {} {} NÃO FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
                 retorno = False
-            except:  # SELECIONA O CLIENTE PESQUISADO  -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
-                try:
-                    element = self.waitingElement("{}/div".format(xPathClick))
-                except:
-                    pass
-                    # element = self.waitingElement('//*[@id="divCliente"]/div[3]/table/tbody/tr')  #clica no registro -> abre a pasta
-                retorno = True
         else:
             retorno = False
-            element = ''
 
-        return retorno, element
+        return retorno, tabelaRegistro
 
     def uploadFile(self):
         self.checkPopUps()
