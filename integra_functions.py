@@ -644,7 +644,7 @@ class IntegraFunctions(object):
 
     def criaAgendammentos(self, registro, reg, check=False):
         #TODO CHECAR OS AGENDAMENTOS
-        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
+        print("\nREG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
