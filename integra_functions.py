@@ -197,8 +197,8 @@ class IntegraFunctions(object):
                 print("\n-----------------------------------------")
                 print("Login utilizado: {}".format(self.login))
                 print("-----------------------------------------\n")
-                # robo = self.abrePasta(registros, reg)
-                robo = True
+                robo = self.abrePasta(registros, reg)
+                # robo = True
                 if (robo):
                     _abreWebDriver = self.acessToIntegra(self.login, self.password)
                     reg = 1
@@ -257,6 +257,7 @@ class IntegraFunctions(object):
                 print('=========================================================')
                 print('REG {}: INICIANDO: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
 
+                searchFolder = None
                 try:
                     print('REG {}: REALIZANDO PESQUISA: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                     if (self.isTest and 'abertura' in registros['tipo']):
@@ -542,9 +543,8 @@ class IntegraFunctions(object):
             sleep(1)
 
         try: # Botão salvar
-            for contSalvar in range(2):
-                if (not(check)):
-                    continue
+            countSalvar = 2 if (check) else 1
+            for contSalvar in countSalvar:
                 botaoSalvar = None
                 botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
                 botaoSalvar.click()
