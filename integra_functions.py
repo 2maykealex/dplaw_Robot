@@ -741,7 +741,6 @@ class IntegraFunctions(object):
                         continue
 
                 # CAMPO QUANDO  - SÓ SE A DATA FOR MAIOR QUE HOJE - se menor ou igual: mantém a data do sistema
-                # campoQuando = datetime.strptime(dataAgendamento, '%d/%m/%Y')
                 if (datetime.strptime(agendamento, '%d/%m/%Y') > datetime.now()):
                     sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
