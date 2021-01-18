@@ -544,7 +544,7 @@ class IntegraFunctions(object):
 
         try: # Botão salvar
             countSalvar = 2 if (check) else 1
-            for contSalvar in countSalvar:
+            for contSalvar in range(countSalvar):
                 botaoSalvar = None
                 botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
                 botaoSalvar.click()
