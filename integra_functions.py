@@ -345,7 +345,7 @@ class IntegraFunctions(object):
                 if (item.text in respProcesso):
                     try:
                         item.click()
-                        print ('\nREG {}: {} -> RESPONSÁVEL SELECIONADO: "{}"'.format(reg, k, item.text))
+                        print ('REG {}: -> ITEM PREENCHIDO : {} -> RESPONSÁVEL "{}"'.format(reg, k, item.text))
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
@@ -663,10 +663,6 @@ class IntegraFunctions(object):
                 self.checkPopUps()
                 _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
                 print('ABRIU FORMULÁRIO DE AGENDAMENTOS')
-
-                responsaveis = []
-                textoAgendamento = ''
-
                 print('REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(reg, tipoAgendamento, agendamento))
                 sleep(1)
                 try:
@@ -677,9 +673,7 @@ class IntegraFunctions(object):
                     print('ERRO NO COMBO DESTINATÁRIO - INICIANDO NOVAMENTE')
                     break
 
-                responsaveis    = registro['slcResponsavel'][tipoAgendamento]
-                dataAgendamento = registro['agendamentos'][tipoAgendamento]
-
+                textoAgendamento = ''
                 if tipoAgendamento == 'Audiência':
                     if ('HoraAudiencia' in registro['agendamentos']):
                         HoraAudiencia = "{}".format(registro['agendamentos']['HoraAudiencia'])
@@ -698,7 +692,7 @@ class IntegraFunctions(object):
                 elif tipoAgendamento == 'Fotocópia':
                     textoAgendamento = "Fotocópia integral"
 
-                totalResp = len(responsaveis)
+                totalResp = len(registro['slcResponsavel'])
                 countResp = 0
                 y = 1
                 print('REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(reg))
@@ -706,7 +700,7 @@ class IntegraFunctions(object):
                 while True:
                     try:
                         for item in listDestinatarios:  #itera inputs recuperados, checa e clica
-                            if (item.text in responsaveis ):
+                            if (item.text in registro['slcResponsavel'] ):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.waitingElement(xPathItem, 'click')
                                 element.click()
@@ -747,7 +741,8 @@ class IntegraFunctions(object):
                         continue
 
                 # CAMPO QUANDO  - SÓ SE A DATA FOR MAIOR QUE HOJE - se menor ou igual: mantém a data do sistema
-                if (datetime.strptime(dataAgendamento, '%d/%m/%Y') > datetime.now()):
+                # campoQuando = datetime.strptime(dataAgendamento, '%d/%m/%Y')
+                if (datetime.strptime(agendamento, '%d/%m/%Y') > datetime.now()):
                     sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
                     quandoElement = self.waitingElement(xPathElement, 'show')
