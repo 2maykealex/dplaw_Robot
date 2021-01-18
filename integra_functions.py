@@ -747,7 +747,7 @@ class IntegraFunctions(object):
                     quandoElement = self.waitingElement(xPathElement, 'show')
                     quandoElement.clear()
                     sleep(1)
-                    quandoElement.send_keys(dataAgendamento)
+                    quandoElement.send_keys(agendamento)
                     print('REG {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg))
 
                     try: #se o calendário estiver aberto, será fechado
