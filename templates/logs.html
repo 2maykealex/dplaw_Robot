@@ -89,12 +89,14 @@
             if (element){
                 let elementos = document.getElementsByClassName("botaoFiltro");
                 for (el of elementos) {
-                    el.classList.remove('btn-warning')
+                    el.classList.remove('btn-danger')
                     el.classList.add('btn-primary')
+                    el.style.fontWeight = 'normal'
                 };
 
                 if (filter = 'all'){
-                    element.classList.add('btn-warning')
+                    element.classList.add('btn-danger')
+                    element.style.fontWeight = 'bold'
                 };
             };
         };
@@ -141,34 +143,16 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
-            <div class="row mb-5">
-                <div class="col-md-4 list-group">
-                    <button id="btnAbertura" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('abertura', this)">ABERTURAS</button>
-                </div>
-                <div class="col-md-4 list-group">
-                    <button id="btnAtualizacao" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('atualizacao', this)">ATUALIZAÇÕES</button>
-                </div>
-                <div class="col-md-4 list-group">
-                    <button id="btnAll" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('all', this)">TODOS</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3"></div>
-    </div>
 
     <div class="row mb-4">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
             <h3>BAIXAR LOGS</h3>
-            <h6>LISTAGEM DECRESCENTE: É ATUALIZADA A CADA 5 SEGUNDOS</h6>
         </div>
         <div class="col-md-3"></div>
     </div>
 
-    <div id="logs">
+    <div id="logs" style="margin-bottom: 6em;">
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
@@ -190,5 +174,23 @@
             <div class="col-md-2"></div>
         </div>
     </div>
+
+    <footer class="row" style=" position: fixed; bottom: 0; width: 100%;">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="row mb-5">
+                <div class="col-md-4 list-group">
+                    <button id="btnAll" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('all', this)">TODOS</button>
+                </div>
+                <div class="col-md-4 list-group">
+                    <button id="btnAbertura" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('abertura', this)">ABERTURAS</button>
+                </div>
+                <div class="col-md-4 list-group">
+                    <button id="btnAtualizacao" class="btn btn-primary list-item botaoFiltro" onclick="listLogs('atualizacao', this)">ATUALIZAÇÕES</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </footer>
 
 {% endblock %}
