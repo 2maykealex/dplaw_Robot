@@ -91,7 +91,7 @@ class IntegraFunctions(object):
             textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
             textoPesquisa.send_keys(str(search))
 
-            print("PESQUISA -  {}: {}".format(tipoPesquisa, search).upper())
+            print("\nPESQUISA -  {}: {}".format(tipoPesquisa, search).upper())
             sleep(3)
             botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
             botaoPesquisar.click()
@@ -221,6 +221,7 @@ class IntegraFunctions(object):
                             #confereAgendamentos = self.criaAgendammentos(registro, reg)
                         reg = reg + 1
 
+                    basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
                     break
                 else:
@@ -335,7 +336,7 @@ class IntegraFunctions(object):
             print('HOUVE UM ERRO: {}'.format(err))
             pass
 
-        basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
+        basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
         self.logoutIntegra()
         return True
 
@@ -384,7 +385,7 @@ class IntegraFunctions(object):
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
                 numIdPromad = numIdPromad.split(' ')[-1].strip()
-                print("\nREG {}: ID PROMAD: {}".format(reg, numIdPromad))
+                print("\nREG {}: -> ID PROMAD: {}".format(reg, numIdPromad))
                 return numIdPromad
             else:
                 return numIdPromad
@@ -438,7 +439,7 @@ class IntegraFunctions(object):
 
         self.checkPopUps()
         sleep(2)
-        print('\nREG {}: INICIANDO INCLUSAO: {}'.format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+        print('\nREG {}: -> INICIANDO: {}'.format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
         naoInserido = {}
         camposInseridos = '|'
 
@@ -544,7 +545,7 @@ class IntegraFunctions(object):
                 botaoSalvar = None
                 botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
                 botaoSalvar.click()
-                print('REG {}: SALVANDO'.format(reg))
+                print('REG {}: -> SALVANDO'.format(reg))
                 sleep(1)
 
                 try: # POP-UPS APÓS O SALVAMENTO
@@ -563,7 +564,7 @@ class IntegraFunctions(object):
 
                             if (janelaOutrosProcessos):
                                 complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                                print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
+                                print('REG {}: -> ADVERSA TEM OUTROS PROCESSOS'.format(reg))
                                 continue
                             else:
                                 break
@@ -890,6 +891,7 @@ class IntegraFunctions(object):
             print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
             return True
 
+#TODO SE DER ERRO OU FALHA NA VERIFICAÇÃO -> DAR UM CONTINUE E REINICIAR O WEBDRIVER (SE ISSO FOR O CASO)
 
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
 #TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
