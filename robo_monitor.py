@@ -7,26 +7,12 @@ from time import sleep, strftime
 from datetime import date
 from datetime import datetime
 from threading import Thread
-from threading import enumerate
-from basic_functions import checkPID
 from basic_functions import createFolder
 from basic_functions import createLog
-from basic_functions import checkIfTest
 from basic_functions import abreArquivo
 from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
 import json
-
-#TODO checkIFexecuting
-# def checkIFexecuting():
-#     deletingFiles = []
-#     for arquivo, logFile in executingFiles.items():
-#         if (not(osPath.isfile(logFile))):
-#             deletingFiles.append(arquivo)
-
-#     for file in deletingFiles:
-#         del executingFiles[file]
-#         print('===O ARQUIVO {} FOI REMOVIDO DA LISTA==='.format(arquivo))
 
 def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
     try:

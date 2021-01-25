@@ -1,16 +1,8 @@
 from selenium_functions import SeleniumFunctions
 from datetime import datetime
-from datetime import timedelta
 from time import strftime
 from time import sleep
 import basic_functions
-from os import mkdir
-from os import remove
-from os import path as pathFolder
-from os import getcwd as osGetCWD
-from os import getpid
-from pprint import pprint
-import json
 
 class IntegraFunctions(object):
 
@@ -296,7 +288,6 @@ class IntegraFunctions(object):
                                 searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
                         except:
                             return False
-                        # searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
                 except:
                     print('{}REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA POR {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                     return False
@@ -482,8 +473,6 @@ class IntegraFunctions(object):
                     if (k in ['txtNroCnj']):
                         v = basic_functions.ajustarNumProcessoCNJ(v)
                     print ('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
-                # else:
-                #     print('\n')
 
                 #TODO   verificar se dá pra MOVER  "if (k == 'slcResponsavel'):"    PARA DENTRO DO   "if (element.tag_name == 'select')"  (LOGO ABAIXO)
                 if (k == 'slcResponsavel'):
@@ -492,7 +481,7 @@ class IntegraFunctions(object):
                     selectResponsaveis = self.selenium.select(selectResponsaveis)
                     respProcesso = v.copy()
 
-                    if (check): #CONFERENCIA
+                    if (check):
                         antigosSelecionados = []
                         all_selected_options = selectResponsaveis.all_selected_options
                         if (all_selected_options):
