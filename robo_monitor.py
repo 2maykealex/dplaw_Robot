@@ -29,20 +29,19 @@ import json
 #         print('===O ARQUIVO {} FOI REMOVIDO DA LISTA==='.format(arquivo))
 
 def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
-    # current_thread().name
     try:
         integra = IntegraFunctions()
         integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
-            # ARQUIVOS_EXECUTADOS = "{}\\arquivos_executados\\{}".format(path.dirname(path.realpath(__file__)), folderName)
-            executedFile = "{}\\{}".format(ARQUIVOS_EXECUTADOS.replace('folder', folderName), pathFile.split('\\')[-1])
-            createFolder(ARQUIVOS_EXECUTADOS)
+            executedFileFolder = "{}\\{}".format(ARQUIVOS_EXECUTADOS, folderName)
+            executedFile = "{}\\{}".format(executedFileFolder, pathFile.split('\\')[-1])
+            createFolder(executedFileFolder)
 
-            if (path.isfile(executedFile)):#todo Testar
+            if (path.isfile(executedFile)):
                 rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
-            move("{}".format(pathFile), ARQUIVOS_EXECUTADOS) #move o arquivo para a pasta 'arquivos_executados'
+            move("{}".format(pathFile), executedFileFolder) #move o arquivo para a pasta 'arquivos_executados'
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
         pass
@@ -99,6 +98,8 @@ while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, 
                 executingFiles.append(file)
                 executeRobot.append(Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
             else:
+                if (file in executingFiles):
+                    executingFiles.remove(file)
                 createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
                 move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
                 print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
