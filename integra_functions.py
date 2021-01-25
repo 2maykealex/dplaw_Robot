@@ -115,6 +115,7 @@ class IntegraFunctions(object):
 
             if (tabelaRegistro):
                 try:
+                    sleep(1)
                     tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
                     tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
                     tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
