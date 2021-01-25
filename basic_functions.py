@@ -14,6 +14,10 @@ def checkLogin(tipo=''):
     else:
         login="cgst@dplaw.com.br"
         password="gestao0"
+
+    print("\n-----------------------------------------")
+    print("Login utilizado: {}".format(login))
+    print("-----------------------------------------\n")
     return login, password
 
 def checkIfTest():
