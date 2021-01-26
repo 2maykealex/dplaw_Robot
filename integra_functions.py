@@ -226,8 +226,8 @@ class IntegraFunctions(object):
 
                         if (elementoPesquisado):
                             elementoPesquisado.click() # Na conferência, sempre vai clicar
-                            messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                            #confereAgendamentos = self.criaAgendammentos(registro, reg)
+                            # messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                            confereAgendamentos = self.criaAgendammentos(registro, reg, True)
                         reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
@@ -648,6 +648,59 @@ class IntegraFunctions(object):
         return (complementoAdversa, naoInserido)
 
     def criaAgendammentos(self, registro, reg, check=False):
+
+        def checkAgendamentos():
+            try:
+                sleep(2)
+                getAgendamentos = self.driver.find_elements_by_class_name('tablesorter')[0]
+                getAgendamentos = getAgendamentos.find_element_by_tag_name('tbody')
+                getAgendamentos = getAgendamentos.find_elements_by_tag_name('tr')
+
+                if (getAgendamentos):
+                    listaAgendamentos = []
+                    for itemCriado in getAgendamentos:
+                        dadosAgendamento = {}
+                        itemCriado.click()
+                        sleep(1)
+                        _cadastroAgendamentoPrincipal = self.waitingElement('cadastroAgendamentoPrincipal', 'show', 'id')
+
+
+                        tipoAgendItem  = itemCriado.text.split('\n')[0].split(' ')[0]
+                        HoraAudiencia  = itemCriado.text.split('\n')[0].split(' ')[1]
+
+                        valorAgendItem = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/label[1]', 'show').text.strip()
+                        # tipoAgendItem  = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[1]/td/div[2]', 'show').text.strip()
+                        # valorAgendItem = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/label[1]', 'show').text.strip()
+                        # dadosAgendamento[tipoAgendItem] = valorAgendItem
+
+                        listDestinatarios = self.waitingElement('aDestinatario', 'show', 'id')
+                        listDestinatarios.click()
+                        listDestinatarios = self.waitingElement('JTPop_copy', 'show', 'id')
+                        listDestinatarios = listDestinatarios.find_elements_by_tag_name('tr')
+
+                        contDest = 1
+                        resps = []
+                        while True:
+                            if (contDest <= len(listDestinatarios)-1):
+                                resps.append(listDestinatarios[contDest].text.split('\n')[0])
+
+                            else:
+                                break
+                            contDest = contDest + 1
+
+                        dadosAgendamento[tipoAgendItem] = {'data': valorAgendItem,
+                                                           'slcResponsavel': resps}
+
+
+
+
+
+                        # dadosAgendamento['tipoAgendamento'] = self.driver.find_elements_by_class_name('tablesorter')
+            except:
+                pass
+
+            print('{}REG {}: OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!'.format(self.fileName, reg))
+
         #TODO CHECAR OS AGENDAMENTOS
         print("\n{}REG {}: INICIANDO OS AGENDAMENTOS:".format(self.fileName, reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
@@ -663,9 +716,21 @@ class IntegraFunctions(object):
         messageNaoAbertos = ''
         refazAgendamento = 1
 
+        agendamentosJaCriados = None
+        if (check):
+            agendamentosJaCriados = checkAgendamentos()
+
         for tipoAgendamento, agendamento in agendamentos.items():
             while True:
                 self.checkPopUps()
+
+                if (agendamentosJaCriados):
+                    for agendamentoJaCriadoItem in agendamentosJaCriados:
+                        for k, v in agendamentoJaCriadoItem.items():
+                            pass
+                            # if (tipoAgendamento in v):
+                            #     break #checa se o agendamento atual está na lista.. se estiver, pula
+
                 _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
                 print('{}REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(self.fileName, reg, tipoAgendamento, agendamento))
                 sleep(1)
@@ -881,6 +946,7 @@ class IntegraFunctions(object):
             if (tentativa > 1): tentativa = 1
 
         print('{}REG {}: OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!'.format(self.fileName, reg))
+
 
 
 #TODO SE DER ERRO OU FALHA NA VERIFICAÇÃO -> DAR UM CONTINUE E REINICIAR O WEBDRIVER (SE ISSO FOR O CASO)
