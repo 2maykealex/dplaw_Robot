@@ -652,7 +652,7 @@ class IntegraFunctions(object):
         def checkAgendamentos():
             try:
                 print('\n{}REG {}: OBTENDO AGENDAMENTOS JÁ REALIZADOS NA PASTA'.format(self.fileName, reg))
-                listaAgendamentos = []
+                listaAgendamentos = {}
                 contAgend = 0
                 while True:
                     sleep(2)
@@ -669,10 +669,9 @@ class IntegraFunctions(object):
                             agendamentoItemTipo  = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[1]/td/div[2]', 'show').text.strip()
                             agendamentoItemData  = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/label[1]', 'show').text.strip()
                             agendamentoItemDados = {}
-                            agendamentoItemDados['data'] = agendamentoItemData
+                            agendamentoItemDados[agendamentoItemTipo] = agendamentoItemData
                             break
                         except:
-                            print('obtendo......')
                             pass
 
                     try:
@@ -701,7 +700,7 @@ class IntegraFunctions(object):
                     except:
                         pass
 
-                    listaAgendamentos.append(dadosAgendamento)
+                    listaAgendamentos.update(dadosAgendamento)
                     fecharAgendamento = self.waitingElement('agendamentoFechar', 'click', 'id')
                     fecharAgendamento.click()
                     while self.driver.find_element_by_id('carregando').is_displayed():
@@ -722,7 +721,6 @@ class IntegraFunctions(object):
 
         if ('HoraAudiencia' in agendNaoAbertos):
             agendNaoAbertos.remove('HoraAudiencia')
-            del agendamentos['HoraAudiencia']
 
         message = ''
         messageFinal = ''
@@ -737,18 +735,22 @@ class IntegraFunctions(object):
                 print('erro')
 
         for tipoAgendamento, agendamento in agendamentos.items():
+            if (tipoAgendamento == 'HoraAudiencia'):
+                continue
+
+            if (agendamentosJaCriados):
+                try:
+                    agendamentoSelecionado = agendamentosJaCriados[tipoAgendamento]
+                    for k, v in agendamentoSelecionado.items():
+                        if ((k in agendamentos.keys()) and (v in agendamentos.values())):
+                            if (k != 'HoraAudiencia'):
+                                agendNaoAbertos.remove(k)
+                    continue
+                except:
+                    pass
+
             while True:
                 self.checkPopUps()
-
-                if (agendamentosJaCriados):
-                    for agendamentoJaCriadoItem in agendamentosJaCriados:
-                        for k, v in agendamentoJaCriadoItem.items():
-                            print( 'tipo: ', k)
-                            for k1, v1 in v.items():
-                                print(' -> ', k1 , ' - ', v1)
-                            # if (tipoAgendamento in v):
-                            #     break #checa se o agendamento atual está na lista.. se estiver, pula
-
                 _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
                 print('{}REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(self.fileName, reg, tipoAgendamento, agendamento))
                 sleep(1)
