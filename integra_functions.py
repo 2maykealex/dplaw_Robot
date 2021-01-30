@@ -649,7 +649,7 @@ class IntegraFunctions(object):
 
     def criaAgendammentos(self, registro, reg, check=False):
 
-        def checkAgendamentos():
+        def checkAgendamentos(registro):
             try:
                 print('\n{}REG {}: OBTENDO AGENDAMENTOS JÁ REALIZADOS NA PASTA'.format(self.fileName, reg))
                 listaAgendamentos = {}
@@ -683,7 +683,8 @@ class IntegraFunctions(object):
                     dadosAgendamento[agendamentoItemTipo] = agendamentoItemDados
 
                     try:
-                        listDestinatarios = self.driver.find_element_by_id('aDestinatario', 'click', 'id')
+                        sleep(1)
+                        listDestinatarios = self.driver.find_element_by_id('aDestinatario')
                         sleep(.5)
                         listDestinatarios.click()
                         listDestinatarios = self.waitingElement('JTPop_copy', 'show', 'id')
@@ -698,9 +699,24 @@ class IntegraFunctions(object):
                             contDest = contDest + 1
                         dadosAgendamento[agendamentoItemTipo].update({'slcResponsavel': resps})
                     except:
+                        print('erro')
                         pass
 
                     listaAgendamentos.update(dadosAgendamento)
+
+                    try:
+                        if ((agendamentoItemTipo in agendamentos.keys()) and (agendamentoItemData in agendamentos[agendamentoItemTipo])):
+                            for resp in resps:
+                                if (resp in agendamentos):
+                                    pass
+
+                            if (agendamentoItemTipo != 'HoraAudiencia'):
+                                agendNaoAbertos.remove(agendamentoItemTipo)
+                        else:
+                            pass # Recadastrar item faltante
+                    except:
+                        pass
+
                     fecharAgendamento = self.waitingElement('agendamentoFechar', 'click', 'id')
                     fecharAgendamento.click()
                     while self.driver.find_element_by_id('carregando').is_displayed():
@@ -727,27 +743,16 @@ class IntegraFunctions(object):
         messageNaoAbertos = ''
         refazAgendamento = 1
 
-        agendamentosJaCriados = None
-        if (check):
-            try:
-                agendamentosJaCriados = checkAgendamentos()
-            except:
-                print('erro')
+        # agendamentosJaCriados = None
+        # if (check):
+        #     try:
+        #         agendamentosJaCriados = checkAgendamentos(registro)
+        #     except:
+        #         print('erro')
 
         for tipoAgendamento, agendamento in agendamentos.items():
             if (tipoAgendamento == 'HoraAudiencia'):
                 continue
-
-            if (agendamentosJaCriados):
-                try:
-                    agendamentoSelecionado = agendamentosJaCriados[tipoAgendamento]
-                    for k, v in agendamentoSelecionado.items():
-                        if ((k in agendamentos.keys()) and (v in agendamentos.values())):
-                            if (k != 'HoraAudiencia'):
-                                agendNaoAbertos.remove(k)
-                    continue
-                except:
-                    pass
 
             while True:
                 self.checkPopUps()
