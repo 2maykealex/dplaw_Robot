@@ -152,9 +152,16 @@ class IntegraFunctions(object):
         element.click()
 
     def logoutIntegra(self):
-        self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
-        sleep(1.5)
-        self.driver.quit()
+        try:
+            self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
+        except:
+            pass
+
+        try:
+            sleep(1.5)
+            self.driver.quit()
+        except:
+            pass
 
     def checkPopUps(self):
         popupOk = False
@@ -208,27 +215,27 @@ class IntegraFunctions(object):
                         reg = 'CONFERENCIA'
 
                 if (robo or reg == 'CONFERENCIA'):
-                    print('\n=============== CONFERÊNCIA DE DADOS ===============')
-                    _abreWebDriver = self.acessToIntegra(self.login, self.password)
-                    reg = 1
-                    while True:
-                        if (reg > len(registros['registros'])):
-                            break
-                        registro = registros['registros']['{}'.format(reg)]
-                        try:
-                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                            if (countChar >= 14):
-                                _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
-                            else:
-                                _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                        except:
-                            return False
+                    # print('\n=============== CONFERÊNCIA DE DADOS ===============')
+                    # _abreWebDriver = self.acessToIntegra(self.login, self.password)
+                    # reg = 1
+                    # while True:
+                    #     if (reg > len(registros['registros'])):
+                    #         break
+                    #     registro = registros['registros']['{}'.format(reg)]
+                    #     try:
+                    #         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                    #         if (countChar >= 14):
+                    #             _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                    #         else:
+                    #             _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                    #     except:
+                    #         return False
 
-                        if (elementoPesquisado):
-                            elementoPesquisado.click() # Na conferência, sempre vai clicar
-                            # messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                            confereAgendamentos = self.criaAgendammentos(registro, reg, True)
-                        reg = reg + 1
+                    #     if (elementoPesquisado):
+                    #         elementoPesquisado.click() # Na conferência, sempre vai clicar
+                    #         messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                    #         # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
+                    #     reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
@@ -479,7 +486,7 @@ class IntegraFunctions(object):
                     self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
                     selectResponsaveis = self.waitingElement(k, 'click', form='id')
                     selectResponsaveis = self.selenium.select(selectResponsaveis)
-                    respProcesso = v.copy()
+                    respProcesso = v['Processo'].copy()
 
                     if (check):
                         antigosSelecionados = []
@@ -786,7 +793,7 @@ class IntegraFunctions(object):
                 elif tipoAgendamento == 'Fotocópia':
                     textoAgendamento = "Fotocópia integral"
 
-                totalResp = len(registro['slcResponsavel'])
+                totalResp = len(registro['slcResponsavel'][tipoAgendamento])
                 countResp = 0
                 y = 1
                 print('{}REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(self.fileName, reg))
@@ -794,7 +801,7 @@ class IntegraFunctions(object):
                 while True:
                     try:
                         for item in listDestinatarios:  #itera inputs recuperados, checa e clica
-                            if (item.text in registro['slcResponsavel'] ):
+                            if (item.text in registro['slcResponsavel'][tipoAgendamento] ):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.waitingElement(xPathItem, 'click')
                                 element.click()
