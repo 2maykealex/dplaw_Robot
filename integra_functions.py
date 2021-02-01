@@ -517,6 +517,12 @@ class IntegraFunctions(object):
 
                     else: #QUANDO É INPUTS OU TEXTAREAS
                         if (not(check) or (check and element.get_attribute('value') != (str(v)))):
+                            if (not(check)):
+                                if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
+                                    if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
+                                        if (element.get_attribute('value') != ''):
+                                            naoInserido[k] = '{} - JÁ PREENCHIDO COM O VALOR: {}.'.format(str(v), element.get_attribute('value'))
+                                            break
                             element.clear()
                             element.send_keys(str(v))
                             if (k == 'txtNroCnj'):
