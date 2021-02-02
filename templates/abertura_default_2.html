@@ -234,7 +234,8 @@
                     <button type="button" class="btn btn-success form-control mt-2" style="width: 100%; height: 90%;" onclick="mudaRegistro(2);">Próximo Registro >>></button>
                 </div>
                 <div class="col-md-4  mb-3">
-                    <form action="{{url_for('executa')}}" method="post" >
+                    <form action="{{request.path}}/executa" method="post" >
+                    <!-- <form action="{{ url_for('executa') }}" method="post" > -->
                         <button type="submit" class="btn btn-warning form-control mt-2" style="width: 100%; height: 90%;" onclick="enviarDados();">EXECUTAR ABERTURAS</button>
                         <textarea name="txtAbertura" id="txtAbertura" cols="30" rows="10" hidden></textarea>
                     </form>
