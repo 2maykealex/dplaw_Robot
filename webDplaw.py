@@ -149,9 +149,9 @@ def defining():
 
         if (base['tipo'] == 'atualizacao'):
             if base['funcao'] == 'volumetria':
-                itemDict = {'txtPasta': '{}'.format((registro[7].strip())), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
+                itemDict = {'txtPasta': '{}'.format(str(registro[7]).strip()), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta': '{}'.format((registro[0].strip())), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
+                itemDict = {'txtPasta': '{}'.format(str(registro[0]).strip()), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
@@ -183,7 +183,7 @@ def defining():
             objetosAcao = open(objetosAcao, 'r', encoding='utf-8')
 
             if (base['funcao'] == 'bradesco_arquivo'):
-                itemDict['txtPasta'] = registro[0]
+                itemDict['txtPasta'] = '{}'.format(registro[0])
 
                 try:
                     if (registro[1] != ''):
@@ -226,7 +226,7 @@ def defining():
 
             elif base['funcao'] == 'bradesco_texto':
                 pasta = registro[0].split('      ')[0].strip()
-                itemDict['txtPasta'] = pasta
+                itemDict['txtPasta'] = '{}'.format(pasta)
 
                 try:
                     if (registro[0].split('      ')[1].strip() != ''):
@@ -280,7 +280,7 @@ def defining():
                 itemDict['urlCliente']  = urlBRA
 
             elif base['funcao'] == 'bv':
-                itemDict['txtPasta']    = registro[0]
+                itemDict['txtPasta'] = '{}'.format(registro[0])
                 if (registro[1] != ''):
                     parteAdversa['txtNome']  = registro[1]
                     itemDict['parteAdversa'] = parteAdversa
@@ -328,7 +328,7 @@ def defining():
                 itemDict['urlCliente']  = urlFARO
 
             elif base['funcao'] == 'faro_extrajudicial':
-                itemDict['txtPasta']    = registro[1]
+                itemDict['txtPasta'] = '{}'.format(registro[1])
                 #ADVERSA
                 if (registro[2] != ''):
                     parteAdversa['txtNome']  = registro[2].strip()
@@ -347,7 +347,7 @@ def defining():
 
             elif base['funcao'] == 'oi_consolidado':
                 try:
-                    itemDict['txtPasta']  = str(int(registro[0]))
+                    itemDict['txtPasta'] = '{}'.format(int(registro[0]))
                 except:
                     continue
                 itemDict['txtNroCnj']       = str(registro[1].replace('[','').replace(']', ''))
@@ -367,7 +367,7 @@ def defining():
 
             elif base['funcao'] == 'oi_migracao':
                 try:
-                    itemDict['txtPasta']  = str(int(registro[0]))
+                    itemDict['txtPasta'] = '{}'.format(int(registro[0]))
                 except:
                     continue
                 itemDict['txtNroCnj'] = str(registro[1])
@@ -396,7 +396,7 @@ def defining():
 
             elif base['funcao'] == 'oi_civel':
                 try:
-                    itemDict['txtPasta']  = str(int(registro[0]))
+                    itemDict['txtPasta'] = '{}'.format(int(registro[0]))
                 except:
                     continue
 
@@ -440,7 +440,7 @@ def defining():
 
             elif base['funcao'] == 'oi_jec':
                 try:
-                    itemDict['txtPasta']  = str(int(registro[0]))
+                    itemDict['txtPasta'] = '{}'.format(int(registro[0]))
                 except:
                     continue
 
@@ -484,7 +484,7 @@ def defining():
                 itemDict['urlCliente']  = urlOi
 
         if (len(str(itemDict['txtPasta'])) >= 14):
-            itemDict['txtPasta'] = ajustarNumProcessoCNJ(str(itemDict['txtPasta']))
+            itemDict['txtPasta'] = '{}'.format(ajustarNumProcessoCNJ(str(itemDict['txtPasta'])))
 
         if ('txtNroProcesso' in itemDict):
             itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
@@ -516,7 +516,7 @@ def defining():
         return render_template('abertura_default.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3,status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
     elif (base['tipo'] == 'atualizacao'):
         gera_arquivo_atualizacao(registros, filename)
-        return redirect(url_for('logs', filter=base['tipo']))
+        return redirect(url_for('logs'))
 
 def checkLocalTramite(tramite):
     jec    = ['JEC', 'JEC CRIMINAL', 'VARA DO JEC', 'VARA JUIZADO ESPECIAL CIVEL CRIMINAL',
@@ -583,7 +583,7 @@ def abertura_default2():
     return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
 @app.route("/abertura/executa", methods=['POST', 'GET'])
-@app.route("/atualizacao/executa", methods=['POST', 'GET'])
+@app.route("/abertura/bradesco/default/part2/executa", methods=['POST', 'GET'])
 def executa():
     data = request.data
     data = request.form.to_dict()
@@ -615,7 +615,8 @@ def executa():
     with open(criaArquivo, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, ensure_ascii=True)
 
-    return render_template('logs.html')#TODO ENVIAR PARA ROTA!
+    return redirect(url_for('logs'))
+    # return render_template('logs.html')#TODO ENVIAR PARA ROTA!
 
 def gera_arquivo_atualizacao(data, filename):
     #reordenando os registros
