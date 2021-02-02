@@ -521,8 +521,8 @@ class IntegraFunctions(object):
                                 if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
                                     if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
                                         if (element.get_attribute('value') != ''):
-                                            naoInserido[k] = '{} - JÁ PREENCHIDO COM O VALOR: {}.'.format(str(v), element.get_attribute('value'))
-                                            break
+                                            naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
+                                            continue
                             element.clear()
                             element.send_keys(str(v))
                             if (k == 'txtNroCnj'):
@@ -535,8 +535,7 @@ class IntegraFunctions(object):
                 naoInserido[k] = str(v)
 
         if (naoInserido):
-            print('\n{}REG {}: -> NÃO INSERIDOS: {} - "{}"'.format(self.fileName, reg, naoInserido))
-            print(naoInserido)
+            print('\n{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
 
         idNovaPasta = recuperaIdIntegra()
         complementoAdversa = ""
