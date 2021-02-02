@@ -101,7 +101,8 @@ while True:
                 print('\n', executa.name,'\n')
                 try:
                     executa.start()
-                    del executeRobot[num] #JÁ É DELETADO DA LISTA LOGO QUE ENTRA EM EXECUÇÃO
                 except Exception as err:
                     print(err)
                     print('\n ERRO EM {}'.format(executa.name))
+
+            executeRobot = None
