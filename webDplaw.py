@@ -101,7 +101,11 @@ def getDefault(sigla):
     dadosPadroes['slcResponsavel'] = responsaveis
     return dadosPadroes
 
-@app.route("/defining", methods=['POST'])
+@app.route("/abertura/bradesco/padronizacao", methods=['POST'])
+@app.route("/abertura/oi/padronizacao", methods=['POST'])
+@app.route("/abertura/bv/padronizacao", methods=['POST'])
+@app.route("/abertura/faro/padronizacao", methods=['POST'])
+# @app.route("/defining", methods=['POST'])
 def defining():
     data = request.form.to_dict()
     file = request.files['arquivo']
@@ -544,10 +548,10 @@ def checkLocalTramite(tramite):
         tramite = 'Centro Judiciário de Solução de Conflitos e Cidada'
     return tramite
 
-@app.route("/abertura/oi/default/part2", methods=['POST'])
-@app.route("/abertura/bv/default/part2", methods=['POST'])
-@app.route("/abertura/faro/default/part2", methods=['POST'])
-@app.route("/abertura/bradesco/default/part2", methods=['POST'])
+@app.route("/abertura/oi/padronizacao/individual", methods=['POST'])
+@app.route("/abertura/bv/padronizacao/individual", methods=['POST'])
+@app.route("/abertura/faro/padronizacao/individual", methods=['POST'])
+@app.route("/abertura/bradesco/padronizacao/individual", methods=['POST'])
 def abertura_default2():
     #importando dados base
     clientes = DADOS +'\\'+'clientes.txt'
@@ -582,8 +586,9 @@ def abertura_default2():
     data = json.loads(data)
     return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
-@app.route("/abertura/executa", methods=['POST', 'GET'])
-@app.route("/abertura/bradesco/default/part2/executa", methods=['POST', 'GET'])
+# @app.route("/abertura/executa", methods=['POST', 'GET'])
+# @app.route("/abertura/bradesco/default/part2/executa", methods=['POST', 'GET'])
+@app.route("/executa", methods=['POST', 'GET'])
 def executa():
     data = request.data
     data = request.form.to_dict()
