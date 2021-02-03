@@ -140,7 +140,7 @@
             <input type="text" name="siglaPadrao" id="siglaPadrao" value="BV" class="form-control content text-center" disabled>
         </div>
     </div>
-    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('defining') }}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="tipo" value="abertura">
         <input type="hidden" name="funcao" value="bv">
         <input type="hidden" name="clientePadrao" id="clientePadrao" value="BANCO VOTORANTIM S.A">
