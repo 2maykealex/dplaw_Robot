@@ -586,8 +586,6 @@ def abertura_default2():
     data = json.loads(data)
     return render_template('abertura_default_2.html', data=data, clientes=clientes, gruposprocessos=gruposprocessos, localizadores=localizadores, resp1=resp1, resp2=resp2, resp3=resp3, status=status, varas=varas, locaistramites=locaistramites, assuntos=assuntos, detalhes=detalhes, areasAtuacao=areasAtuacao, fases=fases, objetosAcao=objetosAcao)
 
-# @app.route("/abertura/executa", methods=['POST', 'GET'])
-# @app.route("/abertura/bradesco/default/part2/executa", methods=['POST', 'GET'])
 @app.route("/executa", methods=['POST', 'GET'])
 def executa():
     data = request.data
