@@ -109,7 +109,8 @@
 {% endblock%}
 
 {% block content %}
-    <form action="{{url_for('defining')}}" method="post" enctype="multipart/form-data">
+
+    <form action="{{request.path}}/padronizacao" method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-4">
                 <label class="ml-2" for="clientePadrao">Cliente</label>
@@ -146,9 +147,8 @@
             </div>
             <div class="col-md-4 mt-2">
                 <label class="" for="btnSend"></label>
-                <button type="submit" class="btn btn-success  btn-block form-control" id="btnSend">ENVIAR</button>
+                <button type="submit" class="btn btn-success  btn-block form-control" id="btnSend">PADRONIZAR</button>
             </div>
         </div>
-
     </form>
 {% endblock %}
