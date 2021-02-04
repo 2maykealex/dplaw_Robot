@@ -719,8 +719,6 @@ def listLogs(filtro):
                     }
                 files.update(file)
                 item = item + 1
-                if (item > 20):
-                    break
     # files.sort()
 
     return files
