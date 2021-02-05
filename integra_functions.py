@@ -486,7 +486,7 @@ class IntegraFunctions(object):
         itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
         for k, v in registro.items():
             valorAntigo = ''
-            #TODO salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
+            #TODO salvar o valor antigo no LOG
             try:
                 if (k in itensExcluidosLoop or v == None):
                     continue
