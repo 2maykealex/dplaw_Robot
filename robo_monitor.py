@@ -44,6 +44,7 @@ createFolder(ARQUIVOS_A_EXECUTAR)
 createFolder(ARQUIVOS_EXECUTADOS)
 createFolder(LOGS)
 
+file = None
 executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
@@ -87,9 +88,13 @@ while True:
                     reg = checkEndFile(logFileCSV)
                     if (reg != 'FIM'):
                         executingFiles.append(file)
-                        myThread = None
-                        myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
-                        executeRobot.append(myThread)
+                        try:
+                            myThread = None
+                            myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
+                            executeRobot.append(myThread)
+                        except:
+                            if (file in executingFiles):
+                                executingFiles.remove(file)
                     else:
                         if (file in executingFiles):
                             executingFiles.remove(file)
@@ -113,5 +118,7 @@ while True:
     except Exception as err:
         exception_type, exception_object, exception_traceback = exc_info()
         line_number = exception_traceback.tb_lineno
+        if (file in executingFiles):
+            executingFiles.remove(file)
         print('\n <<< HOUVE UM ERRO INESPERADO EM -> {} na linha {}>>>'.format(err, line_number))
         pass
