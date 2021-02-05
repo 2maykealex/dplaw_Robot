@@ -258,7 +258,10 @@ class IntegraFunctions(object):
                         pass
 
         except Exception as err:
-            print('{}\n ERRO EM {}'.format(self.fileName, err))
+            from sys import exc_info
+            exception_type, exception_object, exception_traceback = exc_info()
+            line_number = exception_traceback.tb_lineno
+            print('{}\n ERRO EM {} na linha {} >>>'.format(self.fileName, err, line_number))
             self.driver.quit()
             return False
 
@@ -361,7 +364,10 @@ class IntegraFunctions(object):
                 reg = reg + 1
             print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
         except Exception as err:
-            print('{}REG {}: <<< HOUVE UM ERRO: {} >>>'.format(self.fileName, reg, err))
+            from sys import exc_info
+            exception_type, exception_object, exception_traceback = exc_info()
+            line_number = exception_traceback.tb_lineno
+            print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
             pass
 
         basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
