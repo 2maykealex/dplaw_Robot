@@ -1,16 +1,8 @@
 from selenium_functions import SeleniumFunctions
 from datetime import datetime
-from datetime import timedelta
 from time import strftime
 from time import sleep
 import basic_functions
-from os import mkdir
-from os import remove
-from os import path as pathFolder
-from os import getcwd as osGetCWD
-from os import getpid
-from pprint import pprint
-import json
 
 class IntegraFunctions(object):
 
@@ -18,9 +10,12 @@ class IntegraFunctions(object):
         self.selenium = SeleniumFunctions()
         self.waitInstance = self.selenium.waitInstance
         self.driver = None
+        self.login = None
+        self.password = None
 
     def acessToIntegra(self, login, password):
         try:
+            print("\nINICIANDO WebDriver")
             self.driver = self.selenium.iniciaWebdriver()
             self.driver.maximize_window()
             self.driver.get('https://integra.adv.br/login-integra.asp')
@@ -30,6 +25,7 @@ class IntegraFunctions(object):
             self.driver.find_element_by_tag_name('button').click()
             sleep(1)
             self.checkPopUps()
+            print('LOGIN REALIZADO NO INTEGRA')
             return True
         except:
             return False
@@ -62,8 +58,8 @@ class IntegraFunctions(object):
         except:
             abriuPesquisa = self.acessaMenuPesquisa()
 
-        element = None
-        xPathClick = None
+        tabelaRegistro = ''
+        retorno = None
         if (abriuPesquisa):
             sleep(3)
             self.checkPopUps()
@@ -72,13 +68,10 @@ class IntegraFunctions(object):
             #tipo de pesquisa (opções)
             if (tipoPesquisa == 'pasta'):
                 xPathOption = '//*[@id="chkPesquisa139"]'
-                xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
             elif (tipoPesquisa == 'cliente'):
                 xPathOption = '//*[@id="chkPesquisa133"]'
-                xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[4]'
             elif (tipoPesquisa == 'processo'):
                 xPathOption = '//*[@id="chkPesquisa137"]'
-                xPathClick = '//*[@id="divCliente"]/div[3]/table/tbody/tr/td[6]'
 
             selecionaOpcao = self.waitingElement('{}'.format(xPathOption))
             selecionaOpcao.click()
@@ -88,29 +81,48 @@ class IntegraFunctions(object):
             textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
             textoPesquisa.send_keys(str(search))
 
-            print("PESQUISANDO POR {}: {}".format(tipoPesquisa, search).upper())
+            print("\n{}PESQUISA -  {}: {}".format(self.fileName, tipoPesquisa, search).upper())
             sleep(3)
             botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
             botaoPesquisar.click()
-            sleep(3)
 
-            try:   #Checa se não existe registros para essa pasta
-                element = self.driver.find_element_by_id('loopVazio').is_displayed()
-                hora = strftime("%H:%M:%S")
-                print('{} - {} {} NÃO FOI ENCONTRADO'.format(hora, tipoPesquisa, search).upper())
-                retorno = False
-            except:  # SELECIONA O CLIENTE PESQUISADO  -  clica no primeiro item encontrado(não poderia ter duas pastas com o mesmo número)
+            #AGUARDA PELO CARREGAMENTO
+            while True:
+                element = self.driver.find_element_by_id('backgroundPopup').is_displayed()
+                if (not (element)):
+                    break
+
+            contPesquisa = 0
+            while True:
                 try:
-                    element = self.waitingElement("{}/div".format(xPathClick))
+                    tabelaRegistro = self.waitingElement('divCliente', 'click', 'id')
+                    break
                 except:
-                    pass
-                    # element = self.waitingElement('//*[@id="divCliente"]/div[3]/table/tbody/tr')  #clica no registro -> abre a pasta
-                retorno = True
+                    contPesquisa = contPesquisa + 1
+                    print('\n{}AGUARDANDO CARREGAMENTO DA PESQUISA...{}'.format(self.fileName, contPesquisa+1))
+                    sleep(1)
+                    if (contPesquisa > 15):
+                        retorno = False
+                        break
+
+            if (tabelaRegistro):
+                try:
+                    sleep(1)
+                    tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
+                    tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
+                    tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
+                    tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
+                    print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                    retorno = True
+                except:
+                    tabelaRegistro = tabelaRegistro.find_element_by_id('loopVazio')
+                    print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                    retorno = False
         else:
             retorno = False
-            element = ''
 
-        return retorno, element
+        sleep(1.5)
+        return retorno, tabelaRegistro
 
     def uploadFile(self):
         self.checkPopUps()
@@ -140,9 +152,16 @@ class IntegraFunctions(object):
         element.click()
 
     def logoutIntegra(self):
-        self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
-        sleep(1.5)
-        self.driver.quit()
+        try:
+            self.driver.execute_script("chamarLink('../../include/desLogarSistema.asp');")
+        except:
+            pass
+
+        try:
+            sleep(1.5)
+            self.driver.quit()
+        except:
+            pass
 
     def checkPopUps(self):
         popupOk = False
@@ -180,151 +199,186 @@ class IntegraFunctions(object):
                 pass
 
     def controle(self, registros, reg, logFileCSV):
-        robo = None
-        self.logFileCSV = logFileCSV
-        self.isTest = basic_functions.checkIfTest()
-        while True:
-            if (reg != 'FIM' and reg != -1 and (reg <= (len(registros['registros'])))):
-                login, password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
-                print("\n-----------------------------------------")
-                print("Login utilizado: {}".format(login))
-                print("-----------------------------------------\n")
-                print("\nINICIANDO WebDriver")
-                _abreWebDriver = self.acessToIntegra(login, password)
+        try:
+            robo = None
+            self.logFileCSV = logFileCSV
+            self.fileName = "{} ==> ".format(logFileCSV.split('\\')[-1].upper())
+            self.isTest = basic_functions.checkIfTest()
+            self.login, self.password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
+            while True:
+                if (isinstance(reg, int)):
+                    if (reg != -1 and (reg <= (len(registros['registros'])))):
+                        robo = self.abrePasta(registros, reg)
+                    else:
+                        print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
+                        basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
+                        reg = 'CONFERENCIA'
 
-                robo = self.abrePasta(registros, reg)
-                print('ROBO = {}'.format(robo))
-                if (robo):
-                    basic_functions.createLog(self.logFileCSV, "FIM", printOut=False)
+                if (robo or reg == 'CONFERENCIA'):
+                    print('\n=============== CONFERÊNCIA DE DADOS ===============')
+                    _abreWebDriver = self.acessToIntegra(self.login, self.password)
+                    reg = 1
+                    while True:
+                        if (reg > len(registros['registros'])):
+                            break
+                        registro = registros['registros']['{}'.format(reg)]
+                        try:
+                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                            else:
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
+
+                        if (searchFolder):
+                            elementoPesquisado.click() # Na conferência, sempre vai clicar
+                            basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
+                            message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                            # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
+                            # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
+
+                            if (message):
+                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
+                            else:
+                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        else:
+                            basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        reg = reg + 1
+
+                    basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
-                    break
+                    return True
                 else:
-                    self.driver.quit()
-            else:
-                print('NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR.'.upper())
-                break
-        return robo
+                    try:
+                        self.logoutIntegra()
+                        print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
+                        break
+                    except:
+                        pass
+
+        except Exception as err:
+            print('{}\n ERRO EM {}'.format(self.fileName, err))
+            self.driver.quit()
+            return False
 
     def abrePasta(self, registros, reg):
         clienteLocalizado = True
         ultimoCliente = ''
         elementoPesquisado = None
+        _abreWebDriver = self.acessToIntegra(self.login, self.password)
+        try:
+            while True:
+                if (reg > len(registros['registros'])):
+                    break
+                registro = registros['registros']['{}'.format(reg)]
+                message = ''
+                print('=========================================================')
+                print('{}FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format(self.fileName, (len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
-        while True:
-            if (reg > len(registros['registros'])):
-                break
-            registro = registros['registros']['{}'.format(reg)]
-            message = ''
-            print('=========================================================')
-            print('FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format((len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
+                if ('abertura' in registros['tipo']):
+                    if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
+                        if not(self.isTest):
+                            ultimoCliente = registro['razaoSocial']
+                        else: #cliente teste
+                            ultimoCliente = 'Cliente teste'
+                            registro['razaoSocial'] = ultimoCliente
+                            self.driver.get('https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104330872&codigo2=104330872') #redireciona p/ URL
 
-            if ('abertura' in registros['tipo']):
-                if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
-                    if not(self.isTest):
-                        ultimoCliente = registro['razaoSocial']
-                    else: #cliente teste
-                        ultimoCliente = 'Cliente teste'
-                        registro['razaoSocial'] = ultimoCliente
-                        self.driver.get('https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104330872&codigo2=104330872') #redireciona p/ URL
+                tentativa = 1
+                message = ''
+                print('=========================================================')
+                print('{}REG {}: INICIANDO: {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
 
-            tentativa = 1
-            message = ''
-            print('=========================================================')
-            print('REG {}: INICIANDO: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-
-            try:
-                print('REG {}: REALIZANDO PESQUISA: {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                if (self.isTest and 'abertura' in registros['tipo']):
-                    searchFolder = False
-                else:
-                    try:
-                        countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                        if (countChar >= 14):
-                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
-                        else:
-                            searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                    except:
-                        return False
-                    # searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-            except:
-                print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA POR {}'.format(str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                return False
-
-            if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
+                searchFolder = None
                 try:
-                    sleep(3)
-                    self.driver.get(registro['urlCliente']) #redireciona p/ URL
-                    sleep(3)
-                    getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
-                    if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
-                        clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
-                        if (clienteLocalizado):
-                            ultimoCliente = clienteEncontrado.text.strip().upper()
-                            clienteEncontrado.click()
-                            sleep(3)
-                        else:
-                            message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
-                            print(message)
-                            continue
-
-                    incluiAlteraProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                    incluiAlteraProcesso.click()
-                    message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
-
+                    print('{}REG {}: REALIZANDO PESQUISA: {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                    if (self.isTest and 'abertura' in registros['tipo']):
+                        searchFolder = False
+                    else:
+                        try:
+                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                            else:
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
                 except:
-                    print('REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(str(reg), tentativa))
-                    if (tentativa > 5):
-                        message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                        reg = reg + 1
-                    tentativa = tentativa + 1
-                    continue
+                    print('{}REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA POR {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                    return False
 
-                messageAgendamentos = ''
-                if (('abertura' in registros['tipo']) and ('slcResponsavel' in registro) and message):
-                    messageAgendamentos = self.criaAgendammentos(registro, reg)
-                    if (self.isTest):
-                        self.removeAgendamentos()
+                if (not(searchFolder) and ('abertura' in registros['tipo'])): # SE NÃO EXISTE E FOR ABERTURA
+                    try:
+                        sleep(3)
+                        self.driver.get(registro['urlCliente']) #redireciona p/ URL
+                        sleep(3)
+                        getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
+                        if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
+                            clienteLocalizado, clienteEncontrado = self.realizarPesquisa(registro['razaoSocial'], 'cliente')
+                            if (clienteLocalizado):
+                                ultimoCliente = clienteEncontrado.text.strip().upper()
+                                clienteEncontrado.click()
+                                sleep(3)
+                            else:
+                                message = "REG {}; NÃO FOI LOCALIZADO NO PROMAD O CLIENTE {}. A PASTA {} NÃO FOI ABERTA! VERIFICAR!".format(str(reg), registro['razaoSocial'], str(registro['txtPasta']))
+                                print("{}{}".format(self.fileName, message))
+                                continue
+
+                        incluiAlteraProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                        incluiAlteraProcesso.click()
+                        message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
+
+                    except:
+                        print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(self.fileName, str(reg), tentativa))
+                        if (tentativa > 5):
+                            message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            reg = reg + 1
+                        tentativa = tentativa + 1
+                        continue
+
+                    messageAgendamentos = ''
+                    if (('abertura' in registros['tipo']) and ('slcResponsavel' in registro) and message):
+                        messageAgendamentos = self.criaAgendammentos(registro, reg)
+                        if (self.isTest):
+                            self.removeAgendamentos(reg)
+                    else:
+                        message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
+
+                    if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
+
+                elif (searchFolder) and ('atualizacao' in registros['tipo']):
+                    sleep(1.3)
+                    elementoPesquisado.click()
+                    message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
+                elif not(searchFolder) and ('atualizacao' in registros['tipo']):
+                    message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
                 else:
-                    message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
+                    message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+                    print(message)
 
-                if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
+                basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
+                reg = reg + 1
+            print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
+        except Exception as err:
+            print('{}REG {}: <<< HOUVE UM ERRO: {} >>>'.format(self.fileName, reg, err))
+            pass
 
-            elif (searchFolder) and ('atualizacao' in registros['tipo']):
-                elementoPesquisado.click()
-                message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
-            elif not(searchFolder) and ('atualizacao' in registros['tipo']):
-                message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
-            else:
-                message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
-                print(message)
-
-            basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
-            reg = reg + 1
-        print('<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>')
+        basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
+        self.logoutIntegra()
         return True
 
-    def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = []):
+    def incluiAlteraProcesso(self, registro, reg, tipo, itensExcluidosLoop = [], check=False):
 
-        def selecionaResponsaveis(respProcesso):
-            #TODO em caso de alteração - desmarcar todas primeiro
-            self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
-            comboResponsavel = self.waitingElement('//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/button','click')
-            comboResponsavel.click()  # clica e abre as opções
-            sleep(1)
-            #recupera lista de RESPONSÁVEIS do PROMAD
-            xInputs = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li'
-            listInputs = self.driver.find_elements_by_xpath(xInputs) #recupera os inputs abaixo dessa tag
-            # CARREGA LISTA DE RESPONSÁVEIS
-            y = 1
+        def selecionaResponsaveis():
             totalResp = len(respProcesso)
             countResp = 0
             respSelecionados = []
-            for item in listInputs:  #itera inputs recuperados, checa e clica
+            for item in selectResponsaveis.options:
                 if (item.text in respProcesso):
                     try:
-                        xPathItem = '//*[@id="div_TipoProcesso"]/table/tbody/tr[1]/td[2]/table/tbody/tr[8]/td/div[2]/ul/li[{}]'.format(y)
-                        element = self.waitingElement(xPathItem, 'click')
-                        element.click()
+                        item.click()
+                        print('\n{}REG {}: -> ITEM PREENCHIDO : {} -> RESPONSÁVEL "{}"'.format(self.fileName, reg, k, item.text))
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
@@ -332,8 +386,6 @@ class IntegraFunctions(object):
                     countResp = countResp + 1
                     if (countResp == totalResp):
                         break
-                y = y + 1
-            comboResponsavel.click()  # clica e Fecha as opções
             self.driver.execute_script("$('#slcResponsavel').css('display', 'none');") # torna elemento visível
 
         def segredoJusticaAndamentos():
@@ -361,7 +413,7 @@ class IntegraFunctions(object):
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
                 numIdPromad = numIdPromad.split(' ')[-1].strip()
-                print("REG {}: ID PROMAD: {}".format(reg, numIdPromad))
+                print("\n{}REG {}: -> ID PROMAD: {}".format(self.fileName, reg, numIdPromad))
                 return numIdPromad
             else:
                 return numIdPromad
@@ -396,7 +448,7 @@ class IntegraFunctions(object):
                                         y = y + 1
                                     break
                                 except:
-                                    print('ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS')
+                                    print('{}ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS'.format(self.fileName))
                                     continue
 
                             if (not(found)):
@@ -415,7 +467,7 @@ class IntegraFunctions(object):
 
         self.checkPopUps()
         sleep(2)
-        print('REG {}: INICIANDO INCLUSAO: {}'.format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+        print('\n{}REG {}: -> INICIANDO: {}'.format(self.fileName, reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
         naoInserido = {}
         camposInseridos = '|'
 
@@ -425,94 +477,154 @@ class IntegraFunctions(object):
         message = ''
         message = "REG {};{} às {};".format(reg, hoje, hora)  #Insere a primeira linha do item no log
 
-        print('REG {}: INICIANDO LOOPING'.format(reg))
         itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
         for k, v in registro.items():
-            #todo salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
+            valorAntigo = ''
+            #TODO salvar o valor antigo, no caso de atualização ou inserção em registro que já contém dados
             try:
                 if (k in itensExcluidosLoop or v == None):
                     continue
 
-                print ('REG {}: {} - "{}"'.format(reg, k, v))
+                dadoCorrigido = ''
+                if (check):
+                    if (k in ['txtNroCnj']):
+                        v = basic_functions.ajustarNumProcessoCNJ(v)
+                    print ('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
+
                 if (k == 'slcResponsavel'):
-                    selecionaResponsaveis(v['Processo'])
-                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v['Processo'])
+                    self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
+                    selectResponsaveis = self.waitingElement(k, 'click', form='id')
+                    selectResponsaveis = self.selenium.select(selectResponsaveis)
+                    respProcesso = v['Processo'].copy()
+
+                    itensNaoInseridos = []
+                    if (check):
+                        antigosSelecionados = []
+                        all_selected_options = selectResponsaveis.all_selected_options
+                        if (all_selected_options):
+                            for item in all_selected_options:
+                                if (item.text):
+                                    antigosSelecionados.append(item.text)
+                                    if (not(item.text in v['Processo'])):
+                                        itensNaoInseridos.append(item.text)
+
+                            if (itensNaoInseridos):
+                                respProcesso = itensNaoInseridos
+                                valorAntigo = ', '.join(antigosSelecionados)
+                                dadoCorrigido = ' (CORRIGIDO)'
+
+                    if (not(check) or (check and itensNaoInseridos)):
+                        selecionaResponsaveis()
+                        camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, respProcesso, dadoCorrigido)
+
                 else:
                     element = self.waitingElement(k, 'click', form='id')
                     if (element.tag_name == 'select'):
-                        try:
-                            valorElemento = str(v.strip()).title()
-                            select = self.selenium.select(element)
-                            select.select_by_visible_text(valorElemento)
-                        except:
-                            checkValueInCombo(str(v.strip()), k)
-                    else: # (element.tag_name == 'input'): # inputs e textareas
-                        element.clear()
-                        element.send_keys(str(v.strip()))
-                        if (k == 'txtNroCnj'):
-                            segredoJusticaAndamentos()
+                        valorElemento = str(v.strip()).title()
+                        valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
+                        select = self.selenium.select(element)
+                        valorAntigo = select.first_selected_option.text
+                        if (not(check) or (check and valorAntigo.upper() != (str(v.upper())))):
+                            try:
+                                select.select_by_visible_text(valorElemento)
+                            except:
+                                checkValueInCombo(str(v.strip()), k)
+                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                            print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
 
-                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                    else: #QUANDO É INPUTS OU TEXTAREAS
+                        if (not(check) or (check and element.get_attribute('value') != (str(v)))):
+                            if (not(check)):
+                                if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
+                                    if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
+                                        if (element.get_attribute('value') != ''):
+                                            naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
+                                            continue
+                            else:
+                                dadoCorrigido = ' (CORRIGIDO)'
+                            element.clear()
+                            element.send_keys(str(v))
+                            if (k == 'txtNroCnj'):
+                                segredoJusticaAndamentos()
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
+                            print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
                     sleep(1)
-            except:
+            except Exception as err:
+                print('{}{}'.format(self.fileName, err))
                 naoInserido[k] = str(v)
+
+        if (naoInserido):
+            print('\n{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
 
         idNovaPasta = recuperaIdIntegra()
         complementoAdversa = ""
+
+        if (check):
+            menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
+        else:
+            menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
+
         if (tipo == 'abertura'):
             if ("parteAdversa" in registro):
                 while True: # ABRE A PARTE ADVERSA
                     try:
-                        menuCliente = self.waitingElement("//*[@id='div_menu17']", 'click')
-                        menuCliente.click()
-                        sleep(1)
-                        try: #checa se há mensagens que bloqueiam o salvamento #todo ver para demais elementos que não forem localizados
+                        menuAdversa.click()
+                        sleep(1.5)
+                        try: #checa se há mensagens que bloqueiam o salvamento #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
                             element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
                             self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
                             naoInserido['comarcaNova'] = str(registro['comarcaNova'])
-                            sleep(1)
+                            sleep(1.5)
                             continue
                         except:
                             break
                     except:
                         pass
                 self.checkPopUps()
-                complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido)
-
-            print('REG {}: FINALIZADO O LOOPING'.format(reg))
+                complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
             sleep(1)
 
         try: # Botão salvar
-            print('REG {}: ANTES DE SALVAR'.format(reg))
-            botaoSalvar = self.driver.find_element_by_id("btnSalvar")
-            botaoSalvar.click()
-            print('REG {}: SALVANDO'.format(reg))
-            sleep(1)
-            # POP-UPS APÓS O SALVAMENTO
-            try:
-                while True:
-                    sleep(1)
-                    container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
-                    if (container):
-                        try:
-                            janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
-                        except:
-                            janelaOutrosProcessos = False
+            countSalvar = 2 if (check) else 1
+            for contSalvar in range(countSalvar):
+                botaoSalvar = None
+                botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
+                botaoSalvar.click()
+                print('{}REG {}: -> SALVANDO'.format(self.fileName, reg))
+                sleep(1)
 
-                        btnOk = self.waitingElement('popup_ok', 'show', 'id')
-                        btnOk.click()
+                try: # POP-UPS APÓS O SALVAMENTO
+                    while True:
+                        sleep(1)
+                        container = self.waitingElement('popup_container', 'show', 'id')  #primeiro
+                        if (container):
+                            try:
+                                janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
+                            except:
+                                janelaOutrosProcessos = False
 
-                        if (janelaOutrosProcessos):
-                            complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                            print('REG {}: ADVERSA TEM OUTROS PROCESSOS'.format(reg))
-                            continue
+                            btnOk = self.waitingElement('popup_ok', 'show', 'id')
+                            btnOk.click()
+                            sleep(1.5)
+
+                            if (janelaOutrosProcessos):
+                                complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
+                                print('{}REG {}: -> ADVERSA TEM OUTROS PROCESSOS'.format(self.fileName, reg))
+                                continue
+                            else:
+                                break
                         else:
                             break
-                    else:
-                        break
-            except:
-                pass
+                except:
+                    pass
+                sleep(1.5)
+
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
+            if (check):
+                if (camposInseridos and camposInseridos !='|'):
+                    return camposInseridos
+                else:
+                    return False
 
             try:
                 complementoNaoInseridos =''
@@ -521,10 +633,6 @@ class IntegraFunctions(object):
                     for k1, v1 in naoInserido.items():
                         complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
 
-                hoje = "%s" % (strftime("%d-%m-%Y"))
-                hora = strftime("%H:%M:%S")
-                horaStr = hora.replace(':', '-')
-
                 message = "{}{};".format(message, "'{}".format(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else ''))
                 message = "{}{};".format(message, idNovaPasta)
                 if (tipo == 'abertura'):
@@ -532,77 +640,174 @@ class IntegraFunctions(object):
                 elif (tipo == 'atualizacao'):
                     message = "{}{};".format(message, camposInseridos)
                 message = "{}{};".format(message, complementoNaoInseridos)
-
-                print('REG {}: FINALIZADO às: {}'.format(reg, horaStr))
             except:
                 pass
         except:
+            if (check):
+                return False
+
             message = "{}; NÃO FOI POSSÍVEL A ABERTURA/ATUALIZAÇÃO".format(message)
         return message
 
-    def inserirParteAdversa(self, registro, reg, naoInserido):
+    def inserirParteAdversa(self, registro, reg, naoInserido, check=False):
         complementoAdversa = ""
+        if (check):
+            tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
+            try:
+                tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
+            except:
+                tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
+                pass
+            sleep(1)
+            tabelaAdversa.click()
+            sleep(1)
+
         for k, v in registro['parteAdversa'].items():
-            print ('REG {}: {} - {}'.format(reg, k, v))
+            if (check):
+                print('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
             try:
                 element = self.waitingElement(k, 'click', form='id')
-                if (element.tag_name == 'input'):
-                    element.clear()
-                    element.send_keys(str(v))
-                    print('REG {}: PREENCHENDO {} O VALOR: {}'.format(reg, k, v))
+                if (not(check) or (check and element.get_attribute('value').upper() != (str(v.upper())))):
+                    if (element.tag_name == 'input'):
+                        element.clear()
+                        element.send_keys(str(v))
 
-                elif (element.tag_name == 'select'):
-                    try:
-                        select = self.selenium.select(element)
-                        select.select_by_visible_text(str(v))
-                    except:
-                        # checkValueInCombo(str(v), k)
-                        pass
-                sleep(1)
+                    elif (element.tag_name == 'select'):
+                        try: #TODO CHECAR OS SELECTS DA PARTE ADVERSA
+                            select = self.selenium.select(element)
+                            select.select_by_visible_text(str(v))
+                        except:
+                            # checkValueInCombo(str(v), k) #TODO CHECAR ISSO
+                            pass
+                    sleep(1)
+                    print('{}\nREG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
             except:
-                print('REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(reg, k, v))
+                print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(self.fileName, reg, k, v))
                 naoInserido[k] = str(v)
         complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
         return (complementoAdversa, naoInserido)
 
-    def criaAgendammentos(self, registro, reg):
-        #TODO OS ITENS QUE NÃO FOREM CRIADOS OS SEUS AGENDAMENTOS: SALVA E OUTRO ARQUIVO PARA REFAZÊ-LOS
-        print("REG {}: INICIANDO OS AGENDAMENTOS:".format(reg))
+    def criaAgendammentos(self, registro, reg, check=False):
+
+        def checkAgendamentos(registro):
+            try:
+                print('\n{}REG {}: OBTENDO AGENDAMENTOS JÁ REALIZADOS NA PASTA'.format(self.fileName, reg))
+                listaAgendamentos = {}
+                contAgend = 0
+                while True:
+                    sleep(2)
+                    dadosAgendamento = {}
+                    agendamentoItemHora = None
+                    getAgendamentos = None
+                    while True:
+                        try:
+                            getAgendamentos = self.waitingElement('tablesorter', 'show', 'class')
+                            getAgendamentos = getAgendamentos.find_element_by_tag_name('tbody')
+                            getAgendamentos = getAgendamentos.find_elements_by_tag_name('tr')
+                            getAgendamentos[contAgend].click()
+                            _cadastroAgendamentoPrincipal = self.waitingElement('cadastroAgendamentoPrincipal', 'show', 'id')
+                            agendamentoItemTipo  = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[1]/td/div[2]', 'show').text.strip()
+                            agendamentoItemData  = self.waitingElement('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/label[1]', 'show').text.strip()
+                            agendamentoItemDados = {}
+                            agendamentoItemDados[agendamentoItemTipo] = agendamentoItemData
+                            break
+                        except:
+                            pass
+
+                    try:
+                        agendamentoItemHora  = self.driver.find_element_by_xpath('//*[@id="agendamentoConteudo"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/label[2]').text.strip()
+                        if (agendamentoItemHora):
+                            agendamentoItemDados['HoraAudiencia'] = agendamentoItemHora
+                    except:
+                        pass
+                    dadosAgendamento[agendamentoItemTipo] = agendamentoItemDados
+
+                    try:
+                        sleep(1)
+                        listDestinatarios = self.driver.find_element_by_id('aDestinatario')
+                        sleep(.5)
+                        listDestinatarios.click()
+                        listDestinatarios = self.waitingElement('JTPop_copy', 'show', 'id')
+                        listDestinatarios = listDestinatarios.find_elements_by_tag_name('tr')
+                        contDest = 1
+                        resps = []
+                        while True:
+                            if (contDest <= len(listDestinatarios)-1):
+                                resps.append(listDestinatarios[contDest].text.split('\n')[0])
+                            else:
+                                break
+                            contDest = contDest + 1
+                        dadosAgendamento[agendamentoItemTipo].update({'slcResponsavel': resps})
+                    except:
+                        print('erro')
+                        pass
+
+                    listaAgendamentos.update(dadosAgendamento)
+
+                    try:
+                        if ((agendamentoItemTipo in agendamentos.keys()) and (agendamentoItemData in agendamentos[agendamentoItemTipo])):
+                            for resp in resps:
+                                if (resp in agendamentos):
+                                    pass
+
+                            if (agendamentoItemTipo != 'HoraAudiencia'):
+                                agendNaoAbertos.remove(agendamentoItemTipo)
+                        else:
+                            pass # Recadastrar item faltante
+                    except:
+                        pass
+
+                    fecharAgendamento = self.waitingElement('agendamentoFechar', 'click', 'id')
+                    fecharAgendamento.click()
+                    while self.driver.find_element_by_id('carregando').is_displayed():
+                        pass
+
+                    contAgend = contAgend + 1
+                    if (contAgend >= len(getAgendamentos)):
+                        break
+            except Exception as err:
+                print('ERRO: {}'.format(err))
+                return None
+            return listaAgendamentos
+
+        print("\n{}REG {}: INICIANDO OS AGENDAMENTOS:".format(self.fileName, reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
 
         if ('HoraAudiencia' in agendNaoAbertos):
             agendNaoAbertos.remove('HoraAudiencia')
-            del agendamentos['HoraAudiencia']
 
         message = ''
         messageFinal = ''
         messageNaoAbertos = ''
         refazAgendamento = 1
 
+        # agendamentosJaCriados = None
+        # if (check):
+        #     try:
+        #         agendamentosJaCriados = checkAgendamentos(registro)
+        #     except:
+        #         print('erro')
+
         for tipoAgendamento, agendamento in agendamentos.items():
+            if (tipoAgendamento == 'HoraAudiencia'):
+                continue
+
             while True:
                 self.checkPopUps()
                 _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
-                print('ABRIU FORMULÁRIO DE AGENDAMENTOS')
-
-                responsaveis = []
-                textoAgendamento = ''
-
-                print('REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(reg, tipoAgendamento, agendamento))
+                print('{}REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(self.fileName, reg, tipoAgendamento, agendamento))
                 sleep(1)
                 try:
                     xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
                     elementComboDestinatario = self.waitingElement(xPathComboDestinatario, 'click')
                     elementComboDestinatario.click()
                 except:
-                    print('ERRO NO COMBO DESTINATÁRIO - INICIANDO NOVAMENTE')
+                    print('{}REG {}: <<< ERRO NO COMBO DESTINATÁRIO - INICIANDO NOVAMENTE >>>'.format(self.fileName, reg))
                     break
 
-                responsaveis    = registro['slcResponsavel'][tipoAgendamento]
-                dataAgendamento = registro['agendamentos'][tipoAgendamento]
-
+                textoAgendamento = ''
                 if tipoAgendamento == 'Audiência':
                     if ('HoraAudiencia' in registro['agendamentos']):
                         HoraAudiencia = "{}".format(registro['agendamentos']['HoraAudiencia'])
@@ -621,15 +826,15 @@ class IntegraFunctions(object):
                 elif tipoAgendamento == 'Fotocópia':
                     textoAgendamento = "Fotocópia integral"
 
-                totalResp = len(responsaveis)
+                totalResp = len(registro['slcResponsavel'][tipoAgendamento])
                 countResp = 0
                 y = 1
-                print('REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(reg))
+                print('{}REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(self.fileName, reg))
                 listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
                 while True:
                     try:
                         for item in listDestinatarios:  #itera inputs recuperados, checa e clica
-                            if (item.text in responsaveis ):
+                            if (item.text in registro['slcResponsavel'][tipoAgendamento] ):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.waitingElement(xPathItem, 'click')
                                 element.click()
@@ -640,7 +845,7 @@ class IntegraFunctions(object):
                             y = y + 1
                         break
                     except:
-                        print('ERRO AO CARREGAR OU SELECIONAR DESTINATÁRIOS')
+                        print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR DESTINATÁRIOS >>>'.format(self.fileName, reg))
                         continue
                 elementComboDestinatario.click()
                 sleep(1)
@@ -651,7 +856,7 @@ class IntegraFunctions(object):
                 comboTipoAgendamento.click()
                 sleep(1)
 
-                print('REG {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(reg))
+                print('{}REG {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(self.fileName, reg))
                 listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
                 y = 1
                 while True:
@@ -666,30 +871,30 @@ class IntegraFunctions(object):
                             y = y + 1
                         break
                     except:
-                        print('ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS')
+                        print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS >>>'.format(self.fileName, reg))
                         continue
 
                 # CAMPO QUANDO  - SÓ SE A DATA FOR MAIOR QUE HOJE - se menor ou igual: mantém a data do sistema
-                if (datetime.strptime(dataAgendamento, '%d/%m/%Y') > datetime.now()):
+                if (datetime.strptime(agendamento, '%d/%m/%Y') > datetime.now()):
                     sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
                     quandoElement = self.waitingElement(xPathElement, 'show')
                     quandoElement.clear()
                     sleep(1)
-                    quandoElement.send_keys(dataAgendamento)
-                    print('REG {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(reg))
+                    quandoElement.send_keys(agendamento)
+                    print('{}REG {}: SELECIONANDO A DATA DO AGENDAMENTO'.format(self.fileName, reg))
 
                     try: #se o calendário estiver aberto, será fechado
                         sleep(1)
                         self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
                     except:
-                        print("ERRO CALENDÁRIO")
+                        print("{}REG {}: <<< ERRO CALENDÁRIO >>>".format(self.fileName, reg))
 
                     # COM HORA
                     try:
                         sleep(1)
                         if (tipoAgendamento == 'Audiência'):
-                            print('REG {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(reg))
+                            print('{}REG {}: SELECIONANDO O HORÁRIO DA AUDIÊNCIA'.format(self.fileName, reg))
                             sleep(1)
                             xPathElement = '//*[@id="chkDiaInteiroAgendaProcesso1"]'
                             checkComHora = self.waitingElement(xPathElement, 'click')
@@ -707,11 +912,11 @@ class IntegraFunctions(object):
                             horaFinal.clear()
                             horaFinal.send_keys(HoraAudiencia)
                     except:
-                        print('A audiência não tem HORARIO definido')
+                        print('{}REG {}: A audiência não tem HORARIO definido'.format(self.fileName, reg).upper())
                         pass
                 # campo textoAgendamento
                 sleep(1)
-                print('REG {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(reg))
+                print('{}REG {}: PREENCHENDO O TEXTO DO AGENDAMENTO'.format(self.fileName, reg))
                 xPathElement = '//*[@id="txtDescricaoAgendaProcesso1"]'
                 campoAgendamento = self.waitingElement(xPathElement, 'show')
                 campoAgendamento.clear()
@@ -720,27 +925,27 @@ class IntegraFunctions(object):
                 # BOTÃO SALVAR
                 try:
                     sleep(1)
-                    print('REG {}: SALVANDO'.format(reg))
+                    print('{}REG {}: SALVANDO'.format(self.fileName, reg))
                     botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
                     botaoSalvar.click()
                 except:
-                    print("ERRO AO CLICAR NO BOTÃO SALVAR!!!!")
+                    print("{}REG {}: <<< ERRO AO CLICAR NO BOTÃO SALVAR!!!! >>>".format(self.fileName, reg))
                     pass
 
                 sleep(1.5)
                 # CHECA SE FALTOU INFORMAÇÕES NO INPUT
                 validacaoCampos = self.waitingElement('idCampoValidateAgendar', 'show', 'id')
                 if (validacaoCampos.text): # Se faltar informações nos inputs, dá um refresh na página e recomeça
-                    print('REG {}: OS CAMPOS NÃO FORAM PREENCHIDOS CORRETAMENTE'.format(reg))
+                    print('{}REG {}: OS CAMPOS NÃO FORAM PREENCHIDOS CORRETAMENTE'.format(self.fileName, reg))
                     sleep(1)
                     self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #ATUALIZA A PÁGINA
-                    print('TENTATIVA Nº {} DE 3'.format(refazAgendamento))
+                    print('{}REG {}: TENTATIVA Nº {} DE 3'.format(self.fileName, reg, refazAgendamento))
                     if (refazAgendamento <= 3): # 3 tentativas para o agendamento
                         refazAgendamento = refazAgendamento + 1
                         continue  #volta ao While TRUE e recomeça os preenchimentos
                     else:
                         refazAgendamento = 0
-                        print("NÃO FOI POSSÍVEL REALIZAR O AGENDAMENTO DE {}!".format(tipoAgendamento))
+                        print("{}REG {}: NÃO FOI POSSÍVEL REALIZAR O AGENDAMENTO DE {}!".format(self.fileName, reg, tipoAgendamento))
                         break
 
                 try: #Clicar no PopUp - Deseja salvar
@@ -748,17 +953,17 @@ class IntegraFunctions(object):
                     botaoPopUp = self.waitingElement('//*[@id="popup_ok"]', 'click')
                     botaoPopUp.click()
                     message = "{}|{}: '{}'".format(message, tipoAgendamento, agendamento) # add à message o tipo de agendamento REALIZADO.
-                    print ("REG {}: CRIADO O AGENDAMENTO: |{}".format(reg, tipoAgendamento))
+                    print("{}REG {}: CRIADO O AGENDAMENTO: |{}".format(self.fileName, reg, tipoAgendamento))
                     sleep(1.5)
                 except:
-                    print("erro POPUP SALVAR")
+                    print("{}REG {}: <<< ERRO POPUP SALVAR >>>".format(self.fileName, reg))
                     pass
 
                 try: #remove agendamentos já executados
-                    print('REG {}: REMOVENDO O AGENDAMENTO EXECUTADO'.format(reg))
+                    print('{}REG {}: REMOVENDO O AGENDAMENTO EXECUTADO DA LISTA DE NÃO ABERTOS'.format(self.fileName, reg))
                     agendNaoAbertos.remove(tipoAgendamento)
                 except:
-                    print('ERRO AgendNaoAbertos: {}'.format(tipoAgendamento))
+                    print('{}REG {}: <<< ERRO AgendNaoAbertos: {} >>>'.format(self.fileName, reg, tipoAgendamento))
                 break # SE CHEGAR AQUI SEM ERRO - SAI DO LOOPING
 
         # APÓS O LOOPING
@@ -768,17 +973,17 @@ class IntegraFunctions(object):
                 messageNaoAbertos = "{}|{}".format(messageNaoAbertos, x)
 
         if (messageFinal):
-            print('REG {}: INSERINDO A MENSAGEM FINAL'.format(reg))
+            print('{}REG {}: INSERINDO A MENSAGEM FINAL'.format(self.fileName, reg))
             message = "{};{}".format(message, messageFinal)
 
         if (messageNaoAbertos):
-            print('REG {}: INSERINDO OS AGENDAMENTOS NÃO ABERTOS'.format(reg))
+            print('{}REG {}: INSERINDO OS AGENDAMENTOS NÃO ABERTOS'.format(self.fileName, reg))
             message = "{};{}".format(message, messageNaoAbertos)
-        print('FINALIZOU TODOS OS AGENDAMENTOS')
+        print('{}REG {}: FINALIZOU TODOS OS AGENDAMENTOS'.format(self.fileName, reg))
 
         return message
 
-    def removeAgendamentos(self): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
+    def removeAgendamentos(self, reg): # EXECUTA QUANDO ESTÁ EM MODO DE TESTE
         xInputs = '//*[@id="divAgendaListar"]/div/table/tbody/tr'
         tentativa = 1
         while True:
@@ -793,9 +998,9 @@ class IntegraFunctions(object):
                     break
             except:
                 if (tentativa == 4):
-                    print('ERRO AO REMOVER AGENDAMENTO')
+                    print('{}ERRO AO REMOVER AGENDAMENTO'.format(self.fileName))
                     break
-                print('TENTATIVA {} DE REMOVER AGENDAMENTO'.format(tentativa))
+                print('{}TENTATIVA {} DE REMOVER AGENDAMENTO'.format(self.fileName, tentativa))
                 tentativa = tentativa + 1
                 continue
 
@@ -805,31 +1010,11 @@ class IntegraFunctions(object):
                 sleep(0.5)
             if (tentativa > 1): tentativa = 1
 
-        print('OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!')
-
-    def atualizacaoPasta(self, registros, reg):
-        registros = registros['registros']
-        for _k, registro in registros.items():
-            tentativa = 1
-            message = ''
-
-            print('=========================================================')
-            print('REG {}: INICIANDO'.format(str(reg), registro['txtPasta']))
-
-            try:
-                print('REG {}: REALIZANDO PESQUISA'.format(str(reg), registro['txtPasta']))
-                if (self.isTest):
-                    searchFolder = False
-                else:
-                    searchFolder, _element = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-            except:
-                print('REG {}: NÃO FOI POSSÍVEL REALIZAR UMA BUSCA'.format(str(reg), registro['txtPasta']))
-                return False
-
-            print('NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO!')
-            return True
+        print('{}REG {}: OS AGENDAMENTOS DE TESTE FORAM EXCLUÍDOS COM SUCESSO!'.format(self.fileName, reg))
 
 
+
+#TODO SE DER ERRO OU FALHA NA VERIFICAÇÃO -> DAR UM CONTINUE E REINICIAR O WEBDRIVER (SE ISSO FOR O CASO)
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
 #TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
 #TODO PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.

@@ -54,7 +54,7 @@ class SeleniumFunctions(object):
             except:
                 count = count + 1
                 hora = time.strftime("%H:%M:%S")
-                print('{} - {} - Elemento ainda não foi encontrado!'.format(count, hora))
+                print('=========================> {} - {} - Elemento ainda não foi encontrado!'.format(count, hora).upper())
 
         return False
 

@@ -7,50 +7,34 @@ from time import sleep, strftime
 from datetime import date
 from datetime import datetime
 from threading import Thread
-from threading import enumerate
-from basic_functions import checkPID
 from basic_functions import createFolder
 from basic_functions import createLog
-from basic_functions import checkIfTest
 from basic_functions import abreArquivo
 from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
 import json
 
-#TODO checkIFexecuting
-# def checkIFexecuting():
-#     deletingFiles = []
-#     for arquivo, logFile in executingFiles.items():
-#         if (not(osPath.isfile(logFile))):
-#             deletingFiles.append(arquivo)
-
-#     for file in deletingFiles:
-#         del executingFiles[file]
-#         print('===O ARQUIVO {} FOI REMOVIDO DA LISTA==='.format(arquivo))
-
 def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
-    # current_thread().name
     try:
         integra = IntegraFunctions()
         integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
-            # ARQUIVOS_EXECUTADOS = "{}\\arquivos_executados\\{}".format(path.dirname(path.realpath(__file__)), folderName)
-            executedFile = "{}\\{}".format(ARQUIVOS_EXECUTADOS.replace('folder', folderName), pathFile.split('\\')[-1])
-            createFolder(ARQUIVOS_EXECUTADOS)
+            executedFileFolder = "{}\\{}".format(ARQUIVOS_EXECUTADOS, folderName)
+            executedFile = "{}\\{}".format(executedFileFolder, pathFile.split('\\')[-1])
+            createFolder(executedFileFolder)
 
-            if (path.isfile(executedFile)):#todo Testar
+            if (path.isfile(executedFile)):
                 rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
-            move("{}".format(pathFile), ARQUIVOS_EXECUTADOS) #move o arquivo para a pasta 'arquivos_executados'
+            move("{}".format(pathFile), executedFileFolder) #move o arquivo para a pasta 'arquivos_executados'
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
         pass
     executingFiles.remove(file) # COM ERRO OU SEM ERRO, REMOVE DA EXECUÇÃO
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
-
-#============================ ROBO PRINCIPAL====================================================
+#============================================= ROBO PRINCIPAL====================================================
 ARQUIVOS_A_EXECUTAR = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
 ARQUIVOS_EXECUTADOS = "{}\\arquivos_executados".format(path.dirname(path.realpath(__file__)))
 LOGS = "{}\\LOGS".format(path.dirname(path.realpath(__file__)))
@@ -62,53 +46,63 @@ executeRobot = []
 executingFiles =  []
 print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
-while True:   # Percorre a pasta e subpastas de arquivos a executar em looping, checando a existência de novos arquivos
+while True:
     files =  {}
+    countFiles = 0
     for folder, subdirs, filesFolder in walk(ARQUIVOS_A_EXECUTAR):
         for name in filesFolder:
             if (name not in executingFiles):
-                files[folder] = name
+                files[countFiles] = {folder : name}
+                countFiles = countFiles + 1
     sleep(3)
 
     if (files):
-        for localFile, file in files.items():
-            folderName = localFile.split("\\")
-            folderName = folderName[-1]
-            pathFile = "{}\\{}".format(localFile, file)
+        for _numFile, fileItem in files.items():
+            for localFile, file in fileItem.items():
+                folderName = localFile.split("\\")
+                folderName = folderName[-1]
+                pathFile = "{}\\{}".format(localFile, file)
 
-            registros = abreArquivo(pathFile)
-            registros = json.loads(registros)
+                registros = abreArquivo(pathFile)
+                registros = json.loads(registros)
 
-            # CRIANDO ARQUIVO DE LOG .CSV
-            logFileName = file.split('\\')[-1].split('.txt')[0]
-            logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
-            logFileCSV = "{}\\{}.csv".format(logPath, logFileName)
-            createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+                # CRIANDO ARQUIVO DE LOG .CSV
+                logFileName = file.split('\\')[-1].split('.txt')[0]
+                logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
+                logFileCSV = "{}\\{}.csv".format(logPath, logFileName)
+                createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-            if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
-                open(logFileCSV, 'a')
-                cabeçalhoLog = ''
-                if (registros['tipo'] == 'abertura'):
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ERRO: NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; ERRO: AGENDAMENTOS NÃO CRIADOS;'
-                elif (registros['tipo'] == 'atualizacao'):
-                    cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ERRO: NÃO ATUALIZADOS'
-                createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+                if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
+                    open(logFileCSV, 'a')
+                    cabeçalhoLog = ''
+                    if (registros['tipo'] == 'abertura'):
+                        cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ITENS NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; AGENDAMENTOS NÃO CRIADOS;'
+                    elif (registros['tipo'] == 'atualizacao'):
+                        cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ITENS NÃO ATUALIZADOS'
+                    createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-            reg = checkEndFile(logFileCSV)
-            if (reg != 'FIM'):
-                executingFiles.append(file)
-                executeRobot.append(Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)))
-            else:
-                createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
-                move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
-                print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
-                print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
+                reg = checkEndFile(logFileCSV)
+                if (reg != 'FIM'):
+                    executingFiles.append(file)
+                    myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
+                    executeRobot.append(myThread)
+                else:
+                    if (file in executingFiles):
+                        executingFiles.remove(file)
+
+                    createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
+                    move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
+                    print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
+                    print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
+                    continue
 
         if (executeRobot):
-            for executa in executeRobot:
+            for num, executa in enumerate(executeRobot):
                 print('\n', executa.name,'\n')
                 try:
-                    executa.start() # ABRIRÁ TODOS OS ARQUIVOS SIMULTÂNEAMENTE
+                    executa.start()
                 except Exception as err:
                     print(err)
                     print('\n ERRO EM {}'.format(executa.name))
+
+            executeRobot = None

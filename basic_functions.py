@@ -14,6 +14,10 @@ def checkLogin(tipo=''):
     else:
         login="cgst@dplaw.com.br"
         password="gestao0"
+
+    print("\n-----------------------------------------")
+    print("Login utilizado: {}".format(login))
+    print("-----------------------------------------\n")
     return login, password
 
 def checkIfTest():
@@ -23,12 +27,6 @@ def checkIfTest():
         return True
     else:
         return False
-
-# def abreArquivo(arquivo, extensao, path=""):
-#     fileName = "{}\\{}.{}".format(path, arquivo, extensao)
-#     # fileName = (arquivo + '.' + extensao)
-#     dfExcel = get_sheet(file_name=fileName)
-#     return dfExcel
 
 def abreArquivo(fileName):
     try:
@@ -46,14 +44,17 @@ def checkEndFile(log):
         countLines = len(message)
         arquivo.close()
 
+        lastLine = 1
         if countLines > 1:
             try:
                 lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', '')) + 1
             except:
                 if (message[len(message)-1][:3] == 'FIM'):
                     lastLine = 'FIM'
-        else:
-            lastLine = 1
+                elif (message[len(message)-1].split(';')[0] == 'CONFERENCIA'):
+                    lastLine = 'CONFERENCIA'
+                else:
+                    pass
     except:
         lastLine = -1
 
@@ -72,7 +73,6 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
     arquivo.close()
 
 def createFolder(folder):
-    # print(folder)
     if (not(path.exists(folder))):
         mkdir(folder)
 
