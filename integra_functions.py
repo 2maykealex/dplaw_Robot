@@ -2,6 +2,7 @@ from selenium_functions import SeleniumFunctions
 from datetime import datetime
 from time import strftime
 from time import sleep
+from sys import exc_info
 import basic_functions
 
 class IntegraFunctions(object):
@@ -52,77 +53,90 @@ class IntegraFunctions(object):
 
     def realizarPesquisa(self, search, tipoPesquisa):
         sleep(3)
-        try:
-            self.driver.get('https://integra.adv.br/integra4/modulo/21/default.asp')
-            abriuPesquisa = True
-        except:
-            abriuPesquisa = self.acessaMenuPesquisa()
-
-        tabelaRegistro = ''
-        retorno = None
-        if (abriuPesquisa):
-            sleep(3)
-            self.checkPopUps()
-            xPathOption = ''
-
-            #tipo de pesquisa (opções)
-            if (tipoPesquisa == 'pasta'):
-                xPathOption = '//*[@id="chkPesquisa139"]'
-            elif (tipoPesquisa == 'cliente'):
-                xPathOption = '//*[@id="chkPesquisa133"]'
-            elif (tipoPesquisa == 'processo'):
-                xPathOption = '//*[@id="chkPesquisa137"]'
-
-            selecionaOpcao = self.waitingElement('{}'.format(xPathOption))
-            selecionaOpcao.click()
-            sleep(3)
-
-            # valor do parâmetro
-            textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
-            textoPesquisa.send_keys(str(search))
-
-            print("\n{}PESQUISA -  {}: {}".format(self.fileName, tipoPesquisa, search).upper())
-            sleep(3)
-            botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
-            botaoPesquisar.click()
-
-            #AGUARDA PELO CARREGAMENTO
-            while True:
-                element = self.driver.find_element_by_id('backgroundPopup').is_displayed()
-                if (not (element)):
-                    break
-
-            contPesquisa = 0
-            while True:
+        contErro = 0
+        while True:
+            try:
                 try:
-                    tabelaRegistro = self.waitingElement('divCliente', 'click', 'id')
-                    break
+                    self.driver.get('https://integra.adv.br/integra4/modulo/21/default.asp')
+                    abriuPesquisa = True
                 except:
-                    contPesquisa = contPesquisa + 1
-                    print('\n{}AGUARDANDO CARREGAMENTO DA PESQUISA...{}'.format(self.fileName, contPesquisa+1))
-                    sleep(1)
-                    if (contPesquisa > 15):
-                        retorno = False
-                        break
+                    abriuPesquisa = self.acessaMenuPesquisa()
 
-            if (tabelaRegistro):
-                try:
-                    sleep(1)
-                    tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
-                    tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
-                    tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
-                    tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
-                    print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
-                    retorno = True
-                except:
-                    tabelaRegistro = tabelaRegistro.find_element_by_id('loopVazio')
-                    print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                tabelaRegistro = ''
+                retorno = None
+                if (abriuPesquisa):
+                    sleep(3)
+                    self.checkPopUps()
+                    xPathOption = ''
+
+                    #tipo de pesquisa (opções)
+                    if (tipoPesquisa == 'pasta'):
+                        xPathOption = '//*[@id="chkPesquisa139"]'
+                    elif (tipoPesquisa == 'cliente'):
+                        xPathOption = '//*[@id="chkPesquisa133"]'
+                    elif (tipoPesquisa == 'processo'):
+                        xPathOption = '//*[@id="chkPesquisa137"]'
+
+                    selecionaOpcao = self.waitingElement('{}'.format(xPathOption))
+                    selecionaOpcao.click()
+                    sleep(3)
+
+                    # valor do parâmetro
+                    textoPesquisa = self.waitingElement('txtPesquisa', 'show', 'id')
+                    textoPesquisa.send_keys(str(search))
+
+                    print("\n{}PESQUISA -  {}: {}".format(self.fileName, tipoPesquisa, search).upper())
+                    sleep(3)
+                    botaoPesquisar = self.waitingElement('btnPesquisar', 'click', 'id')
+                    botaoPesquisar.click()
+
+                    #AGUARDA PELO CARREGAMENTO
+                    while True:
+                        element = self.driver.find_element_by_id('backgroundPopup').is_displayed()
+                        print("\n{}PESQUISA - CARREGAMENTO OK".format(self.fileName))
+                        if (not (element)):
+                            break
+
+                    contPesquisa = 0
+                    while True:
+                        try:
+                            tabelaRegistro = self.waitingElement('divCliente', 'click', 'id')
+                            break
+                        except:
+                            contPesquisa = contPesquisa + 1
+                            print('\n{}AGUARDANDO CARREGAMENTO DA PESQUISA...{}'.format(self.fileName, contPesquisa+1))
+                            sleep(1)
+                            if (contPesquisa > 15):
+                                retorno = False
+                                break
+
+                    if (tabelaRegistro):
+                        try:
+                            sleep(1)
+                            tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
+                            tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
+                            tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
+                            tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
+                            print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                            retorno = True
+                        except:
+                            tabelaRegistro = tabelaRegistro.find_element_by_id('loopVazio')
+                            print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                            retorno = False
+                else:
                     retorno = False
-        else:
-            retorno = False
 
-        sleep(1.5)
-        return retorno, tabelaRegistro
+                sleep(1.5)
+                return retorno, tabelaRegistro
+
+            except Exception as err:
+                exception_type, exception_object, exception_traceback = exc_info()
+                line_number = exception_traceback.tb_lineno
+                print('{}\n ERRO EM {} na linha {} >>>'.format(self.fileName, err, line_number))
+                contErro = contErro + 1
+                if (contErro >= 3):
+                    print('{}\n<<< FOI TENTADO REALIZAR A PESQUISA {} VEZES SEM SUCESSO. SAINDO!>>> '.format(self.fileName, contErro))
+                    return False, False
 
     def uploadFile(self):
         self.checkPopUps()
@@ -258,7 +272,6 @@ class IntegraFunctions(object):
                         pass
 
         except Exception as err:
-            from sys import exc_info
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
             print('{}\n ERRO EM {} na linha {} >>>'.format(self.fileName, err, line_number))
@@ -305,6 +318,9 @@ class IntegraFunctions(object):
                                 searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
                             else:
                                 searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+
+                            if (not(searchFolder) and not (elementoPesquisado)):
+                                return False
                         except:
                             return False
                 except:
@@ -364,7 +380,6 @@ class IntegraFunctions(object):
                 reg = reg + 1
             print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
         except Exception as err:
-            from sys import exc_info
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
             print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
