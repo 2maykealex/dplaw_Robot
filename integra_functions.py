@@ -215,27 +215,36 @@ class IntegraFunctions(object):
                         reg = 'CONFERENCIA'
 
                 if (robo or reg == 'CONFERENCIA'):
-                    # print('\n=============== CONFERÊNCIA DE DADOS ===============')
-                    # _abreWebDriver = self.acessToIntegra(self.login, self.password)
-                    # reg = 1
-                    # while True:
-                    #     if (reg > len(registros['registros'])):
-                    #         break
-                    #     registro = registros['registros']['{}'.format(reg)]
-                    #     try:
-                    #         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                    #         if (countChar >= 14):
-                    #             _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
-                    #         else:
-                    #             _searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                    #     except:
-                    #         return False
+                    print('\n=============== CONFERÊNCIA DE DADOS ===============')
+                    _abreWebDriver = self.acessToIntegra(self.login, self.password)
+                    reg = 1
+                    while True:
+                        if (reg > len(registros['registros'])):
+                            break
+                        registro = registros['registros']['{}'.format(reg)]
+                        try:
+                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                            else:
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
 
-                    #     if (elementoPesquisado):
-                    #         elementoPesquisado.click() # Na conferência, sempre vai clicar
-                    #         messageConferencia = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                    #         # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
-                    #     reg = reg + 1
+                        if (searchFolder):
+                            elementoPesquisado.click() # Na conferência, sempre vai clicar
+                            basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
+                            message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                            # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
+                            # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
+
+                            if (message):
+                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
+                            else:
+                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        else:
+                            basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
@@ -476,29 +485,37 @@ class IntegraFunctions(object):
                 if (k in itensExcluidosLoop or v == None):
                     continue
 
+                dadoCorrigido = ''
                 if (check):
                     if (k in ['txtNroCnj']):
                         v = basic_functions.ajustarNumProcessoCNJ(v)
                     print ('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
 
-                #TODO   verificar se dá pra MOVER  "if (k == 'slcResponsavel'):"    PARA DENTRO DO   "if (element.tag_name == 'select')"  (LOGO ABAIXO)
                 if (k == 'slcResponsavel'):
                     self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
                     selectResponsaveis = self.waitingElement(k, 'click', form='id')
                     selectResponsaveis = self.selenium.select(selectResponsaveis)
                     respProcesso = v['Processo'].copy()
 
+                    itensNaoInseridos = []
                     if (check):
                         antigosSelecionados = []
                         all_selected_options = selectResponsaveis.all_selected_options
                         if (all_selected_options):
                             for item in all_selected_options:
-                                antigosSelecionados.append(item.text)
-                            respProcesso = list(set(respProcesso) - set(antigosSelecionados))
-                            valorAntigo = ''.join(antigosSelecionados)
+                                if (item.text):
+                                    antigosSelecionados.append(item.text)
+                                    if (not(item.text in v['Processo'])):
+                                        itensNaoInseridos.append(item.text)
 
-                    selecionaResponsaveis()
-                    camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, respProcesso)
+                            if (itensNaoInseridos):
+                                respProcesso = itensNaoInseridos
+                                valorAntigo = ', '.join(antigosSelecionados)
+                                dadoCorrigido = ' (CORRIGIDO)'
+
+                    if (not(check) or (check and itensNaoInseridos)):
+                        selecionaResponsaveis()
+                        camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, respProcesso, dadoCorrigido)
 
                 else:
                     element = self.waitingElement(k, 'click', form='id')
@@ -507,7 +524,7 @@ class IntegraFunctions(object):
                         valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
                         select = self.selenium.select(element)
                         valorAntigo = select.first_selected_option.text
-                        if (not(check) or (check and valorAntigo != (str(v)))):
+                        if (not(check) or (check and valorAntigo.upper() != (str(v.upper())))):
                             try:
                                 select.select_by_visible_text(valorElemento)
                             except:
@@ -523,11 +540,13 @@ class IntegraFunctions(object):
                                         if (element.get_attribute('value') != ''):
                                             naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
                                             continue
+                            else:
+                                dadoCorrigido = ' (CORRIGIDO)'
                             element.clear()
                             element.send_keys(str(v))
                             if (k == 'txtNroCnj'):
                                 segredoJusticaAndamentos()
-                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
                             print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
                     sleep(1)
             except Exception as err:
@@ -601,6 +620,12 @@ class IntegraFunctions(object):
                 sleep(1.5)
 
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
+            if (check):
+                if (camposInseridos and camposInseridos !='|'):
+                    return camposInseridos
+                else:
+                    return False
+
             try:
                 complementoNaoInseridos =''
                 if (naoInserido):
@@ -618,6 +643,9 @@ class IntegraFunctions(object):
             except:
                 pass
         except:
+            if (check):
+                return False
+
             message = "{}; NÃO FOI POSSÍVEL A ABERTURA/ATUALIZAÇÃO".format(message)
         return message
 
@@ -987,7 +1015,6 @@ class IntegraFunctions(object):
 
 
 #TODO SE DER ERRO OU FALHA NA VERIFICAÇÃO -> DAR UM CONTINUE E REINICIAR O WEBDRIVER (SE ISSO FOR O CASO)
-
 #TODO  CRIAR UM GATILHO - PARA QUANDO A SESSÃO EXPIRAR OU O CHROME FECHAR - PRA VOLTAR PARA O ROBO MONITOR
 #TODO MELHORAR OS LOGS - CAMPO SE EXISTE OUTROS PROCESSOS (P/MARCAR)   ERROS NÃO INSERIDOS PARA O FINAL (NOVO NOME: ITENS QUE NÃO FOI POSSÍVEL REALIZAR O PREENCHIMENTO)
 #TODO PENSAR NA VOLTA DO pid PARA CHECAR NAS EXECUÇÕES SE O WEBDRIVER NÃO FOI FINALIZADO E RECOMEÇAR CASO TENHA SIDO.
