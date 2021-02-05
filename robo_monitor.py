@@ -87,6 +87,7 @@ while True:
                     reg = checkEndFile(logFileCSV)
                     if (reg != 'FIM'):
                         executingFiles.append(file)
+                        myThread = None
                         myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
                         executeRobot.append(myThread)
                     else:
