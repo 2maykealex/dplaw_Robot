@@ -3,6 +3,7 @@ from datetime import datetime
 from time import strftime
 from time import sleep
 from sys import exc_info
+from os import path
 import basic_functions
 
 class IntegraFunctions(object):
@@ -229,6 +230,12 @@ class IntegraFunctions(object):
                         reg = 'CONFERENCIA'
 
                 if (robo or reg == 'CONFERENCIA'):
+                    from shutil import copy
+                    logBackup = "{}LOGS\\backups\\{}".format(logFileCSV.split('LOGS')[0], logFileCSV.split('\\')[-1])
+                    basic_functions.createFolder("{}backups".format(logBackup.split('backups')[0]))
+                    if (not(path.isfile(logBackup))):
+                        copy(logFileCSV, logBackup)
+
                     print('\n=============== CONFERÊNCIA DE DADOS ===============')
                     _abreWebDriver = self.acessToIntegra(self.login, self.password)
                     reg = 1
@@ -307,6 +314,7 @@ class IntegraFunctions(object):
                 print('{}REG {}: INICIANDO: {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
 
                 searchFolder = None
+                self.isTest = False
                 try:
                     print('{}REG {}: REALIZANDO PESQUISA: {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
                     if (self.isTest and 'abertura' in registros['tipo']):
@@ -508,6 +516,7 @@ class IntegraFunctions(object):
 
                 dadoCorrigido = ''
                 if (check):
+                    dadoCorrigido = ' (CORRIGIDO)'
                     if (k in ['txtNroCnj']):
                         v = basic_functions.ajustarNumProcessoCNJ(v)
                     print ('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
@@ -532,7 +541,6 @@ class IntegraFunctions(object):
                             if (itensNaoInseridos):
                                 respProcesso = itensNaoInseridos
                                 valorAntigo = ', '.join(antigosSelecionados)
-                                dadoCorrigido = ' (CORRIGIDO)'
 
                     if (not(check) or (check and itensNaoInseridos)):
                         selecionaResponsaveis()
@@ -550,7 +558,7 @@ class IntegraFunctions(object):
                                 select.select_by_visible_text(valorElemento)
                             except:
                                 checkValueInCombo(str(v.strip()), k)
-                            camposInseridos = "{}{}: '{}' |".format(camposInseridos, k, v)
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
                             print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
 
                     else: #QUANDO É INPUTS OU TEXTAREAS
@@ -561,8 +569,6 @@ class IntegraFunctions(object):
                                         if (element.get_attribute('value') != ''):
                                             naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
                                             continue
-                            else:
-                                dadoCorrigido = ' (CORRIGIDO)'
                             element.clear()
                             element.send_keys(str(v))
                             if (k == 'txtNroCnj'):
