@@ -19,6 +19,7 @@ class SeleniumFunctions(object):
     def waitInstance(self, driver, object, poll, type, form = 'xpath'):
         timeOut = 4 #segundos
         count = 0
+        element = None
         while (count < 3):
             try:
                 if type == 'click':
@@ -50,11 +51,13 @@ class SeleniumFunctions(object):
                         element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                                 ignored_exceptions=[NoSuchElementException,
                                                 ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.CLASS_NAME, object)))
+                hora = time.strftime("%H:%M:%S")
+                print('=========================> {} - {} - O Elemento "{}" foi encontrado!'.format(count, hora, object).upper())
                 return element
             except:
                 count = count + 1
                 hora = time.strftime("%H:%M:%S")
-                print('=========================> {} - {} - Elemento ainda não foi encontrado!'.format(count, hora).upper())
+                print('=========================> {} - {} - Elemento "{}" ainda não foi encontrado!'.format(count, hora, object).upper())
 
         return False
 
