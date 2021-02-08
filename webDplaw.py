@@ -706,19 +706,20 @@ def listLogs(filtro):
     logsPath = '{}\\logs'.format(path.dirname(__file__))
     for folder, _subdirs, filesFolder in walk(logsPath, topdown=True):
         for name in filesFolder:
-            if (folder.split('\\')[-1] in filtro or filtro == 'all'):
-                status = checkEndFile("{}\\{}".format(folder, name))
-                tipo = folder.split('\\')[-1]
-                file = {
-                        name: {
-                                'ARQUIVO': name,
-                                'TIPO': tipo,
-                                'PATH': folder,
-                                'STATUS': status
+            if (folder.split('\\')[-1] != 'backups'):
+                if (folder.split('\\')[-1] in filtro or filtro == 'all'):
+                    status = checkEndFile("{}\\{}".format(folder, name))
+                    tipo = folder.split('\\')[-1]
+                    file = {
+                            name: {
+                                    'ARQUIVO': name,
+                                    'TIPO': tipo,
+                                    'PATH': folder,
+                                    'STATUS': status
+                            }
                         }
-                    }
-                files.update(file)
-                item = item + 1
+                    files.update(file)
+                    item = item + 1
     # files.sort()
 
     return files
