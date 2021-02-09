@@ -248,37 +248,37 @@ class IntegraFunctions(object):
                     if (not(path.isfile(logBackup))):
                         copy(logFileCSV, logBackup)
 
-                    print('\n=============== CONFERÊNCIA DE DADOS ===============')
-                    _abreWebDriver = self.acessToIntegra(self.login, self.password)
-                    reg = 1
-                    while True:
-                        if (reg > len(registros['registros'])):
-                            break
-                        registro = registros['registros']['{}'.format(reg)]
-                        try:
-                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                            if (countChar >= 14):
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
-                            else:
-                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                        except:
-                            return False
+                    # print('\n=============== CONFERÊNCIA DE DADOS ===============')
+                    # _abreWebDriver = self.acessToIntegra(self.login, self.password)
+                    # reg = 1
+                    # while True:
+                    #     if (reg > len(registros['registros'])):
+                    #         break
+                    #     registro = registros['registros']['{}'.format(reg)]
+                    #     try:
+                    #         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                    #         if (countChar >= 14):
+                    #             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                    #         else:
+                    #             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                    #     except:
+                    #         return False
 
-                        if (searchFolder):
-                            elementoPesquisado.click() # Na conferência, sempre vai clicar
-                            basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
-                            message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                            # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
-                            # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
+                    #     if (searchFolder):
+                    #         elementoPesquisado.click() # Na conferência, sempre vai clicar
+                    #         basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
+                    #         message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                    #         # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
+                    #         # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
 
-                            if (message):
-                                if (message == True): message = 'NENHUM ITEM PRECISOU DE CORREÇÃO!'
-                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
-                            else:
-                                basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
-                        else:
-                            basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
-                        reg = reg + 1
+                    #         if (message):
+                    #             if (message == True): message = 'NENHUM ITEM PRECISOU DE CORREÇÃO!'
+                    #             basic_functions.createLog(self.logFileCSV, "REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
+                    #         else:
+                    #             basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                    #     else:
+                    #         basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                    #     reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
