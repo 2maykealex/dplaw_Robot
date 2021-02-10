@@ -121,7 +121,7 @@ class IntegraFunctions(object):
                             retorno = True
                         except:
                             loopVazio = tabelaRegistro.find_element_by_id('loopVazio')
-                            if (loopVazio):
+                            if (loopVazio.text.strip() == 'Nenhum registro foi encontrado.'):
                                 print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
                                 retorno = False
                                 break
@@ -749,6 +749,7 @@ class IntegraFunctions(object):
         while True:
             try:
                 for k, v in registro['parteAdversa'].items():
+                    sleep(1)
                     if (check):
                         dadoCorrigido = ' (CORRIGIDO)'
                         print('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
