@@ -120,12 +120,13 @@ class IntegraFunctions(object):
                             print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
                             retorno = True
                         except:
-                            tabelaRegistro = tabelaRegistro.find_element_by_id('loopVazio')
-                            if (not(tabelaRegistro)):
-                                print('{} <<< ERRO!!! REFAZENDO A PESQUISA! >>>'.format(self.fileName))
-                            else:
+                            loopVazio = tabelaRegistro.find_element_by_id('loopVazio')
+                            if (loopVazio):
                                 print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
                                 retorno = False
+                                break
+                            else:
+                                print('{} <<< ERRO!!! REFAZENDO A PESQUISA! >>>'.format(self.fileName))
                 else:
                     retorno = False
 
@@ -206,7 +207,7 @@ class IntegraFunctions(object):
                     script = "$('{}').css('display', 'none');".format(popUp)
                     try:
                         self.driver.execute_script(script)
-                        print('POPUP "{}" FECHADO!'.format(popUp))
+                        # print('POPUP "{}" FECHADO!'.format(popUp))
                         sleep(1.5)
                     except:
                         pass
@@ -241,51 +242,51 @@ class IntegraFunctions(object):
                         basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
                         reg = 'CONFERENCIA'
 
-                if (robo or reg == 'CONFERENCIA'):
+                if (robo or reg in ['CONFERENCIA', 'CONF']):
                     from shutil import copy
                     logBackup = "{}LOGS\\backups\\{}".format(logFileCSV.split('LOGS')[0], logFileCSV.split('\\')[-1])
                     basic_functions.createFolder("{}backups".format(logBackup.split('backups')[0]))
                     if (not(path.isfile(logBackup))):
                         copy(logFileCSV, logBackup)
 
-                    # print('\n=============== CONFERÊNCIA DE DADOS ===============')
-                    # _abreWebDriver = self.acessToIntegra(self.login, self.password)
-                    # reg = 1
-                    # while True:
-                    #     if (reg > len(registros['registros'])):
-                    #         break
-                    #     registro = registros['registros']['{}'.format(reg)]
-                    #     try:
-                    #         countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-                    #         if (countChar >= 14):
-                    #             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
-                    #         else:
-                    #             searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
-                    #     except:
-                    #         return False
+                    print('\n=============== CONFERÊNCIA DE DADOS ===============')
+                    _abreWebDriver = self.acessToIntegra(self.login, self.password)
+                    reg = 1
+                    while True:
+                        if (reg > len(registros['registros'])):
+                            break
+                        registro = registros['registros']['{}'.format(reg)]
+                        try:
+                            countChar = len(str(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+                            if (countChar >= 14):
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtNroProcesso'] if (registro['txtPasta'] in registro) else registro['txtPasta'], 'processo')  # INVERTIDO
+                            else:
+                                searchFolder, elementoPesquisado = self.realizarPesquisa(registro['txtPasta'], 'pasta')
+                        except:
+                            return False
 
-                    #     if (searchFolder):
-                    #         elementoPesquisado.click() # Na conferência, sempre vai clicar
-                    #         basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
-                    #         message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
-                    #         # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
-                    #         # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
+                        if (searchFolder):
+                            elementoPesquisado.click() # Na conferência, sempre vai clicar
+                            basic_functions.createLog(self.logFileCSV, "\n", printOut=False) #pula linha no Log
+                            message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=True)
+                            # confereAgendamentos = self.criaAgendammentos(registro, reg, True)
+                            # if (confereAgendamentos): message = '{}{}'.format(message, confereAgendamentos)
 
-                    #         if (message):
-                    #             if (message == True): message = 'NENHUM ITEM PRECISOU DE CORREÇÃO!'
-                    #             basic_functions.createLog(self.logFileCSV, "REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
-                    #         else:
-                    #             basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
-                    #     else:
-                    #         basic_functions.createLog(self.logFileCSV, "REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
-                    #     reg = reg + 1
+                            if (message):
+                                if (message == True): message = 'NENHUM ITEM PRECISOU DE CORREÇÃO!'
+                                basic_functions.createLog(self.logFileCSV, "CONF REG {};;{};{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "FOI CHECADO", message), printOut=False)
+                            else:
+                                basic_functions.createLog(self.logFileCSV, "CONF REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        else:
+                            basic_functions.createLog(self.logFileCSV, "CONF REG {};;{};{}\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'], "NÃO FOI POSSIVEL CHECAR ESSA PASTA - CHECAR MANUALMENTE!"), printOut=False)
+                        reg = reg + 1
 
                     basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
                     self.logoutIntegra()
                     return True
                 else:
                     try:
-                        self.logoutIntegra()
+                        # self.logoutIntegra()
                         print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
                         break
                     except:
@@ -398,16 +399,19 @@ class IntegraFunctions(object):
                     message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
                     print(message)
 
-                basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
+                # basic_functions.createLog(self.logFileCSV, "\n", printOut=False)
+                basic_functions.createLog(self.logFileCSV, "{}".format(message), printOut=False)
                 reg = reg + 1
+
             print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
+            basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
+
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
             print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
             pass
 
-        basic_functions.createLog(self.logFileCSV, "\nCONFERENCIA", printOut=False)
         self.logoutIntegra()
         return True
 
@@ -600,7 +604,8 @@ class IntegraFunctions(object):
             print('\n{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
 
         idNovaPasta = recuperaIdIntegra()
-        complementoAdversa = ""
+        complementoAdversa = ''
+        camposInseridosAdversa = '|'
         sleep(1)
 
         menuAdversa = None
@@ -617,7 +622,10 @@ class IntegraFunctions(object):
                         while True: # ABRE A PARTE ADVERSA
                             try:
                                 menuAdversa.click()
-                                sleep(1.5)
+                                # while True:
+                                #     if (not(self.driver.find_element_by_id('popupCarregando').is_displayed())):
+                                #         break
+                                sleep(2)
                                 try: #checa se há mensagens que bloqueiam o salvamento #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
                                     element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
                                     self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
@@ -645,7 +653,7 @@ class IntegraFunctions(object):
 
                         self.checkPopUps()
                         try:
-                            complementoAdversa, naoInserido = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
+                            complementoAdversa, naoInserido, camposInseridosAdversa = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
                         except:
                             print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
                         sleep(1)
@@ -653,45 +661,56 @@ class IntegraFunctions(object):
             else:
                 print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
 
+        if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
+            print('sem alteração!!!!!!!!!')
+            return True
+
         try: # Botão salvar
-            countSalvar = 2 if (check) else 1
-            for contSalvar in range(countSalvar):
-                botaoSalvar = None
-                botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
-                botaoSalvar.click()
-                print('{}REG {}: -> SALVANDO'.format(self.fileName, reg))
-                sleep(1)
+            countSalvar = 0
+            if (check):
+                if (camposInseridosAdversa != '|'): countSalvar = countSalvar + 1 #se teve correção na parte adversa
+                if (camposInseridos != '|')       : countSalvar = countSalvar + 1 #se teve correção na parte administrativa/judicial
+            else:
+                countSalvar = 1
 
-                try: # POP-UPS APÓS O SALVAMENTO
-                    while True:
-                        sleep(1)
-                        container = self.waitingElement('popup_container', 'show', 'id')  #primeiro  #TODO melhorar a forma de buscar esse elemento
-                        if (container):
-                            try:
-                                janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
-                            except:
-                                janelaOutrosProcessos = False
+            if (countSalvar):
+                for contSalvar in range(countSalvar):
+                    botaoSalvar = None
+                    botaoSalvar = self.driver.find_elements_by_id("btnSalvar")[contSalvar]
+                    botaoSalvar.click()
+                    print('{}REG {}: -> SALVANDO'.format(self.fileName, reg))
+                    sleep(1)
 
-                            btnOk = self.waitingElement('popup_ok', 'show', 'id')
-                            btnOk.click()
-                            sleep(1.5)
+                    try: # POP-UPS APÓS O SALVAMENTO
+                        while True:
+                            sleep(1)
+                            container = self.waitingElement('popup_container', 'show', 'id')  #primeiro  #TODO melhorar a forma de buscar esse elemento
+                            if (container):
+                                try:
+                                    janelaOutrosProcessos = self.driver.find_element_by_class_name("confirm")
+                                except:
+                                    janelaOutrosProcessos = False
 
-                            if (janelaOutrosProcessos):
-                                complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
-                                print('{}REG {}: -> ADVERSA TEM OUTROS PROCESSOS'.format(self.fileName, reg))
+                                btnOk = self.waitingElement('popup_ok', 'show', 'id')
+                                btnOk.click()
+                                sleep(1.5)
 
-                                _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
-                                if (_checkElemento):
-                                    break
+                                if (janelaOutrosProcessos):
+                                    complementoAdversa = "{} --> TEM OUTROS PROCESSOS REGISTRADOS NO SISTEMA".format(complementoAdversa)
+                                    print('{}REG {}: -> ADVERSA TEM OUTROS PROCESSOS'.format(self.fileName, reg))
+
+                                    _checkElemento = self.waitingElement('idDoCliente', 'show', form='class') #aguarda carregamento da página depois de salvar.
+                                    if (_checkElemento):
+                                        break
+                                    else:
+                                        continue
                                 else:
-                                    continue
+                                    break
                             else:
                                 break
-                        else:
-                            break
-                except:
-                    pass
-                sleep(1.5)
+                    except:
+                        pass
+                    sleep(1.5)
 
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class')
             if (check):
@@ -724,11 +743,14 @@ class IntegraFunctions(object):
         return message
 
     def inserirParteAdversa(self, registro, reg, naoInserido, check=False):
-        complementoAdversa = ""
+        complementoAdversa = ''
+        camposInseridos = ''
+        dadoCorrigido = ''
         while True:
             try:
                 for k, v in registro['parteAdversa'].items():
                     if (check):
+                        dadoCorrigido = ' (CORRIGIDO)'
                         print('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
                     try:
                         element = self.waitingElement(k, 'click', form='id')
@@ -745,12 +767,13 @@ class IntegraFunctions(object):
                                     # checkValueInCombo(str(v), k) #TODO CHECAR ISSO
                                     pass
                             sleep(1)
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
                             print('{}\nREG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
                     except:
                         print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(self.fileName, reg, k, v))
                         naoInserido[k] = str(v)
                 complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
-                return (complementoAdversa, naoInserido)
+                return (complementoAdversa, naoInserido, camposInseridos)
             except:
                 print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
                 pass
