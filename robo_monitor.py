@@ -88,6 +88,8 @@ while True:
                     reg = checkEndFile(logFileCSV)
                     if (reg != 'FIM'):
                         executingFiles.append(file)
+                        if (type(reg) != type(int())):
+                            if (reg.split(' ')[0] == 'CONF'): reg = int(reg.split(' ')[-1])
                         try:
                             myThread = None
                             myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
