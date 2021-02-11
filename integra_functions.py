@@ -402,7 +402,8 @@ class IntegraFunctions(object):
                 reg = reg + 1
 
             print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
-            basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
+            basic_functions.createLog(self.logFileCSV, "\nFIM", printOut=False)
+            # basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False) #TODO     ATIVAR NA CONFERÊNCIA
 
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
