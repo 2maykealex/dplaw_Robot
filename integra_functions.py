@@ -124,7 +124,6 @@ class IntegraFunctions(object):
                             if (loopVazio.text.strip() == 'Nenhum registro foi encontrado.'):
                                 print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
                                 retorno = False
-                                break
                             else:
                                 print('{} <<< ERRO!!! REFAZENDO A PESQUISA! >>>'.format(self.fileName))
                 else:
@@ -286,7 +285,7 @@ class IntegraFunctions(object):
                     return True
                 else:
                     try:
-                        # self.logoutIntegra()
+                        self.logoutIntegra()
                         print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
                         break
                     except:
@@ -399,7 +398,6 @@ class IntegraFunctions(object):
                     message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
                     print(message)
 
-                # basic_functions.createLog(self.logFileCSV, "\n", printOut=False)
                 basic_functions.createLog(self.logFileCSV, "{}".format(message), printOut=False)
                 reg = reg + 1
 
