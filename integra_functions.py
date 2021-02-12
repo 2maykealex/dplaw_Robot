@@ -101,6 +101,25 @@ class IntegraFunctions(object):
                     while True:
                         try:
                             tabelaRegistro = self.waitingElement('divCliente', 'click', 'id')
+                            sleep(2)
+                            try:
+                                tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
+                                tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
+                                tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
+                                tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
+                                print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                                retorno = True
+                            except:
+                                try:
+                                    loopVazio = tabelaRegistro.find_element_by_id('loopVazio')
+                                except:
+                                    continue
+                                if (loopVazio.text.strip() == 'Nenhum registro foi encontrado.'):
+                                    print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
+                                    retorno = False
+                                else:
+                                    print('{} <<< ERRO!!! REFAZENDO A PESQUISA! >>>'.format(self.fileName))
+                                    continue
                             break
                         except:
                             contPesquisa = contPesquisa + 1
@@ -109,23 +128,6 @@ class IntegraFunctions(object):
                             if (contPesquisa > 15):
                                 retorno = False
                                 break
-
-                    if (tabelaRegistro):
-                        try:
-                            sleep(1)
-                            tabelaRegistro = tabelaRegistro.find_element_by_class_name('tablesorter')
-                            tabelaRegistro = tabelaRegistro.find_element_by_tag_name('tbody')
-                            tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('tr')[0]
-                            tabelaRegistro = tabelaRegistro.find_elements_by_tag_name('td')[4]
-                            print('{}PESQUISA -  {}: {} - FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
-                            retorno = True
-                        except:
-                            loopVazio = tabelaRegistro.find_element_by_id('loopVazio')
-                            if (loopVazio.text.strip() == 'Nenhum registro foi encontrado.'):
-                                print('{}PESQUISA -  {}: {} - NÃO FOI ENCONTRADO'.format(self.fileName, tipoPesquisa, search).upper())
-                                retorno = False
-                            else:
-                                print('{} <<< ERRO!!! REFAZENDO A PESQUISA! >>>'.format(self.fileName))
                 else:
                     retorno = False
 
@@ -310,7 +312,7 @@ class IntegraFunctions(object):
                 registro = registros['registros']['{}'.format(reg)]
                 message = ''
                 print('=========================================================')
-                print('{}FALTAM {} DE {} REGISTROS PARA FINALIZAR!'.format(self.fileName, (len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
+                print('{}FALTAM  {}  REGISTROS PARA FINALIZAR! ==> TOTAL DE  {}'.format(self.fileName, (len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
                 if ('abertura' in registros['tipo']):
                     if (not(ultimoCliente) or (registro['razaoSocial'].upper() != ultimoCliente.upper())):
@@ -389,13 +391,14 @@ class IntegraFunctions(object):
                     if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
 
                 elif (searchFolder) and ('atualizacao' in registros['tipo']):
-                    sleep(1.3)
+                    sleep(2)
                     elementoPesquisado.click()
                     message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta'])
+                    message = '{}\n'.format(message)
                 elif not(searchFolder) and ('atualizacao' in registros['tipo']):
-                    message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+                    message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
                 else:
-                    message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
+                    message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
                     print(message)
 
                 basic_functions.createLog(self.logFileCSV, "{}".format(message), printOut=False)
@@ -607,16 +610,16 @@ class IntegraFunctions(object):
         camposInseridosAdversa = '|'
         sleep(1)
 
-        menuAdversa = None
-        while True:
-            if (check):
-                menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
-            else:
-                menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
+        if ('abertura' in tipo): #TODO => CHECAR SE É VOLUMETRIA OU CONTRATO PA  (PODE TER NO FUTURO ATUALIZAÇÃO QUE VAI PARA A PARTE ADVERSA)
+            menuAdversa = None
+            while True:
+                if (check):
+                    menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
+                else:
+                    menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
 
-            self.checkPopUps()
-            if (menuAdversa):
-                if ('abertura' in tipo):
+                self.checkPopUps()
+                if (menuAdversa):
                     if ("parteAdversa" in registro):
                         while True: # ABRE A PARTE ADVERSA
                             try:
@@ -656,9 +659,9 @@ class IntegraFunctions(object):
                         except:
                             print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
                         sleep(1)
-                break
-            else:
-                print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
+                    break
+                else:
+                    print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
 
         if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
             print('sem alteração!!!!!!!!!')
