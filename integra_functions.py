@@ -611,57 +611,65 @@ class IntegraFunctions(object):
         sleep(1)
 
         if ('abertura' in tipo): #TODO => CHECAR SE É VOLUMETRIA OU CONTRATO PA  (PODE TER NO FUTURO ATUALIZAÇÃO QUE VAI PARA A PARTE ADVERSA)
-            menuAdversa = None
-            while True:
-                if (check):
-                    menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
-                else:
-                    menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
+            if ("parteAdversa" in registro):
+                menuAdversa = None
+                countAdversa = 0
+                while countAdversa < 5:
+                    if (check):
+                        menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
+                    else:
+                        menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
 
-                self.checkPopUps()
-                if (menuAdversa):
-                    if ("parteAdversa" in registro):
-                        while True: # ABRE A PARTE ADVERSA
-                            try:
-                                menuAdversa.click()
-                                # while True:
-                                #     if (not(self.driver.find_element_by_id('popupCarregando').is_displayed())):
-                                #         break
-                                sleep(2)
-                                try: #checa se há mensagens que bloqueiam o salvamento #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
-                                    element = self.driver.find_element_by_id('div_txtComarca').is_displayed()
-                                    self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
-                                    naoInserido['comarcaNova'] = str(registro['comarcaNova'])
-                                    sleep(1.5)
-                                    continue #todo testar
-                                except:
-                                    pass
+                    sleep(1)
+                    self.checkPopUps()
+                    if (menuAdversa):
+                        try:
+                            menuAdversa.click()
+                            sleep(2)
+                        except:
+                            print('\n{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>>'.format(self.fileName, reg))
+                            countAdversa = countAdversa + 1
+                            continue
+
+                        try: #checa se há mensagens que bloqueiam o salvamento
+                            element = self.driver.find_element_by_id('div_txtComarca').is_displayed() #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
+                            self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+                            naoInserido['comarcaNova'] = str(registro['comarcaNova'])
+                            sleep(1.5)
+                            continue
+                        except:
+                            pass
+
+                        try:
+                            if (check):
+                                sleep(1)
+                                tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
                                 try:
-                                    if (check):
-                                        tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
-                                        try:
-                                            tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
-                                        except:
-                                            tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
-                                            pass
-                                        sleep(1)
-                                        tabelaAdversa.click()
-                                        sleep(1)
+                                    tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
                                 except:
-                                    continue
-                                break
-                            except:
-                                print('\n{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>>'.format(self.fileName, reg))
+                                    tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
+
+                                sleep(1)
+                                tabelaAdversa.click()
+                                sleep(1)
+                        except:
+                            print('\n{}REG {}: <<< ERRO AO CLICAR NO TABELA COM A ADVERSA NA CHECAGEM >>>'.format(self.fileName, reg))
+                            countAdversa = countAdversa + 1
+                            continue
 
                         self.checkPopUps()
                         try:
                             complementoAdversa, naoInserido, camposInseridosAdversa = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
                         except:
                             print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
+                            countAdversa = countAdversa + 1
+                            continue
                         sleep(1)
-                    break
-                else:
-                    print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
+
+                        break
+                    else:
+                        print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
+                    countAdversa = countAdversa + 1
 
         if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
             print('sem alteração!!!!!!!!!')
