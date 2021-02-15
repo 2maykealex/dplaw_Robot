@@ -88,7 +88,6 @@ while True:
                     reg = checkEndFile(logFileCSV)
                     if (reg != 'FIM'):
                         executingFiles.append('{}'.format(file))
-                        reg = int(reg.replace('CONF ','').replace('REG ', ''))
                         try:
                             Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)).start()
                         except:

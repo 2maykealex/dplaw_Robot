@@ -235,16 +235,18 @@ class IntegraFunctions(object):
             self.fileNameFim = "==========================================================="
             self.isTest = basic_functions.checkIfTest()
             self.login, self.password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
+            isCheck = True if ('CONF REG' in reg) else False
+            reg = int(reg.replace('CONF ','').replace('REG ', ''))
             while True:
-                if (isinstance(reg, int)):
+                if (not(isCheck)):
                     if (reg != -1 and (reg <= (len(registros['registros'])))):
                         robo = self.abrePasta(registros, reg)
                     else:
                         print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
                         basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
-                        reg = 'CONFERENCIA'
+                        isCheck = True
 
-                if (robo or reg in ['CONFERENCIA', 'CONF']):
+                if (robo or isCheck):
                     from shutil import copy
                     logBackup = "{}LOGS\\backups\\{}".format(logFileCSV.split('LOGS')[0], logFileCSV.split('\\')[-1])
                     basic_functions.createFolder("{}backups".format(logBackup.split('backups')[0]))
