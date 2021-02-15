@@ -387,7 +387,7 @@ class IntegraFunctions(object):
                     else:
                         message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
 
-                    if (messageAgendamentos): message = '{}{}'.format(message, messageAgendamentos)
+                    if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
 
                 elif (searchFolder) and ('atualizacao' in registros['tipo']):
                     sleep(2)
