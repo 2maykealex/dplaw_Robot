@@ -4,6 +4,7 @@ from os import mkdir
 from time import strftime
 from psutil import pid_exists
 from pyexcel import get_sheet
+from sys import exc_info
 
 def checkLogin(tipo=''):
     checarTeste = checkIfTest()
@@ -38,29 +39,24 @@ def abreArquivo(fileName):
         pass
 
 def checkEndFile(log):
-    try:
-        arquivo =  open(log, 'r')
-        message = arquivo.readlines()
-        countLines = len(message)
-        arquivo.close()
+    arquivo =  open(log, 'r')
+    message = arquivo.readlines()
+    countLines = len(message)
+    arquivo.close()
 
-        lastLine = 1
-        if countLines > 1:
-            try:
-                if ('CONFERENCIA' in message[len(message)-1].split(';')[0]):
-                    lastLine = 'CONFERENCIA'
-                elif ('CONF' in message[len(message)-1].split(';')[0]):
-                    lastLine = "{} {}".format(' '.join(message[len(message)-1].split(';')[0].split(' ')[:-1]), int(message[len(message)-1].split(';')[0].split(' ')[-1]) + 1)
-                else:
-                    lastLine = int(message[len(message)-1].split(';')[0].replace('REG ', '')) + 1
-            except:
-                if (message[len(message)-1][:3] == 'FIM'):
-                    lastLine = 'FIM'
-                else:
-                    pass
-    except:
-        lastLine = -1
-
+    lastLine = None
+    if (countLines == 1):
+        lastLine = 'REG 1'
+    else:
+        ultimaLinha = message[ len(message) - 1].split(';')[0].strip()
+        if ('FIM' in ultimaLinha):
+                lastLine = 'FIM'
+        elif ('CONFERENCIA' in ultimaLinha):
+            lastLine = 'CONF REG 1'
+        elif ('CONF REG' in ultimaLinha):
+            lastLine = "CONF REG {}".format( int( ultimaLinha.split(' ')[-1] ) + 1 )
+        else:
+            lastLine = "REG {}".format( int( ultimaLinha.split(' ')[-1] ) + 1 )
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
