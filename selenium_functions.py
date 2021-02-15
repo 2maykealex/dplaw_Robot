@@ -51,11 +51,11 @@ class SeleniumFunctions(object):
                         element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                                 ignored_exceptions=[NoSuchElementException,
                                                 ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.CLASS_NAME, object)))
-                print('===================> {} - O Elemento "{}" foi encontrado! <==================='.format(count, object).lower())
+                print('=============> {} - O Elemento "{}" foi encontrado!'.format(count, object).lower())
                 return element
             except:
                 count = count + 1
-                print('===================> {} - Elemento "{}" ainda não foi encontrado! <==================='.format(count, object).lower())
+                print('=============> {} - Elemento "{}" ainda não foi encontrado!'.format(count, object).lower())
 
         return False
 

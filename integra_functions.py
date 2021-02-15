@@ -231,7 +231,8 @@ class IntegraFunctions(object):
         try:
             robo = None
             self.logFileCSV = logFileCSV
-            self.fileName = "{} ==> ".format(logFileCSV.split('\\')[-1].upper())
+            self.fileName  = "\n===========================================================\n{}\n".format(logFileCSV.split('\\')[-1].upper())
+            self.fileNameFim = "==========================================================="
             self.isTest = basic_functions.checkIfTest()
             self.login, self.password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
             while True:
@@ -311,7 +312,6 @@ class IntegraFunctions(object):
                     break
                 registro = registros['registros']['{}'.format(reg)]
                 message = ''
-                print('=========================================================')
                 print('{}FALTAM  {}  REGISTROS PARA FINALIZAR! ==> TOTAL DE  {}'.format(self.fileName, (len(registros['registros']) -int(reg) + 1), len(registros['registros'])).upper())
 
                 if ('abertura' in registros['tipo']):
@@ -325,7 +325,6 @@ class IntegraFunctions(object):
 
                 tentativa = 1
                 message = ''
-                print('=========================================================')
                 print('{}REG {}: INICIANDO: {}'.format(self.fileName, str(reg), registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
 
                 searchFolder = None
@@ -426,7 +425,7 @@ class IntegraFunctions(object):
                 if (item.text in respProcesso):
                     try:
                         item.click()
-                        print('\n{}REG {}: -> ITEM PREENCHIDO : {} -> RESPONSÁVEL "{}"'.format(self.fileName, reg, k, item.text))
+                        print('{}REG {}: -> ITEM PREENCHIDO : {} -> RESPONSÁVEL "{}"'.format(self.fileName, reg, k, item.text))
                         respSelecionados.append(item.text)
                     except:
                         naoInserido['{}-{}'.format(k, countResp + 1)] = item.text
@@ -461,7 +460,7 @@ class IntegraFunctions(object):
             if (numIdPromad):
                 numIdPromad = numIdPromad.get_attribute("innerHTML")
                 numIdPromad = numIdPromad.split(' ')[-1].strip()
-                print("\n{}REG {}: -> ID PROMAD: {}".format(self.fileName, reg, numIdPromad))
+                print("{}REG {}: -> ID PROMAD: {}".format(self.fileName, reg, numIdPromad))
                 return numIdPromad
             else:
                 return numIdPromad
@@ -515,7 +514,7 @@ class IntegraFunctions(object):
 
         self.checkPopUps()
         sleep(2)
-        print('\n{}REG {}: -> INICIANDO: {}'.format(self.fileName, reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+        print('{}REG {}: -> INICIANDO: {}'.format(self.fileName, reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
         naoInserido = {}
         camposInseridos = '|'
 
@@ -538,7 +537,7 @@ class IntegraFunctions(object):
                     dadoCorrigido = ' (CORRIGIDO)'
                     if (k in ['txtNroCnj']):
                         v = basic_functions.ajustarNumProcessoCNJ(v)
-                    print ('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
+                    print ('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
 
                 if (k == 'slcResponsavel'):
                     self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento visível
@@ -580,7 +579,7 @@ class IntegraFunctions(object):
                             except:
                                 checkValueInCombo(str(v.strip()), k)
                             camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
-                            print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
+                            print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
 
                     else: #QUANDO É INPUTS OU TEXTAREAS
                         if (not(check) or (check and element.get_attribute('value') != (str(v)))):
@@ -595,14 +594,14 @@ class IntegraFunctions(object):
                             if (k == 'txtNroCnj'):
                                 segredoJusticaAndamentos()
                             camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
-                            print('\n{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
+                            print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
                 sleep(1.2)
             except Exception as err:
                 print('{}{}'.format(self.fileName, err))
                 naoInserido[k] = str(v)
 
         if (naoInserido):
-            print('\n{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
+            print('{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
 
         idNovaPasta = recuperaIdIntegra()
         complementoAdversa = ''
@@ -626,7 +625,7 @@ class IntegraFunctions(object):
                             menuAdversa.click()
                             sleep(2)
                         except:
-                            print('\n{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>>'.format(self.fileName, reg))
+                            print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>>'.format(self.fileName, reg))
                             countAdversa = countAdversa + 1
                             continue
 
@@ -652,7 +651,7 @@ class IntegraFunctions(object):
                                 tabelaAdversa.click()
                                 sleep(1)
                         except:
-                            print('\n{}REG {}: <<< ERRO AO CLICAR NO TABELA COM A ADVERSA NA CHECAGEM >>>'.format(self.fileName, reg))
+                            print('{}REG {}: <<< ERRO AO CLICAR NO TABELA COM A ADVERSA NA CHECAGEM >>>'.format(self.fileName, reg))
                             countAdversa = countAdversa + 1
                             continue
 
@@ -660,14 +659,14 @@ class IntegraFunctions(object):
                         try:
                             complementoAdversa, naoInserido, camposInseridosAdversa = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
                         except:
-                            print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
+                            print('{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
                             countAdversa = countAdversa + 1
                             continue
                         sleep(1)
 
                         break
                     else:
-                        print('\n{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
+                        print('{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
                     countAdversa = countAdversa + 1
 
         if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
@@ -761,7 +760,7 @@ class IntegraFunctions(object):
                     sleep(1)
                     if (check):
                         dadoCorrigido = ' (CORRIGIDO)'
-                        print('\n{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
+                        print('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
                     try:
                         element = self.waitingElement(k, 'click', form='id')
                         if (not(check) or (check and element.get_attribute('value').upper() != (str(v.upper())))):
@@ -778,21 +777,21 @@ class IntegraFunctions(object):
                                     pass
                             sleep(1)
                             camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
-                            print('{}\nREG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
+                            print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
                     except:
                         print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(self.fileName, reg, k, v))
                         naoInserido[k] = str(v)
                 complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
                 return (complementoAdversa, naoInserido, camposInseridos)
             except:
-                print('\n{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
+                print('{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
                 pass
 
     def criaAgendammentos(self, registro, reg, check=False):
 
         def checkAgendamentos(registro):
             try:
-                print('\n{}REG {}: OBTENDO AGENDAMENTOS JÁ REALIZADOS NA PASTA'.format(self.fileName, reg))
+                print('{}REG {}: OBTENDO AGENDAMENTOS JÁ REALIZADOS NA PASTA'.format(self.fileName, reg))
                 listaAgendamentos = {}
                 contAgend = 0
                 while True:
@@ -871,7 +870,7 @@ class IntegraFunctions(object):
                 return None
             return listaAgendamentos
 
-        print("\n{}REG {}: INICIANDO OS AGENDAMENTOS:".format(self.fileName, reg))
+        print("{}REG {}: INICIANDO OS AGENDAMENTOS:".format(self.fileName, reg))
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
