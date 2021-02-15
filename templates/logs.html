@@ -44,22 +44,33 @@
                         botaoElement.setAttribute("class", "btn btn-warning");
                         for (var [key1, value1] of Object.entries(dados)) {
                             tdElement = "td";
+
                             if (value1 == arquivo){
-                                value1 = value1.split('__')[2];
-                            }
-                            if (value1 == status)
-                                if (value1 != 'FIM' && value1 != 'CONFERENCIA')
-                                    if (value1-1 == 0)
-                                        value1 = 'INICIADO'
-                                    else
-                                        value1 = 'REGISTRO ' + (value1-1)
+                                value1 = value1.split('__')[2].replace('.csv', '');
+                            };
+
+                            if (value1 == status){
+                                if (value1.trim() != 'FIM'){
+                                    value1 = value1.trim().split(' ');
+                                    numRegistro = parseInt(value1.pop());
+                                    preFixoREG  = value1.join(' ');
+                                    if (!isNaN(numRegistro)){
+                                        console.log(preFixoREG + ' ' + numRegistro)
+                                        value1 = preFixoREG + ' ' + (numRegistro);
+                                    }else{
+                                        if (preFixoREG != 'FIM'){
+                                            value1 = 'CONF REG 1';
+                                        };
+                                    };
+                                };
+                            };
 
                             novoElemento = document.createElement(tdElement);
-                            textnode = document.createTextNode(value1.replace('.csv', '').toUpperCase());
+                            textnode = document.createTextNode(value1.toUpperCase());
                             novoElemento.appendChild(textnode);
                             trElement.appendChild(novoElemento);
                             lista.appendChild(trElement);
-                        }
+                        };
 
                         tdElement = "td";
                         novoElemento = document.createElement(tdElement);
