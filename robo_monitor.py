@@ -87,12 +87,10 @@ while True:
 
                     reg = checkEndFile(logFileCSV)
                     if (reg != 'FIM'):
-                        executingFiles.append(file)
+                        executingFiles.append('{}'.format(file))
                         reg = int(reg.replace('CONF ','').replace('REG ', ''))
                         try:
-                            myThread = None
-                            myThread = Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV))
-                            executeRobot.append(myThread)
+                            Thread(name='Executa_{}_{}'.format(folderName, file.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folderName, logFileCSV)).start()
                         except:
                             if (file in executingFiles):
                                 executingFiles.remove(file)
@@ -105,16 +103,6 @@ while True:
                         print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
                         print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
                         continue
-
-            if (executeRobot):
-                for num, executa in enumerate(executeRobot):
-                    print('\n', executa.name,'\n')
-                    try:
-                        executa.start()
-                    except Exception as err:
-                        print('\n ERRO EM {} -> {}'.format(executa.name, err))
-
-                executeRobot = None
 
     except Exception as err:
         exception_type, exception_object, exception_traceback = exc_info()
