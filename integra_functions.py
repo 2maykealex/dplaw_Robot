@@ -583,8 +583,15 @@ class IntegraFunctions(object):
                             camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
                             print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
 
-                    else: #QUANDO É INPUTS OU TEXTAREAS
-                        if (not(check) or (check and element.get_attribute('value') != (str(v)))):
+                    else: #QUANDO É INPUTS OU TEXTAREAS                        
+                        is_V_Equal = False
+                        if (check):
+                            try: #SÓ SERÁ 'VERDADEIRO' SE O ELEMENTO E 'V.' FOREM DIFERENTES
+                                is_V_Equal = True if (float(element.get_attribute('value').upper().strip().replace(',','.')) != float(v.strip().replace(',','.'))) else False
+                            except:
+                                is_V_Equal = True if (element.get_attribute('value').strip() != (str(v.strip()))) else False
+
+                        if (not(check) or (check and is_V_Equal)):
                             if (not(check)):
                                 if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
                                     if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
@@ -765,7 +772,7 @@ class IntegraFunctions(object):
                         print('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
                     try:
                         element = self.waitingElement(k, 'click', form='id')
-                        if (not(check) or (check and element.get_attribute('value').upper() != (str(v.upper())))):
+                        if (not(check) or (check and element.get_attribute('value').upper().strip() != (str(v.upper().strip())))):
                             if (element.tag_name == 'input'):
                                 element.clear()
                                 element.send_keys(str(v))
