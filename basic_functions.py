@@ -48,7 +48,8 @@ def checkEndFile(log):
     if (countLines == 1):
         lastLine = 'REG 1'
     else:
-        ultimaLinha = message[ len(message) - 1].split(';')[0].strip()
+        linhaAnterior = 2 if (message[ len(message) - 1]) == '\n' else 1
+        ultimaLinha = message[ len(message) - linhaAnterior].split(';')[0].strip()
         if ('FIM' in ultimaLinha):
                 lastLine = 'FIM'
         elif ('CONFERENCIA' in ultimaLinha):
