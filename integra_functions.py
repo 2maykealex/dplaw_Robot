@@ -241,6 +241,7 @@ class IntegraFunctions(object):
                 if (not(isCheck)):
                     if (reg != -1 and (reg <= (len(registros['registros'])))):
                         robo = self.abrePasta(registros, reg)
+                        reg = 1
                     else:
                         print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
                         basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
@@ -255,7 +256,6 @@ class IntegraFunctions(object):
 
                     print('\n=============== CONFERÊNCIA DE DADOS ===============')
                     _abreWebDriver = self.acessToIntegra(self.login, self.password)
-                    reg = 1
                     while True:
                         if (reg > len(registros['registros'])):
                             break
