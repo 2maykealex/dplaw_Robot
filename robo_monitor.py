@@ -12,6 +12,7 @@ from basic_functions import createFolder
 from basic_functions import createLog
 from basic_functions import abreArquivo
 from basic_functions import checkEndFile
+from basic_functions import checkIfTest
 from integra_functions import IntegraFunctions
 import json
 
@@ -28,7 +29,9 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
             if (path.isfile(executedFile)):
                 rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
-            move("{}".format(pathFile), executedFileFolder)
+            if (not(checkIfTest)):
+                move("{}".format(pathFile), executedFileFolder)
+
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
         pass
@@ -98,7 +101,8 @@ while True:
                             executingFiles.remove(file)
 
                         createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName))
-                        move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
+                        if (not(checkIfTest)):
+                            move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folderName)) #move o arquivo para a pasta 'arquivos_executados'
                         print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(file).upper())
                         print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
                         continue
