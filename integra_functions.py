@@ -366,6 +366,7 @@ class IntegraFunctions(object):
                     except:
                         searchFolder = False
 
+                    sleep(1.2)
                     if (not(searchFolder)): #se não há registros
                         if ('abertura' in registros['tipo']):
                             linkIncluiProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
