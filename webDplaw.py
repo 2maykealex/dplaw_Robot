@@ -156,6 +156,7 @@ def defining():
                 itemDict = {'txtPasta': '{}'.format(str(registro[7]).strip()), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
             elif base['funcao'] == 'contrato':
                 itemDict = {'txtPasta': '{}'.format(str(registro[0]).strip()), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
+            itemDict['urlCliente']  = urlBRA
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
