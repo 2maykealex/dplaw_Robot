@@ -157,6 +157,7 @@ def defining():
             elif base['funcao'] == 'contrato':
                 itemDict = {'txtPasta': '{}'.format(str(registro[0]).strip()), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
             itemDict['urlCliente']  = urlBRA
+            itemDict['razaoSocial'] = base['clientePadrao']
 
         elif (base['tipo'] == 'abertura'):
             #importando dados base
