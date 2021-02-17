@@ -152,10 +152,16 @@ def defining():
                 itemDict[k] = dp
 
         if (base['tipo'] == 'atualizacao'):
+            chavePastaProcesso = "txtNroProcesso" if (len(registro[0].strip()) >= 14) else "txtPasta"
+            valorAtualizacao = (filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip()
             if base['funcao'] == 'volumetria':
-                itemDict = {'txtPasta': '{}'.format(str(registro[7]).strip()), 'txtCampoLivre3': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
+                valorPastaProcesso = str(registro[7]).strip()
+                chaveAtualizacao = 'txtCampoLivre3'
             elif base['funcao'] == 'contrato':
-                itemDict = {'txtPasta': '{}'.format(str(registro[0]).strip()), 'txtCampoLivre4': '{}'.format((filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip())}
+                valorPastaProcesso = str(registro[0]).strip()
+                chaveAtualizacao = 'txtCampoLivre4'
+
+            itemDict = {chavePastaProcesso: valorPastaProcesso, chaveAtualizacao: valorAtualizacao}
             itemDict['urlCliente']  = urlBRA
             itemDict['razaoSocial'] = base['clientePadrao']
 
@@ -488,9 +494,6 @@ def defining():
                     parteAdversa['txtEndereco'] = '{}'.format(registro[29])
 
                 itemDict['urlCliente']  = urlOi
-
-        if (len(str(itemDict['txtPasta'])) >= 14):
-            itemDict['txtPasta'] = '{}'.format(ajustarNumProcessoCNJ(str(itemDict['txtPasta'])))
 
         if ('txtNroProcesso' in itemDict):
             itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
