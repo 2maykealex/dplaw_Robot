@@ -373,15 +373,14 @@ class IntegraFunctions(object):
                             linkIncluiProcesso.click()
                             message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
 
-                            messageAgendamentos = ''
                             if ('slcResponsavel' in registro and message):
+                                messageAgendamentos = ''
                                 messageAgendamentos = self.criaAgendammentos(registro, reg)
+                                if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
                                 if (self.isTest):
                                     self.removeAgendamentos(reg)
                             else:
                                 message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
-
-                            if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
 
                         elif ('atualizacao' in registros['tipo']):
                             message = "REG {};;A PASTA/PROCESSO {} NÃO EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'])
