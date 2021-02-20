@@ -47,6 +47,8 @@ def checkEndFile(log):
     lastLine = None
     if (countLines == 1):
         lastLine = 'REG 1'
+    elif ('EM FILA' in message[ len(message) - 1]):
+        lastLine = message[ len(message) - 1]
     else:
         linhaAnterior = 2 if (message[ len(message) - 1]) == '\n' else 1
         ultimaLinha = message[ len(message) - linhaAnterior].split(';')[0].strip()
@@ -70,6 +72,15 @@ def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=Fals
         arquivo.writelines(writeLog)
     if (printOut):
         print(writeLog)
+    arquivo.close()
+
+def deleteLastLineLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
+    arquivo = open(logFile, 'r')
+    lines = arquivo.readlines()
+    lines = lines[:-1]
+    arquivo.close()
+    arquivo = open(logFile, 'w+')
+    arquivo.writelines(lines)
     arquivo.close()
 
 def createFolder(folder):
