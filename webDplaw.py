@@ -115,7 +115,8 @@ def defining():
     newPathFile = path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(newPathFile)
 
-    df = pd.read_excel(newPathFile).fillna('')
+    headerExcel = 0 if (data['funcao'] != 'contrato') else None
+    df = pd.read_excel(newPathFile, header=headerExcel).fillna('')
 
     itensPadroes = {}
     registros    = {}
@@ -146,26 +147,27 @@ def defining():
         agendamentos = {}
         parteAdversa = {}
 
-        dadosPadroes = getDefault(base['siglaPadrao'])
-        if (dadosPadroes):
-            for k, dp in dadosPadroes.items():
-                itemDict[k] = dp
-
         if (base['tipo'] == 'atualizacao'):
-            chavePastaProcesso = "txtNroProcesso" if (len(registro[0].strip()) >= 14) else "txtPasta"
             valorAtualizacao = (filename.replace(filename[-5:], '').replace('_', ' ').strip()).strip()
             if base['funcao'] == 'volumetria':
+                chavePastaProcesso = "txtNroProcesso" if (len(str(registro[7]).strip()) >= 14) else "txtPasta"
                 valorPastaProcesso = str(registro[7]).strip()
                 chaveAtualizacao = 'txtCampoLivre3'
             elif base['funcao'] == 'contrato':
+                chavePastaProcesso = "txtNroProcesso" if (len(str(registro[0]).strip()) >= 14) else "txtPasta"
                 valorPastaProcesso = str(registro[0]).strip()
                 chaveAtualizacao = 'txtCampoLivre4'
-
-            itemDict = {chavePastaProcesso: valorPastaProcesso, chaveAtualizacao: valorAtualizacao}
+            itemDict[chavePastaProcesso] = valorPastaProcesso
+            itemDict[chaveAtualizacao]   = valorAtualizacao
             itemDict['urlCliente']  = urlBRA
             itemDict['razaoSocial'] = base['clientePadrao']
 
         elif (base['tipo'] == 'abertura'):
+            dadosPadroes = getDefault(base['siglaPadrao'])
+            if (dadosPadroes):
+                for k, dp in dadosPadroes.items():
+                    itemDict[k] = dp
+
             #importando dados base
             clientes = DADOS +'\\'+'clientes.txt'
             clientes = open(clientes, 'r')
