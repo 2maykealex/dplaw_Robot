@@ -65,7 +65,7 @@ def checkNewFiles():
                     if (reg != 'FIM'):
                         executingFiles.append(name)
                         try:
-                            myThreads.append(Thread(name='Executa_{}_{}'.format(folder, name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV)))
+                            myThreads.append(Thread(name='Executa_{}_{}'.format(registros['tipo'].upper(), name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV)))
                         except Exception as err:
                             print(err)
                             print('\n ERRO EM {}'.format(myThreads.name))
@@ -74,11 +74,18 @@ def checkNewFiles():
                     else:
                         if (name in executingFiles):
                             executingFiles.remove(name)
-                        createFolder('{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo']))
-                        move("{}".format(pathFile), '{}\\{}'.format(ARQUIVOS_EXECUTADOS, folder)) #move o arquivo para a pasta 'arquivos_executados'
+
+                        executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
+                        executedFile   = '{}\\{}'.format(executedFolder, name)
+
+                        createFolder(executedFolder)
+                        if (path.isfile(executedFile)):
+                            rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
+                        move("{}".format(pathFile), executedFolder) #move o arquivo para a pasta 'arquivos_executados'
+
                         print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
                         print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
-        sleep(3)
+        sleep(1.5)
 
 #============================================= ROBO PRINCIPAL====================================================
 ARQUIVOS_A_EXECUTAR = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
