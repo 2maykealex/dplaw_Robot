@@ -48,6 +48,7 @@ def checkNewFiles():
                     registros = json.loads(registros)
                     logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
                     logFileCSV = "{}\\{}.csv".format(logPath, name.replace('.txt', '').strip())
+                    logsFiles.append(logFileCSV)
                     createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
                     if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
@@ -71,9 +72,11 @@ def checkNewFiles():
                             print('\n ERRO EM {}'.format(myThreads.name))
                             if (name in executingFiles):
                                 executingFiles.remove(name)
+                                logsFiles.remove(logFileCSV)
                     else:
                         if (name in executingFiles):
                             executingFiles.remove(name)
+                            logsFiles.remove(logFileCSV)
 
                         executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
                         executedFile   = '{}\\{}'.format(executedFolder, name)
@@ -85,6 +88,13 @@ def checkNewFiles():
 
                         print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
                         print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
+
+                elif (name in executingFiles): #se por ventura, o Log da execução tenha sido deletado
+                    for x in range(len(logsFiles)):
+                        if (not(path.isfile(logsFiles[x]))):
+                            executingFiles.remove(name)
+                            logsFiles.remove(logsFiles[x])
+
         sleep(1.5)
 
 #============================================= ROBO PRINCIPAL====================================================
@@ -100,6 +110,7 @@ try:
     executeRobot = []
     executingFiles =  []
     myThreads = []
+    logsFiles = []
 
     #THREAD CHECA NOVOS ARQUIVOS E ADD NA FILA DE THREADS
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
@@ -114,13 +125,14 @@ try:
                 myThread.start()
                 while (myThread.is_alive()):
                     pass
-                try:
-                    if (myThread._args[2] in executingFiles):
-                        executingFiles.remove(myThread._args[2]) #REMOVE DA FILA DE EXECUÇÃO
-                except:
-                    pass
             else:
                 remove(myThread._args[-1]) # SE O ARQUIVO ADD NÃO ESTÁ MAIS DISPONÍVEL, O SEU LOG TAMBÉM É APAGADO
+            try:
+                if (myThread._args[2] in executingFiles):
+                    executingFiles.remove(myThread._args[2]) #REMOVE DA FILA DE EXECUÇÃO
+                    logsFiles.remove(myThread._args[-1])
+            except:
+                pass
             myThreads.remove(myThread) #REMOVE A THREAD EXECUTADA
 
 
