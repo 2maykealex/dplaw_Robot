@@ -351,7 +351,7 @@ class IntegraFunctions(object):
 
                     #pesquisa pasta/processo
                     campoPpesquisa = self.waitingElement('txtPesquisaProcesso', 'click', 'id')
-                    if ('txtNroProcesso' in registro and not(self.isTest)):
+                    if ('txtNroProcesso' in registro):
                         paramsPesquisa = registro['txtNroProcesso']
                     else:
                         self.waitingElement('chkPesquisaTipoProcessoPasta', 'click', 'id').click()
@@ -391,7 +391,7 @@ class IntegraFunctions(object):
                     elif (searchFolder): #se há registros
                         if ('atualizacao' in registros['tipo']):
                             selecionarProcesso.click()
-                            message = '{}\n'.format(self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta']))
+                            message = '{}\n'.format(self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta', 'txtNroProcesso']))
 
                         elif ('abertura' in registros['tipo']):
                             message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'])
