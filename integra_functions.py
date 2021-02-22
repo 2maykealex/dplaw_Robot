@@ -540,7 +540,7 @@ class IntegraFunctions(object):
                 if (k in itensExcluidosLoop or v == None):
                     continue
 
-                # sleep(.5)
+                sleep(.5) #por segurança
                 dadoCorrigido = ''
                 if (check):
                     dadoCorrigido = ' (CORRIGIDO)'
@@ -771,7 +771,7 @@ class IntegraFunctions(object):
         while True:
             try:
                 for k, v in registro['parteAdversa'].items():
-                    # sleep(.5)
+                    sleep(.5) #por segurança
                     if (check):
                         dadoCorrigido = ' (CORRIGIDO)'
                         # print('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
@@ -796,10 +796,10 @@ class IntegraFunctions(object):
                         print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {}'.format(self.fileName, reg, k, v))
                         naoInserido[k] = str(v)
                 complementoAdversa = "{}".format(str(registro['parteAdversa']['txtNome']))
+                sleep(1) #por segurança
                 return (complementoAdversa, naoInserido, camposInseridos)
             except:
                 print('{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
-                pass
 
     def criaAgendammentos(self, registro, reg, check=False):
 
@@ -885,6 +885,7 @@ class IntegraFunctions(object):
             return listaAgendamentos
 
         # print("{}REG {}: INICIANDO OS AGENDAMENTOS:".format(self.fileName, reg))
+        sleep(1) #por segurança
         self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #clica em agendamentos
         agendNaoAbertos = list(registro['agendamentos'].keys())
         agendamentos    = registro['agendamentos'].copy()
