@@ -711,12 +711,17 @@ def listLogs(filtro):
     files = {}
     item = 1
     logsPath = '{}\\logs'.format(path.dirname(__file__))
+    filePath = '{}\\arquivos_a_executar'.format(path.dirname(__file__))
     for folder, _subdirs, filesFolder in walk(logsPath, topdown=True):
         for name in filesFolder:
             if (folder.split('\\')[-1] != 'backups'):
                 if (folder.split('\\')[-1] in filtro or filtro == 'all'):
-                    status = checkEndFile("{}\\{}".format(folder, name))
                     tipo = folder.split('\\')[-1]
+                    checkFile = '{}\\{}\\{}'.format(filePath, tipo, name.replace('.csv', '.txt'))
+                    if (path.exists(checkFile)):
+                        status = 'EM EXECUÇÃO'
+                    else:
+                        status = 'FIM'
                     file = {
                             name: {
                                     'ARQUIVO': name,
@@ -727,8 +732,6 @@ def listLogs(filtro):
                         }
                     files.update(file)
                     item = item + 1
-    # files.sort()
-
     return files
 
 @app.route("/atualizacao")

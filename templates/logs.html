@@ -49,26 +49,27 @@
                                 value1 = value1.split('__')[2].replace('.csv', '');
                             };
 
-                            if (value1 == status){
-                                if (value1.trim() == 'EM FILA'){
-                                    value1 = value1.split(';')[0];
-                                    console.log(value1.split(';')[0]);
-                                }
-                                else if (value1.trim() != 'FIM'){
-                                    value1 = value1.trim().split(' ');
-                                    numRegistro = parseInt(value1.pop());
-                                    preFixoREG  = value1.join(' ');
-                                    console.log(preFixoREG + ' ' + numRegistro)
-                                    if (!isNaN(numRegistro)){
-                                        console.log(preFixoREG + ' ' + numRegistro)
-                                        value1 = preFixoREG + ' ' + (numRegistro);
-                                    }else{
-                                        if (preFixoREG != 'FIM'){
-                                            value1 = 'CONF REG 1';
-                                        };
-                                    };
-                                };
-                            };
+                            // if (value1 == status){
+                                // console.log(value1)
+                            //     if (value1.trim() == 'EM FILA'){
+                            //         value1 = value1.split(';')[0];
+                            //         console.log(value1.split(';')[0]);
+                            //     }
+                            //     else if (value1.trim() != 'FIM'){
+                            //         value1 = value1.trim().split(' ');
+                            //         numRegistro = parseInt(value1.pop());
+                            //         preFixoREG  = value1.join(' ');
+                            //         console.log(preFixoREG + ' ' + numRegistro)
+                            //         if (!isNaN(numRegistro)){
+                            //             console.log(preFixoREG + ' ' + numRegistro)
+                            //             value1 = preFixoREG + ' ' + (numRegistro);
+                            //         }else{
+                            //             if (preFixoREG != 'FIM'){
+                            //                 value1 = 'CONF REG 1';
+                            //             };
+                            //         };
+                            //     };
+                            // };
 
                             novoElemento = document.createElement(tdElement);
                             textnode = document.createTextNode(value1.toUpperCase());
