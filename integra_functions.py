@@ -360,7 +360,7 @@ class IntegraFunctions(object):
 
                     botaoPesquisa = self.waitingElement('btnPesquisarProcesso', 'click', 'id')
                     botaoPesquisa.click()
-                    sleep(1.2)
+                    sleep(2)
 
                     try:
                         selecionarProcesso = self.waitingElement('divProcesso', 'click', 'id')
@@ -369,7 +369,7 @@ class IntegraFunctions(object):
                     except:
                         searchFolder = False
 
-                    sleep(1.2)
+                    sleep(2)
                     if (not(searchFolder)): #se não há registros
                         if ('abertura' in registros['tipo']):
                             linkIncluiProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
@@ -396,8 +396,10 @@ class IntegraFunctions(object):
                         elif ('abertura' in registros['tipo']):
                             message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'])
 
-                except:
-                    print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR'.format(self.fileName, str(reg), tentativa))
+                except Exception as err:
+                    exception_type, exception_object, exception_traceback = exc_info()
+                    line_number = exception_traceback.tb_lineno
+                    print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR - linha:{} - erro: {}'.format(self.fileName, str(reg), tentativa, line_number, err))
                     if (tentativa > 5):
                         message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta']))
                         basic_functions.createLog(self.logFileCSV, "\n{}".format(message), printOut=False)
