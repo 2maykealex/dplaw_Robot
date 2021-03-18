@@ -410,7 +410,7 @@ class IntegraFunctions(object):
                     tentativa = tentativa + 1
                     continue
 
-                basic_functions.createLog(self.logFileCSV, "{}".format(message), printOut=False)
+                basic_functions.createLog(self.logFileCSV, "{}\n".format(message), printOut=False)
                 reg = reg + 1
 
             print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
@@ -607,6 +607,11 @@ class IntegraFunctions(object):
                                         if (element.get_attribute('value') != ''):
                                             naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
                                             continue
+
+                            if (k == 'txtValorCausa' and len(v.split('.')[1]) > 2):
+                                print('txtValorCausa')
+                                v = '{}.{}'.format(v.split('.')[0], v.split('.')[1][:2])
+
                             element.clear()
                             element.send_keys(str(v))
                             if (k == 'txtNroCnj'):
