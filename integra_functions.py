@@ -377,11 +377,12 @@ class IntegraFunctions(object):
                             message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
 
                             if ('slcResponsavel' in registro and message):
-                                messageAgendamentos = ''
-                                messageAgendamentos = self.criaAgendammentos(registro, reg)
-                                if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
-                                if (self.isTest):
-                                    self.removeAgendamentos(reg)
+                                if ('agendamentos' in registro['slcResponsavel']):
+                                    messageAgendamentos = ''
+                                    messageAgendamentos = self.criaAgendammentos(registro, reg)
+                                    if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
+                                    if (self.isTest):
+                                        self.removeAgendamentos(reg)
                             else:
                                 message = "{};;NÃO HÁ RESPONSÁVEIS PELA PASTA - NÃO FOI CRIADO NENHUM AGENDAMENTO! FAVOR VERIFICAR!".format(message)
 
