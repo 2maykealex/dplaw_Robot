@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% set title = "ABERTURA DE PASTAS" %}
+{% set subtitle = title %}
+    ENERGISA
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+    <form action="{{request.path}}/padronizacao" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="abertura">
+        <!-- <input type="hidden" name="clientePadrao" id="clientePadrao" value="ENERGISA S.A."> -->
+        <input type="hidden" name="grupoPadrao" id="grupoPadrao" value="ENERGISA S.A">
+        <input type="hidden" name="siglaPadrao" id="siglaPadrao" value="ENERGISA">
+
+        <div class="row  ml-1 md-1">
+            <div class="col-md-4">
+                <label class="" for="clientePadrao">Cliente</label>
+                <input type="text" name="clientePadrao1" id="clientePadrao1" value="ENERGISA S.A." class="   form-control content text-center" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="grupoPadrao">Grupo</label>
+                <input type="text" name="grupoPadrao1" id="grupoPadrao1" value="ENERGISA S.A" class="   form-control content text-center" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="" for="siglaPadrao">Sigla</label>
+                <input type="text" name="siglaPadrao1" id="siglaPadrao1" value="ENERGISA" class="   form-control content text-center" disabled>
+            </div>
+        </div>
+
+        <h1 class="mt-4 ml-3 text-center">ENVIE O ARQUIVO:</h1>
+        <div class="row mt-4 ml-1">
+            <div class="col-md-3 ">
+                <label for="funcao">TIPO DE IMPORTAÇÃO</label>
+                <select name="funcao" id="funcao" class="form-control campo" required>
+                    <option value="">SELECIONE</option>
+                    <option value="energisa_migracao1">MIGRAÇÃO 1</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="" for="arquivo">SELECIONE O ARQUIVO</label>
+                <input type="file" name="arquivo" id="arquivo" class="form-control campo" required accept=".xls,.xlsx">
+            </div>
+            <div class="col-md-3 mt-2">
+                <label class="" for="btnSend"></label>
+                <button type="submit" class="btn btn-success  btn-block form-control" id="btnSend">PADRONIZAR</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
