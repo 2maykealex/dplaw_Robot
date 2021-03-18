@@ -46,6 +46,10 @@ def abertura_bv():
 def abertura_oi():
     return render_template('abertura_oi.html')
 
+@app.route("/abertura/energisa")
+def abertura_energisa():
+    return render_template('abertura_energisa.html')
+
 def getDefault(sigla):
     responsaveis = {}
     dadosPadroes = {}
@@ -95,6 +99,19 @@ def getDefault(sigla):
         responsaveis['Anexar']    = ['COI','apoioOi']
         responsaveis['Audiência'] = ['COI','advoi','GST']
         responsaveis['Fotocópia'] = ['GST']
+
+    elif (sigla=='ENERGISA'):
+        dadosPadroes['slcGrupo'] = 'Grupo 4'
+        dadosPadroes['slcStatusProcessual'] = 'DEMANDADO'
+        dadosPadroes['slcAreaAtuacao'] = 'Direito do Consumidor'
+        dadosPadroes['slcFase'] = 'Conhecimento'
+        dadosPadroes['slcLocalizador'] = 'Migração Energisa 03.2021'
+        responsaveis['Processo']  = ['CJE','CGSTE']
+        # responsaveis['Ciencia de novo processo'] = ['COI','advoi']
+        # responsaveis['Anexar']    = ['COI','apoioOi']
+        # responsaveis['Audiência'] = ['COI','advoi','GST']
+        # responsaveis['Fotocópia'] = ['GST']
+
     else:
         return False
 
@@ -105,6 +122,7 @@ def getDefault(sigla):
 @app.route("/abertura/oi/padronizacao", methods=['POST'])
 @app.route("/abertura/bv/padronizacao", methods=['POST'])
 @app.route("/abertura/faro/padronizacao", methods=['POST'])
+@app.route("/abertura/energisa/padronizacao", methods=['POST'])
 # @app.route("/defining", methods=['POST'])
 def defining():
     data = request.form.to_dict()
@@ -128,6 +146,13 @@ def defining():
     urlOi   = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=103848554&codigo2=103848554'
     urlFARO = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104066917&codigo2=104066917'
 
+    urlENERGISA = {}
+    urlENERGISA ['ENERGISA ACRE - DISTRIBUIDORA DE ENERGIA ELETRICA S/A']    = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894213&codigo2=104894213'
+    urlENERGISA ['ENERGISA MATO GROSSO DISTRIBUIDORA DE ENERGIA S/A']        = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894190&codigo2=104894190'
+    urlENERGISA ['ENERGISA MATO GROSSO DO SUL DISTRIBUIDORA DE ENERGIA S/A'] = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894237&codigo2=104894237'
+    urlENERGISA ['ENERGISA RONDONIA - DISTRIBUIDORA DE ENERGIA S.A']         = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894220&codigo2=104894220'
+    urlENERGISA ['ENERGISA TOCANTINS - DISTRIBUIDORA DE ENERGIA S/A']        = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894248&codigo2=104894248'
+
     #separando base e padrões
     for k, item in data.items():
         if k in ['clientePadrao', 'grupoPadrao', 'siglaPadrao', 'tipo', 'funcao']:
@@ -140,8 +165,8 @@ def defining():
     regs={}
     dadosPadroes = None
     for registro in df.values:
-        if (registro[0] in ['', ' ']):
-            continue
+        # if (registro[0] in ['', ' ']):
+        #     continue
 
         itemDict = {}
         agendamentos = {}
@@ -497,6 +522,51 @@ def defining():
 
                 itemDict['urlCliente']  = urlOi
 
+            elif base['funcao'] == 'energisa_migracao1':
+
+                itemDict['txtDataContratacao'] = '16/03/2021'
+
+                itemDict['txtPasta'] = '{}'.format(registro[0])
+
+                razSocial = '{}'.format(registro[1])
+                itemDict['razaoSocial'] = razSocial
+
+                if (registro[2] != ''):
+                    parteAdversa['txtNome']  = registro[2]
+                    itemDict['parteAdversa'] = parteAdversa
+
+                itemDict['txtNroProcesso'] = registro[3]
+                itemDict['txtNroCnj']      = registro[3]
+
+                if (registro[4] != ''):
+                    itemDict['slcNumeroVara']   = "{} ª-º".format(registro[4].split('ª')[0])
+
+                if (type(registro[5]) == type(str() and registro[5] != '')):
+                    itemDict['slcLocalTramite'] = registro[5].split(' DE ')[0]
+
+                itemDict['slcComarca'] = registro[6].strip()
+                itemDict['txtUf']      = registro[7].strip()
+
+                if (type(registro[8]) == type(str()) and registro[8] != ''):
+                    agendamentos['Audiência'] = registro[8]
+
+                if (type(registro[9]) == type(str()) and registro[9] != ''):
+                    agendamentos['HoraAudiencia'] = registro[9]
+
+                if (type(registro[10]) == type(float()) and registro[10] != '' and registro[10] != '0.0' and registro[10] != 0.0):
+                    itemDict['txtValorCausa'] = '{}'.format(registro[10])
+
+                if (registro[11] != ''):
+                    itemDict['txtDataDistribuicao'] = '{}'.format(datetime.strftime(registro[11], '%d/%m/%Y'))
+
+                if (type(registro[12]) == type(str()) and registro[12] != ''):
+                    itemDict['txtPedido'] = registro[12] #slcObjetoAcao
+
+                if (type(registro[13]) == type(str()) and registro[13] != ''):
+                    itemDict['txtObservacao'] = registro[13] #slcAssunto
+
+                itemDict['urlCliente']  = urlENERGISA[razSocial]
+
         if ('txtNroProcesso' in itemDict):
             itemDict['txtNroProcesso'] = ajustarNumProcessoCNJ(str(itemDict['txtNroProcesso']))
 
@@ -559,6 +629,7 @@ def checkLocalTramite(tramite):
 @app.route("/abertura/bv/padronizacao/individual", methods=['POST'])
 @app.route("/abertura/faro/padronizacao/individual", methods=['POST'])
 @app.route("/abertura/bradesco/padronizacao/individual", methods=['POST'])
+@app.route("/abertura/energisa/padronizacao/individual", methods=['POST'])
 def abertura_default2():
     #importando dados base
     clientes = DADOS +'\\'+'clientes.txt'
