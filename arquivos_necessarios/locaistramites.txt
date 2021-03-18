@@ -1,3 +1,5 @@
+ADMINISTRATIVA
+Administrativo
 AGU
 ANVISA
 Arquivo Geral do TRT
@@ -59,6 +61,7 @@ JEC - Unidade UniNilton Lins
 JUI INF JUV-ÁREA POL.PÚB.EXEC.MEDIDA SÓCIO EDUC.
 Juizado da Infância Juventude
 Juizado das Relações de Consumo
+JUIZADO ESPECIAL CÍVEL
 Juizado Especial Cível
 Juizado Especial Civel Central
 Juizado Especial Cível de Acidentes de Trânsito
@@ -127,6 +130,7 @@ uízo da 1ª Escrivania Cível de Itaguatins
 UNIDADE JURISDICIONAL CÍVEL
 UNIR
 VARA
+VARA CÍVEL
 Vara Civel
 Vara Cível
 Vara Cível Distrital
