@@ -42,58 +42,61 @@ def checkNewFiles():
     while True:
         for folder, subdirs, filesFolder in walk(ARQUIVOS_A_EXECUTAR):
             for name in filesFolder:
-                if (name not in executingFiles):
-                    pathFile = "{}\\{}".format(folder, name)
-                    registros = abreArquivo(pathFile)
-                    registros = json.loads(registros)
-                    logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
-                    logFileCSV = "{}\\{}.csv".format(logPath, name.replace('.txt', '').strip())
-                    logsFiles.append(logFileCSV)
-                    createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+                try:
+                    if (name not in executingFiles):
+                        pathFile = "{}\\{}".format(folder, name)
+                        registros = abreArquivo(pathFile)
+                        registros = json.loads(registros)
+                        logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
+                        logFileCSV = "{}\\{}.csv".format(logPath, name.replace('.txt', '').strip())
+                        logsFiles.append(logFileCSV)
+                        createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-                    if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
-                        open(logFileCSV, 'a')
-                        cabeçalhoLog = ''
-                        if (registros['tipo'] == 'abertura'):
-                            cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ITENS NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; AGENDAMENTOS NÃO CRIADOS;'
-                        elif (registros['tipo'] == 'atualizacao'):
-                            cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ITENS NÃO ATUALIZADOS'
-                        createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+                        if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
+                            open(logFileCSV, 'a')
+                            cabeçalhoLog = ''
+                            if (registros['tipo'] == 'abertura'):
+                                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ITENS NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; AGENDAMENTOS NÃO CRIADOS;'
+                            elif (registros['tipo'] == 'atualizacao'):
+                                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ITENS NÃO ATUALIZADOS'
+                            createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-                    reg = checkEndFile(logFileCSV)
-                    createLog(logFileCSV, "EM FILA", printOut=False)
+                        reg = checkEndFile(logFileCSV)
+                        createLog(logFileCSV, "EM FILA", printOut=False)
 
-                    if (reg != 'FIM'):
-                        executingFiles.append(name)
-                        try:
-                            myThreads.append(Thread(name='Executa_{}_{}'.format(registros['tipo'].upper(), name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV)))
-                        except Exception as err:
-                            print(err)
-                            print('\n ERRO EM {}'.format(myThreads.name))
+                        if (reg != 'FIM'):
+                            executingFiles.append(name)
+                            try:
+                                myThreads.append(Thread(name='Executa_{}_{}'.format(registros['tipo'].upper(), name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV)))
+                            except Exception as err:
+                                print(err)
+                                print('\n ERRO EM {}'.format(myThreads.name))
+                                if (name in executingFiles):
+                                    executingFiles.remove(name)
+                                    logsFiles.remove(logFileCSV)
+                        else:
                             if (name in executingFiles):
                                 executingFiles.remove(name)
                                 logsFiles.remove(logFileCSV)
-                    else:
-                        if (name in executingFiles):
-                            executingFiles.remove(name)
-                            logsFiles.remove(logFileCSV)
 
-                        executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
-                        executedFile   = '{}\\{}'.format(executedFolder, name)
+                            executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
+                            executedFile   = '{}\\{}'.format(executedFolder, name)
 
-                        createFolder(executedFolder)
-                        if (path.isfile(executedFile)):
-                            rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
-                        move("{}".format(pathFile), executedFolder) #move o arquivo para a pasta 'arquivos_executados'
+                            createFolder(executedFolder)
+                            if (path.isfile(executedFile)):
+                                rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
+                            move("{}".format(pathFile), executedFolder) #move o arquivo para a pasta 'arquivos_executados'
 
-                        print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
-                        print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
+                            print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
+                            print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
-                elif (name in executingFiles): #se por ventura, o Log da execução tenha sido deletado
-                    for x in range(len(logsFiles)):
-                        if (not(path.isfile(logsFiles[x]))):
-                            executingFiles.remove(name)
-                            logsFiles.remove(logsFiles[x])
+                    elif (name in executingFiles): #se por ventura, o Log da execução tenha sido deletado
+                        for x in range(len(logsFiles)):
+                            if (not(path.isfile(logsFiles[x]))):
+                                executingFiles.remove(name)
+                                logsFiles.remove(logsFiles[x])
+                except:
+                    pass
 
         sleep(1.5)
 
