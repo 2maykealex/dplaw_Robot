@@ -293,9 +293,10 @@ class IntegraFunctions(object):
                         self.logoutIntegra()
                         if (reg == 'FIM'):
                             print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
+                            return True
                         else:
-                            print('{} <<<HOUVE ALGUM ERRO NAS TENTATIVAS DE INSERIR/ALTERAR REGISTRO: {} >>>'.format(self.fileName).upper(), reg)
-                        break
+                            print('{} <<<HOUVE ALGUM ERRO NAS TENTATIVAS DE INSERIR/ALTERAR REGISTRO: {} >>>'.format(self.fileName.upper(), reg))
+                            return False
                     except:
                         pass
 
@@ -403,8 +404,7 @@ class IntegraFunctions(object):
                     print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR - linha:{} - erro: {}'.format(self.fileName, str(reg), tentativa, line_number, err))
                     if (tentativa > 5):
                         message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta']))
-                        basic_functions.createLog(self.logFileCSV, "\n{}".format(message), printOut=False)
-                        self.logoutIntegra()
+                        print(message)
                         return False
 
                     tentativa = tentativa + 1
