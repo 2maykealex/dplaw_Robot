@@ -5,6 +5,7 @@ from time import sleep
 from sys import exc_info
 from os import path
 import basic_functions
+import winsound
 
 class IntegraFunctions(object):
 
@@ -14,6 +15,9 @@ class IntegraFunctions(object):
         self.driver = None
         self.login = None
         self.password = None
+        self.frequency = 2500  # Set Frequency To 2500 Hertz
+        self.duration = 500  # Set Duration To 1000 ms == 1 second
+        # winsound.Beep(self.frequency, self.duration)
 
     def acessToIntegra(self, login, password):
         try:
@@ -238,16 +242,17 @@ class IntegraFunctions(object):
             isCheck = True if ('CONF REG' in reg) else False
             reg = int(reg.replace('CONF ','').replace('REG ', ''))
             while True:
-                if (not(isCheck)):
-                    if (reg != -1 and (reg <= (len(registros['registros'])))):
-                        robo = self.painelCliente(registros, reg)
-                        reg = 1
-                    else:
-                        print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
-                        basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
-                        isCheck = True
+                if (reg != -1 and (reg <= (len(registros['registros'])))):
+                    robo = self.painelCliente(registros, reg, check=isCheck)
+                    reg = 1
+                else:
+                    print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(self.fileName).upper())
+                    basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA", printOut=False)
+                    isCheck = True
 
-                if (robo or isCheck):
+                # winsound.Beep(self.frequency, self.duration)
+
+                if (robo or (robo and isCheck)):
                     from shutil import copy
                     logBackup = "{}LOGS\\backups\\{}".format(logFileCSV.split('LOGS')[0], logFileCSV.split('\\')[-1])
                     basic_functions.createFolder("{}backups".format(logBackup.split('backups')[0]))
@@ -302,12 +307,13 @@ class IntegraFunctions(object):
 
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
+            winsound.Beep(self.frequency, self.duration)
             line_number = exception_traceback.tb_lineno
             print('{}\n ERRO EM {} na linha {} >>>'.format(self.fileName, err, line_number))
             self.driver.quit()
             return False
 
-    def painelCliente(self, registros, reg):
+    def painelCliente(self, registros, reg, check = False):
         clienteLocalizado = True
         urlCliente = None
         ultimoCliente = ''
@@ -396,7 +402,11 @@ class IntegraFunctions(object):
                             message = '{}\n'.format(self.incluiAlteraProcesso(registro, reg, registros['tipo'], itensExcluidosLoop = ['txtPasta', 'txtNroProcesso']))
 
                         elif ('abertura' in registros['tipo']):
-                            message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'])
+                            if (not(check)):
+                                message = "REG {};;A PASTA/PROCESSO {} JÁ EXISTE NO SISTEMA! FAVOR VERIFICAR!\n".format(reg, registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'])
+                            else:
+                                selecionarProcesso.click()
+                                message = self.incluiAlteraProcesso(registro, reg, registros['tipo'], check=check)
 
                 except Exception as err:
                     exception_type, exception_object, exception_traceback = exc_info()
@@ -404,6 +414,7 @@ class IntegraFunctions(object):
                     print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR - linha:{} - erro: {}'.format(self.fileName, str(reg), tentativa, line_number, err))
                     if (tentativa > 5):
                         message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta']))
+                        # winsound.Beep(self.frequency, self.duration)
                         print(message)
                         return False
 
@@ -419,6 +430,7 @@ class IntegraFunctions(object):
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
+            # winsound.Beep(self.frequency, self.duration)
             print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
             pass
 
@@ -522,180 +534,7 @@ class IntegraFunctions(object):
             idNovaPasta = '=HIPERLINK("{}?{}")'.format(linkbase, codigos, idNovaPasta)
             #todo CHECAR IDNOVAPASTA
 
-        self.checkPopUps()
-        # sleep(.5)
-        print('{}REG {}: -> INICIANDO {}: {}'.format(self.fileName, reg, 'CHECAGEM' if (check) else tipo.upper() ,registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
-        naoInserido = {}
-        camposInseridos = '|'
-
-        hoje = "%s" % (strftime("%d-%m-%Y"))
-        hoje = hoje.replace('-', '/')
-        hora = strftime("%H:%M:%S")
-        message = ''
-        message = "REG {};{} às {};".format(reg, hoje, hora)  #Insere a primeira linha do item no log
-
-        self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento slcResponsavel visível
-        itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
-        for k, v in registro.items():
-            valorAntigo = ''
-            #TODO salvar o valor antigo no LOG
-            try:
-                if (k in itensExcluidosLoop or v == None):
-                    continue
-
-                sleep(.5) #por segurança
-                dadoCorrigido = ''
-                if (check):
-                    dadoCorrigido = ' (CORRIGIDO)'
-                    if (k in ['txtNroCnj']):
-                        v = basic_functions.ajustarNumProcessoCNJ(v)
-                    # print ('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
-
-                element = self.waitingElement(k, 'click', form='id')
-                if (k == 'slcResponsavel'):
-                    selectResponsaveis = self.selenium.select(element)
-                    respProcesso = v['Processo'].copy()
-                    # sleep(.5)
-
-                    itensNaoInseridos = []
-                    if (check):
-                        antigosSelecionados = []
-                        all_selected_options = selectResponsaveis.all_selected_options
-                        if (all_selected_options):
-                            for item in all_selected_options:
-                                if (item.text):
-                                    antigosSelecionados.append(item.text)
-                                    if (not(item.text in v['Processo'])):
-                                        itensNaoInseridos.append(item.text)
-
-                            if (itensNaoInseridos):
-                                respProcesso = itensNaoInseridos
-                                valorAntigo = ', '.join(antigosSelecionados)
-
-                    if (not(check) or (check and itensNaoInseridos)):
-                        selecionaResponsaveis()
-                        camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, respProcesso, dadoCorrigido)
-
-                else:
-                    # element = self.waitingElement(k, 'click', form='id')
-                    # sleep(.5)
-                    if (element.tag_name == 'select'):
-                        valorElemento = str(v.strip()).title()
-                        valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
-                        select = self.selenium.select(element)
-                        valorAntigo = select.first_selected_option.text
-                        if (not(check) or (check and valorAntigo.upper() != (str(v.upper())))):
-                            try:
-                                select.select_by_visible_text(valorElemento)
-                            except:
-                                checkValueInCombo(str(v.strip()), k)
-                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
-                            # print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
-
-                    else: #QUANDO É INPUTS OU TEXTAREAS
-                        is_V_Equal = False
-                        if (check):
-                            try: #SÓ SERÁ 'VERDADEIRO' SE O ELEMENTO E 'V.' FOREM DIFERENTES
-                                is_V_Equal = True if (float(element.get_attribute('value').upper().strip().replace(',','.')) != float(v.strip().replace(',','.'))) else False
-                            except:
-                                is_V_Equal = True if (element.get_attribute('value').strip() != (str(v.strip()))) else False
-
-                        if (not(check) or (check and is_V_Equal)):
-                            if (not(check)):
-                                if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
-                                    if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
-                                        if (element.get_attribute('value') != ''):
-                                            naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
-                                            continue
-
-                            if (k == 'txtValorCausa' and len(v.split('.')[1]) > 2):
-                                print('txtValorCausa')
-                                v = '{}.{}'.format(v.split('.')[0], v.split('.')[1][:2])
-
-                            element.clear()
-                            element.send_keys(str(v))
-                            if (k == 'txtNroCnj'):
-                                segredoJusticaAndamentos()
-                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
-                            # print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
-            except Exception as err:
-                print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {} - {}'.format(self.fileName, reg, k, v, err))
-                naoInserido[k] = str(v)
-
-        if (naoInserido):
-            print('{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
-
-        idNovaPasta = recuperaIdIntegra()
-        complementoAdversa = ''
-        camposInseridosAdversa = '|'
-        # sleep(.5)
-
-        if ('abertura' in tipo): #TODO => CHECAR SE É VOLUMETRIA OU CONTRATO PA  (PODE TER NO FUTURO ATUALIZAÇÃO QUE VAI PARA A PARTE ADVERSA)
-            if ("parteAdversa" in registro):
-                menuAdversa = None
-                countAdversa = 0
-                while countAdversa < 5:
-                    if (check):
-                        menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
-                    else:
-                        menuAdversa = self.waitingElement("//*[@id='div_menu17']", 'click')
-
-                    # sleep(.5)
-                    self.checkPopUps()
-                    if (menuAdversa):
-                        try:
-                            menuAdversa.click()
-                            # sleep(2)
-                        except:
-                            print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>>'.format(self.fileName, reg))
-                            countAdversa = countAdversa + 1
-                            continue
-
-                        try: #checa se há mensagens que bloqueiam o salvamento
-                            element = self.driver.find_element_by_id('div_txtComarca').is_displayed() #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
-                            self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
-                            naoInserido['comarcaNova'] = str(registro['comarcaNova'])
-                            # sleep(.5)
-                            continue
-                        except:
-                            pass
-
-                        try:
-                            if (check):
-                                # sleep(.5)
-                                tabelaAdversa = self.waitingElement('efect-tableParteAdversa', 'click', form='id')
-                                try:
-                                    tabelaAdversa = tabelaAdversa.find_element_by_tag_name('tr')
-                                except:
-                                    tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
-
-                                # sleep(.5)
-                                tabelaAdversa.click()
-                                # sleep(.5)
-                        except:
-                            print('{}REG {}: <<< ERRO AO CLICAR NO TABELA COM A ADVERSA NA CHECAGEM >>>'.format(self.fileName, reg))
-                            countAdversa = countAdversa + 1
-                            continue
-
-                        self.checkPopUps()
-                        try:
-                            complementoAdversa, naoInserido, camposInseridosAdversa = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
-                        except:
-                            print('{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
-                            countAdversa = countAdversa + 1
-                            continue
-                        # sleep(.5)
-
-                        break
-                    else:
-                        print('{}REG {}: -> BUSCANDO O ELEMENTO DO MENU ADVERSA...'.format(self.fileName, reg))
-                    countAdversa = countAdversa + 1
-
-        if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
-            print('sem alteração!!!!!!!!!')
-            return True
-
-        try: # Botão salvar
+        def bSalvar():
             countSalvar = 0
             if (check):
                 if (camposInseridosAdversa != '|'): countSalvar = countSalvar + 1 #se teve correção na parte adversa
@@ -742,12 +581,196 @@ class IntegraFunctions(object):
                         pass
                     # sleep(.5)
 
+        self.checkPopUps()
+        # sleep(.5)
+        print('{}REG {}: -> INICIANDO {}: {}'.format(self.fileName, reg, 'CHECAGEM' if (check) else tipo.upper() ,registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso']))
+        naoInserido = {}
+        camposInseridos = '|'
+
+        hoje = "%s" % (strftime("%d-%m-%Y"))
+        hoje = hoje.replace('-', '/')
+        hora = strftime("%H:%M:%S")
+        message = ''
+        message = "{}REG {};{} às {};".format('CONF ' if (check) else '', reg, hoje, hora)  #Insere a primeira linha do item no log
+
+        self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento slcResponsavel visível
+        itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
+        for k, v in registro.items():
+            valorAntigo = ''
+            #TODO salvar o valor antigo no LOG
+            try:
+                if (k in itensExcluidosLoop or v == None):
+                    continue
+
+                sleep(.5) #por segurança
+                dadoCorrigido = ''
+                if (check):
+                    dadoCorrigido = ' (CORRIGIDO)'
+                    if (k in ['txtNroCnj']):
+                        v = basic_functions.ajustarNumProcessoCNJ(v)
+                    print ('{}REG {}: -> CHECANDO VALORES: {} - "{}"'.format(self.fileName, reg, k, v))
+
+                element = self.waitingElement(k, 'click', form='id')
+                if (k == 'slcResponsavel'):
+                    selectResponsaveis = self.selenium.select(element)
+                    respProcesso = v['Processo'].copy()
+                    # sleep(.5)
+
+                    itensNaoInseridos = []
+                    if (check):
+                        antigosSelecionados = []
+                        all_selected_options = selectResponsaveis.all_selected_options
+                        if (all_selected_options):
+                            for item in all_selected_options:
+                                if (item.text):
+                                    antigosSelecionados.append(item.text)
+                                    if (not(item.text in v['Processo'])):
+                                        itensNaoInseridos.append(item.text)
+
+                            if (itensNaoInseridos):
+                                respProcesso = itensNaoInseridos
+                                valorAntigo = ', '.join(antigosSelecionados)
+
+                    if (not(check) or (check and itensNaoInseridos)):
+                        selecionaResponsaveis()
+                        camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, respProcesso, dadoCorrigido)
+
+                else:
+                    # element = self.waitingElement(k, 'click', form='id')
+                    # sleep(.5)
+                    if (element.tag_name == 'select'):
+                        valorElemento = str(v.strip()).title()
+                        valorElemento = valorElemento.replace(' Do ', ' do ').replace(' Da ', ' da ').replace(' De ', ' de ')
+                        select = self.selenium.select(element)
+                        valorAntigo = select.first_selected_option.text
+                        if (not(check) or (check and valorAntigo.upper() != (str(v.upper())))):
+                            try:
+                                select.select_by_visible_text(valorElemento)
+                            except:
+                                checkValueInCombo(str(v.strip()), k)
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
+                            # print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
+
+                    else: #QUANDO É INPUTS OU TEXTAREAS
+                        is_V_Different = False
+                        if (check):
+                            try: #SÓ SERÁ 'VERDADEIRO' SE O ELEMENTO E 'V.' FOREM DIFERENTES
+                                is_V_Different = True if (float(element.get_attribute('value').upper().strip().replace('.','').replace(',','.')) != float(v.strip().replace(',','.')[:v.index('.') + 3])) else False
+                            except:
+                                is_V_Different = True if (element.get_attribute('value').strip() != (str(v.strip()))) else False
+
+                        if (not(check) or (check and is_V_Different)):
+                            if (not(check)):
+                                if (tipo == 'atualizacao'): #TODO  -  CRIAR FUNÇÕES DE ATUALIZAÇÃO PARA COMPARAR
+                                    if (k in ['txtCampoLivre3', 'txtCampoLivre4']):
+                                        if (element.get_attribute('value') != ''):
+                                            naoInserido[k] = 'NÃO PREENCHIDO O VALOR "{}"  -> JÁ ESTAVA PREENCHIDO COM O VALOR: "{}".'.format(str(v), element.get_attribute('value'))
+                                            continue
+
+                            if (k == 'txtValorCausa'):
+                                if (len(v.split('.')[1]) > 2):
+                                    v = '{}.{}'.format(v.split('.')[0], v.split('.')[1][:2])
+                                elif (len(v.split('.')[1]) == 1):
+                                    v = '{}0'.format(v)
+                                v = v.replace(',','').replace('.','')
+
+                            element.clear()
+                            element.send_keys(str(v))
+                            camposInseridos = "{}{}: '{}' {} |".format(camposInseridos, k, v, dadoCorrigido)
+
+                            if (k == 'txtValorCausa'):
+                                element = self.waitingElement('txtValorCausa2', 'click', form='id')
+                                element.click()
+
+                            if (k == 'txtNroCnj'):
+                                segredoJusticaAndamentos()
+
+                            # print('{}REG {}: -> ITEM PREENCHIDO : {} - "{}"'.format(self.fileName, reg, k, v))
+            except Exception as err:
+                print('{}REG {}: ERRO AO INSERIR PARA {} O VALOR: {} - {}'.format(self.fileName, reg, k, v, err))
+                naoInserido[k] = str(v)
+
+        if (naoInserido):
+            print('{}REG {}: -> NÃO INSERIDOS: "{}"'.format(self.fileName, reg, naoInserido))
+
+        idNovaPasta = recuperaIdIntegra()
+        complementoAdversa = ''
+        camposInseridosAdversa = '|'
+        # sleep(.5)
+
+        if (check and camposInseridos != '|'):
+            bSalvar()
+
+        if ('abertura' in tipo): #TODO => CHECAR SE É VOLUMETRIA OU CONTRATO PA  (PODE TER NO FUTURO ATUALIZAÇÃO QUE VAI PARA A PARTE ADVERSA)
+            if ("parteAdversa" in registro):
+                menuAdversa = None
+                countAdversa = 0
+                while countAdversa < 5:
+                    if (check):
+                        # menuAdversa = self.waitingElement("divMenuProcesso26", 'click', 'id')
+                        try:
+                            self.driver.execute_script("clickMenuCadastro(26,'processoParteAdversa.asp');")
+                            sleep(5)
+                            tabelaAdversa = self.waitingElement('//*[@id="efect-tableParteAdversa"]/tr/td[3]', 'click')
+                            tabelaAdversa.click()
+                            sleep(1)
+                        except:
+                            try:
+                                tabelaAdversa = self.waitingElement('aAdverso', 'click', form='id')
+                                tabelaAdversa.click()
+                                break
+                            except:
+                                # winsound.Beep(self.frequency, self.duration)
+                                print('{}REG {}: <<< ERRO AO CLICAR NO TABELA COM A ADVERSA NA CHECAGEM >>> {}'.format(self.fileName, reg, tabelaAdversa))
+                                countAdversa = countAdversa + 1
+                                continue
+                        sleep(1)
+                    else:
+                        sleep(3)
+                        try:
+                            self.driver.execute_script("clickMudarMenu('S', 4);")
+                            sleep(.5)
+                            self.checkPopUps()
+                            sleep(.5)
+                            try: #checa se há mensagens que bloqueiam o salvamento
+                                element = self.driver.find_element_by_id('div_txtComarca').is_displayed() #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
+                                self.driver.execute_script("verificarComboNovo('-1','txtComarca','slcComarca');")
+                                naoInserido['comarcaNova'] = str(registro['comarcaNova'])
+                                # sleep(.5)
+                            except:
+                                pass
+                            break
+                        except:
+                            winsound.Beep(self.frequency, self.duration)
+                            print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>> {}'.format(self.fileName, reg, menuAdversa))
+                            countAdversa = countAdversa + 1
+                            continue
+
+                    self.checkPopUps()
+                    try:
+                        complementoAdversa, naoInserido, camposInseridosAdversa = self.inserirParteAdversa(registro, reg, naoInserido, check=check)
+                    except:
+                        print('{}REG {}: <<< ERRO AO PASSAR PELA PARTE ADVERSA >>>'.format(self.fileName, reg))
+                        countAdversa = countAdversa + 1
+                        continue
+                    break
+
+        message = "{}{};".format(message, "'{}".format(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta'] if ('txtPasta' in registro) else ''))
+        message = "{}{};".format(message, idNovaPasta)
+        if (check and camposInseridos == '|' and camposInseridosAdversa == '|'): #se não houveram correções, sai sem salvar
+            message = '{};TODOS OS DADOS CONFEREM!'.format(message)
+            print(message)
+            return message
+
+        try: # Botão salvar
+            bSalvar()
+
             _checkElemento = self.waitingElement('idDoCliente', 'show', form='class')
             if (check):
                 if (camposInseridos and camposInseridos !='|'):
-                    return camposInseridos #SE HOUVER CAMPOS QUE FORAM CORRIGIDOS
+                    return '{};{}'.format(message, camposInseridos) #SE HOUVER CAMPOS QUE FORAM CORRIGIDOS
                 else:
-                    return True
+                    return message
 
             try:
                 complementoNaoInseridos =''
@@ -756,8 +779,6 @@ class IntegraFunctions(object):
                     for k1, v1 in naoInserido.items():
                         complementoNaoInseridos = '{} {}: "{}" | '.format(complementoNaoInseridos, k1, v1)
 
-                message = "{}{};".format(message, "'{}".format(registro['txtPasta'] if ('txtPasta' in registro) else registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else ''))
-                message = "{}{};".format(message, idNovaPasta)
                 if (tipo == 'abertura'):
                     message = "{}{};".format(message, complementoAdversa)
                 elif (tipo == 'atualizacao'):
@@ -774,7 +795,7 @@ class IntegraFunctions(object):
 
     def inserirParteAdversa(self, registro, reg, naoInserido, check=False):
         complementoAdversa = ''
-        camposInseridos = ''
+        camposInseridos = '|'
         dadoCorrigido = ''
         while True:
             try:
