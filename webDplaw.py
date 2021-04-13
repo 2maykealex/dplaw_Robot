@@ -821,5 +821,13 @@ def atualizacao_volumetria():
 def atualizacao_geral():
     return render_template('geral.html')
 
+@app.route("/whatsapp")
+def whatsapp():
+    return render_template('whatsapp.html')
+
+@app.route("/whatsApp/sendMsg")
+def sendMsg():
+    return render_template('whatsapp.html')
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
