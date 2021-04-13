@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% set title = "whatsApp" %}
+
+{% set subtitle = title %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 text-center">
+
+        <form action="{{request.url}}/sendMsg" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="fones">TELEFONES</label>
+                    <textarea name="fones" id="fones" class="" cols="10" rows="10"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="message">MENSAGEM</label>
+                    <textarea name="message" id="message" class="" cols="60" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <label for="sendTime">HORA</label>
+                <input type="time" name="sendTime" id="sendTime" class="form-control">
+                <div class="row">
+                    <button type="submit" class="btn btn-danger form-control mt-2" style="width: 100%; height: 100%;">ENVIAR</button>
+                </div>
+
+            </div>
+
+
+        </form>
+
+
+        </div>
+        <div class="col-md-6"></div>
+    </div>
+{% endblock %}
