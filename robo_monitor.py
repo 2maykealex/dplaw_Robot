@@ -16,9 +16,9 @@ from basic_functions import checkEndFile
 from integra_functions import IntegraFunctions
 import json
 
-def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
+def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV, webDriverNumero):
     try:
-        integra = IntegraFunctions()
+        integra = IntegraFunctions(webDriverNumero)
         integra = integra.controle(registros, reg, logFileCSV)
 
         if (integra):
@@ -39,66 +39,84 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV):
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
 def checkNewFiles():
-    while True:
-        for folder, subdirs, filesFolder in walk(ARQUIVOS_A_EXECUTAR):
-            for name in filesFolder:
-                try:
-                    if (name not in executingFiles):
-                        pathFile = "{}\\{}".format(folder, name)
-                        registros = abreArquivo(pathFile)
-                        registros = json.loads(registros)
-                        logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
-                        logFileCSV = "{}\\{}.csv".format(logPath, name.replace('.txt', '').strip())
-                        logsFiles.append(logFileCSV)
-                        createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
+    webdriver = 1
+    for folder, subdirs, filesFolder in walk(ARQUIVOS_A_EXECUTAR):
+        for name in filesFolder:
+            try:
+                if (name not in executingFiles):
+                    pathFile = "{}\\{}".format(folder, name)
+                    registros = abreArquivo(pathFile)
+                    registros = json.loads(registros)
+                    logPath     = '{}\\{}'.format(LOGS, registros['tipo'])
+                    logFileCSV = "{}\\{}.csv".format(logPath, name.replace('.txt', '').strip())
+                    logsFiles.append(logFileCSV)
+                    createFolder(logPath) # CRIA DIRETÓRIO SE NÃO EXISTIR.
 
-                        if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
-                            open(logFileCSV, 'a')
-                            cabeçalhoLog = ''
-                            if (registros['tipo'] == 'abertura'):
-                                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ITENS NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; AGENDAMENTOS NÃO CRIADOS;'
-                            elif (registros['tipo'] == 'atualizacao'):
-                                cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ITENS NÃO ATUALIZADOS'
-                            createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
+                    if not(path.isfile(logFileCSV)): #se o log não existir, cria-se
+                        open(logFileCSV, 'a')
+                        cabeçalhoLog = ''
+                        if (registros['tipo'] == 'abertura'):
+                            cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;PARTE ADVERSA; ITENS NÃO INSERIDOS; AGENDAMENTOS CRIADOS; AUDIÊNCIA; AGENDAMENTOS NÃO CRIADOS;'
+                        elif (registros['tipo'] == 'atualizacao'):
+                            cabeçalhoLog = 'REG NUMº;DATA-HORA;NUM PASTA / NUM PROCESSO;ID PROMAD;CAMPOS ATUALIZADOS; ITENS NÃO ATUALIZADOS'
+                        createLog(logFileCSV, "{}\n".format(cabeçalhoLog), printOut=False)
 
-                        reg = checkEndFile(logFileCSV)
-                        createLog(logFileCSV, "EM FILA", printOut=False)
+                    reg = checkEndFile(logFileCSV)
+                    createLog(logFileCSV, "EM FILA", printOut=False)
 
-                        if (reg != 'FIM'):
-                            executingFiles.append(name)
-                            try:
-                                myThreads.append(Thread(name='Executa_{}_{}'.format(registros['tipo'].upper(), name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV)))
-                            except Exception as err:
-                                print(err)
-                                print('\n ERRO EM {}'.format(myThreads.name))
-                                if (name in executingFiles):
-                                    executingFiles.remove(name)
-                                    logsFiles.remove(logFileCSV)
-                        else:
+                    if (reg != 'FIM'):
+                        executingFiles.append(name)
+                        myThread = None
+                        try:
+                            myThread = Thread(name='Executa_{}_{}'.format(registros['tipo'].upper(), name.upper()), target=acessaIntegra, args= (registros, reg, pathFile, folder, logFileCSV, webdriver))
+                            if (path.isfile(myThread._args[2].strip())): #SE O ARQUIVO ADD AINDA ESTÁ NA PASTA
+                                print('\n{}\n'.format(myThread.name))
+                                deleteLastLineLog(myThread._args[-2].strip()) #DELETE ULTIMA LINHA QUE DIZ "EM FILA"
+                                myThread.start() # Se iniciar a thread, não vai ser mais tratada aqui na sequência (morre aqui)
+                                webdriver = webdriver + 1
+                                if (webdriver > 5):
+                                    webdriver = 0
+                            else:
+                                remove(myThread._args[-2]) # SE O ARQUIVO ADD NÃO ESTÁ MAIS DISPONÍVEL, O SEU LOG TAMBÉM É APAGADO
+                                try:
+                                    if (myThread._args[2] in executingFiles):
+                                        executingFiles.remove(myThread._args[2]) #REMOVE DA FILA DE EXECUÇÃO
+                                        logsFiles.remove(myThread._args[-2])
+                                except:
+                                    pass
+
+                        except Exception as err:
+                            print(err)
+                            print('\n ERRO EM THREAD: {}'.format(myThread.name))
                             if (name in executingFiles):
                                 executingFiles.remove(name)
                                 logsFiles.remove(logFileCSV)
 
-                            executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
-                            executedFile   = '{}\\{}'.format(executedFolder, name)
+                    else: # no caso de Haver travado e reiniciado e já estava finalizado (ou foi colocado novamente pra rodar)
+                        if (name in executingFiles):
+                            executingFiles.remove(name)
+                            logsFiles.remove(logFileCSV)
 
-                            createFolder(executedFolder)
-                            if (path.isfile(executedFile)):
-                                rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
-                            move("{}".format(pathFile), executedFolder) #move o arquivo para a pasta 'arquivos_executados'
+                        executedFolder = '{}\\{}'.format(ARQUIVOS_EXECUTADOS, registros['tipo'])
+                        executedFile   = '{}\\{}'.format(executedFolder, name)
 
-                            print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
-                            print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
+                        createFolder(executedFolder)
+                        if (path.isfile(executedFile)):
+                            rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
+                        move("{}".format(pathFile), executedFolder) #move o arquivo para a pasta 'arquivos_executados'
 
-                    elif (name in executingFiles): #se por ventura, o Log da execução tenha sido deletado
-                        for x in range(len(logsFiles)):
-                            if (not(path.isfile(logsFiles[x]))):
-                                executingFiles.remove(name)
-                                logsFiles.remove(logsFiles[x])
-                except:
-                    pass
+                        print("NÃO HÁ MAIS REGISTROS NO ARQUIVO '{}' PARA IMPORTAR.".format(name).upper())
+                        print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
-        sleep(1.5)
+                elif (name in executingFiles): #se por ventura, o Log da execução tenha sido deletado
+                    for x in range(len(logsFiles)):
+                        if (not(path.isfile(logsFiles[x]))):
+                            executingFiles.remove(name)
+                            logsFiles.remove(logsFiles[x])
+            except:
+                pass
+
+    sleep(1.5)
 
 #============================================= ROBO PRINCIPAL====================================================
 ARQUIVOS_A_EXECUTAR = "{}\\arquivos_a_executar".format(path.dirname(path.realpath(__file__)))
@@ -112,32 +130,12 @@ try:
     file = None
     executeRobot = []
     executingFiles =  []
-    myThreads = []
+    executingThreads = []
     logsFiles = []
 
-    #THREAD CHECA NOVOS ARQUIVOS E ADD NA FILA DE THREADS
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
-    checkNewFilesThread = Thread(name='CHECK_NEW_FILES', target=checkNewFiles, args= ()).start()
-
     while True:
-        if (myThreads): #CASO HAJA NOVOS ARQUIVOS
-            myThread = myThreads[0]
-            if (path.isfile(myThread._args[2].strip())): #SE O ARQUIVO ADD AINDA ESTÁ NA PASTA
-                print('\n{}\n'.format(myThread.name))
-                deleteLastLineLog(myThread._args[-1].strip()) #DELETE ULTIMA LINHA QUE DIZ "EM FILA"
-                myThread.start()
-                while (myThread.is_alive()):
-                    pass
-            else:
-                remove(myThread._args[-1]) # SE O ARQUIVO ADD NÃO ESTÁ MAIS DISPONÍVEL, O SEU LOG TAMBÉM É APAGADO
-            try:
-                if (myThread._args[2] in executingFiles):
-                    executingFiles.remove(myThread._args[2]) #REMOVE DA FILA DE EXECUÇÃO
-                    logsFiles.remove(myThread._args[-1])
-            except:
-                pass
-            myThreads.remove(myThread) #REMOVE A THREAD EXECUTADA
-
+        checkNewFiles()
 
 except Exception as err:
     exception_type, exception_object, exception_traceback = exc_info()

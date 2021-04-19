@@ -51,7 +51,7 @@ class SeleniumFunctions(object):
                         element = WebDriverWait(driver, timeOut, poll_frequency = poll,
                                                 ignored_exceptions=[NoSuchElementException,
                                                 ElementNotVisibleException, ElementNotSelectableException]).until(EC.presence_of_element_located((By.CLASS_NAME, object)))
-                print('=============> {} - O Elemento "{}" foi encontrado!'.format(count, object).lower())
+                # print('=============> {} - O Elemento "{}" foi encontrado!'.format(count, object).lower())
                 return element
             except:
                 count = count + 1
@@ -59,19 +59,20 @@ class SeleniumFunctions(object):
 
         return False
 
-    def iniciaWebdriver(self, modSilent = False, monitor = 2):
+    def iniciaWebdriver(self, modSilent = False, monitor = 2, webDriverNumero = 1):
 
         sistemaOperacional = SO()
         chromepath=None
 
+        chromeDriveFile = '/arquivos_necessarios/chromedriver{}'.format(webDriverNumero)
         if (sistemaOperacional == 'Windows'):
             # acessando diretório do webdriver do chrome no WINDOWS
             dirpath = osPath.dirname(osPath.realpath(__file__))
-            chromepath = dirpath + '/arquivos_necessarios/chromedriver.exe'
+            chromepath = dirpath + chromeDriveFile + '.exe'.format(webDriverNumero)
         elif (sistemaOperacional == 'Linux'):
             # acessando diretório do webdriver do chrome no LINUX
             dirpath = '/usr/bin'
-            chromepath = dirpath + '/arquivos_necessarios/chromedriver'
+            chromepath = dirpath + chromeDriveFile
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
