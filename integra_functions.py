@@ -9,7 +9,7 @@ import winsound
 
 class IntegraFunctions(object):
 
-    def __init__(self):
+    def __init__(self, webDriverNumero=1):
         self.selenium = SeleniumFunctions()
         self.waitInstance = self.selenium.waitInstance
         self.driver = None
@@ -17,12 +17,13 @@ class IntegraFunctions(object):
         self.password = None
         self.frequency = 2500  # Set Frequency To 2500 Hertz
         self.duration = 500  # Set Duration To 1000 ms == 1 second
+        self.webDriverNumero = webDriverNumero
         # winsound.Beep(self.frequency, self.duration)
 
     def acessToIntegra(self, login, password):
         try:
             print("\nINICIANDO WebDriver")
-            self.driver = self.selenium.iniciaWebdriver()
+            self.driver = self.selenium.iniciaWebdriver(webDriverNumero = self.webDriverNumero)
             self.driver.maximize_window()
             self.driver.get('https://integra.adv.br/login-integra.asp')
             self.driver.execute_script("document.getElementById('login_email').value='{}'".format(login))
@@ -324,6 +325,7 @@ class IntegraFunctions(object):
             while True:
                 if (reg > len(registros['registros'])):
                     break
+
                 registro = registros['registros']['{}'.format(reg)]
                 message = ''
 
@@ -340,8 +342,10 @@ class IntegraFunctions(object):
                             registro['razaoSocial'] = ultimoCliente
                             urlCliente = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104330872&codigo2=104330872'
 
-                    sleep(3)
-                    self.driver.get(urlCliente)
+                    if (self.driver.current_url != urlCliente): #só redireciona à URL do cliente se forem diferentes
+                        sleep(3)
+                        self.driver.get(urlCliente)
+
                     sleep(3)
                     getClientName = self.waitingElement('//*[@id="txtNome"]', 'show')
                     if (getClientName.parent.title.upper() != registro['razaoSocial'].upper()):
@@ -358,6 +362,7 @@ class IntegraFunctions(object):
 
                     #pesquisa pasta/processo
                     campoPpesquisa = self.waitingElement('txtPesquisaProcesso', 'click', 'id')
+                    campoPpesquisa.clear()
                     if ('txtNroProcesso' in registro):
                         paramsPesquisa = registro['txtNroProcesso']
                     else:
@@ -383,8 +388,11 @@ class IntegraFunctions(object):
                             linkIncluiProcesso.click()
                             message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
 
+                            if (message == False):
+                                continue
+
                             if ('slcResponsavel' in registro and message):
-                                if ('agendamentos' in registro['slcResponsavel']):
+                                if ('agendamentos' in registro):
                                     messageAgendamentos = ''
                                     messageAgendamentos = self.criaAgendammentos(registro, reg)
                                     if (messageAgendamentos): message = '{}{}\n'.format(message, messageAgendamentos)
@@ -414,7 +422,7 @@ class IntegraFunctions(object):
                     print('{}REG {}: TENTATIVA {}: ERRO AO INCLUIR - linha:{} - erro: {}'.format(self.fileName, str(reg), tentativa, line_number, err))
                     if (tentativa > 5):
                         message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta']))
-                        # winsound.Beep(self.frequency, self.duration)
+                        winsound.Beep(self.frequency, self.duration)
                         print(message)
                         return False
 
@@ -430,7 +438,7 @@ class IntegraFunctions(object):
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
-            # winsound.Beep(self.frequency, self.duration)
+            winsound.Beep(self.frequency, self.duration)
             print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
             pass
 
@@ -593,7 +601,8 @@ class IntegraFunctions(object):
         message = ''
         message = "{}REG {};{} às {};".format('CONF ' if (check) else '', reg, hoje, hora)  #Insere a primeira linha do item no log
 
-        self.driver.execute_script("$('#slcResponsavel').css('display', 'block');") # torna elemento slcResponsavel visível
+        sleep(.5)
+        self.driver.execute_script("$('#slcResponsavel').css('display', 'block');")
         itensExcluidosLoop.extend(['razaoSocial', 'parteAdversa', 'sigla', 'agendamentos', 'urlCliente'])
         for k, v in registro.items():
             valorAntigo = ''
@@ -739,7 +748,14 @@ class IntegraFunctions(object):
                                 # sleep(.5)
                             except:
                                 pass
-                            break
+
+                            try:
+                                element = self.driver.find_elements_by_class_name('c-alert').is_displayed() #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
+                                winsound.Beep(self.frequency, self.duration)
+                                return False
+                            except:
+                                pass
+
                         except:
                             winsound.Beep(self.frequency, self.duration)
                             print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>> {}'.format(self.fileName, reg, menuAdversa))
@@ -942,7 +958,7 @@ class IntegraFunctions(object):
                 self.checkPopUps()
                 _formAgendamento = self.waitingElement('divAgendaCadastrar', 'show', 'id')
                 # print('{}REG {}: INICIANDO O AGENDAMENTO {}: {}'.format(self.fileName, reg, tipoAgendamento, agendamento))
-                # sleep(1)
+                sleep(1)
                 try:
                     xPathComboDestinatario = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/button'
                     elementComboDestinatario = self.waitingElement(xPathComboDestinatario, 'click')
@@ -976,7 +992,7 @@ class IntegraFunctions(object):
                 y = 1
                 # print('{}REG {}: SELECIONANDO OS RESPONSÁVEIS'.format(self.fileName, reg))
                 listDestinatarios = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li')
-                # sleep(.5)
+                sleep(1)
                 while True:
                     try:
                         for item in listDestinatarios:  #itera inputs recuperados, checa e clica
@@ -984,13 +1000,14 @@ class IntegraFunctions(object):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[3]/td[1]/div[2]/ul/li[{}]'.format(y)
                                 element = self.waitingElement(xPathItem, 'click')
                                 element.click()
-                                sleep(.3)
+                                sleep(.5)
                                 countResp = countResp + 1
                                 if (countResp == totalResp):
                                     break
                             y = y + 1
                         break
                     except:
+                        winsound.Beep(self.frequency, self.duration)
                         print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR DESTINATÁRIOS >>>'.format(self.fileName, reg))
                         continue
                 elementComboDestinatario.click()
@@ -1000,7 +1017,7 @@ class IntegraFunctions(object):
                 xPathElement = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/button'
                 comboTipoAgendamento = self.waitingElement(xPathElement, 'click')
                 comboTipoAgendamento.click()
-                sleep(.5)
+                sleep(1)
 
                 # print('{}REG {}: SELECIONANDO O TIPO TIPO DE AGENDAMENTO'.format(self.fileName, reg))
                 listTiposAgendamentos = self.driver.find_elements_by_xpath('//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li') #recupera os inputs abaixo dessa tag
@@ -1012,18 +1029,19 @@ class IntegraFunctions(object):
                                 xPathItem = '//*[@id="tableAgendamentoCadastroProcesso1"]/tbody/tr[4]/td/div[2]/ul/li[{}]'.format(y)
                                 element = self.waitingElement(xPathItem, 'click')
                                 element.click()
-                                sleep(.3)
+                                sleep(.5)
                                 # sleep(1)
                                 break
                             y = y + 1
                         break
                     except:
+                        winsound.Beep(self.frequency, self.duration)
                         print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS >>>'.format(self.fileName, reg))
                         continue
 
                 # CAMPO QUANDO  - SÓ SE A DATA FOR MAIOR QUE HOJE - se menor ou igual: mantém a data do sistema
                 if (datetime.strptime(agendamento, '%d/%m/%Y') > datetime.now()):
-                    # sleep(1)
+                    sleep(1)
                     xPathElement = '//*[@id="txtDataInicialAgendaProcesso1"]'
                     quandoElement = self.waitingElement(xPathElement, 'show')
                     quandoElement.clear()
@@ -1035,6 +1053,7 @@ class IntegraFunctions(object):
                     try: #se o calendário estiver aberto, será fechado
                         self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
                     except:
+                        winsound.Beep(self.frequency, self.duration)
                         print("{}REG {}: <<< ERRO CALENDÁRIO >>>".format(self.fileName, reg))
 
                     # COM HORA
@@ -1075,6 +1094,7 @@ class IntegraFunctions(object):
                     botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
                     botaoSalvar.click()
                 except:
+                    winsound.Beep(self.frequency, self.duration)
                     print("{}REG {}: <<< ERRO AO CLICAR NO BOTÃO SALVAR!!!! >>>".format(self.fileName, reg))
                     pass
 
@@ -1086,7 +1106,7 @@ class IntegraFunctions(object):
                     sleep(1)
                     self.driver.execute_script("clickMenuCadastro(109,'processoAgenda.asp');") #ATUALIZA A PÁGINA
                     print('{}REG {}: TENTATIVA Nº {} DE 3'.format(self.fileName, reg, refazAgendamento))
-                    if (refazAgendamento <= 3): # 3 tentativas para o agendamento
+                    if (refazAgendamento <= 5): # 6 tentativas para o agendamento
                         refazAgendamento = refazAgendamento + 1
                         continue  #volta ao While TRUE e recomeça os preenchimentos
                     else:
@@ -1102,6 +1122,7 @@ class IntegraFunctions(object):
                     print("{}REG {}: CRIADO O AGENDAMENTO: |{}".format(self.fileName, reg, tipoAgendamento))
                     sleep(1)
                 except:
+                    winsound.Beep(self.frequency, self.duration)
                     print("{}REG {}: <<< ERRO POPUP SALVAR >>>".format(self.fileName, reg))
                     pass
 
