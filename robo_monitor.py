@@ -18,18 +18,23 @@ import json
 
 def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV, webDriverNumero):
     try:
-        integra = IntegraFunctions(webDriverNumero)
-        integra = integra.controle(registros, reg, logFileCSV)
+        if (int(reg.replace('CONF ','').replace('REG ', '')) <= (len(registros['registros']))):
+            integra = IntegraFunctions(webDriverNumero)
+            integra = integra.controle(registros, reg, logFileCSV)
 
-        if (integra):
-            executedFileFolder = "{}\\{}".format(ARQUIVOS_EXECUTADOS, registros['tipo'])
-            executedFile = "{}\\{}".format(executedFileFolder, pathFile.split('\\')[-1])
-            createFolder(executedFileFolder)
+            if (integra):
+                executedFileFolder = "{}\\{}".format(ARQUIVOS_EXECUTADOS, registros['tipo'])
+                executedFile = "{}\\{}".format(executedFileFolder, pathFile.split('\\')[-1])
+                createFolder(executedFileFolder)
 
-            if (path.isfile(executedFile)):
-                rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
+                if (path.isfile(executedFile)):
+                    rename(executedFile, '{}'.format(executedFile.replace('.txt', '.OLD.txt')))  # Antigo / Novo
 
-            move("{}".format(pathFile), executedFileFolder)
+                move("{}".format(pathFile), executedFileFolder)
+        else:
+            print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(pathFile.split('\\')[-1]).upper())
+            createLog(logFileCSV, "\n\nCONFERENCIA", printOut=False)
+            isCheck = True
 
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
