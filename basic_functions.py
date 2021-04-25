@@ -41,25 +41,32 @@ def abreArquivo(fileName):
 def checkEndFile(log):
     arquivo =  open(log, 'r')
     message = arquivo.readlines()
-    countLines = len(message)
     arquivo.close()
 
+    while True:
+        if (message[-1] == '\n'):
+            message.remove(message[-1])
+        else:
+            message.remove(message[0])
+            break
+
+    ultimaLinha = message[-1].split(';')[0].strip()
     lastLine = None
-    if (countLines == 1):
+
+    if (len(message) == 0):
         lastLine = 'REG 1'
-    elif ('EM FILA' in message[ len(message) - 1]):
-        lastLine = message[ len(message) - 1]
+    elif ('EM FILA' in ultimaLinha):
+        lastLine = ultimaLinha
     else:
-        linhaAnterior = 2 if (message[ len(message) - 1]) == '\n' else 1
-        ultimaLinha = message[ len(message) - linhaAnterior].split(';')[0].strip()
         if ('FIM' in ultimaLinha):
             lastLine = 'FIM'
         elif ('CONFERENCIA' in ultimaLinha):
             lastLine = 'CONF REG 1'
         elif ('CONF REG' in ultimaLinha):
-            lastLine = "CONF REG {}".format( int( ultimaLinha.split(' ')[-1] ) + 1 )
-        else:
-            lastLine = "REG {}".format( int( ultimaLinha.split(' ')[-1] ) + 1 )
+            lastLine = "CONF {}".format(ultimaLinha)
+        elif ('REG' in ultimaLinha):
+            lastLine = ultimaLinha
+
     return (lastLine)
 
 def createLog(logFile, message = "", tipo = 'w+', printOut = True, onlyText=False):
