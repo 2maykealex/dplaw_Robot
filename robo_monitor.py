@@ -18,8 +18,10 @@ import json
 
 def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV, webDriverNumero):
     try:
+        check = True if ('CONF REG' in reg) else False
+
         if (int(reg.replace('CONF ','').replace('REG ', '')) <= (len(registros['registros']))):
-            integra = IntegraFunctions(webDriverNumero)
+            integra = IntegraFunctions(webDriverNumero, check=check)
             integra = integra.controle(registros, reg, logFileCSV)
 
             if (integra):
@@ -32,15 +34,21 @@ def acessaIntegra(registros, reg, pathFile, folderName, logFileCSV, webDriverNum
 
                 move("{}".format(pathFile), executedFileFolder)
         else:
-            print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(pathFile.split('\\')[-1]).upper())
-            createLog(logFileCSV, "\n\nCONFERENCIA", printOut=False)
-            isCheck = True
+            if (check): # SE FOR CHECK E REG >= QUE O LEN()
+                print('{} <<<NÃO HÁ MAIS REGISTROS NESSE ARQUIVO PARA IMPORTAR! >>>'.format(pathFile.split('\\')[-1]).upper())
+                createLog(logFileCSV, "\n\nFIM;", printOut=False)
+                executingFiles.remove(pathFile.split('\\')[-1]) # COM ERRO OU SEM ERRO, REMOVE DA EXECUÇÃO
+
+            else:
+                print('{} <<< INICIANDO A CONFERÊNCIA >>>'.format(pathFile.split('\\')[-1]).upper())
+                createLog(logFileCSV, "\n\nCONFERENCIA;\n", printOut=False)
 
     except Exception as err:
         print('\nHouve um erro: {}\n'.format(err))
         pass
 
-    executingFiles.remove(pathFile.split('\\')[-1]) # COM ERRO OU SEM ERRO, REMOVE DA EXECUÇÃO
+    # COM ERRO OU SEM ERRO, REMOVE DA EXECUÇÃO -> SE NÃO FINALIZOU, REINICIA-SE
+    executingFiles.remove(pathFile.split('\\')[-1])
     print('{} - {} - VERIFICANDO SE HÁ NOVOS ARQUIVOS!'.format(date.today(), strftime("%H:%M:%S")))
 
 def checkNewFiles():
