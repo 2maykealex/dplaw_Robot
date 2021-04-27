@@ -9,7 +9,7 @@ import winsound
 
 class IntegraFunctions(object):
 
-    def __init__(self, webDriverNumero=1):
+    def __init__(self, webDriverNumero=1, check=False):
         self.selenium = SeleniumFunctions()
         self.waitInstance = self.selenium.waitInstance
         self.driver = None
@@ -18,7 +18,7 @@ class IntegraFunctions(object):
         self.frequency = 2500  # Set Frequency To 2500 Hertz
         self.duration = 500  # Set Duration To 1000 ms == 1 second
         self.webDriverNumero = webDriverNumero
-        self.check = False
+        self.check = check
         # winsound.Beep(self.frequency, self.duration)
 
     def acessToIntegra(self, login, password):
@@ -241,22 +241,23 @@ class IntegraFunctions(object):
             self.isTest = basic_functions.checkIfTest()
             self.login, self.password = basic_functions.checkLogin(str(registros['tipo']))     #se for atualização - usa-se o login do robô
 
-            self.check = True if ('CONF REG' in reg) else False
+            loop = 1 if (self.check) else 2
             reg = int(reg.replace('CONF ','').replace('REG ', ''))
-            _robo = self.painelCliente(registros, reg)
+            execucao = self.painelCliente(registros, reg, loop)
+            return execucao
 
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
-            winsound.Beep(self.frequency, self.duration)
+            # winsound.Beep(self.frequency, self.duration)
             line_number = exception_traceback.tb_lineno
             print('{}\n ERRO EM {} na linha {} >>>'.format(self.fileName, err, line_number))
             self.driver.quit()
             return False
 
-    def painelCliente(self, registros, reg):
+    def painelCliente(self, registros, reg, loop):
         try:
             _abreWebDriver = self.acessToIntegra(self.login, self.password)
-            for _executa in range (2):
+            for _executa in range (loop):
                 clienteLocalizado = True
                 urlCliente = None
                 ultimoCliente = ''
@@ -325,8 +326,9 @@ class IntegraFunctions(object):
 
                         if (not(searchFolder)): #se não há registros
                             if ('abertura' in registros['tipo']):
-                                linkIncluiProcesso = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
-                                linkIncluiProcesso.click()
+                                incluirProcessoLink = self.waitingElement('//*[@id="frmProcesso"]/table/tbody/tr[2]/td/div[1]', 'click')
+                                sleep(2)
+                                incluirProcessoLink.click()
                                 message = self.incluiAlteraProcesso(registro, reg, registros['tipo'])
 
                                 if (message == False):
@@ -367,7 +369,7 @@ class IntegraFunctions(object):
                         if (tentativa > 5):
                             message = "REG {}; FOI REALIZADO {} TENTATIVAS E NÃO FOI POSSÍVEL REALIZAR A ABERTURA: {}".format(str(reg), tentativa, str(registro['txtNroProcesso'] if ('txtNroProcesso' in registro) else registro['txtPasta']))
                             print(message)
-                            winsound.Beep(self.frequency, self.duration)
+                            # winsound.Beep(self.frequency, self.duration)
 
                             self.logoutIntegra()
                             _abreWebDriver = self.acessToIntegra(self.login, self.password)
@@ -377,12 +379,14 @@ class IntegraFunctions(object):
                         tentativa = tentativa + 1
                         continue
 
-                reg = 1 # reinicia para checagem
-                self.check = True
-                self.geraLogBackup()
-                print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
-                basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA;", printOut=False)
+                # PARA CHECAGEM
+                if (not(self.check)):
+                    reg = 1
+                    self.check = True
+                    self.geraLogBackup()
+                    basic_functions.createLog(self.logFileCSV, "\n\nCONFERENCIA;\n", printOut=False)
 
+            print('{}<<<<< NÃO HÁ MAIS REGISTROS PARA IMPORTAR. FINALIZANDO! >>>>>'.format(self.fileName))
             basic_functions.createLog(self.logFileCSV, "\nFIM;", printOut=False)
             self.logoutIntegra()
             return True
@@ -390,7 +394,7 @@ class IntegraFunctions(object):
         except Exception as err:
             exception_type, exception_object, exception_traceback = exc_info()
             line_number = exception_traceback.tb_lineno
-            winsound.Beep(self.frequency, self.duration)
+            # winsound.Beep(self.frequency, self.duration)
             print('{}REG {}: <<< HOUVE UM ERRO: {} - na linha {} >>>'.format(self.fileName, reg, err, line_number))
             pass
 
@@ -699,13 +703,13 @@ class IntegraFunctions(object):
 
                             try:
                                 element = self.driver.find_elements_by_class_name('c-alert').is_displayed() #TODO   -> CHECAR SE HÁ CAMPOS OBRIGATÓRIOS VAZIOS (ALÉM DESSE)
-                                winsound.Beep(self.frequency, self.duration)
+                                # winsound.Beep(self.frequency, self.duration)
                                 return False
                             except:
                                 pass
 
                         except:
-                            winsound.Beep(self.frequency, self.duration)
+                            # winsound.Beep(self.frequency, self.duration)
                             print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>> {}'.format(self.fileName, reg, menuAdversa))
                             countAdversa = countAdversa + 1
                             continue
@@ -955,7 +959,7 @@ class IntegraFunctions(object):
                             y = y + 1
                         break
                     except:
-                        winsound.Beep(self.frequency, self.duration)
+                        # winsound.Beep(self.frequency, self.duration)
                         print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR DESTINATÁRIOS >>>'.format(self.fileName, reg))
                         continue
                 elementComboDestinatario.click()
@@ -983,7 +987,7 @@ class IntegraFunctions(object):
                             y = y + 1
                         break
                     except:
-                        winsound.Beep(self.frequency, self.duration)
+                        # winsound.Beep(self.frequency, self.duration)
                         print('{}REG {}: <<< ERRO AO CARREGAR OU SELECIONAR TIPOS DE AGENDAMENTOS >>>'.format(self.fileName, reg))
                         continue
 
@@ -1001,7 +1005,7 @@ class IntegraFunctions(object):
                     try: #se o calendário estiver aberto, será fechado
                         self.driver.execute_script("$('#ui-datepicker-div').css('display', 'none');")
                     except:
-                        winsound.Beep(self.frequency, self.duration)
+                        # winsound.Beep(self.frequency, self.duration)
                         print("{}REG {}: <<< ERRO CALENDÁRIO >>>".format(self.fileName, reg))
 
                     # COM HORA
@@ -1042,7 +1046,7 @@ class IntegraFunctions(object):
                     botaoSalvar = self.waitingElement('//*[@id="btnAgendarSalvar"]', 'click')
                     botaoSalvar.click()
                 except:
-                    winsound.Beep(self.frequency, self.duration)
+                    # winsound.Beep(self.frequency, self.duration)
                     print("{}REG {}: <<< ERRO AO CLICAR NO BOTÃO SALVAR!!!! >>>".format(self.fileName, reg))
                     pass
 
@@ -1070,7 +1074,7 @@ class IntegraFunctions(object):
                     print("{}REG {}: CRIADO O AGENDAMENTO: |{}".format(self.fileName, reg, tipoAgendamento))
                     sleep(1)
                 except:
-                    winsound.Beep(self.frequency, self.duration)
+                    # winsound.Beep(self.frequency, self.duration)
                     print("{}REG {}: <<< ERRO POPUP SALVAR >>>".format(self.fileName, reg))
                     pass
 
