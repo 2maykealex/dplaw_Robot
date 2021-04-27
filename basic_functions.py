@@ -50,22 +50,24 @@ def checkEndFile(log):
             message.remove(message[0])
             break
 
-    ultimaLinha = message[-1].split(';')[0].strip()
-    lastLine = None
+    lastLine    = None
+    ultimaLinha = None
 
     if (len(message) == 0):
         lastLine = 'REG 1'
-    elif ('EM FILA' in ultimaLinha):
-        lastLine = ultimaLinha
     else:
-        if ('FIM' in ultimaLinha):
-            lastLine = 'FIM'
-        elif ('CONFERENCIA' in ultimaLinha):
-            lastLine = 'CONF REG 1'
-        elif ('CONF REG' in ultimaLinha):
-            lastLine = "CONF {}".format(ultimaLinha)
-        elif ('REG' in ultimaLinha):
+        ultimaLinha = message[-1].split(';')[0].strip()
+        if ('EM FILA' in ultimaLinha):
             lastLine = ultimaLinha
+        else:
+            if ('FIM' in ultimaLinha):
+                lastLine = 'FIM'
+            elif ('CONFERENCIA' in ultimaLinha):
+                lastLine = 'CONF REG 1'
+            elif ('CONF REG' in ultimaLinha):
+                lastLine = "CONF REG {}".format(int(ultimaLinha.split(' ')[-1]) + 1)
+            elif ('REG' in ultimaLinha):
+                lastLine = "REG {}".format(int(ultimaLinha.split(' ')[-1]) + 1)
 
     return (lastLine)
 
