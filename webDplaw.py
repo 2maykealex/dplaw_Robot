@@ -147,11 +147,11 @@ def defining():
     urlFARO = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104066917&codigo2=104066917'
 
     urlENERGISA = {}
-    urlENERGISA ['ENERGISA ACRE - DISTRIBUIDORA DE ENERGIA ELETRICA S/A']    = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894213&codigo2=104894213'
-    urlENERGISA ['ENERGISA MATO GROSSO DISTRIBUIDORA DE ENERGIA S/A']        = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894190&codigo2=104894190'
-    urlENERGISA ['ENERGISA MATO GROSSO DO SUL DISTRIBUIDORA DE ENERGIA S/A'] = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894237&codigo2=104894237'
-    urlENERGISA ['ENERGISA RONDONIA - DISTRIBUIDORA DE ENERGIA S.A']         = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894220&codigo2=104894220'
-    urlENERGISA ['ENERGISA TOCANTINS - DISTRIBUIDORA DE ENERGIA S/A']        = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894248&codigo2=104894248'
+    urlENERGISA ['ENERGISA ACRE - DISTRIBUIDORA DE ENERGIA ELETRICA S.A.']      = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894213&codigo2=104894213'
+    urlENERGISA ['ENERGISA MATO GROSSO - DISTRIBUIDORA DE ENERGIA S.A.']        = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894190&codigo2=104894190'
+    urlENERGISA ['ENERGISA MATO GROSSO DO SUL - DISTRIBUIDORA DE ENERGIA S.A.'] = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894237&codigo2=104894237'
+    urlENERGISA ['ENERGISA RONDONIA - DISTRIBUIDORA DE ENERGIA S.A']            = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894220&codigo2=104894220'
+    urlENERGISA ['ENERGISA TOCANTINS - DISTRIBUIDORA DE ENERGIA S.A.']          = 'https://integra.adv.br/integra4/modulo/21/parteVisualizar.asp?codigo=104894248&codigo2=104894248'
 
     #separando base e padrões
     for k, item in data.items():
