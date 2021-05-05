@@ -729,7 +729,7 @@ class IntegraFunctions(object):
                         sleep(3)
                         try:
                             self.driver.execute_script("clickMudarMenu('S', 4);")
-                            sleep(.5)
+                            sleep(1)
                             self.checkPopUps()
                             sleep(.5)
                             try: #checa se há mensagens que bloqueiam o salvamento
@@ -739,7 +739,6 @@ class IntegraFunctions(object):
                                 # sleep(.5)
                             except:
                                 pass
-                            break
                         except:
                             winsound.Beep(self.frequency, self.duration)
                             print('{}REG {}: <<< ERRO AO CLICAR NO MENU ADVERSA >>> {}'.format(self.fileName, reg, menuAdversa))
